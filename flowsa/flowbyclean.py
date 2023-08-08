@@ -5,7 +5,8 @@ from flowsa.flowby import FlowBySector, FB, get_catalog_info, \
 from flowsa.flowsa_log import log
 from flowsa import (geo, location, getFlowBySector, flowbyfunctions,
                     FlowByActivity)
-from flowsa.naics import map_source_sectors_to_less_aggregated_sectors
+from flowsa.naics import map_source_sectors_to_more_aggregated_sectors
+from flowsa.validation import compare_summation_at_sector_lengths_between_two_dfs
 
 def return_primary_activity_column(fba: FlowByActivity) -> \
         FlowByActivity:
