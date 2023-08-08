@@ -160,6 +160,43 @@ def map_source_sectors_to_more_aggregated_sectors(
     return naics_key.drop_duplicates()
 
 
+def map_source_sectors_to_less_aggregated_sectors(
+    year: Literal[2002, 2007, 2012, 2017] = 2012
+) -> pd.DataFrame:
+    """
+    Map source NAICS to all possible other sector lengths
+    parent-childhierarchy
+    """
+    naics = []
+    for n in naics_crosswalk.columns.values.tolist():
+        naics_sub = naics_crosswalk.assign(source_naics=naics_crosswalk[n])
+        naics.append(naics_sub)
+
+    # concat data into single dataframe
+    naics_key = pd.concat(naics, sort=False)
+    naics_key = naics_key.dropna(subset=['source_naics'])
+
+    # drop source_naics that are more aggregated than target_naics, reorder
+    for n in range(2, 8):
+        naics_key[f'NAICS_{n}'] = np.where(
+            naics_key[f'NAICS_{n}'].str.len() < naics_key[
+                'source_naics'].str.len(),
+            np.nan,
+            naics_key[f'NAICS_{n}'])
+
+    cw_melt = naics_key.melt(id_vars="source_naics",
+                             var_name="SectorLength",
+                             value_name='Sector'
+                             ).drop_duplicates().reset_index(drop=True)
+
+    cw_melt = (cw_melt
+               .query("source_naics != Sector")
+               .query("~Sector.isna()")
+               ).drop_duplicates().reset_index(drop=True)
+
+    return cw_melt
+
+
 def year_crosswalk(
     source_year: Literal[2002, 2007, 2012, 2017],
     target_year: Literal[2002, 2007, 2012, 2017]
