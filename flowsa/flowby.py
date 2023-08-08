@@ -759,6 +759,14 @@ class _FlowBy(pd.DataFrame):
                                 'FlowAmount', 'group_total', 'validation_total']])
                     log.error('Errors in attributing flows from %s:\n%s',
                               self.full_name, errors)
+                # calculate the percent change in df caused by attribution
+                fbsum = (fb[['group_id', 'group_total']]
+                         .drop_duplicates())['group_total'].sum()
+                attsum = (validation_fb[['group_id', 'validation_total']]
+                          .drop_duplicates())['validation_total'].sum()
+                percent_change = ((attsum - fbsum)/fbsum)*100
+                log.info(f"Percent change in dataset after attribution is"
+                         f" {percent_change}")
 
             # run function to clean fbs after attribution
             attributed_fb = attributed_fb.function_socket(
@@ -2395,7 +2403,8 @@ class FlowBySector(_FlowBy):
                 },
                 external_config_path=external_config_path,
                 download_sources_ok=download_sources_ok
-            ).prepare_fbs(external_config_path=external_config_path, download_sources_ok=download_sources_ok)
+            ).prepare_fbs(external_config_path=external_config_path,
+                          download_sources_ok=download_sources_ok)
             for source_name, config in sources.items()
         ])
 
