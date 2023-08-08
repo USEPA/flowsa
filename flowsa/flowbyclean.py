@@ -506,14 +506,14 @@ def define_parentincompletechild_descendants(
             .reset_index()
             .rename(columns={activity_col: 'descendants',
                              'FlowAmount': 'descendant_flows',
-                             'parent': 'ActivityConsumedBy'})
+                             'parent': activity_col})
         )
 
         fba = (
             fba
             .merge(descendants,
                    how='left',
-                   on=['Flowable', 'Location', 'ActivityConsumedBy'],
+                   on=['Flowable', 'Location', activity_col],
                    suffixes=(None, '_y'))
             .fillna({'descendant_flows': 0, 'descendants_y': ''})
             .assign(
