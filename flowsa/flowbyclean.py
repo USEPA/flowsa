@@ -218,8 +218,8 @@ def estimate_suppressed_sectors_equal_attribution(
             .assign(**{f"{col}": lambda x: x.Sector})
             .drop(columns=['source_naics', 'Sector'])
             .query(f"~{col}.isna()")
+            .drop_duplicates()  # duplicates if multiple generations of 1:1
             )
-    fba2 = fba2.astype(fba.dtypes.to_dict())
 
     fba3 = (fba
             .merge(fba2, indicator=True, how='outer')
@@ -235,12 +235,12 @@ def estimate_suppressed_sectors_equal_attribution(
 
     # drop rows that contain "&" and "-"
     fba3 = (fba3
-           .query(f"~{col}.str.contains('&')")
-           .query(f"~{col}.str.contains('-')")
-           )
+            .query(f"~{col}.str.contains('&')")
+            .query(f"~{col}.str.contains('-')")
+            )
 
     for level in [6, 5, 4, 3, 2]:
-        descendants = pd.DataFrame(
+        descendants = (
             fba3
             .drop(columns='descendants')
             .query(f'{col}.str.len() > {level}')
@@ -265,7 +265,7 @@ def estimate_suppressed_sectors_equal_attribution(
                 descendants=lambda x: x.descendants.mask(x.descendants == '',
                                                          x.descendants_y),
                 Unattributed=lambda x: (x.Unattributed -
-                                      x.descendant_flows).mask(
+                                        x.descendant_flows).mask(
                     x.Unattributed - x.descendant_flows < 0, 0),
                 Attributed=lambda x: (x.Attributed +
                                       x.descendant_flows)
