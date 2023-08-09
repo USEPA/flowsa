@@ -224,19 +224,70 @@ def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
     else:
         log.critical('At a subnational scale, this will take a long time.')
 
+    fba2 = (fba
+            .assign(Unattributed=fba.FlowAmount.copy(),
+                    Attributed=0)
+            .assign(descendants='')
+            .replace({'ActivityProducedBy': {'31-33': '3X',
+                                             '44-45': '4X',
+                                             '48-49': '4Y'}})
+            )
+
+    for level in [5, 4, 3, 2]:
+        descendants = pd.DataFrame(
+            fba2
+            .drop(columns='descendants')
+            .query(f'ActivityProducedBy.str.len() > {level}')
+            .assign(
+                parent=lambda x: x.ActivityProducedBy.str.slice(stop=level)
+            )
+            # replace parent values if parent is a range
+            .replace({'parent': {'31': '3X',
+                                 '32': '3X',
+                                 '33': '3X',
+                                 '44': '4X',
+                                 '45': '4X',
+                                 '48': '4Y',
+                                 '49': '4Y'
+                                 }})
+            .groupby(['FlowName', 'Location', 'parent'])
+            .agg({'Unattributed': 'sum', 'ActivityProducedBy': ' '.join})
+            .reset_index()
+            .rename(columns={'ActivityProducedBy': 'descendants',
+                             'Unattributed': 'descendant_flows',
+                             'parent': 'ActivityProducedBy'})
+        )
+
+        fba2 = (
+            fba2
+            .merge(descendants,
+                   how='left',
+                   on=['FlowName', 'Location', 'ActivityProducedBy'],
+                   suffixes=(None, '_y'))
+            .fillna({'descendant_flows': 0, 'descendants_y': ''})
+            .assign(
+                descendants=lambda x: x.descendants.mask(x.descendants == '',
+                                                         x.descendants_y),
+                Unattributed=lambda x: (x.Unattributed -
+                                      x.descendant_flows).mask(
+                    x.Unattributed - x.descendant_flows < 0, 0),
+                Attributed=lambda x: (x.Attributed +
+                                      x.descendant_flows)
+            )
+            .drop(columns=['descendant_flows', 'descendants_y'])
+        )
+    fba2 = fba2.drop(columns=['descendants'])
+
     indexed = (
-        fba
-        .assign(n2=fba.ActivityProducedBy.str.slice(stop=2),
-                n3=fba.ActivityProducedBy.str.slice(stop=3),
-                n4=fba.ActivityProducedBy.str.slice(stop=4),
-                n5=fba.ActivityProducedBy.str.slice(stop=5),
-                n6=fba.ActivityProducedBy.str.slice(stop=6),
-                location=fba.Location,
-                category=fba.FlowName)
+        fba2
+        .assign(n2=fba2.ActivityProducedBy.str.slice(stop=2),
+                n3=fba2.ActivityProducedBy.str.slice(stop=3),
+                n4=fba2.ActivityProducedBy.str.slice(stop=4),
+                n5=fba2.ActivityProducedBy.str.slice(stop=5),
+                n6=fba2.ActivityProducedBy.str.slice(stop=6),
+                location=fba2.Location,
+                category=fba2.FlowName)
         .replace({'FlowAmount': {0: np.nan},
-                  'ActivityProducedBy': {'31-33': '3X',
-                                         '44-45': '4X',
-                                         '48-49': '4Y'},
                   'n2': {'31': '3X', '32': '3X', '33': '3X',
                          '44': '4X', '45': '4X',
                          '48': '4Y', '49': '4Y'}})
@@ -245,48 +296,40 @@ def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
     )
 
     def fill_suppressed(
-        flows: pd.Series,
-        level: int,
-        full_naics: pd.Series
-    ) -> pd.Series:
-        parent = flows[full_naics.str.len() == level]
-        children = flows[full_naics.str.len() == level + 1]
-        null_children = children[children.isna()]
+        flows, level: int, activity
+    ):
+        parent = flows[flows[activity].str.len() == level]
+        children = flows[flows[activity].str.len() == level + 1]
+        null_children = children[children['FlowAmount'].isna()]
 
         if null_children.empty or parent.empty:
             return flows
         else:
-            value = max((parent[0] - children.sum()) / null_children.size, 0)
-            return flows.fillna(pd.Series(value, index=null_children.index))
+            value = max(parent['Unattributed'][0] / len(null_children), 0)
+            # update the null children by adding the unattributed data to
+            # the attributed data
+            null_children = (
+                null_children
+                .assign(FlowAmount=value+null_children['Attributed'])
+                .assign(Unattributed=value)
+            )
+            flows.update(null_children)
 
-    unsuppressed = (
-        indexed
-        .assign(
-            FlowAmount=lambda x: (
-                x.groupby(level=['n2',
-                                 'location', 'category'])['FlowAmount']
-                .transform(fill_suppressed, 2, x.ActivityProducedBy)))
-        .assign(
-            FlowAmount=lambda x: (
-                x.groupby(level=['n2', 'n3',
-                                 'location', 'category'])['FlowAmount']
-                .transform(fill_suppressed, 3, x.ActivityProducedBy)))
-        .assign(
-            FlowAmount=lambda x: (
-                x.groupby(level=['n2', 'n3', 'n4',
-                                 'location', 'category'])['FlowAmount']
-                .transform(fill_suppressed, 4, x.ActivityProducedBy)))
-        .assign(
-            FlowAmount=lambda x: (
-                x.groupby(level=['n2', 'n3', 'n4', 'n5',
-                                 'location', 'category'])['FlowAmount']
-                .transform(fill_suppressed, 5, x.ActivityProducedBy)))
-        .fillna({'FlowAmount': 0})
-        .reset_index(drop=True)
-    )
+            return flows
+
+    unsuppressed = indexed.copy()
+    for level in [2, 3, 4, 5, 6]:
+        groupcols = ["{}{}".format("n", i) for i in range(2, level+1)] + [
+            'location', 'category']
+        unsuppressed = unsuppressed.groupby(
+            level=groupcols).apply(
+            fill_suppressed, level, 'ActivityProducedBy')
 
     aggregated = (
         unsuppressed
+        .reset_index(drop=True)
+        .fillna({'FlowAmount': 0})
+        .drop(columns=['Unattributed', 'Attributed'])
         .assign(FlowName='Number of employees')
         .replace({'ActivityProducedBy': {'3X': '31-33',
                                          '4X': '44-45',

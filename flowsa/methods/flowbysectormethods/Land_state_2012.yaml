@@ -17,7 +17,9 @@ sources_to_cache:
       Location: '00000'
     clean_fba: !script_function:EIA_CBECS_Land cbecs_land_fba_cleanup
     clean_fba_w_sec: !clean_function:flowbyclean attribute_national_to_states
-    clean_source: Employment_state_2012
+    clean_source:
+      Employment_state_2012:
+        geoscale: state
     activity_sets:
       cbecs_land: # all activities in eia cbecs land crosswalk
         selection_fields:
@@ -34,7 +36,9 @@ sources_to_cache:
     estimate_suppressed: !script_function:EIA_MECS estimate_suppressed_mecs_energy
     clean_fba: !script_function:EIA_MECS mecs_land_fba_cleanup
     clean_fba_w_sec: !clean_function:flowbyclean attribute_national_to_states
-    clean_source: Employment_state_2014
+    clean_source:
+      Employment_state_2014:
+        geoscale: state
     activity_sets:
       mecs_land: # all activities in eia mecs land crosswalk
         selection_fields:
@@ -65,58 +69,53 @@ source_names:
     fedefl_mapping: USDA_ERS_MLU
     selection_fields:
       Class: Land
-      Location: !include:Location_common.yaml:_state_location
     activity_sets:
       cropland_crops:
+        industry_spec:
+          default: NAICS_6
+          NAICS_7: ['111150', '111199']
         selection_fields:
          PrimaryActivity:
           - 'Cropland used for crops'
           - 'Cropland idled'
         attribution_method: proportional
         attribution_source:
-          "USDA_CoA_Cropland":
-            year: 2012
+          USDA_CoA_Cropland:
             selection_fields:
-              Class: "Land"
+              Class: Land
               FlowName:
                 - "AREA HARVESTED"
                 - "AREA"
                 - "AREA IN PRODUCTION"
                 - 'AREA BEARING & NON-BEARING'
                 - 'AREA GROWN'
-              Location: !include:Location_common.yaml:_state_location
             exclusion_fields:
               conditional: {FlowName: 'AREA IN PRODUCTION',
                             ActivityConsumedBy: 'VEGETABLE TOTALS'}
-              ActivityConsumedBy: ['AG LAND', 'AG LAND, CROPLAND, HARVESTED']
-            attribution_method: proportional
-            attribution_source:
-              USDA_CoA_Cropland_NAICS:
-                year: 2017
+              ActivityConsumedBy: ['AG LAND, CROPLAND, HARVESTED']
+            activity_sets:
+              cropland_attribution-cropland:
+                exclusion_fields:
+                  ActivityConsumedBy: 'ORCHARDS'
+                attribution_method: proportional
+                attribution_source:
+                  USDA_CoA_Cropland_NAICS:
+                    selection_fields:
+                      Class: Land
+                      FlowName:
+                        - "AG LAND, CROPLAND, HARVESTED"
+                    estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
+              cropland_attribution-orchards:
                 selection_fields:
-                  Class: Land
-                  FlowName:
-                    - "FARM OPERATIONS"
-                estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
-                selection_fields_after_data_suppression_estimation:
-                  PrimaryActivity: [ "112111", "112112", "11212", "1122",
-                                     "11231", "11232", "11233", "11234",
-                                     "11239", "11241", "11242", "11291",
-                                     "11292", "11293", "11299" ]
+                  PrimaryActivity: ORCHARDS
+                attribution_method: direct
       pastureland:
         selection_fields:
          PrimaryActivity:
           - 'Cropland used for pasture'
           - 'Forest-use land grazed'
           - 'Grassland pasture and range'
-        attribution_method: proportional
-        attribution_source:
-          "USDA_CoA_Cropland_NAICS":
-            year: 2012
-            selection_fields:
-              Class: "Land"
-              FlowName: "FARM OPERATIONS"
-            estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
+        attribution_method: direct
       forest:
         selection_fields:
          PrimaryActivity:
@@ -144,7 +143,7 @@ source_names:
         attribution_method: direct
       other:
         selection_fields:
-         PrimaryActivity:
-          - 'Other land'
+         PrimaryActivity: 'Other land'
+         Location: !include:Location_common.yaml:_state_location
         clean_fba_w_sec: !script_function:USDA_ERS_MLU allocate_usda_ers_mlu_other_land
         attribution_method: direct

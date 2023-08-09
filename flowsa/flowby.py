@@ -611,16 +611,13 @@ class _FlowBy(pd.DataFrame):
                 'FlowAmount'])
 
         # check flowamounts equal after aggregating
-        try:
-            self_flow = self['FlowAmount'].sum()
-            agg_flow = aggregated['FlowAmount'].sum()
-            percent_diff = int(((agg_flow - self_flow) * 100) / self_flow)
-            if percent_diff > 0:
-                log.warning(f'There is an error in aggregating dataframe, as new '
-                            'flow totals do not match original dataframe '
-                            'flowtotals, there is a {percent_diff}% difference.')
-        except:
-            log.warning('Dataframe is empty.')
+        self_flow = self['FlowAmount'].sum()
+        agg_flow = aggregated['FlowAmount'].sum()
+        percent_diff = int(((agg_flow - self_flow) * 100) / self_flow)
+        if percent_diff > 0:
+            log.warning(f'There is an error in aggregating dataframe, as new '
+                        'flow totals do not match original dataframe '
+                        'flowtotals, there is a {percent_diff}% difference.')
 
         return aggregated
 
@@ -762,6 +759,14 @@ class _FlowBy(pd.DataFrame):
                                 'FlowAmount', 'group_total', 'validation_total']])
                     log.error('Errors in attributing flows from %s:\n%s',
                               self.full_name, errors)
+                # calculate the percent change in df caused by attribution
+                fbsum = (fb[['group_id', 'group_total']]
+                         .drop_duplicates())['group_total'].sum()
+                attsum = (validation_fb[['group_id', 'validation_total']]
+                          .drop_duplicates())['validation_total'].sum()
+                percent_change = ((attsum - fbsum)/fbsum)*100
+                log.info(f"Percent change in dataset after attribution is"
+                         f" {percent_change}")
 
             # run function to clean fbs after attribution
             attributed_fb = attributed_fb.function_socket(
@@ -2053,7 +2058,7 @@ class FlowByActivity(_FlowBy):
 
         fba = self.add_primary_secondary_columns('Sector')
 
-        groupby_cols = ['group_id']
+        groupby_cols = ['group_id', 'Location']
         for rank in ['Primary', 'Secondary']:
             fba = (
                 fba
@@ -2398,7 +2403,8 @@ class FlowBySector(_FlowBy):
                 },
                 external_config_path=external_config_path,
                 download_sources_ok=download_sources_ok
-            ).prepare_fbs(external_config_path=external_config_path, download_sources_ok=download_sources_ok)
+            ).prepare_fbs(external_config_path=external_config_path,
+                          download_sources_ok=download_sources_ok)
             for source_name, config in sources.items()
         ])
 

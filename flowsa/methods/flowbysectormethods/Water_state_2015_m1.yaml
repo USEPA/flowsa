@@ -18,6 +18,13 @@ source_names:
         !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:direct_attribution
       employment_attribution:
         !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:employment_attribution
+        # First attribute employment FBS to NAICS6 and aggregate to NAICS3/4
+        # at the end because we only want to capture the relevant employment
+        # sectors. For example, "Industrial" accounts for sector "1133", but
+        # if we map to NAICS3/4, then the employment will include all child
+        # NAICS of "113" instead of only "1133"
+        industry_spec:
+          default: NAICS_6
         attribution_method: proportional
         attribution_source: Employment_state_2015
       cropland_attribution:

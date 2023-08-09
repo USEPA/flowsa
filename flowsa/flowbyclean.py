@@ -5,7 +5,8 @@ from flowsa.flowby import FlowBySector, FB, get_catalog_info, \
 from flowsa.flowsa_log import log
 from flowsa import (geo, location, getFlowBySector, flowbyfunctions,
                     FlowByActivity)
-from flowsa.naics import map_source_sectors_to_less_aggregated_sectors
+from flowsa.naics import map_source_sectors_to_more_aggregated_sectors
+from flowsa.validation import compare_summation_at_sector_lengths_between_two_dfs
 
 def return_primary_activity_column(fba: FlowByActivity) -> \
         FlowByActivity:
@@ -149,8 +150,9 @@ def substitute_nonexistent_values(
               .merge(other,
                      on=list(other.select_dtypes(
                          include=['object', 'int']).columns),
-                     how='left',
+                     how='outer',
                      suffixes=(None, '_y'))
+              .fillna({'FlowAmount': 0})
               )
     # fill in missing data
     new_col_data = [col for col in merged if col.endswith('_y')]
@@ -164,7 +166,7 @@ def substitute_nonexistent_values(
             merged[original_col] = merged[original_col].fillna(
                 merged[c])
 
-    # reset grop id and group total, drop columns
+    # reset group id and group total, drop columns
     merged = (merged
               .drop(merged.filter(regex='_y').columns, axis=1)
               .drop(columns=['group_id'])
@@ -183,30 +185,105 @@ def substitute_nonexistent_values(
 def estimate_suppressed_sectors_equal_attribution(
         fba: FlowByActivity) -> FlowByActivity:
     """
-
+    Method to estimate suppressed data only works for activity-like sectors
     :param fba:
     :return:
     """
+    from flowsa.naics import map_source_sectors_to_less_aggregated_sectors
     # todo: update function to work for any number of sector lengths
     # todo: update to loop through both sector columns, see equally_attribute()
 
     log.info('Estimating suppressed data by equally attributing parent to '
              'child sectors.')
-    naics_key = map_source_sectors_to_less_aggregated_sectors()
+    naics_key = map_source_sectors_to_more_aggregated_sectors()
     # forward fill
     naics_key = naics_key.T.ffill().T
 
     col = return_primary_activity_column(fba)
 
+    # determine if there are any 1:1 parent:child sectors that are missing,
+    # if so, add them (true for usda_coa_cropland_naics df)
+    cw_melt = map_source_sectors_to_less_aggregated_sectors()
+    cw_melt = cw_melt.assign(count=(cw_melt
+                                    .groupby(['source_naics', 'SectorLength'])
+                                    ['source_naics']
+                                    .transform('count')))
+    cw = (cw_melt
+          .query("count==1")
+          .drop(columns=['SectorLength', 'count'])
+          )
+    # create new df with activity col values reassigned to their child sectors
+    fba2 = (fba
+            .merge(cw, left_on=col, right_on='source_naics', how='left')
+            .assign(**{f"{col}": lambda x: x.Sector})
+            .drop(columns=['source_naics', 'Sector'])
+            .query(f"~{col}.isna()")
+            )
+    fba2 = fba2.astype(fba.dtypes.to_dict())
+
+    fba3 = (fba
+            .merge(fba2, indicator=True, how='outer')
+            .query('_merge!="both"')
+            .drop('_merge', axis=1)
+            )
+
+    fba3 = (fba3
+            .assign(Unattributed=fba3.FlowAmount.copy(),
+                    Attributed=0)
+            .assign(descendants='')
+            )
+
+    # drop rows that contain "&" and "-"
+    fba3 = (fba3
+           .query(f"~{col}.str.contains('&')")
+           .query(f"~{col}.str.contains('-')")
+           )
+
+    for level in [6, 5, 4, 3, 2]:
+        descendants = pd.DataFrame(
+            fba3
+            .drop(columns='descendants')
+            .query(f'{col}.str.len() > {level}')
+            .assign(
+                parent=lambda x: x[col].str.slice(stop=level)
+            )
+            .groupby(['FlowName', 'Location', 'parent'])
+            .agg({'Unattributed': 'sum', col: ' '.join})
+            .reset_index()
+            .rename(columns={col: 'descendants',
+                             'Unattributed': 'descendant_flows',
+                             'parent': col})
+        )
+        fba3 = (
+            fba3
+            .merge(descendants,
+                   how='left',
+                   on=['FlowName', 'Location', col],
+                   suffixes=(None, '_y'))
+            .fillna({'descendant_flows': 0, 'descendants_y': ''})
+            .assign(
+                descendants=lambda x: x.descendants.mask(x.descendants == '',
+                                                         x.descendants_y),
+                Unattributed=lambda x: (x.Unattributed -
+                                      x.descendant_flows).mask(
+                    x.Unattributed - x.descendant_flows < 0, 0),
+                Attributed=lambda x: (x.Attributed +
+                                      x.descendant_flows)
+            )
+            .drop(columns=['descendant_flows', 'descendants_y'])
+        )
+
+    fba3 = fba3.drop(columns=['descendants'])
+
     # todo: All hyphenated sectors are currently dropped, modify code so
     #  they are not
     fba_m = (
-        fba
+        fba3
         .merge(naics_key, how='left', left_on=col,
                right_on='source_naics')
-        .assign(location=fba.Location,
-                category=fba.FlowName)
-        .replace({'FlowAmount': {0: np.nan} #,
+        .assign(location=fba3.Location,
+                category=fba3.FlowName)
+        .replace({'FlowAmount': {0: np.nan}  #,
                   # col: {'1125 & 1129': '112X',
                   #       '11193 & 11194 & 11199': '1119X',
                   #       '31-33': '3X',
@@ -226,58 +303,46 @@ def estimate_suppressed_sectors_equal_attribution(
                                'location', 'category'], verify_integrity=True)
 
     def fill_suppressed(
-        flows: pd.Series,
-        level: int,
-        full_naics: pd.Series
-    ) -> pd.Series:
-        parent = flows[full_naics.str.len() == level]
-        children = flows[full_naics.str.len() == level + 1]
-        null_children = children[children.isna()]
+        flows, level: int, activity
+    ):
+        parent = flows[flows[activity].str.len() == level]
+        children = flows[flows[activity].str.len() == level + 1]
+        null_children = children[children['FlowAmount'].isna()]
 
         if null_children.empty or parent.empty:
             return flows
         else:
-            value = max((parent[0] - children.sum()) / null_children.size, 0)
-            return flows.fillna(pd.Series(value, index=null_children.index))
+            value = max(parent['Unattributed'][0] / len(null_children), 0)
+            # update the null children by adding the unattributed data to
+            # the attributed data
+            null_children = (
+                null_children
+                .assign(FlowAmount=value+null_children['Attributed'])
+                .assign(Unattributed=value)
+            )
+            flows.update(null_children)
+            return flows
 
-    unsuppressed = (
-        indexed
-        .assign(
-            FlowAmount=lambda x: (
-                x.groupby(level=['n2',
-                                 'location', 'category'])['FlowAmount']
-                .transform(fill_suppressed, 2, x[col])))
-        .assign(
-            FlowAmount=lambda x: (
-                x.groupby(level=['n2', 'n3',
-                                 'location', 'category'])['FlowAmount']
-                .transform(fill_suppressed, 3, x[col])))
-        .assign(
-            FlowAmount=lambda x: (
-                x.groupby(level=['n2', 'n3', 'n4',
-                                 'location', 'category'])['FlowAmount']
-                .transform(fill_suppressed, 4, x[col])))
-        .assign(
-            FlowAmount=lambda x: (
-                x.groupby(level=['n2', 'n3', 'n4', 'n5',
-                                 'location', 'category'])['FlowAmount']
-                .transform(fill_suppressed, 5, x[col])))
-        .assign(
-            FlowAmount=lambda x: (
-                x.groupby(level=['n2', 'n3', 'n4', 'n5', 'n6',
-                                 'location', 'category'])['FlowAmount']
-                .transform(fill_suppressed, 6, x[col])))
-        .fillna({'FlowAmount': 0})
-        .reset_index(drop=True)
-    )
+    unsuppressed = indexed.copy()
+    for level in [2, 3, 4, 5, 6]:
+        groupcols = ["{}{}".format("n", i) for i in range(2, level+1)] + [
+            'location', 'category']
+        unsuppressed = unsuppressed.groupby(
+            level=groupcols).apply(
+            fill_suppressed, level, col)
 
     aggregated = (
         unsuppressed
+        .reset_index(drop=True)
+        .fillna({'FlowAmount': 0})
+        .drop(columns=['Unattributed', 'Attributed'])
         # .replace({col: {'3X': '31-33',
         #                 '4X': '44-45',
         #                 '4Y': '48-49'}})
         .aggregate_flowby()
     )
+
+    compare_summation_at_sector_lengths_between_two_dfs(fba, aggregated)
 
     return aggregated
 
@@ -442,14 +507,14 @@ def define_parentincompletechild_descendants(
             .reset_index()
             .rename(columns={activity_col: 'descendants',
                              'FlowAmount': 'descendant_flows',
-                             'parent': 'ActivityConsumedBy'})
+                             'parent': activity_col})
         )
 
         fba = (
             fba
             .merge(descendants,
                    how='left',
-                   on=['Flowable', 'Location', 'ActivityConsumedBy'],
+                   on=['Flowable', 'Location', activity_col],
                    suffixes=(None, '_y'))
             .fillna({'descendant_flows': 0, 'descendants_y': ''})
             .assign(

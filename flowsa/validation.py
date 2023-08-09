@@ -447,17 +447,30 @@ def compare_summation_at_sector_lengths_between_two_dfs(df1, df2):
     :return: df, comparison of sector summation results by region and
     printout if any child naics sum greater than parent naics
     """
-    from flowsa.flowbyfunctions import assign_columns_of_sector_levels
+    from flowsa.common import load_sector_length_cw_melt
 
-    agg_cols = ['Class', 'SourceName', 'FlowName', 'Unit', 'FlowType',
-                'Compartment', 'Location', 'Year', 'SectorProducedByLength',
-                'SectorConsumedByLength']
+    # determine if activity or sector col
+    col = 'Sector'
+    if 'ActivityProducedBy' in df1.columns:
+        col = 'Activity'
+
+    cw = load_sector_length_cw_melt()
+
+    agg_cols = list(df2.select_dtypes(include=['object', 'int']).columns) + \
+               ['SectorProducedByLength', 'SectorConsumedByLength']
+    agg_cols = [e for e in agg_cols if e not in [f'{col}ProducedBy',
+                                                 f'{col}ConsumedBy']]
 
     df_list = []
     for df in [df1, df2]:
-        df = assign_columns_of_sector_levels(df)
+        # merge df assigning sector lengths
+        for s in ['Produced', 'Consumed']:
+            df = df.merge(cw, how='left', left_on=f'{col}{s}By',
+                          right_on='Sector').drop(columns=['Sector']).rename(
+                columns={'SectorLength': f'Sector{s}ByLength'})
+            df[f'Sector{s}ByLength'] = df[f'Sector{s}ByLength'].fillna(0)
         # sum flowamounts by sector length
-        dfsum = df.groupby(agg_cols).agg({'FlowAmount': 'sum'}).reset_index()
+        dfsum = df.groupby(agg_cols, dropna=False).agg({'FlowAmount': 'sum'}).reset_index()
         df_list.append(dfsum)
 
     df_list[0] = df_list[0].rename(columns={'FlowAmount': 'df1'})
