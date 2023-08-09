@@ -12,7 +12,7 @@ import io
 import pandas as pd
 import numpy as np
 from flowsa.location import get_all_state_FIPS_2, US_FIPS
-from flowsa.flowsa_log import vlog
+from flowsa.flowsa_log import vlog, log
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.common import load_crosswalk
 from flowsa.literature_values import \
@@ -319,6 +319,9 @@ def allocate_usda_ers_mlu_other_land(
     :return: df, allocated USDS ERS MLU Land, FBS format
     """
 
+    log.info('The only category for MLU other land use is rural land '
+             'occupation. All other land area in this category is '
+             'unassigned to sectors, resulting in unaccounted land area.')
     # land in rural residential lots
     rural_res = get_area_of_rural_land_occupied_by_houses_2013()
 
@@ -326,12 +329,19 @@ def allocate_usda_ers_mlu_other_land(
     household = load_crosswalk('household')
     household = household['Code'].drop_duplicates().tolist()
 
+    # if it is state data, take weighted avg using land area
+    if fba.config['geoscale'] == 'state':
+        fba = (fba
+               .assign(rural_res=rural_res,
+                       total_area=fba['FlowAmount'].sum(),
+                       FlowAmount=lambda x: x['FlowAmount']/x[
+                           'total_area'] * x['rural_res']
+                       )
+               )
     # in df, where sector is a personal expenditure value, and
     # location = 00000, replace with rural res value
-    vlog.info('The only category for MLU other land use is rural land '
-              'occupation. All other land area in this category is '
-              'unassigned to sectors, resulting in unaccounted land area.')
-    fba['FlowAmount'] = np.where(fba['SectorConsumedBy'].isin(household),
-                                 rural_res, fba['FlowAmount'])
+    elif fba.config['geoscale'] == 'national':
+        fba['FlowAmount'] = np.where(fba['SectorConsumedBy'].isin(household),
+                                     rural_res, fba['FlowAmount'])
 
-    return fba
+    return fba.drop(columns=['rurl_res', 'total_area'], errors='ignore')
