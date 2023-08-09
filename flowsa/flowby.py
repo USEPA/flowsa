@@ -2058,7 +2058,7 @@ class FlowByActivity(_FlowBy):
 
         fba = self.add_primary_secondary_columns('Sector')
 
-        groupby_cols = ['group_id']
+        groupby_cols = ['group_id', 'Location']
         for rank in ['Primary', 'Secondary']:
             fba = (
                 fba
