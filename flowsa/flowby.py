@@ -1941,6 +1941,7 @@ class FlowByActivity(_FlowBy):
                            right_on=['Activity', 'source_naics'])
                     .assign(Sector=lambda x: x['target_naics'])
                     .drop(columns=['source_naics', 'target_naics'])
+                    .drop_duplicates()
                 )
 
                 fba_w_naics = self.copy()
