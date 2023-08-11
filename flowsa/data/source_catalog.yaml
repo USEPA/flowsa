@@ -130,7 +130,10 @@ EIA_MECS_Energy:
     - Energy
     - Other
     - Money
-  activity_schema: NAICS_2017_Code
+  activity_schema: {2010: NAICS_2007_Code,
+                    2014: NAICS_2012_Code,
+                    2018: NAICS_2017_Code,
+                    }
   sector_hierarchy: "parent-incompleteChild"
 EIA_MECS_Land:
   data_format: FBA
