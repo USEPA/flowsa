@@ -526,6 +526,15 @@ def define_parentincompletechild_descendants(
             )
             .drop(columns=['descendant_flows', 'descendants_y'])
         )
+    # Reset group_total after adjusting for descendents
+    fba = (fba
+           .drop(columns='group_total')
+           .merge((fba.groupby('group_id')
+                      .agg({'FlowAmount':sum})
+                      .rename(columns={'FlowAmount': 'group_total'})
+                      ),
+                  on='group_id', how='left', validate='m:1')
+           )
 
     return fba
 
