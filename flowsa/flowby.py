@@ -984,7 +984,6 @@ class _FlowBy(pd.DataFrame):
             attribute_cols = self.config.get('attribute_on')
 
             log.info(f'Proportionally attributing on {attribute_cols}')
-            fb = (fb.add_primary_secondary_columns('Sector'))
 
             merged = (
                 fb
