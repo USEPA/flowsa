@@ -631,7 +631,7 @@ class _FlowBy(pd.DataFrame):
         attributed to those sectors, by the methods specified in the calling
         FBA's configuration dictionary.
         """
-
+        validate = True
         # look for the "attribute" key in the FBS yaml, which will exist if
         # there are multiple, non-recursive attribution methods applied to a
         # data source
@@ -730,6 +730,7 @@ class _FlowBy(pd.DataFrame):
                     log.info('No attribution needed for %s at the given industry '
                              'aggregation level', fb.full_name)
                     attributed_fb = fb.copy()
+                    validate = False
                 else:
                     if step_config.get('attribution_method') is None:
                         log.warning('No attribution method specified for %s. '
@@ -741,8 +742,8 @@ class _FlowBy(pd.DataFrame):
 
             # depending on att method, check that new df values equal
             # original df values
-            if attribution_method not in ['multiplication', 'inheritance',
-                                          'division']:
+            if validate and attribution_method not in [
+                    'multiplication', 'inheritance', 'division']:
                 # todo: add results from this if statement to validation log
                 validation_fb = attributed_fb.assign(
                     validation_total=(attributed_fb.groupby('group_id')
