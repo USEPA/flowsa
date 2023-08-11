@@ -32,6 +32,7 @@ source_names:
             - "Sports Venues"
         attribution_method: direct
       employment:
+        primary_action_type: Produced
         selection_fields:
           PrimaryActivity:
             - "Correctional Facilities"
@@ -42,18 +43,19 @@ source_names:
             - "Restaurants/Food Services"
             - "Retail"
         attribution_method: proportional
-        # do not want to attribute the waste management pathways using
+#        do not want to attribute the waste management pathways using
 #        employment data (SectorConsumedBy), only attribute the waste
 #        generation activities (SectorProducedBy)
-        attribute_on: [SectorProducedBy]
+        attribute_on: [PrimarySector]
         attribution_source: Employment_national_2018
       establishments:
+        primary_action_type: Produced
         selection_fields:
           PrimaryActivity:
             - "Wholesale"
         attribution_method: proportional
         # do not want to attribute the waste management pathways using employment data (SectorConsumedBy)
-        attribute_on: [SectorProducedBy]
+        attribute_on: [PrimarySector]
         attribution_source:
           BLS_QCEW:
             selection_fields:
@@ -68,12 +70,13 @@ source_names:
                 'Number of establishments, State Government': 'Number of establishments'
               }  # standardize after estimating suppressed
       manufacturing:
+        primary_action_type: Produced
         selection_fields:
           PrimaryActivity:
             - "Manufacturing/Processing"
         attribution_method: proportional
         # do not want to attribute the waste management pathways using employment data (SectorConsumedBy)
-        attribute_on: [SectorProducedBy]
+        attribute_on: [PrimarySector]
         attribution_source:
           Census_ASM:
             selection_fields:
@@ -105,9 +108,6 @@ source_names:
             - 'Services to buildings and dwellings'
             - 'Museums, historical sites, zoos, and parks'
         attribution_method: proportional
-        # do not want to attribute the waste management pathways using employment data (SectorConsumedBy)
-        attribute_on: [SectorProducedBy]
-        attribution_source:
-          Employment_national_2018:
-            year: 2018
-            primary_action_type: Produced
+        # do not want to attribute the waste management pathways using employment data (SectorProducedBy)
+        attribute_on: ['PrimarySector']  # In this case, only SectorConsumedBy
+        attribution_source: Employment_national_2018

@@ -18,7 +18,7 @@ source_names:
           PrimarySector: !from_index:CNHW_Food_asets.csv wasted_food_report
         attribution_method: proportional
         primary_action_type: Produced
-        attribute_on: [SectorProducedBy]
+        attribute_on: [PrimarySector]
         fill_columns: SectorConsumedBy
         attribution_source:
           EPA_WFR:
