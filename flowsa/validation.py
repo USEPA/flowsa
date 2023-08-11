@@ -755,7 +755,7 @@ def compare_geographic_totals(
                           f'values and {subnational_geoscale} subset, '
                           f'saving to validation log')
 
-                vlog.info(
+                vlog.debug(
                     'Comparison of National FlowAmounts to aggregated data '
                     'subset for %s: \n {}'.format(
                         df_m_sub.to_string()), activity_set)

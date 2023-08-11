@@ -6,8 +6,8 @@ from functools import partial, reduce
 from copy import deepcopy
 from flowsa import (common, settings, metadata, sectormapping,
                     literature_values, flowbyactivity, flowsa_yaml,
-                    validation, geo, naics, exceptions, location)
-from flowsa.flowsa_log import log, reset_log_file
+                    validation, geo, naics, exceptions, location, schema)
+from flowsa.flowsa_log import log, vlog, reset_log_file
 import esupy.processed_data_mgmt
 import esupy.dqi
 import fedelemflowlist
@@ -756,7 +756,7 @@ class _FlowBy(pd.DataFrame):
                               .query('validation_total != group_total')
                               [['group_id',
                                 'ActivityProducedBy', 'ActivityConsumedBy',
-                                'SectorProducedBy', 'SectorConsumedBy',
+                                'SectorProducedBy', 'SectorConsumedBy', 'Location',
                                 'FlowAmount', 'group_total', 'validation_total']])
                     log.error('Errors in attributing flows from %s:\n%s',
                               self.full_name, errors)
@@ -765,9 +765,13 @@ class _FlowBy(pd.DataFrame):
                          .drop_duplicates())['group_total'].sum()
                 attsum = (validation_fb[['group_id', 'validation_total']]
                           .drop_duplicates())['validation_total'].sum()
-                percent_change = ((attsum - fbsum)/fbsum)*100
-                log.info(f"Percent change in dataset after attribution is"
-                         f" {percent_change}")
+                percent_change = round(((attsum - fbsum)/fbsum)*100,3)
+                if percent_change == 0:
+                    log.info(f"No change in {self.full_name} FlowAmount after "
+                             "attribution.")
+                else:
+                    log.info(f"Percent change in {self.full_name} after "
+                             f"attribution is {percent_change}%")
 
             # run function to clean fbs after attribution
             attributed_fb = attributed_fb.function_socket(
@@ -958,17 +962,29 @@ class _FlowBy(pd.DataFrame):
                 unattributable = with_denominator.query(f'denominator == 0 ')
 
                 if not unattributable.empty:
-                    log.warning(
+                    vlog.warning(
                         'Could not attribute activities in %s due to lack of '
-                        'flows in attribution source %s for mapped %s sectors %s',
-                        #set(zip(unattributable.ActivityProducedBy,
-                        #        unattributable.ActivityConsumedBy,
-                        #        unattributable.Location)),
+                        'flows in attribution source %s for mapped %s sectors %s. '
+                        'See validation_log for details.',
                         unattributable.full_name,
                         other.full_name,
                         rank,
                         sorted(set(unattributable[f'{rank}Sector']))
                     )
+                    if other_geoscale.aggregation_level < 5:
+                    # if other_geoscale < 5:
+                        vlog.warning('This can occur when combining datasets '
+                                    'at a sub-national level when activities '
+                                    'do not align for some locations.')
+                    vlog.debug(
+                        'Unattributed activities: \n {}'.format(
+                            unattributable
+                            .drop(columns=schema.dq_fields +
+                                  ['LocationSystem', 'SectorSourceName', 'FlowType',
+                                   'ProducedBySectorType', 'ConsumedBySectorType',
+                                   'denominator', 'Suppressed'],
+                                  errors='ignore')
+                            .to_string()))
 
                 proportionally_attributed = (
                     non_zero_denominator
@@ -2014,8 +2030,9 @@ class FlowByActivity(_FlowBy):
                           .drop_duplicates())
             log.warning('Activities in %s are not mapped to sectors: %s',
                         not_mapped.full_name,
-                        set(zip(not_mapped.ActivityProducedBy,
-                                not_mapped.ActivityConsumedBy))
+                        sorted(
+                            set(not_mapped.ActivityProducedBy.dropna())
+                            .union(set(not_mapped.ActivityConsumedBy.dropna())))
                         )
         # drop rows of data that are not mapped to sectors
         fba_w_naics = fba_w_naics.dropna(subset=[
@@ -2112,7 +2129,7 @@ class FlowByActivity(_FlowBy):
                 )
             except ValueError:
                 return FlowBySector(pd.DataFrame())
-
+        log.info(f'Processing FlowBySector for {self.full_name}')
         # Primary FlowBySector generation approach:
         return FlowBySector(
             self
