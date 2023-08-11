@@ -113,11 +113,12 @@ def return_fbs_method_data(source_name, config):
                     v['inventory_dict'])
             continue
 
-        cat = get_catalog_info(k)['data_format'].replace(
-            'FBS', 'FlowBySector').replace('FBA', 'FlowByActivity')
+        cat = (get_catalog_info(k)['data_format']
+               .replace('FBS', 'FlowBySector')
+               .replace('FBA', 'FlowByActivity'))
 
         # append source and year
-        year = config['year'] if v.get('year') is None else v.get('year')
+        year = v.get('year', config['year'])
         meta['primary_source_meta'][k] = getMetadata(k, year=year,
                                                      category=cat)
         # create dictionary of allocation datasets for different activities
@@ -125,23 +126,32 @@ def return_fbs_method_data(source_name, config):
         if activities is None:
             continue
         # initiate nested dictionary
-        meta['primary_source_meta'][k]['attribution_source_meta'] = {}
+        attr_source_meta = {}
         # subset activity data and allocate to sector
         for aset, attr in activities.items():
-            if attr.get('attribution_source'):
+            attr_dict = attr.get('attribution_source')
+            if attr_dict:
                 # append fba meta
                 try:
-                    source = list(attr['attribution_source'].keys())[0]
-                    year = attr['attribution_source'][source].get('year')
+                    source = list(attr_dict.keys())[0]
+                    # Check first for cached source
+                    if source in config.get('sources_to_cache', ()):
+                        year = (config.get('sources_to_cache')
+                                      .get(source)
+                                      .get('year', v.get('year'))
+                                      )
+                    else:
+                        year = attr_dict[source].get('year', v.get('year'))
                 except AttributeError:
-                    source = attr['attribution_source']
+                    source = attr_dict
                     year = None
+                if source in attr_source_meta.keys():
+                    continue
+                cat = (get_catalog_info(source)['data_format']
+                       .replace('FBS', 'FlowBySector')
+                       .replace('FBA', 'FlowByActivity'))
 
-                cat = get_catalog_info(source)['data_format'].replace(
-                    'FBS', 'FlowBySector').replace('FBA', 'FlowByActivity')
-
-                meta['primary_source_meta'][k]['attribution_source_meta'][
-                    source] = getMetadata(
+                attr_source_meta[source] = getMetadata(
                     source, year=year, category=cat)
 
             if 'literature_sources' in attr:
@@ -149,8 +159,13 @@ def return_fbs_method_data(source_name, config):
                 for s, y in lit.items():
                     lit_meta = return_fba_method_meta(s, year=y)
                     # append fba meta
-                    meta['primary_source_meta'][k][
-                        'attribution_source_meta'][s] = lit_meta
+                    attr_source_meta[s] = lit_meta
+            if 'attribution_source_meta' in meta['primary_source_meta'][k]:
+                meta['primary_source_meta'][k][
+                    'attribution_source_meta'].update(attr_source_meta)
+            else:
+                meta['primary_source_meta'][k][
+                    'attribution_source_meta'] = attr_source_meta
 
     return meta
 
