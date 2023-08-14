@@ -685,7 +685,7 @@ class _FlowBy(pd.DataFrame):
                     for k, v in step_config['attribution_source'].items():
                         attribution_name = k
 
-            if attribution_method in ['direct', 'inheritance']:
+            if attribution_method in ['direct', 'inheritance', 'equal']:
                 fb = fb.assign(AttributionSources='Direct')
             else:
                 fb = fb.assign(AttributionSources=attribution_name)
@@ -719,6 +719,11 @@ class _FlowBy(pd.DataFrame):
                 log.info(f'Directly attributing {self.full_name} to sectors, child '
                          'sectors inherit parent values.')
                 attributed_fb = fb.copy()
+
+            elif attribution_method == 'equal':
+                log.info(f"Equally attributing {self.full_name} to "
+                         f"target sectors.")
+                attributed_fb = fb.equally_attribute()                
 
             elif attribution_method != 'direct':
                 log.error('Attribution method for %s not recognized: %s',
