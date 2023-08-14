@@ -92,10 +92,16 @@ source_names:
       !include:GHG_national_m1_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets
       petroleum:
         !include:GHG_national_m1_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:petroleum
-        year: *mecs_year
+        attribution_source:
+          EIA_MECS_Energy:
+            !include:GHG_national_m1_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:petroleum:attribution_source:EIA_MECS_Energy
+              year: *mecs_year
       natural_gas:
         !include:GHG_national_m1_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:natural_gas
-        year: *mecs_year
+        attribution_source:
+          EIA_MECS_Energy:
+            !include:GHG_national_m1_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:natural_gas:attribution_source:EIA_MECS_Energy
+              year: *mecs_year
 
 ### Major CO2 Sources
   "EPA_GHGI_T_A_9":  # CO2 emissions from stationary combustion. This table number changes with year
@@ -106,10 +112,16 @@ source_names:
       !include:GHG_national_m1_common.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets
       coal_manufacturing:
         !include:GHG_national_m1_common.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:coal_manufacturing
-        year: *mecs_year
+        attribution_source:
+          EIA_MECS_Energy:
+            !include:GHG_national_m1_common.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:coal_manufacturing:attribution_source:EIA_MECS_Energy
+              year: *mecs_year
       natural_gas_manufacturing: # Industrial Natural Gas for manufacturing
         !include:GHG_national_m1_common.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:natural_gas_manufacturing
-        year: *mecs_year
+        attribution_source:
+          EIA_MECS_Energy:
+            !include:GHG_national_m1_common.yaml:source_names:GHGI_CO2_stationary_combustion_and_transport:activity_sets:natural_gas_manufacturing:attribution_source:EIA_MECS_Energy
+              year: *mecs_year
 
   "EPA_GHGI_T_3_8": # CH4 emissions from stationary combustion
     !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8
@@ -119,10 +131,16 @@ source_names:
       !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets
       coal_manufacturing:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:coal_manufacturing
-        year: *mecs_year
+        attribution_source:
+          EIA_MECS_Energy:
+            !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:coal_manufacturing:attribution_source:EIA_MECS_Energy
+              year: *mecs_year
       ng_manufacturing:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:ng_manufacturing
-        year: *mecs_year
+        attribution_source:
+          EIA_MECS_Energy:
+            !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:ng_manufacturing:attribution_source:EIA_MECS_Energy
+              year: *mecs_year
 
   "EPA_GHGI_T_3_9": # N2O emissions from stationary combustion
     !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_9
@@ -132,7 +150,13 @@ source_names:
       !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_9:activity_sets
       coal_manufacturing:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_9:activity_sets:coal_manufacturing
-        year: *mecs_year
+        attribution_source:
+          EIA_MECS_Energy:
+            !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_9:activity_sets:coal_manufacturing:attribution_source:EIA_MECS_Energy
+              year: *mecs_year
       ng_manufacturing:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_9:activity_sets:ng_manufacturing
-        year: *mecs_year
+        attribution_source:
+          EIA_MECS_Energy:
+            !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_9:activity_sets:ng_manufacturing:attribution_source:EIA_MECS_Energy
+              year: *mecs_year
