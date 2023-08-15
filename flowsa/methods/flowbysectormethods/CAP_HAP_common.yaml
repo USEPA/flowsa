@@ -64,6 +64,7 @@ _attribution_sources:
         selection_fields:
           Class: Land
           FlowName: AG LAND, CROPLAND, HARVESTED
+        estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
 
   USDA_CoA_Livestock: &livestock_allocation
     year: 2017

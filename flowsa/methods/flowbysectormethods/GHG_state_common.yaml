@@ -196,6 +196,7 @@ source_names:
             selection_fields:
               Class: Land
               FlowName: AG LAND, CROPLAND, HARVESTED # land in active use
+            estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
 
       transport_petroleum: # C02 from petroleum highway
         # state inventory assumes all petroleum is "highway"
