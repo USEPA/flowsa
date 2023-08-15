@@ -1,32 +1,5 @@
-from flowsa import naics
-from flowsa import settings
-import pandas as pd
 from flowsa.data_source_scripts import EPA_GHGI as ghgi
-from flowsa.data_source_scripts import USDA_CoA_Cropland as coa
 from flowsa.flowby import FlowByActivity
-
-
-def clean_usda_cropland_naics(fba: FlowByActivity, **kwargs):
-    if fba.config['industry_spec']['default'] == 'NAICS_2':
-        naics_2 = (
-            fba
-            .query('ActivityProducedBy.str.len() == 3')
-            .assign(ActivityProducedBy=lambda x: (x.ActivityProducedBy
-                                                  .str.slice(stop=2)))
-            .groupby(fba.groupby_cols).agg('sum')
-            .reset_index()
-        )
-        fba = pd.concat([naics_2, fba]).reset_index(drop=True)
-
-    target_naics = set(
-        naics.industry_spec_key(fba.config['industry_spec'])
-        .target_naics
-        .str.replace('0', '')
-    ) | {'1122', '1125'}
-
-    filtered = fba.query('ActivityConsumedBy in @target_naics')
-
-    return filtered
 
 
 def clean_mecs_energy_fba_for_bea_summary(fba: FlowByActivity, **kwargs):
@@ -82,27 +55,3 @@ def clean_hfc_fba_for_seea(fba: FlowByActivity, **kwargs):
         setattr(new_fba, attr, attributes_to_save[attr])
 
     return new_fba
-
-# todo: delete after confirming no longer used in FBS methods
-# def disaggregate_coa_cropland_to_6_digit_naics(fba: FlowByActivity):
-#     """
-#     Disaggregate usda coa cropland to naics 6. Fragile implementation, should
-#     be replaced. In particular, it will break things for any industry
-#     specification other than {'default': 'NAICS_6'}.
-#     :param fba: df, CoA cropland data, FBA format with sector columns
-#     :return: df, CoA cropland with disaggregated NAICS sectors
-#     """
-#     attributes_to_save = {
-#         attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
-#     }
-#
-#     df = coa.disaggregate_coa_cropland_to_6_digit_naics(
-#         fba, fba.config, fba.config,
-#         download_FBA_if_missing=settings.DEFAULT_DOWNLOAD_IF_MISSING
-#     )
-#
-#     new_fba = FlowByActivity(df)
-#     for attr in attributes_to_save:
-#         setattr(new_fba, attr, attributes_to_save[attr])
-#
-#     return new_fba
