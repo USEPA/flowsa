@@ -4,20 +4,6 @@
 year: &ghg_year 2013
 geoscale: state
 
-_allocation_types:
-  _use_allocation: &use_table_allocation
-    year: *ghg_year
-    geoscale: state
-    activity_to_sector_mapping: BEA_2012_Summary
-    # selection_fields:
-    #   ActivityProducedBy: {'324': ''}  # Petroleum 324110
-    attribution_method: proportional
-    attribution_source:
-      Employment_state_2013:
-        data_format: FBS
-        geoscale: state
-        year: *ghg_year
-
 sources_to_cache:
   EIA_MECS_Energy:
     !include:GHG_state_common.yaml:sources_to_cache:EIA_MECS_Energy
@@ -36,7 +22,8 @@ source_names:
         !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:use_table_coal
         attribution_source:
           stateio_Use_Summary:
-            <<: *use_table_allocation
+            !include:GHG_state_common.yaml:_allocation_types:_use_allocation
+            year: *ghg_year
             selection_fields:
               ActivityProducedBy: {'212': ''}  # metal ores and nonmetallic minerals (i.e., coal)
 
@@ -44,7 +31,8 @@ source_names:
         !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:use_table_pet
         attribution_source:
           stateio_Use_Summary:
-            <<: *use_table_allocation
+            !include:GHG_state_common.yaml:_allocation_types:_use_allocation
+            year: *ghg_year
             selection_fields:
               ActivityProducedBy: {'324': ''}  # Petroleum fuel
 
@@ -52,7 +40,8 @@ source_names:
         !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:use_table_gas
         attribution_source:
           stateio_Use_Summary:
-            <<: *use_table_allocation
+            !include:GHG_state_common.yaml:_allocation_types:_use_allocation
+            year: *ghg_year
             selection_fields:
               ActivityProducedBy: {'22': ''}  # Electricity and natural gas
 
@@ -60,7 +49,8 @@ source_names:
         !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:use_table_chem
         attribution_source:
           stateio_Use_Summary:
-            <<: *use_table_allocation
+            !include:GHG_state_common.yaml:_allocation_types:_use_allocation
+            year: *ghg_year
             selection_fields:
               ActivityProducedBy: {'325': ''}  # Use of chemicals
 
@@ -68,7 +58,8 @@ source_names:
         !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:transport_petroleum
         attribution_source:
           stateio_Use_Summary:
-            <<: *use_table_allocation
+            !include:GHG_state_common.yaml:_allocation_types:_use_allocation
+            year: *ghg_year
             selection_fields:
               ActivityProducedBy: {'324': ''}  # Petroleum fuel
 
@@ -76,7 +67,8 @@ source_names:
         !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:transport_nonroad
         attribution_source:
           stateio_Use_Summary:
-            <<: *use_table_allocation
+            !include:GHG_state_common.yaml:_allocation_types:_use_allocation
+            year: *ghg_year
             selection_fields:
               ActivityProducedBy: {'324': ''}  # Petroleum fuel
 
@@ -84,7 +76,8 @@ source_names:
         !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:transport_machinery
         attribution_source:
           stateio_Use_Summary:
-            <<: *use_table_allocation
+            !include:GHG_state_common.yaml:_allocation_types:_use_allocation
+            year: *ghg_year
             selection_fields:
               ActivityProducedBy: {'333': ''}  # Machinery
 
@@ -92,6 +85,7 @@ source_names:
         !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:ods_substitutes
         attribution_source:
           stateio_Use_Summary:
-            <<: *use_table_allocation
+            !include:GHG_state_common.yaml:_allocation_types:_use_allocation
+            year: *ghg_year
             selection_fields:
               ActivityProducedBy: {'333': ''}  # Poor proxy for A/C equipment

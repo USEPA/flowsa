@@ -13,12 +13,8 @@ _allocation_types:
     activity_to_sector_mapping: BEA_2012_Summary
     # selection_fields:
     #   ActivityProducedBy: {'324': ''}  # Petroleum 324110
-    attribution_method: proportional
-    attribution_source:
-      Employment_state_2019: ## Update this to match the target year
-        data_format: FBS
-        geoscale: state
-        # year: *ghg_year
+    exclusion_fields:
+      ActivityConsumedBy: ['F030', 'F040', 'F050', 'F051']
 
 
 sources_to_cache:
