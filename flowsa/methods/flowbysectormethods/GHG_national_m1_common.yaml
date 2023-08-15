@@ -60,6 +60,7 @@ attribution_sources:
           selection_fields:
             Class: Land
             FlowName: AG LAND, CROPLAND, HARVESTED
+          estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
 
   _animal_land_allocation: &animal_land_allocation
     USDA_CoA_Cropland_NAICS:
@@ -67,7 +68,7 @@ attribution_sources:
       selection_fields:
         Class: Land
         FlowName: FARM OPERATIONS
-      clean_fba: !script_function:temp_data_source_functions clean_usda_cropland_naics
+      estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
 
 source_names:
   EPA_GHGI_T_2_1: #U.S. GHG emissions
