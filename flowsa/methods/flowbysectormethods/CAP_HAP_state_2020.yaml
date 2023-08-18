@@ -14,6 +14,10 @@ sources_to_cache:
   EIA_MECS_Energy:
     !include:CAP_HAP_common.yaml:sources_to_cache:EIA_MECS_Energy_state
     year: 2018
+    attribution_source:
+      Employment_state_2018: # Update to MECS year
+        geoscale: national
+        year: 2018
     clean_source: Employment_state_2018
 
 _attribution_sources:
@@ -21,12 +25,12 @@ _attribution_sources:
     year: *year
     geoscale: state
     activity_to_sector_mapping: BEA_2012_Summary
-    attribution_method: proportional
-    attribution_source:
-      Employment_state_2020:
-        data_format: FBS
-        geoscale: state
-        year: *year
+    exclusion_fields:
+      ActivityConsumedBy: ['F030', 'F040', 'F050', 'F051', 
+                           'F02E', 'F06E', 'F07E', 'F10E']
+    attribution_method: equal
+    ## No attribution supplied (will use equal) because target level for
+    ## modeling is BEA summary level.
 
 source_names:
   EPA_NEI_Nonpoint:
@@ -70,17 +74,9 @@ source_names:
         attribution_method: proportional
         attribution_source:
           stateio_Industry_GO:
-            year: *year
-            geoscale: state
-            activity_to_sector_mapping: BEA_2012_Summary
+            <<: *stateio
             selection_fields:
               Class: Money
-            attribution_method: proportional
-            attribution_source:
-              Employment_state_2020:
-                data_format: FBS
-                geoscale: state
-                year: *year
 
   EPA_NEI_Nonroad:
     !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonroad
