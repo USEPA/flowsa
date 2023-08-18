@@ -279,7 +279,7 @@ stateio:
   class:
     - Money
   activity_schema: BEA_2012_Summary_Code
-  sector_hierarchy: "parent-completeChild"
+  sector_hierarchy: "flat"
 stewiFBS:
   data_format: FBS
   activity_schema: NAICS_2012_Code
