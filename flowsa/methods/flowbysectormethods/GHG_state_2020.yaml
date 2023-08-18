@@ -8,6 +8,10 @@ sources_to_cache:
   EIA_MECS_Energy:
     !include:GHG_state_common.yaml:sources_to_cache:EIA_MECS_Energy
     year: 2018
+    attribution_source:
+      Employment_state_2018: # Update to MECS year
+        geoscale: national
+        year: 2018
     clean_source: Employment_state_2018
 
 source_names:

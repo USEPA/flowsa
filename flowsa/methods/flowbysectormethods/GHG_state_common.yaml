@@ -8,13 +8,16 @@ geoscale: state
 
 _allocation_types:
   _use_allocation: &use_table_allocation
+  ## No attribution supplied (will use equal) because target level for modeling
+  ## is BEA summary level.
     # year: *ghg_year
     geoscale: state
     activity_to_sector_mapping: BEA_2012_Summary
     # selection_fields:
     #   ActivityProducedBy: {'324': ''}  # Petroleum 324110
     exclusion_fields:
-      ActivityConsumedBy: ['F030', 'F040', 'F050', 'F051']
+      ActivityConsumedBy: ['F030', 'F040', 'F050', 'F051', 
+                           'F02E', 'F06E', 'F07E', 'F10E']
 
 
 sources_to_cache:
@@ -31,6 +34,11 @@ sources_to_cache:
     exclusion_fields:
       Location: '00000'
     estimate_suppressed: !script_function:EIA_MECS estimate_suppressed_mecs_energy
+    attribution_method: proportional
+    attribution_source: # Required to attribute a few sectors to full target sector level
+      Employment_state_2018: # Update to MECS year
+        geoscale: national # Uses national at this stage prior to attributing to states
+        year: 2018
     clean_fba_after_attribution: !script_function:EIA_MECS clean_mapped_mecs_energy_fba_to_state
     clean_source: Employment_state_2018 ## Update to MECS year
 
