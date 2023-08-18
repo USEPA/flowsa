@@ -118,7 +118,7 @@ def return_fbs_method_data(source_name, config):
                .replace('FBA', 'FlowByActivity'))
 
         # append source and year
-        year = v.get('year', config['year'])
+        year = v.get('year', config.get('year'))
         meta['primary_source_meta'][k] = getMetadata(k, year=year,
                                                      category=cat)
         # create dictionary of allocation datasets for different activities
