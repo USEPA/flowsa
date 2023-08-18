@@ -325,12 +325,13 @@ def estimate_suppressed_sectors_equal_attribution(
 
     unsuppressed = indexed.copy()
     for level in [2, 3, 4, 5, 6]:
-        groupcols = ["{}{}".format("n", i) for i in range(2, level+1)] + [
-            'location', 'category']
-        unsuppressed = unsuppressed.groupby(
-            level=groupcols).apply(
-            fill_suppressed, level, col)
-
+        groupcols = (["{}{}".format("n", i) for i in range(2, level+1)] +
+                     ['location', 'category'])
+        unsuppressed = (unsuppressed
+                        .groupby(level=groupcols)
+                        .apply(fill_suppressed, level, col)
+                        )
+    unsuppressed['Year'] = unsuppressed['Year'].astype('int')
     aggregated = (
         unsuppressed
         .reset_index(drop=True)
