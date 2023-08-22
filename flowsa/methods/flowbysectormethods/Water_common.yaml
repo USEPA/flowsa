@@ -25,7 +25,7 @@ sources_to_cache:
         clean_fba_after_attribution: !clean_function:flowbyclean substitute_nonexistent_values
         clean_source:
           USDA_IWMS:
-            geoscale: national  #todo: check if should be default national
+            geoscale: national
             # year: 2018  # specify in year-specific yaml
             selection_fields:
               Class: Water
@@ -59,7 +59,7 @@ source_names:
     clean_fba_before_activity_sets: !script_function:USGS_NWIS_WU usgs_fba_data_cleanup
     activity_sets:
 
-      direct_attribution:  # use in m1, m2, m3
+      direct_attribution:
         selection_fields:
           PrimaryActivity:
             - "Aquaculture"
@@ -70,7 +70,7 @@ source_names:
         attribution_method: direct
 
 
-      employment_attribution:  # use in m1
+      employment_attribution:
         selection_fields:
           PrimaryActivity:
             - "Industrial"
@@ -81,76 +81,12 @@ source_names:
 #            geoscale:  # specify in method
 
 
-#      industrial_attribution:  # use in m2 (instead of employment_attribution)
-#        selection_fields:
-#          PrimaryActivity:
-#            - "Industrial"
-#        attribution_method: proportional
-#        attribution_source:
-#          StatCan_IWS_MI:
-##            year: # select in method
-#            geoscale: national
-#            selection_fields:
-#              Class: Water
-#              FlowName: "Water intake"
-#              Location: {'124': '00000'} # replace canadian ISO with FIPS
-#              LocationSystem: {'ISO': 'FIPS_2015'}
-#            # todo: convert clean fba fxn into this yaml
-##            clean_allocation_fba: !script_function:StatCan_IWS_MI convert_statcan_data_to_US_water_use
-#            attribution_method: division
-#            attribution_source:
-#              StatCan_GDP:
-##                year:  # select in method
-#                selection_fields:
-#                  Class: Money
-#                  Location: {'124': '00000'} # replace canadian ISO with FIPS
-#                  LocationSystem: {'ISO': 'FIPS_2015'}
-#                attribution_method: multiplication
-#                attribution_source:
-#                  BEA_GDP_GrossOutput:
-##                    year:  # select in method
-#                    selection_fields: Money
-#                  attribution_method: proportional
-#                  attribution_source:
-##                    Employment_national_2015:  # select in method
-#                      geoscale: national
-
-
-#      mining_attribution:  # use in m2 (instead of employment_attribution)
-#        geoscale: national
-#        selection_fields:
-#          PrimaryActivity:
-#            - "Mining"
-#        attribution_method: proportional
-#        attribution_source:
-#          Blackhurst_IO:
-#            year: 2002
-#            geoscale: national
-#            selection_fields:
-#              Class: Water
-#              FlowName: "Water Withdrawals IO Vector"
-#            attribute:
-#                # convert to kg/year for 2002
-#              - attribution_method: multiplication
-#                attribution_source:
-#                  BEA_Make_AR:
-#                    year: 2002
-#                    selection_fields:
-#                      Class: Money
-#                    attribution_method: proportional
-#                    attribution_source: Employment_national_2002
-#                # scale to year of USGS data
-#              - attribution_method: multiplication
-##                attribution_source: Employment_national_2015  # specify in method
-
-
-      cropland_attribution:  # use in m1, m2
+      cropland_attribution:
         industry_spec:
           default: NAICS_6
           NAICS_7: ['111150', '111199']
         selection_fields:
-          PrimaryActivity:
-            - "Irrigation Crop"
+          PrimaryActivity: "Irrigation Crop"
         attribution_method: proportional
         attribution_source:
           USDA_CoA_Cropland:
@@ -217,7 +153,7 @@ source_names:
                     attribution_source: USDA_IWMS
 
 
-      livestock_attribution:  # use in m1, m2
+      livestock_attribution:
         industry_spec:
           default: NAICS_6
           NAICS_7: ['112130', '112320', '112390', '112910',
