@@ -210,7 +210,7 @@ def stackedBarChart(df,
             import lciafmt
             df = (lciafmt.apply_lcia_method(df, 'TRACI2.1')
                   .rename(columns={'FlowAmount': 'InvAmount',
-                                    'Impact': 'FlowAmount'}))
+                                   'Impact': 'FlowAmount'}))
             var = 'Indicator'
             df = df[df['Indicator'] == impact_cat]
             df_unit = df['Indicator unit'][0]
@@ -245,12 +245,12 @@ def stackedBarChart(df,
         pass
     # aggregate by location/sector/unit and optionally 'context'
     df2 = df.groupby(index_cols + [stacking_col],
-                      as_index=False).agg({"FlowAmount": sum})
+                     as_index=False).agg({"FlowAmount": sum})
 
     # fill in non existent data with 0s to enable accurate sorting of sectors
     flows = (df2[['Location', 'Unit', var, 'Sector']]
-              .drop_duplicates()
-              )
+             .drop_duplicates()
+             )
     scv = df[stacking_col].unique().tolist()
     flows[stacking_col] = [scv for _ in range(len(flows))]
     flows = flows.explode(stacking_col)
