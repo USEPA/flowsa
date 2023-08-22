@@ -167,7 +167,7 @@ def allocate_flows_by_fuel(fba: FlowByActivity, **_) -> FlowByActivity:
                 .drop(columns=['Fuel', 'variable', 'value'])
                 )
 
-    if fba3.FlowAmount.sum() != fba.FlowAmount.sum():
+    if round(fba3.FlowAmount.sum(), 6) != round(fba.FlowAmount.sum(), 6):
         log.warning('Error: totals do not match when splitting CH4 and N2O by '
                     'fuel type')
 
