@@ -158,7 +158,7 @@ def census_pop_parse(*, df_list, year, **_):
     df['SourceName'] = 'Census_PEP_Population'
     df['FlowName'] = 'Population'
     df['Unit'] = 'p'
-    df['ActivityConsumedBy'] = 'F01000'  # attribute to household
+    df['ActivityProducedBy'] = 'F01000'  # attribute to household
     # temporary data quality scores
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 5  # tmp
