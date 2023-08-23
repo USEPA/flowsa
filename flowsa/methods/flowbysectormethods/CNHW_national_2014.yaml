@@ -9,11 +9,38 @@ geoscale: national
 
 source_names:
   CNHW_CA_2014:
-    clean_fbs: !clean_function:flowbyclean calculate_flow_per_employee
-    clean_source:
-      Employment_state_2014:
-        geoscale: state
-    attribution_method: multiplication
-    attribution_source:
-      Employment_state_2014:
-        geoscale: state
+    activity_sets:
+      employment:
+        exclusion_fields:
+          SectorProducedBy:
+          - F01000
+        clean_fbs: !clean_function:flowbyclean calculate_flow_per_employee
+        clean_source:
+          Employment_state_2014:
+            geoscale: state
+        attribution_method: multiplication
+        attribution_source:
+          Employment_state_2014:
+            geoscale: state
+      population: # Requires an alternate dataset for Households (F01000)
+        selection_fields:
+          SectorProducedBy:
+          - F01000
+        clean_fbs: !clean_function:flowbyclean calculate_flow_per_employee
+        clean_source:
+          Census_PEP_Population:
+            year: 2014
+            geoscale: state
+            activity_schema: NAICS_2012_Code # Update based on use of F01000
+            selection_fields:
+              ActivityConsumedBy:
+                All: F01000     # Change to align with field in CNHW_CA
+        attribution_method: multiplication
+        attribution_source:
+          Census_PEP_Population:
+            year: 2014
+            geoscale: state
+            activity_schema: NAICS_2012_Code # Update based on use of F01000
+            selection_fields:
+              ActivityConsumedBy:
+                All: F01000     # Change to align with field in CNHW_CA

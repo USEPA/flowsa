@@ -405,13 +405,16 @@ def calculate_flow_per_employee(
         **_
     ) -> 'FlowBySector':
     """
-    Calculates FlowAmount per employee per year based on dataset name passed
-    in "clean_parameter"
+    Calculates FlowAmount per employee (or other metric) per year based on
+    dataset name passed in "clean_parameter"
     clean_fbs function
     """
     bls = load_prepare_clean_source(fbs,
                                     download_sources_ok=download_sources_ok)
     cols = ['Location', 'Year', 'SectorProducedBy']
+    if bls['SectorProducedBy'].isna().all():
+        bls = bls.assign(SectorProducedBy = bls['SectorConsumedBy'])
+    ## TODO ^^ need to account for mismatched of ProducedBy/ConsumedBy
     fbs = (fbs
            .sector_aggregation()
            .aggregate_flowby()
