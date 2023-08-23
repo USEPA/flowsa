@@ -151,19 +151,3 @@ def coa_cropland_NAICS_parse(*, df_list, year, **_):
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 2
     return df
-
-# todo: delete
-# def coa_cropland_naics_fba_wsec_cleanup(fba_w_sector, **kwargs):
-#     """
-#     Clean up the land fba for use in allocation
-#     :param fba_w_sector: df, coa cropland naics flowbyactivity
-#         with sector columns
-#     :param kwargs: dictionary, requires df sourcename
-#     :return: df, flowbyactivity with modified values
-#     """
-#
-#     method = kwargs.get('method')
-#     df = equally_allocate_suppressed_parent_to_child_naics(
-#         fba_w_sector, method, 'SectorConsumedBy',
-#         fba_wsec_default_grouping_fields)
-#     return df

@@ -465,8 +465,6 @@ def clean_mapped_mecs_energy_fba_to_state(
     clean_fba_w_sec fxn that replicates drop_parentincompletechild_descendants but
     also updates regions to states for state models.
     """
-    # todo: delete commented out code because incorporated into mapping fxn
-    # fba = drop_parentincompletechild_descendants(fba)
     fba = update_regions_to_states(fba)
     return fba
 

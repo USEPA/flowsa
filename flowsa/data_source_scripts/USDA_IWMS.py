@@ -122,38 +122,6 @@ def iwms_parse(*, df_list, year, **_):
 
     return df
 
-# todo: delete
-# def disaggregate_iwms_to_6_digit_naics_for_water_withdrawal(df, attr, method,
-#                                                     **kwargs):
-#     """
-#     Disaggregate the data in the USDA Irrigation and Water Management Survey
-#     to 6-digit NAICS using Census of Agriculture 'Land in Farm' data
-#     :param df: df, FBA format
-#     :param attr: dictionary, attribute data from method yaml for activity set
-#     :param method: dictionary, FBS method yaml
-#     :return: df, FBA format with disaggregated NAICS
-#     """
-#
-#     # define sector column to base df modifications
-#     sector_column = 'SectorConsumedBy'
-#
-#     # address double counting brought on by iwms categories
-#     # applying to multiply NAICS
-#     df.drop_duplicates(subset=['FlowName', 'FlowAmount', 'Compartment',
-#                                'Location'], keep='first', inplace=True)
-#     years = attr['allocation_source_year'] - 1
-#     df = df[~df[sector_column].isna()].reset_index(drop=True)
-#     # drop aquaculture when disaggregating pastureland because water use for
-#     # aquaculture calculated separately
-#     df = disaggregate_pastureland(df, attr, method, years, sector_column,
-#                                   download_FBA_if_missing=kwargs[
-#                                       'download_FBA_if_missing'],
-#                                   parameter_drop=['1125'])
-#     df = disaggregate_cropland(df, attr, method, years, sector_column,
-#                                download_FBA_if_missing=kwargs['download_FBA_if_missing'])
-#
-#     return df
-
 
 def iwms_aggregation(df_load, **kwargs):
     """
