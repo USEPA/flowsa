@@ -19,6 +19,7 @@ source_names:
           Employment_state_2014: # aligns with CA 2014 data
             geoscale: state
         attribution_method: multiplication
+        fill_columns: Year
         attribution_source:
           Employment_state_2018:
             geoscale: state
@@ -32,6 +33,7 @@ source_names:
             year: 2014 # aligns with CA 2014 data
             geoscale: state
         attribution_method: multiplication
+        fill_columns: Year
         attribution_source:
           Census_PEP_Population:
             year: 2018
