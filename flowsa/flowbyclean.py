@@ -399,13 +399,13 @@ def attribute_national_to_states(fba: FlowByActivity, **_) -> FlowByActivity:
     return fba
 
 
-def calculate_flow_per_employee(
+def calculate_flow_per_person(
         fbs: 'FlowBySector',
         download_sources_ok: bool = True,
         **_
     ) -> 'FlowBySector':
     """
-    Calculates FlowAmount per employee (or other metric) per year based on
+    Calculates FlowAmount per person (or other metric) per year based on
     dataset name passed in "clean_parameter"
     clean_fbs function
     """
@@ -420,16 +420,16 @@ def calculate_flow_per_employee(
            .aggregate_flowby()
            # ^^ handles updated industry specs
            .merge(bls
-                  .rename(columns={'FlowAmount': 'Employees'})
-                  .groupby(cols).agg({'Employees': 'sum'})
+                  .rename(columns={'FlowAmount': 'persons'})
+                  .groupby(cols).agg({'persons': 'sum'})
                   .reset_index(),
                   how='inner',
                   on=cols)
            .assign(FlowAmount=lambda x: np.divide(
-        x['FlowAmount'], x['Employees'], out=np.zeros_like(
-            x['Employees']), where=x['Employees'] != 0))
-            .assign(Unit = lambda x: x['Unit'] + '/employee')
-            .drop(columns=['Employees'])
+        x['FlowAmount'], x['persons'], out=np.zeros_like(
+            x['persons']), where=x['persons'] != 0))
+            .assign(Unit = lambda x: x['Unit'] + '/p')
+            .drop(columns=['persons'])
             )
 
     return fbs

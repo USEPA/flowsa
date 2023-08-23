@@ -93,7 +93,7 @@ Some functions allow for extra named parameters.
 - _attribute_national_to_states()_: Propogates national data to all states 
   to enable for use in state methods. Allocates sectors across states based 
   on employment.
-- _calculate_flow_per_employee()_: Calculates FlowAmount per employee per 
+- _calculate_flow_per_person()_: Calculates FlowAmount per person per 
   year based on dataset name passed in "clean_parameter"
 - _estimate_suppressed_sectors_equal_attribution()_: Equally attribute 
   known parent values to child values based on sector-length.
