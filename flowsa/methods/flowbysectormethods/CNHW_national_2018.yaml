@@ -14,9 +14,9 @@ source_names:
         exclusion_fields:
           SectorProducedBy:
           - F01000
-        clean_fbs: !clean_function:flowbyclean calculate_flow_per_employee
+        clean_fbs: !clean_function:flowbyclean calculate_flow_per_person
         clean_source:
-          Employment_state_2014:
+          Employment_state_2014: # aligns with CA 2014 data
             geoscale: state
         attribution_method: multiplication
         attribution_source:
@@ -26,21 +26,13 @@ source_names:
         selection_fields:
           SectorProducedBy:
           - F01000
-        clean_fbs: !clean_function:flowbyclean calculate_flow_per_employee
+        clean_fbs: !clean_function:flowbyclean calculate_flow_per_person
         clean_source:
           Census_PEP_Population:
-            year: 2014
+            year: 2014 # aligns with CA 2014 data
             geoscale: state
-            activity_schema: NAICS_2012_Code # Update based on use of F01000
-            selection_fields:
-              ActivityConsumedBy:
-                All: F01000     # Change to align with field in CNHW_CA
         attribution_method: multiplication
         attribution_source:
           Census_PEP_Population:
             year: 2018
             geoscale: state
-            activity_schema: NAICS_2012_Code # Update based on use of F01000
-            selection_fields:
-              ActivityConsumedBy:
-                All: F01000     # Change to align with field in CNHW_CA

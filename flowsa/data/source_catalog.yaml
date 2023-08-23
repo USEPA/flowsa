@@ -89,6 +89,7 @@ Census_CBP:
 Census_PEP_Population:
   data_format: FBA
   class: Other
+  activity_schema: NAICS_2012_Code
   sector_hierarchy: "flat"
 Census_QWI:
   data_format: FBA
