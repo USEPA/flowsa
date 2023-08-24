@@ -47,7 +47,7 @@ YEARS = list(pd.date_range(start="2010", end="2021", freq='Y').year.astype(str))
 
 def ghg_url_helper(*, build_url, config, **_):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py,
+    This helper function uses the "build_url" input from generateflowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
     string to be replaced with info specific to the data year. This function
     does not parse the data, only modifies the urls from which data is
