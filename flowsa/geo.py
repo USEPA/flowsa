@@ -2,7 +2,6 @@ from typing import Literal
 import enum
 from functools import total_ordering
 import pandas as pd
-import numpy as np
 from . import settings
 from .flowsa_log import log
 

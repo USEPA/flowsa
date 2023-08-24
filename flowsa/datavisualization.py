@@ -12,13 +12,11 @@ import random
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import flowsa
-from flowsa.common import load_crosswalk, load_yaml_dict
-from flowsa.dataclean import replace_NoneType_with_empty_cells
+from flowsa.common import load_crosswalk
 # todo: need to update fxn to use new sector_aggregation - datavis not
 #  currently working
 # from flowsa.flowbyfunctions import sector_aggregation
 from flowsa.flowsa_log import log
-from flowsa.sectormapping import get_sector_list
 from flowsa.settings import datapath, plotoutputpath
 import textwrap
 
