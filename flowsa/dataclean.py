@@ -5,11 +5,12 @@
 Common functions to clean and harmonize dataframes
 """
 
+import pandas as pd
 import numpy as np
-from flowsa.literature_values import get_Canadian_to_USD_exchange_rate
+from flowsa import (literature_values, settings, flowsa_log)
 
 
-def clean_df(df, flowbyfields, fill_na_dict, drop_description=True):
+def clean_df(df, flowbyfields, drop_description=True):
     """
     Modify a dataframe to ensure all columns are present and column
     datatypes correct
@@ -30,32 +31,6 @@ def clean_df(df, flowbyfields, fill_na_dict, drop_description=True):
         # harmonize units across dfs
         df = standardize_units(df)
 
-    return df
-
-
-def replace_strings_with_NoneType(df):
-    """
-    Ensure that cell values in columns with datatype = string remain NoneType
-    :param df: df with columns where datatype = object
-    :return: A df where values are NoneType if they are supposed to be
-    """
-    # if datatypes are strings, ensure that Null values remain NoneType
-    for y in df.columns:
-        if df[y].dtype == object:
-            df.loc[df[y].isin(['nan', 'None', np.nan, '']), y] = None
-    return df
-
-
-def replace_NoneType_with_empty_cells(df):
-    """
-    Replace all NoneType in columns where datatype = string with empty cells
-    :param df: df with columns where datatype = object
-    :return: A df where values are '' when previously they were NoneType
-    """
-    # if datatypes are strings, change NoneType to empty cells
-    for y in df.columns:
-        if df[y].dtype == object:
-            df.loc[df[y].isin(['nan', 'None', np.nan, None]), y] = ''
     return df
 
 

@@ -166,7 +166,7 @@ def process_data_frame(*, df, source, year, config):
     log.info("Retrieved data for %s %s", source, year)
     # add any missing columns of data and cast to appropriate data type
     log.info("Add any missing columns and check field datatypes")
-    flow_df = clean_df(df, flow_by_activity_fields, fba_fill_na_dict,
+    flow_df = clean_df(df, flow_by_activity_fields,
                        drop_description=False)
     # sort df and reset index
     flow_df = flow_df.sort_values(['Class', 'Location', 'ActivityProducedBy',
