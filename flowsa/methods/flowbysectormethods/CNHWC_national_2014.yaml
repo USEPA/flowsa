@@ -18,6 +18,13 @@ source_names:
           FlowName: Wood
           ActivityProducedBy:
             Other: 'Other - Wood'
+          ActivityConsumedBy:
+            # reset all ActivityConsumedBy to drop for this method
+            Compost: ''
+            Fuel: ''
+            Landfill: ''
+            Mulch: ''
+            Remanufacture: ''
         attribution_method: direct
         attribute_on: ['SectorProducedBy']
       construction_spending:
@@ -26,6 +33,26 @@ source_names:
           conditional:
             FlowName: Wood
             ActivityProducedBy: Other
+        selection_fields:
+          ActivityConsumedBy:
+            # reset all ActivityConsumedBy to drop for this method
+            Aggregate: ''
+            Aggregate- Drain Rock: ''
+            Aggregate- Other Construction: ''
+            Aggregate- Road Base: ''
+            Agricultural: ''
+            Compost: ''
+            Compost/Mulch: ''
+            Fill Material: ''
+            Fuel: ''
+            General Recycled: ''
+            HMA/WMA: ''
+            Landfill: ''
+            Landfill Cover: ''
+            Mulch: ''
+            Other: ''
+            Remanufacture: ''
+            Road Base: ''
         attribution_method: proportional
         attribute_on: ['SectorProducedBy']
         attribution_source:
