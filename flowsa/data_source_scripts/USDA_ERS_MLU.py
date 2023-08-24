@@ -22,7 +22,7 @@ from flowsa.literature_values import \
     get_urban_land_use_for_airports, \
     get_urban_land_use_for_railroads, get_open_space_fraction_of_urban_area
 from flowsa.validation import compare_df_units
-from flowsa.flowby import FlowByActivity
+from flowsa import FlowByActivity
 from flowsa.naics import industry_spec_key
 
 

@@ -18,7 +18,7 @@ import pandas as pd
 import numpy as np
 from flowsa.location import US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.flowby import FlowByActivity
+from flowsa import FlowByActivity
 from flowsa.flowsa_log import log
 from flowsa.naics import industry_spec_key
 

@@ -28,7 +28,8 @@ from flowsa.validation import check_for_nonetypes_in_sector_col, \
 import flowsa.flowbyactivity
 from flowsa.bibliography import generate_fbs_bibliography
 from flowsa.datavisualization import FBSscatterplot
-from .flowby import FlowByActivity, FlowBySector
+from .flowbyactivity import FlowByActivity
+from .flowbysector import FlowBySector
 
 
 def getFlowByActivity(

@@ -8,7 +8,7 @@ Functions to check data is loaded and transformed correctly
 import pandas as pd
 import numpy as np
 import flowsa
-from flowsa.flowby import FlowBySector
+from flowsa import FlowBySector
 from flowsa.flowbyfunctions import aggregator, collapse_fbs_sectors
 from flowsa.flowsa_log import log, vlog
 from flowsa.common import fba_activity_fields

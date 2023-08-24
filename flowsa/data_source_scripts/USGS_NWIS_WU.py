@@ -15,7 +15,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.flowsa_log import vlog
 from flowsa.validation import compare_df_units, \
     calculate_flowamount_diff_between_dfs
-from flowsa.flowby import FlowByActivity
+from flowsa import FlowByActivity
 
 
 def usgs_URL_helper(*, build_url, config, **_):

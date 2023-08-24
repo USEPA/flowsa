@@ -5,9 +5,8 @@ import sys
 
 import pytest
 import os
-from flowsa import seeAvailableFlowByModels
+from flowsa import seeAvailableFlowByModels, FlowBySector
 from flowsa.common import check_method_status
-from flowsa.flowby import FlowBySector
 from flowsa.settings import diffpath
 from flowsa.test_single_FBS import compare_single_FBS_against_remote
 

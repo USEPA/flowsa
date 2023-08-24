@@ -16,7 +16,8 @@ from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units, filter_by_geoscale
 # from flowsa.data_source_scripts.USDA_CoA_Cropland import disaggregate_pastureland, \
 #     disaggregate_cropland
-from flowsa.flowby import FlowByActivity
+from flowsa import FlowByActivity
+
 
 def iwms_url_helper(*, build_url, config, **_):
     """

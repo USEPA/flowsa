@@ -1,5 +1,5 @@
 from flowsa.data_source_scripts import EPA_GHGI as ghgi
-from flowsa.flowby import FlowByActivity
+from flowsa import FlowByActivity
 
 
 def clean_mecs_energy_fba_for_bea_summary(fba: FlowByActivity, **kwargs):
