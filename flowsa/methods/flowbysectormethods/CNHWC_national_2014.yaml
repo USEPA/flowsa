@@ -8,17 +8,26 @@ source_names:
   EPA_CDDPath:
     geoscale: national
     year: 2014
-    clean_fba_before_mapping: !script_function:EPA_CDDPath assign_wood_to_engineering
     # mfl_mapping: 'EPA_CDDPath'
     activity_sets:
-      construction_spending:
+      construction_spending_wood:
         selection_fields:
-          PrimaryActivity:
-            - Buildings
-            - Other
-            - Other - Wood
-            - Roads and Bridges
+          # reclassifies Wood from 'Other' to 'Other - Wood' so that its
+          # mapping can be adjusted to only use 237990/Heavy engineering
+          # NAICS according to method in Meyer et al. 2020
+          FlowName: Wood
+          ActivityProducedBy:
+            Other: 'Other - Wood'
+        attribution_method: direct
+        attribute_on: ['SectorProducedBy']
+      construction_spending:
+        # All other data
+        exclusion_fields:
+          conditional:
+            FlowName: Wood
+            ActivityProducedBy: Other
         attribution_method: proportional
+        attribute_on: ['SectorProducedBy']
         attribution_source:
           Census_VIP:
             year: 2014

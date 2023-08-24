@@ -170,21 +170,6 @@ def call_generation_by_source(file_dict):
     return df2
 
 
-def assign_wood_to_engineering(fba, **_):
-    """clean_fba_df_fxn that reclassifies Wood from 'Other' to
-    'Other - Wood' so that its mapping can be adjusted to only use
-    237990/Heavy engineering NAICS according to method in Meyer et al. 2020
-    :param fba: df, FBA of CDDPath
-    :return: df, CDDPath FBA with wood reassigned
-    """
-    # Update wood to a new activity for improved mapping
-    fba.loc[((fba.FlowName == 'Wood') &
-           (fba.ActivityProducedBy == 'Other')),
-           'ActivityProducedBy'] = 'Other - Wood'
-
-    return fba
-
-
 def keep_activity_consumed_by(fba, **_):
     """clean_allocation_fba"""
     fba['ActivityProducedBy'] = None
