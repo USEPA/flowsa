@@ -298,3 +298,13 @@ def check_method_status():
     with open(yaml_path, 'r') as f:
         method_status = yaml.safe_load(f)
     return method_status
+
+
+def get_catalog_info(source_name: str) -> dict:
+    '''
+    Retrieves the information on a given source from source_catalog.yaml.
+    Replaces various pieces of code that load the source_catalog yaml.
+    '''
+    source_catalog = load_yaml_dict('source_catalog')
+    source_name = return_true_source_catalog_name(source_name)
+    return source_catalog.get(source_name, {})

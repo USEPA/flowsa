@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
-from flowsa.flowby import FlowBySector, FB, get_catalog_info, \
-    get_flowby_from_config
+from flowsa.flowby import FlowBySector, FB, get_flowby_from_config
+from flowsa.common import get_catalog_info
 from flowsa.flowsa_log import log
 from flowsa import (geo, location, FlowByActivity)
 from flowsa.naics import map_source_sectors_to_more_aggregated_sectors

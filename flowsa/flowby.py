@@ -1,12 +1,13 @@
-from typing import List, Literal, TypeVar, Union
+from typing import List, Literal, TypeVar
 import pandas as pd
 from pandas import ExcelWriter
 import numpy as np
 from functools import partial, reduce
 from copy import deepcopy
 from flowsa import (common, settings, metadata, sectormapping,
-                    literature_values, flowbyactivity, flowsa_yaml,
-                    validation, geo, naics, exceptions, schema)
+                    literature_values, flowsa_yaml, validation, geo, naics,
+                    exceptions, schema)
+from flowsa.common import get_catalog_info
 from flowsa.flowsa_log import log, vlog, reset_log_file
 import esupy.processed_data_mgmt
 import esupy.dqi
@@ -21,17 +22,6 @@ NAME_SEP_CHAR = '.'
 with open(settings.datapath / 'flowby_config.yaml') as f:
     flowby_config = flowsa_yaml.load(f)
     # ^^^ Replaces schema.py
-
-
-# TODO: Move this to common.py
-def get_catalog_info(source_name: str) -> dict:
-    '''
-    Retrieves the information on a given source from source_catalog.yaml.
-    Replaces various pieces of code that load the source_catalog yaml.
-    '''
-    source_catalog = common.load_yaml_dict('source_catalog')
-    source_name = common.return_true_source_catalog_name(source_name)
-    return source_catalog.get(source_name, {})
 
 
 # TODO: Should this be in the flowsa __init__.py?
