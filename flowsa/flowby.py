@@ -213,8 +213,8 @@ class _FlowBy(pd.DataFrame):
     @property
     def groupby_cols(self) -> List[str]:
         return [x for x in self
-                if self[x].dtype in ['int', 'object'] and x not in
-                ['Description', 'group_id']]
+                if self[x].dtype in ['int', 'object', 'int32', 'int64']
+                and x not in ['Description', 'group_id']]
 
     @classmethod
     def _getFlowBy(
@@ -1216,9 +1216,10 @@ class _FlowBy(pd.DataFrame):
         return (
             fb
             .drop(columns=['PrimarySector', 'SecondarySector',
-                           'temp_location', 'group_total', 'Unit_other',
+                           'temp_location', 'group_total',
                            'Denominator'],
                   errors='ignore')
+            .drop(fb.filter(regex='_other').columns, axis=1)
             .reset_index(drop=True)
         )
 
