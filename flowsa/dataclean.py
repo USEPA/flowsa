@@ -23,16 +23,12 @@ def clean_df(df, flowbyfields, fill_na_dict, drop_description=True):
     df = df.reset_index(drop=True)
     # ensure correct data types
     df = add_missing_flow_by_fields(df, flowbyfields)
-    # fill null values
-    df = df.fillna(value=fill_na_dict)
     # drop description field, if exists
     if 'Description' in df.columns and drop_description is True:
         df = df.drop(columns='Description')
     if flowbyfields == 'flow_by_sector_fields':
         # harmonize units across dfs
         df = standardize_units(df)
-    # if datatypes are strings, ensure that Null values remain NoneType
-    df = replace_strings_with_NoneType(df)
 
     return df
 
@@ -75,12 +71,21 @@ def add_missing_flow_by_fields(flowby_partial_df, flowbyfields):
     for col, param in flowbyfields.items():
         for required, response in param[1].items():
             if response and col not in flowby_partial_df.columns:
-                flowby_partial_df[col] = None
+                flowby_partial_df[col] = np.nan
+    # convert all None, 'nan' to np.nan
+    flowby_partial_df = (flowby_partial_df
+                         .replace('None', np.nan)
+                         .replace('nan', np.nan))
     # convert data types to match those defined in flow_by_activity_fields
     for k, v in flowbyfields.items():
         if k in flowby_partial_df.columns:
-            flowby_partial_df.loc[:, k] = \
+            flowby_partial_df[k] = \
                 flowby_partial_df[k].astype(v[0]['dtype'])
+            if v[0]['dtype'] in ['string', 'str', 'object']:
+                flowby_partial_df[k] = flowby_partial_df[k].fillna(np.nan)
+            else:
+                flowby_partial_df[k] = flowby_partial_df[k].fillna(0)
+
     # Resort it so order is correct
     cols = [e for e in flowbyfields.keys() if e in flowby_partial_df.columns]
     flowby_df = flowby_partial_df[cols]
