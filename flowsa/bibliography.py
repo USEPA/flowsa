@@ -9,9 +9,8 @@ import pandas as pd
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 from esupy.processed_data_mgmt import mkdir_if_missing
-from flowsa.common import load_yaml_dict, \
-    load_values_from_literature_citations_config, get_flowsa_base_name, \
-    sourceconfigpath, load_yaml_dict
+from flowsa.common import load_values_from_literature_citations_config, \
+    get_flowsa_base_name, sourceconfigpath, load_yaml_dict
 from flowsa.flowsa_log import log
 from flowsa.settings import outputpath, biboutputpath
 

@@ -6,7 +6,7 @@ from functools import partial, reduce
 from copy import deepcopy
 from flowsa import (common, settings, metadata, sectormapping,
                     literature_values, flowbyactivity, flowsa_yaml,
-                    validation, geo, naics, exceptions, location, schema)
+                    validation, geo, naics, exceptions, schema)
 from flowsa.flowsa_log import log, vlog, reset_log_file
 import esupy.processed_data_mgmt
 import esupy.dqi

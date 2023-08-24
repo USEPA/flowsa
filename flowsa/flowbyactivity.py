@@ -19,7 +19,6 @@ from flowsa.common import load_env_file_key, sourceconfigpath, \
 from flowsa.settings import paths
 from flowsa.flowsa_log import log, reset_log_file
 from flowsa.metadata import set_fb_meta, write_metadata
-from flowsa.flowbyfunctions import fba_fill_na_dict
 from flowsa.schema import flow_by_activity_fields
 from flowsa.dataclean import clean_df
 

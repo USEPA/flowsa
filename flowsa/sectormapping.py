@@ -9,10 +9,8 @@ import pandas as pd
 import numpy as np
 from esupy.mapping import apply_flow_mapping
 import flowsa
-from flowsa.common import get_flowsa_base_name, fba_activity_fields, \
-    fbs_activity_fields
+from flowsa.common import get_flowsa_base_name, load_crosswalk
 from flowsa.dataclean import standardize_units
-from flowsa.flowbyfunctions import load_crosswalk
 from flowsa.flowsa_log import log
 from flowsa.schema import dq_fields
 

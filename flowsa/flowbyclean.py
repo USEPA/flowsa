@@ -3,8 +3,7 @@ import pandas as pd
 from flowsa.flowby import FlowBySector, FB, get_catalog_info, \
     get_flowby_from_config
 from flowsa.flowsa_log import log
-from flowsa import (geo, location, getFlowBySector, flowbyfunctions,
-                    FlowByActivity)
+from flowsa import (geo, location, FlowByActivity)
 from flowsa.naics import map_source_sectors_to_more_aggregated_sectors
 from flowsa.validation import compare_summation_at_sector_lengths_between_two_dfs
 
