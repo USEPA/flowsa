@@ -71,16 +71,20 @@ def add_missing_flow_by_fields(flowby_partial_df, flowbyfields):
            or flow_by_sector_collapsed_fields
     :return: df, with all required columns
     """
-    for k in flowbyfields.keys():
-        if k not in flowby_partial_df.columns:
-            flowby_partial_df[k] = None
+    # add required columns identified in schema.py
+    for col, param in flowbyfields.items():
+        for required, response in param[1].items():
+            if response and col not in flowby_partial_df.columns:
+                flowby_partial_df[col] = None
     # convert data types to match those defined in flow_by_activity_fields
     for k, v in flowbyfields.items():
-        flowby_partial_df.loc[:, k] = \
-            flowby_partial_df[k].astype(v[0]['dtype'])
+        if k in flowby_partial_df.columns:
+            flowby_partial_df.loc[:, k] = \
+                flowby_partial_df[k].astype(v[0]['dtype'])
     # Resort it so order is correct
-    flowby_partial_df = flowby_partial_df[flowbyfields.keys()]
-    return flowby_partial_df
+    cols = [e for e in flowbyfields.keys() if e in flowby_partial_df.columns]
+    flowby_df = flowby_partial_df[cols]
+    return flowby_df
 
 
 def standardize_units(df):
