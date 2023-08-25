@@ -15,6 +15,11 @@ https://edap-ord-data-commons.s3.amazonaws.com/index.html?prefix=flowsa/
 The most recent version (based on timestamp) of Flow-By-Activity and
 Flow-By-Sector files are loaded when running these functions
 """
+# necessary so 'FlowBySector'/'FlowByActivity' can be used in fxn
+# annotations without importing the class to the py script which would lead
+# to circular reasoning
+from __future__ import annotations
+
 import os
 import pprint
 import pandas as pd
