@@ -1,3 +1,8 @@
+"""
+The functions defined in this script can be applied to both
+FlowByActivity and FlowBySector classes.
+"""
+
 from typing import List, Literal, TypeVar
 import pandas as pd
 import numpy as np

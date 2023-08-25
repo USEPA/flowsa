@@ -1,15 +1,17 @@
-import pandas as pd
+"""
+The three classes extending pd.Series, together with the _constructor...
+methods of each class, are required for allowing pandas methods called on
+objects of these classes to return objects of these classes, as desired.
 
+For more information, see
+https://pandas.pydata.org/docs/development/extending.html
+"""
+
+import pandas as pd
 from flowsa.flowbyactivity import FlowByActivity
 from flowsa.flowbysector import FlowBySector
 from flowsa.flowby import _FlowBy
 
-
-# The three classes extending pd.Series, together with the _constructor...
-# methods of each class, are required for allowing pandas methods called on
-# objects of these classes to return objects of these classes, as desired.
-# For more information, see
-# https://pandas.pydata.org/docs/development/extending.html
 
 class _FlowBySeries(pd.Series):
     _metadata = [*_FlowBy()._metadata]

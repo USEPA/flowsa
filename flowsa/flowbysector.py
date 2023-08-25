@@ -1,3 +1,9 @@
+"""
+FlowBySector (FBS) data are attributed to a class, allowing the configuration
+file and other attributes to be attached to the FBS object. The functions
+defined in this file are specific to FBS data.
+"""
+
 import esupy.processed_data_mgmt
 import pandas as pd
 from pandas import ExcelWriter

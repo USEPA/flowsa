@@ -1,3 +1,13 @@
+"""
+FlowByActivity (FBA) data are attributed to a class, allowing the configuration
+file and other attributes to be attached to the FBA object. The functions
+defined in this file are specific to FBA data and.
+
+Generation of FBA datasets calls on the functions defined in
+gerneateflowbyactivity.py
+
+"""
+
 from functools import partial, reduce
 from typing import Literal, List
 import fedelemflowlist
