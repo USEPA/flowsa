@@ -853,8 +853,8 @@ class _FlowBy(pd.DataFrame):
             if not child_df.empty:
                 child_df_list.append(child_df.drop(columns='row'))
             else:
-                log.error('Activity set %s is empty. Check activity set '
-                          'definition!', child_df.full_name)
+                log.error(f'Activity set {child_df.full_name} is empty. '
+                          'Check activity set definition!')
 
         if set(parent_df.row) - assigned_rows:
             log.warning('Some rows from %s not assigned to an activity '
@@ -2204,11 +2204,12 @@ class FlowByActivity(_FlowBy):
                 # raise ValueError('Some rows in multiple activity sets')
 
             assigned_rows.update(child_fba.row)
-            if not child_fba.empty:
+            if ((not child_fba.empty) and
+                len(child_fba.query('FlowAmount != 0')) > 0):
                 child_fba_list.append(child_fba.drop(columns='row'))
             else:
-                log.error('Activity set %s is empty. Check activity set '
-                          'definition!', child_fba.full_name)
+                log.error(f'Activity set {child_fba.full_name} is empty or all '
+                          'zeroes. Check activity set definition!')
 
         if set(parent_fba.row) - assigned_rows:
             log.warning('Some rows from %s not assigned to an activity '
