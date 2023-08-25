@@ -61,7 +61,6 @@ class FlowByActivity(_FlowBy):
 
     @property
     def _constructor_sliced(self) -> '_FBASeries':
-        from flowsa.flowbyseries import _FBASeries
         return _FBASeries
 
     @classmethod
@@ -889,3 +888,23 @@ class FlowByActivity(_FlowBy):
             .drop(columns=['PrimaryActivity', 'SecondaryActivity'])
         )
         return emissions_fba
+
+
+"""
+The three classes extending pd.Series, together with the _constructor...
+methods of each class, are required for allowing pandas methods called on
+objects of these classes to return objects of these classes, as desired.
+
+For more information, see
+https://pandas.pydata.org/docs/development/extending.html
+"""
+class _FBASeries(pd.Series):
+    _metadata = [*FlowByActivity()._metadata]
+
+    @property
+    def _constructor(self) -> '_FBASeries':
+        return _FBASeries
+
+    @property
+    def _constructor_expanddim(self) -> 'FlowByActivity':
+        return FlowByActivity

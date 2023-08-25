@@ -55,7 +55,6 @@ class FlowBySector(_FlowBy):
 
     @property
     def _constructor_sliced(self) -> '_FBSSeries':
-        from flowsa.flowbyseries import _FBSSeries
         return _FBSSeries
 
     @classmethod
@@ -330,3 +329,23 @@ class FlowBySector(_FlowBy):
                         f'{self.full_name} to {tables_path} denied.')
 
         return table_dict
+
+
+"""
+The three classes extending pd.Series, together with the _constructor...
+methods of each class, are required for allowing pandas methods called on
+objects of these classes to return objects of these classes, as desired.
+
+For more information, see
+https://pandas.pydata.org/docs/development/extending.html
+"""
+class _FBSSeries(pd.Series):
+    _metadata = [*FlowBySector()._metadata]
+
+    @property
+    def _constructor(self) -> '_FBSSeries':
+        return _FBSSeries
+
+    @property
+    def _constructor_expanddim(self) -> 'FlowBySector':
+        return FlowBySector

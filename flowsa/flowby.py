@@ -148,7 +148,6 @@ class _FlowBy(pd.DataFrame):
 
     @property
     def _constructor_sliced(self) -> '_FlowBySeries':
-        from flowsa.flowbyseries import _FlowBySeries
         return _FlowBySeries
 
     def __finalize__(self, other, method=None, **kwargs):
@@ -626,6 +625,9 @@ class _FlowBy(pd.DataFrame):
         attributed to those sectors, by the methods specified in the calling
         FBA's configuration dictionary.
         """
+
+        from flowsa.flowbyactivity import FlowByActivity
+
         validate = True
         # look for the "attribute" key in the FBS yaml, which will exist if
         # there are multiple, non-recursive attribution methods applied to a
@@ -1304,8 +1306,6 @@ class _FlowBy(pd.DataFrame):
             dataset.
         '''
 
-        from flowsa.flowbyseries import _FlowBySeries
-
         if (f'{col_type}ProducedBy' not in self
                 or f'{col_type}ConsumedBy' not in self):
             log.error(f'Cannot add Primary{col_type} or Secondary{col_type} '
@@ -1392,3 +1392,23 @@ class _FlowBy(pd.DataFrame):
         fb = type(self)(df, add_missing_columns=False, **metadata)
 
         return fb
+
+
+"""
+The three classes extending pd.Series, together with the _constructor...
+methods of each class, are required for allowing pandas methods called on
+objects of these classes to return objects of these classes, as desired.
+
+For more information, see
+https://pandas.pydata.org/docs/development/extending.html
+"""
+class _FlowBySeries(pd.Series):
+    _metadata = [*_FlowBy()._metadata]
+
+    @property
+    def _constructor(self) -> '_FlowBySeries':
+        return _FlowBySeries
+
+    @property
+    def _constructor_expanddim(self) -> '_FlowBy':
+        return _FlowBy
