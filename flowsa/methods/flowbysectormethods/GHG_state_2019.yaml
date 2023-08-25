@@ -31,7 +31,7 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'212': ''}  # metal ores and nonmetallic minerals (i.e., coal)
 
-      use_table_pet: # commercial petroleum combustion; mobile ag equipment
+      use_table_pet: # commercial petroleum combustion; mobile ag equipment, industrial petroleum
         !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:use_table_pet
         attribution_source:
           stateio_Use_Summary:

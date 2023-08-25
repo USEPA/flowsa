@@ -69,7 +69,7 @@ direct,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel C
 industrial_ch4_n2o,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial,
 industrial_coal,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal,EPA_GHGI_T_A_14
 industrial_gas,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas,EPA_GHGI_T_A_14
-industrial_petroleum,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum,EPA_GHGI_T_A_14
+use_table_pet,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum,EPA_GHGI_T_A_14
 direct,Residential - Stationary Combustion - Fossil Fuel Combustion,
 direct,Residential - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,
 direct,Residential - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,
@@ -144,7 +144,7 @@ direct,Commercial - Landfills - Municipal - Landfills - MSW Landfill - MSW Landf
 direct,Industry - Wastewater Treatment - Wastewater Treatment and Discharge - Industrial,EPA_GHGI_T_2_1
 direct,Commercial - Wastewater Treatment - Wastewater Treatment and Discharge - Domestic,EPA_GHGI_T_2_1
 transport_machinery,Agriculture - Mobile Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,EPA_GHGI_T_3_14
-industrial_petroleum,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment,negative emissions; align with 'Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum' to avoid double counting
+use_table_pet,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment,negative emissions; align with 'Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum' to avoid double counting
 transport_machinery,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,EPA_GHGI_T_3_13
 transport_machinery,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Construction,EPA_GHGI_T_3_14
 direct,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry,

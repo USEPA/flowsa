@@ -74,7 +74,7 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'212': ''}  # metal ores and nonmetallic minerals (i.e., coal)
 
-      use_table_pet: # commercial petroleum combustion; mobile ag equipment
+      use_table_pet: # commercial petroleum combustion; mobile ag equipment, industrial petroleum
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_pet
         attribution_method: proportional
@@ -148,19 +148,6 @@ source_names:
               Class: Energy
               Flowable: Coal
 
-      industrial_petroleum: # CO2 from industrial petroleum combustion
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv industrial_petroleum
-        attribution_method: proportional
-        attribution_source:
-          EIA_MECS_Energy:
-            selection_fields:
-              Class: Energy
-              Flowable: 
-                - Distillate Fuel Oil
-                - Residual Fuel Oil
-                # - "Other" Should this be included?
-
       industrial_gas: # CO2 from industrial gas combustion
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv industrial_gas
@@ -175,9 +162,10 @@ source_names:
         clean_fba_before_activity_sets: !script_function:EPA_StateGHGI allocate_flows_by_fuel
         clean_parameter:
             flow_ratio_source:
-            - !from_index:EPA_StateGHGI_asets.csv industrial_coal
-            - !from_index:EPA_StateGHGI_asets.csv industrial_petroleum
-            - !from_index:EPA_StateGHGI_asets.csv industrial_gas
+            - Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal
+            - Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas
+            - Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum
+            - Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment            
             fba_source: # National tables for identifyng CH4 and N2O ratios to CO2
             - EPA_GHGI_T_3_7
             - EPA_GHGI_T_3_8
