@@ -32,7 +32,7 @@ if __name__ == '__main__':
     # data to include in activity set 1
     wfr_fba = flowsa.getFlowByActivity('EPA_WFR', '2018')
     wfr_fba = wfr_fba[['ActivityProducedBy']].drop_duplicates()
-    wfr_cw = pd.read_csv(f'{crosswalkpath}NAICS_Crosswalk_EPA_WFR.csv')
+    wfr_cw = pd.read_csv(f'{crosswalkpath}/NAICS_Crosswalk_EPA_WFR.csv')
     wfr = wfr_fba.merge(wfr_cw[['Activity', 'Sector']],
                         left_on='ActivityProducedBy',
                         right_on='Activity').drop(columns='Activity')
@@ -50,5 +50,5 @@ if __name__ == '__main__':
           .sort_values(['activity_set', 'name'])
           .reset_index(drop=True))
 
-    df.to_csv(f'{flowbysectoractivitysetspath}CNHW_Food_asets.csv',
+    df.to_csv(f'{flowbysectoractivitysetspath}/CNHW_Food_asets.csv',
               index=False)

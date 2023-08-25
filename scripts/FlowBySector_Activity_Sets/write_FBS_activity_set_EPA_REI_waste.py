@@ -31,5 +31,5 @@ if __name__ == '__main__':
           .sort_values(['activity_set', 'name'])
           .reset_index(drop=True))
 
-    df.to_csv(f'{flowbysectoractivitysetspath}{datasource}_waste_'
+    df.to_csv(f'{flowbysectoractivitysetspath}/{datasource}_waste_'
               f'{year}_asets.csv', index=False)

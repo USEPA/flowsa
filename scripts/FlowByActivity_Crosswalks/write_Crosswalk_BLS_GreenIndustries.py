@@ -19,7 +19,7 @@ import pandas as pd
 from flowsa.settings import datapath
 
 # read the csv loaded as a raw datafile
-df_raw = pd.read_csv(datapath + "BLS_GreenIndustries_Raw.csv")
+df_raw = pd.read_csv(f"{datapath}/BLS_GreenIndustries_Raw.csv")
 
 # only keep columns where naics is included in green goods and services
 df1 = df_raw[df_raw['Included'] == 'Y']
@@ -44,5 +44,5 @@ df3 = df3.sort_values('Sector')
 # reset index
 df3.reset_index(drop=True, inplace=True)
 # save as csv
-df3.to_csv(datapath + "activitytosectormapping/" +
-           "NAICS_Crosswalk_BLS_GreenIndustries.csv", index=False)
+df3.to_csv(f"{datapath}/activitytosectormapping/NAICS_Crosswalk_"
+           f"BLS_GreenIndustries.csv", index=False)

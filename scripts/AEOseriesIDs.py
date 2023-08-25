@@ -90,4 +90,4 @@ def getAEOseriesIDs():
     df = df.reindex(columns=['table_name', 'series_name', 'units', 'series_id'])
     
     # save to csv
-    df.to_csv(externaldatapath + 'AEOseriesIDs.csv', index=False)
+    df.to_csv(f"{externaldatapath}/AEOseriesIDs.csv", index=False)

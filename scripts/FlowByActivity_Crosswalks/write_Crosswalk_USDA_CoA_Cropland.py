@@ -100,37 +100,37 @@ def assign_naics(df):
     # orchards associated with 6 naics6, for now, after allocation,
     # divide values associated with these naics by 6
     df.loc[df['Activity'] == 'ORCHARDS', 'Sector'] = '111331'
-    df = df.append(pd.DataFrame(
+    df = pd.concat([df, pd.DataFrame(
         [['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111332']],
         columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                 'Sector']), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame(
+                 'Sector'])], ignore_index=True, sort=True)
+    df = pd.concat([df, pd.DataFrame(
         [['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111335']],
         columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                 'Sector']), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame(
+                 'Sector'])], ignore_index=True, sort=True)
+    df = pd.concat([df, pd.DataFrame(
         [['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111336']],
         columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                 'Sector']), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame(
+                 'Sector'])], ignore_index=True, sort=True)
+    df = pd.concat([df, pd.DataFrame(
         [['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111339']],
         columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                 'Sector']), ignore_index=True, sort=True)
+                 'Sector'])], ignore_index=True, sort=True)
     # orange groves
-    df = df.append(pd.DataFrame(
+    df = pd.concat([df, pd.DataFrame(
         [['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111310']],
         columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                 'Sector']), ignore_index=True, sort=True)
+                 'Sector'])], ignore_index=True, sort=True)
     # citrus except orange groves
-    df = df.append(pd.DataFrame(
+    df = pd.concat([df, pd.DataFrame(
         [['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111320']],
         columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                 'Sector']), ignore_index=True, sort=True)
+                 'Sector'])], ignore_index=True, sort=True)
     df.loc[df['Activity'] == 'BERRY TOTALS', 'Sector'] = '111334'
-    df = df.append(pd.DataFrame(
+    df = pd.concat([df, pd.DataFrame(
         [['USDA_CoA_Cropland', 'BERRY TOTALS', 'NAICS_2012_Code', '111333']],
         columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                 'Sector']), ignore_index=True, sort=True)
+                 'Sector'])], ignore_index=True, sort=True)
     df.loc[df['Activity'] == 'PINEAPPLES', 'Sector'] = '111339'
 
     # coa aggregates to greenhouse nursery and floriculture production: 1114

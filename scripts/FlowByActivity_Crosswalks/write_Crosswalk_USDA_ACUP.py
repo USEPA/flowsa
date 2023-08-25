@@ -84,21 +84,27 @@ def assign_naics(df):
     # orchards associated with 6 naics6, for now, after allocation,
     # divide values associated with these naics by 6
     df.loc[df['Activity'] == 'ORCHARDS', 'Sector'] = '111331'
-    df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111332']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                                         'Sector']), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111333']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                                         'Sector']), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111335']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                                         'Sector']), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111336']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                                         'Sector']), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame([['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111339']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                                         'Sector']), ignore_index=True, sort=True)
+    df = pd.concat([df, pd.DataFrame(
+        [['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111332']],
+        columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                 'Sector'])], ignore_index=True, sort=True)
+    df = pd.concat([df, pd.DataFrame(
+        [['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111333']],
+        columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                 'Sector'])], ignore_index=True,
+                   sort=True)
+    pd.concat([df, pd.DataFrame(
+        [['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111335']],
+        columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                 'Sector'])], ignore_index=True, sort=True)
+    pd.concat([df, pd.DataFrame(
+        [['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111336']],
+        columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                 'Sector'])], ignore_index=True, sort=True)
+    pd.concat([df, pd.DataFrame(
+        [['USDA_CoA_Cropland', 'ORCHARDS', 'NAICS_2012_Code', '111339']],
+        columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                 'Sector'])], ignore_index=True, sort=True)
     df.loc[df['Activity'] == 'BERRY TOTALS', 'Sector'] = '111334'
     df.loc[df['Activity'] == 'PINEAPPLES', 'Sector'] = '111339'
 
@@ -176,4 +182,5 @@ if __name__ == '__main__':
         # sort df
         df = order_crosswalk(df)
         # save as csv
-        df.to_csv(f"{datapath}activitytosectormapping/NAICS_Crosswalk_{d}.csv", index=False)
+        df.to_csv(f"{datapath}/activitytosectormapping/NAICS_Crosswalk"
+                  f"_{d}.csv", index=False)
