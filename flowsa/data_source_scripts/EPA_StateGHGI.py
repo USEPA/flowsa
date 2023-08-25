@@ -184,6 +184,35 @@ def allocate_flows_by_fuel(fba: FlowByActivity, **_) -> FlowByActivity:
     return new_fba
 
 
+def allocate_industrial_combustion(fba: FlowByActivity, **_) -> FlowByActivity:
+    """
+    Split industrial combustion emissions into two buckets to be further allocated.
+
+    clean_fba_before_activity_sets. Calculate the percentage of fuel consumption
+    captured in EIA MECS relative to national GHGI. Create new activities to
+    distinguish those which use EIA MECS as allocation source and those that
+    use alternate source.
+    """
+    from flowsa.data_source_scripts.EPA_GHGI import get_manufacturing_energy_ratios
+    pct_dict = get_manufacturing_energy_ratios(fba.config.get('clean_parameter'))
+
+    # activities reflect flows in A_14 and 3_8 and 3_9
+    alist = fba.config.get('clean_parameter')['activities_to_split']
+    activities_to_split = {a: a.rsplit(' - ')[-1] for a in alist}
+
+    for activity, fuel in activities_to_split.items():
+        df_subset = fba.loc[fba['ActivityProducedBy'] == activity].reset_index(drop=True)
+        if len(df_subset) == 0:
+            continue
+        df_subset['FlowAmount'] = df_subset['FlowAmount'] * pct_dict[fuel]
+        df_subset['ActivityProducedBy'] = f"{activity} - Manufacturing"
+        fba.loc[fba['ActivityProducedBy'] == activity,
+               'FlowAmount'] = fba['FlowAmount'] * (1-pct_dict[fuel])
+        fba = pd.concat([fba, df_subset], ignore_index=True)
+
+    return fba
+
+
 if __name__ == '__main__':
     import flowsa
     flowsa.flowbyactivity.main(source='EPA_StateGHGI', year='2017')

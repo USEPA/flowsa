@@ -22,7 +22,7 @@ source_names:
       !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets
 
     ## List these activity sets separately to access the correct use table year
-      use_table_coal: # commercial coal combustion
+      use_table_coal: # commercial coal combustion, non-manufacturing industrial
         !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:use_table_coal
         attribution_source:
           stateio_Use_Summary:
@@ -40,7 +40,7 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'324': ''}  # Petroleum fuel
 
-      use_table_gas: # commercial gas combustion
+      use_table_gas: # commercial gas combustion, non-manufacturing industrial
         !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:use_table_gas
         attribution_source:
           stateio_Use_Summary:

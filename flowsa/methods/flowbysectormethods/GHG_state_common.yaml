@@ -48,6 +48,14 @@ source_names:
     # year: *ghg_year
     keep_unmapped_rows: True
     fedefl_mapping: 'GHGI'
+    clean_fba_before_activity_sets: !script_function:EPA_StateGHGI allocate_industrial_combustion
+    clean_parameter: # Override each year for use in allocate_industrial_combustion
+        energy_fba: EIA_MECS_Energy
+        year: 2018
+        ghg_fba: EPA_GHGI_T_A_7 # 2018 Table
+        activities_to_split:
+        - Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal
+        - Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas
     activity_sets:
       direct:
         selection_fields:
@@ -64,7 +72,7 @@ source_names:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct_ods
         attribution_method: direct
 
-      use_table_coal: # commercial coal combustion
+      use_table_coal: # commercial coal combustion, non-manufacturing industrial
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_coal
         attribution_method: proportional
@@ -84,7 +92,7 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'324': ''}  # Petroleum fuel
 
-      use_table_gas: # commercial gas combustion
+      use_table_gas: # commercial gas combustion, non-manufacturing industrial
         # This allocaiton is problematic because 22 includes electricity
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_gas
@@ -138,7 +146,7 @@ source_names:
                 selection_fields:
                   ActivityProducedBy: {'22': ''}  # Electricity and natural gas
 
-      industrial_coal: # CO2 from industrial coal combustion
+      industrial_coal: # CO2 from industrial coal combustion (manufacturing)
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv industrial_coal
         attribution_method: proportional
@@ -148,7 +156,7 @@ source_names:
               Class: Energy
               Flowable: Coal
 
-      industrial_gas: # CO2 from industrial gas combustion
+      industrial_gas: # CO2 from industrial gas combustion (manufacturing)
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv industrial_gas
         attribution_method: proportional
