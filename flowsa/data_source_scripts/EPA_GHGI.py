@@ -15,7 +15,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system, \
 from flowsa.flowsa_log import log
 from flowsa.settings import externaldatapath
 from flowsa.schema import flow_by_activity_fields
-from flowsa import FlowByActivity
+from flowsa.flowbyactivity import FlowByActivity
 
 SECTOR_DICT = {'Res.': 'Residential',
                'Comm.': 'Commercial',

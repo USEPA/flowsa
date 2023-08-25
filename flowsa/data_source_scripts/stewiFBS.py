@@ -15,7 +15,8 @@ import numpy as np
 from esupy.processed_data_mgmt import read_source_metadata
 
 import flowsa.flowbysector
-from flowsa import FlowBySector, FlowByActivity
+from flowsa.flowbysector import FlowBySector
+from flowsa.flowbyactivity import FlowByActivity
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.flowsa_log import log
 from flowsa.location import apply_county_FIPS, update_geoscale

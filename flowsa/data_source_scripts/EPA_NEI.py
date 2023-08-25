@@ -12,7 +12,7 @@ import pandas as pd
 import numpy as np
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.dataclean import standardize_units
-from flowsa import FlowByActivity
+from flowsa.flowbyactivity import FlowByActivity
 from flowsa.flowsa_log import log
 from flowsa.location import merge_urb_cnty_pct
 

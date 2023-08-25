@@ -1,6 +1,7 @@
 import pandas as pd
 
-from flowsa import FlowByActivity, FlowBySector
+from flowsa.flowbyactivity import FlowByActivity
+from flowsa.flowbysector import FlowBySector
 from flowsa.flowby import _FlowBy
 
 

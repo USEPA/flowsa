@@ -14,9 +14,7 @@ from flowsa.location import US_FIPS, get_state_FIPS
 from flowsa.common import WITHDRAWN_KEYWORD
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units, filter_by_geoscale
-# from flowsa.data_source_scripts.USDA_CoA_Cropland import disaggregate_pastureland, \
-#     disaggregate_cropland
-from flowsa import FlowByActivity
+from flowsa.flowbyactivity import FlowByActivity
 
 
 def iwms_url_helper(*, build_url, config, **_):

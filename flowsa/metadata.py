@@ -212,7 +212,7 @@ def getMetadata(source, year=None, category=None):
     :param category: string, 'FlowBySector' or 'FlowByActivity'
     :return: meta object, previously generated FBA or FBS meta
     """
-    from flowsa.flowbyactivity import set_fba_name
+    from flowsa.generateflowbyactivity import set_fba_name
 
     if category is None:
         log.error('Category required, specify "FlowByActivity" or '

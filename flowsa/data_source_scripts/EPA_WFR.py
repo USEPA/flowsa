@@ -12,7 +12,7 @@ from string import ascii_uppercase
 from tabula.io import read_pdf
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.location import US_FIPS
-from flowsa import FlowByActivity
+from flowsa.flowbyactivity import FlowByActivity
 
 
 def epa_wfr_call(*, resp, **_):

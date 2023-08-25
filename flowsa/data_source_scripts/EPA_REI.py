@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 from flowsa.location import US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa import FlowBySector
+from flowsa.flowbysector import FlowBySector
 
 
 def rei_url_helper(*, build_url, config, **_):
