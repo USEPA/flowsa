@@ -53,7 +53,10 @@ def annual_fips(years):
         # skip the first few rows
         FIPS_df = pd.DataFrame(raw_df.loc[1:]).reindex()
         # Assign the column titles (remove whitespace if exists and new lines
-        FIPS_df.columns = raw_df.loc[0, ].str.replace(' |\\n', '')
+        FIPS_df.columns = (raw_df.loc[0, ]
+                           .str.replace('\n', '')
+                           .str.replace(' ', '')
+                           )
 
         original_cols = FIPS_df.columns
 
@@ -61,9 +64,9 @@ def annual_fips(years):
         geocode_levels = {"010": "Country",
                           "040": "State",
                           "050": "County_" + year}
-        level_codes = geocode_levels.keys()
+        level_codes = list(geocode_levels.keys())
         # filter df for records with the levels of interest
-        FIPS_df = FIPS_df.loc[FIPS_df["SummaryLevel"].isin(level_codes)]
+        FIPS_df = FIPS_df.query(f"SummaryLevel.isin({level_codes})")
 
         # split df by level to return a list of dfs
         # use a list comprehension to split it out
@@ -93,7 +96,6 @@ def annual_fips(years):
             new_dfs[level] = new_df
 
         # New merge the new dfs to add the info
-        # FIPS_df_new = FIPS_df
         for k, v in new_dfs.items():
             fields_to_merge = [str(x) for x in state_and_county_fields[k]]
             FIPS_df = pd.merge(FIPS_df, v, on=fields_to_merge, how="left")
@@ -187,8 +189,8 @@ if __name__ == '__main__':
     # so 2010 will have an additional row
     df_10 = pd.DataFrame(df_13["FIPS_2013"])
     df_10['FIPS_2010'] = df_13['FIPS_2013']
-    df_10 = df_10.append(pd.DataFrame([["51019", "51515"]],
-                                      columns=df_10.columns))
+    df_10 = pd.concat([df_10, pd.DataFrame([["51019", "51515"]],
+                                      columns=df_10.columns)])
 
     # merge 2010 with 2013 dataframe
     df2 = pd.merge(df_10, df_13, on="FIPS_2013", how='left')\
@@ -222,4 +224,4 @@ if __name__ == '__main__':
         drop=True)
 
     # write fips crosswalk as csv
-    fips_xwalk.to_csv(datapath + "FIPS_Crosswalk.csv", index=False)
+    fips_xwalk.to_csv(f"{datapath}/FIPS_Crosswalk.csv", index=False)

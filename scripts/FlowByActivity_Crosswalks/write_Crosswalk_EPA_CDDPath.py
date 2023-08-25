@@ -17,7 +17,7 @@ def assign_naics(df):
     :return: df with assigned Sector columns
     """
 
-    cw = pd.read_csv(externaldatapath + 'VIPNametoNAICStoFF.csv',
+    cw = pd.read_csv(f"{externaldatapath}/VIPNametoNAICStoFF.csv",
                      usecols=['FF Source Category', '2012_NAICS_Code'],
                      dtype='str').drop_duplicates()
     df = df.merge(cw, how='left', left_on=['Activity'],
@@ -26,10 +26,9 @@ def assign_naics(df):
     
     # append additional mapping for Wood see EPA_CDDPath.py
     # function assign_wood_to_engineering()
-    df = df.append({'Activity': 'Other - Wood',
-                    'ActivitySourceName': 'EPA_CDDPath',
-                    '2012_NAICS_Code': '237990'},
-                   ignore_index=True)
+    df = pd.concat([df, pd.DataFrame(
+        [['Other - Wood', 'EPA_CDDPath', '237990']],
+        columns=['Activity', 'ActivitySourceName', '2012_NAICS_Code'])], ignore_index=True)
     
     df = df.rename(columns={'2012_NAICS_Code': 'Sector'})
 
@@ -55,5 +54,5 @@ if __name__ == '__main__':
     # reorder
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" +
-              "NAICS_Crosswalk_" + datasource + ".csv", index=False)
+    df.to_csv(f"{datapath}/activitytosectormapping/NAICS_Crosswalk_"
+              f"{datasource}.csv", index=False)

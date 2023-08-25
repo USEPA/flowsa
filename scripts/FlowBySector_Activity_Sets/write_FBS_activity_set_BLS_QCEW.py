@@ -34,5 +34,5 @@ if __name__ == '__main__':
         # drop duplicates and save df
     df3 = df2.drop_duplicates()
     df3 = df3.sort_values(['activity_set', 'name']).reset_index(drop=True)
-    df3.to_csv(f"{flowbysectoractivitysetspath}{datasource}_asets.csv",
+    df3.to_csv(f"{flowbysectoractivitysetspath}/{datasource}_asets.csv",
                index=False)

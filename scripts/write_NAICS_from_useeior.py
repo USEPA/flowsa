@@ -28,7 +28,7 @@ def import_useeior_mastercrosswalk():
         'MasterCrosswalk2012')['MasterCrosswalk2012']
 
     # save as csv
-    cw.to_csv(datapath + "NAICS_to_BEA_Crosswalk.csv", index=False)
+    cw.to_csv(f"{datapath}/NAICS_to_BEA_Crosswalk.csv", index=False)
 
 
 if __name__ == '__main__':
