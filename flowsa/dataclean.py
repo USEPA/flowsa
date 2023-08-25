@@ -85,7 +85,10 @@ def add_missing_flow_by_fields(flowby_partial_df, flowbyfields):
                 flowby_partial_df[k] = flowby_partial_df[k].fillna(np.nan)
             else:
                 flowby_partial_df[k] = flowby_partial_df[k].fillna(0)
-
+    # convert all None, 'nan' to np.nan
+    flowby_partial_df = (flowby_partial_df
+                         .replace('None', np.nan)
+                         .replace('nan', np.nan))
     # Resort it so order is correct
     cols = [e for e in flowbyfields.keys() if e in flowby_partial_df.columns]
     flowby_df = flowby_partial_df[cols]
