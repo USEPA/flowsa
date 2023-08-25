@@ -95,6 +95,49 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'22': ''}  # Electricity and natural gas
 
+      commercial_ch4_n2o: # CH4 and N2O from commercial combustion
+        clean_fba_before_activity_sets: !script_function:EPA_StateGHGI allocate_flows_by_fuel
+        clean_parameter:
+            flow_ratio_source:
+            - Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal
+            - Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas
+            - Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum
+            fba_source: # National tables for identifyng CH4 and N2O ratios to CO2
+            - EPA_GHGI_T_3_7
+            - EPA_GHGI_T_3_8
+            - EPA_GHGI_T_3_9
+            sector: Commercial
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv commercial_ch4_n2o
+        activity_sets:
+          coal:
+            selection_fields:
+              Description: Coal
+            attribution_method: proportional
+            attribution_source:
+              stateio_Use_Summary:
+                <<: *use_table_allocation
+                selection_fields:
+                  ActivityProducedBy: {'212': ''}  # metal ores and nonmetallic minerals (i.e., coal)
+          petroleum:
+            selection_fields:
+              Description: Petroleum
+            attribution_method: proportional
+            attribution_source:
+              stateio_Use_Summary:
+                <<: *use_table_allocation
+                selection_fields:
+                  ActivityProducedBy: {'324': ''}  # Petroleum fuel
+          gas:
+            selection_fields:
+              Description: Natural Gas
+            attribution_method: proportional
+            attribution_source:
+              stateio_Use_Summary:
+                <<: *use_table_allocation
+                selection_fields:
+                  ActivityProducedBy: {'22': ''}  # Electricity and natural gas
+
       industrial_coal: # CO2 from industrial coal combustion
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv industrial_coal
@@ -139,6 +182,7 @@ source_names:
             - EPA_GHGI_T_3_7
             - EPA_GHGI_T_3_8
             - EPA_GHGI_T_3_9
+            sector: Industrial
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv industrial_ch4_n2o
         activity_sets:

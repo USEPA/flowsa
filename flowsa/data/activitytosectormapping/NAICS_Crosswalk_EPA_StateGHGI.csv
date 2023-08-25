@@ -58,22 +58,22 @@ EPA_State_GHGI,Industry - Coal Mining - Fugitive - Post-Mining (Underground),NAI
 EPA_State_GHGI,Industry - Coal Mining - Fugitive - Surface Mining,NAICS_2012_Code,2121,,direct
 EPA_State_GHGI,Industry - Coal Mining - Fugitive - Underground Liberated,NAICS_2012_Code,2121,,direct
 EPA_State_GHGI,Industry - Coal Mining - Fugitive - Underground Recovered &Used For Energy,NAICS_2012_Code,2121,,direct
-EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,2213,,use_table_gas
-EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,42,,use_table_gas
-EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,44,,use_table_gas
-EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,45,,use_table_gas
-EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,493,,use_table_gas
-EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,51,,use_table_gas
-EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,52,,use_table_gas
-EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,53,,use_table_gas
-EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,54,,use_table_gas
-EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,55,,use_table_gas
-EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,56,,use_table_gas
-EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,61,,use_table_gas
-EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,62,,use_table_gas
-EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,71,,use_table_gas
-EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,72,,use_table_gas
-EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,81,,use_table_gas
+EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,2213,,commercial_ch4_n2o
+EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,42,,commercial_ch4_n2o
+EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,44,,commercial_ch4_n2o
+EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,45,,commercial_ch4_n2o
+EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,493,,commercial_ch4_n2o
+EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,51,,commercial_ch4_n2o
+EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,52,,commercial_ch4_n2o
+EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,53,,commercial_ch4_n2o
+EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,54,,commercial_ch4_n2o
+EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,55,,commercial_ch4_n2o
+EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,56,,commercial_ch4_n2o
+EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,61,,commercial_ch4_n2o
+EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,62,,commercial_ch4_n2o
+EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,71,,commercial_ch4_n2o
+EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,72,,commercial_ch4_n2o
+EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,81,,commercial_ch4_n2o
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,NAICS_2012_Code,2213,,use_table_coal
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,NAICS_2012_Code,42,,use_table_coal
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,NAICS_2012_Code,44,,use_table_coal

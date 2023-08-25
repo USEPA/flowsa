@@ -57,7 +57,7 @@ direct,Industry - Coal Mining - Fugitive - Post-Mining (Underground),EPA_GHGI_T_
 direct,Industry - Coal Mining - Fugitive - Surface Mining,EPA_GHGI_T_2_1
 direct,Industry - Coal Mining - Fugitive - Underground Liberated,EPA_GHGI_T_2_1
 direct,Industry - Coal Mining - Fugitive - Underground Recovered &Used For Energy,EPA_GHGI_T_2_1
-use_table_gas,Commercial - Stationary Combustion - Fossil Fuel Combustion,
+commercial_ch4_n2o,Commercial - Stationary Combustion - Fossil Fuel Combustion,
 use_table_coal,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,EPA_GHGI_T_A_14
 use_table_gas,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,EPA_GHGI_T_A_14
 use_table_pet,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,EPA_GHGI_T_A_14

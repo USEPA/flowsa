@@ -103,13 +103,18 @@ def allocate_flows_by_fuel(fba: FlowByActivity, **_) -> FlowByActivity:
 
     year = fba.config.get('year')
     # combine lists of activities from CO2 activity set
-    activity_list = [a for a in 
-                     fba.config['clean_parameter']['flow_ratio_source']
-                     for a in a]
+    alist = fba.config['clean_parameter']['flow_ratio_source']
+    if any(isinstance(i, list) for i in alist):
+        # pulled from !index, so list of lists
+        activity_list = sum(alist, [])
+    else:
+        activity_list = alist
     source_fba = pd.concat([
         flowsa.getFlowByActivity(x, year) for x in 
         fba.config['clean_parameter']['fba_source']
         ], ignore_index=True)
+
+    sector = fba.config['clean_parameter']['sector']
 
     # align fuel names from National GHGI (keys) with StateGHGI (values)
     fuels = {'Natural Gas': 'Natural Gas',
@@ -118,7 +123,7 @@ def allocate_flows_by_fuel(fba: FlowByActivity, **_) -> FlowByActivity:
 
     df_list = []
     for f in fuels.keys():
-        df = (source_fba.query(f'ActivityProducedBy == "{f} Industrial"')
+        df = (source_fba.query(f'ActivityProducedBy == "{f} {sector}"')
               [['FlowName', 'FlowAmount']]
               .assign(Fuel=f)
               )
@@ -131,6 +136,7 @@ def allocate_flows_by_fuel(fba: FlowByActivity, **_) -> FlowByActivity:
               .assign(CH4=lambda x: x['CH4'] / x['CO2'])
               .assign(N2O=lambda x: x['N2O'] / x['CO2'])
               .drop(columns='CO2')
+              .fillna(0)
               )
 
     # prepare dataframe from StateGHGI including CO2 flows by fuel type

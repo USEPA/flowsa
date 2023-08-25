@@ -49,6 +49,34 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'22': ''}  # Electricity and natural gas
 
+      commercial_ch4_n2o: # CH4 and N2O from commercial combustion
+        !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:commercial_ch4_n2o
+        activity_sets:
+          coal:
+            !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:commercial_ch4_n2o:activity_sets:coal
+            attribution_source:
+              stateio_Use_Summary:
+                !include:GHG_state_common.yaml:_allocation_types:_use_allocation
+                year: *ghg_year
+                selection_fields:
+                  ActivityProducedBy: {'212': ''}  # metal ores and nonmetallic minerals (i.e., coal)
+          petroleum:
+            !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:commercial_ch4_n2o:activity_sets:petroleum
+            attribution_source:
+              stateio_Use_Summary:
+                !include:GHG_state_common.yaml:_allocation_types:_use_allocation
+                year: *ghg_year
+                selection_fields:
+                  ActivityProducedBy: {'324': ''}  # Petroleum fuel
+          gas:
+            !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:commercial_ch4_n2o:activity_sets:gas
+            attribution_source:
+              stateio_Use_Summary:
+                !include:GHG_state_common.yaml:_allocation_types:_use_allocation
+                year: *ghg_year
+                selection_fields:
+                  ActivityProducedBy: {'22': ''}  # Electricity and natural gas
+
       use_table_chem: # other process use of carbonates
         !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:use_table_chem
         attribution_source:
