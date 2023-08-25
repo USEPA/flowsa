@@ -1,11 +1,9 @@
 import esupy.processed_data_mgmt
 import pandas as pd
 from pandas import ExcelWriter
-
 from flowsa import settings, metadata, common, exceptions, log, geo, naics
 from flowsa.common import get_catalog_info
 from flowsa.flowby import _FlowBy, flowby_config, get_flowby_from_config
-from flowsa.flowbyseries import _FBSSeries
 from flowsa.flowsa_log import reset_log_file
 
 
@@ -51,6 +49,7 @@ class FlowBySector(_FlowBy):
 
     @property
     def _constructor_sliced(self) -> '_FBSSeries':
+        from flowsa.flowbyseries import _FBSSeries
         return _FBSSeries
 
     @classmethod

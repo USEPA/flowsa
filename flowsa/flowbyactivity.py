@@ -1,13 +1,10 @@
 from functools import partial, reduce
 from typing import Literal, List
-
 import fedelemflowlist
 import pandas as pd
-
 from flowsa import settings, metadata, log, geo, validation, naics, common, \
-    sectormapping, FlowBySector
+    sectormapping, generateflowbyactivity
 from flowsa.flowby import _FlowBy, flowby_config, NAME_SEP_CHAR
-from flowsa.flowbyseries import _FBASeries
 
 
 class FlowByActivity(_FlowBy):
@@ -54,6 +51,7 @@ class FlowByActivity(_FlowBy):
 
     @property
     def _constructor_sliced(self) -> '_FBASeries':
+        from flowsa.flowbyseries import _FBASeries
         return _FBASeries
 
     @classmethod
@@ -85,7 +83,7 @@ class FlowByActivity(_FlowBy):
             'FlowByActivity'
         )
         flowby_generator = partial(
-            flowbyactivity.main,
+            generateflowbyactivity.main,
             source=full_name,
             year=year
         )
@@ -719,12 +717,14 @@ class FlowByActivity(_FlowBy):
                      *[f'_unique_naics_{n}_by_group' for n in range(2, 8)]]
         )
 
-
     def prepare_fbs(
             self: 'FlowByActivity',
             external_config_path: str = None,
             download_sources_ok: bool = True
             ) -> 'FlowBySector':
+
+        from flowsa import FlowBySector
+
         if 'activity_sets' in self.config:
             try:
                 return (

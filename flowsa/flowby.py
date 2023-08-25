@@ -3,10 +3,8 @@ import pandas as pd
 import numpy as np
 from functools import partial, reduce
 from copy import deepcopy
-from flowsa import (settings, literature_values, flowsa_yaml, geo, schema,
-                    FlowBySector, FlowByActivity)
+from flowsa import (settings, literature_values, flowsa_yaml, geo, schema)
 from flowsa.common import get_catalog_info
-from flowsa.flowbyseries import _FlowBySeries
 from flowsa.flowsa_log import log, vlog
 import esupy.processed_data_mgmt
 import esupy.dqi
@@ -35,6 +33,9 @@ def get_flowby_from_config(
 
     :return: a FlowByActivity dataframe
     """
+    from flowsa.flowbyactivity import FlowByActivity
+    from flowsa.flowbysector import FlowBySector
+
     external_data_path = config.get('external_data_path')
 
     if config['data_format'] == 'FBA':
@@ -142,6 +143,7 @@ class _FlowBy(pd.DataFrame):
 
     @property
     def _constructor_sliced(self) -> '_FlowBySeries':
+        from flowsa.flowbyseries import _FlowBySeries
         return _FlowBySeries
 
     def __finalize__(self, other, method=None, **kwargs):
@@ -1296,6 +1298,9 @@ class _FlowBy(pd.DataFrame):
             columns added, if possible; otherwise, the unmodified caling FlowBy
             dataset.
         '''
+
+        from flowsa.flowbyseries import _FlowBySeries
+
         if (f'{col_type}ProducedBy' not in self
                 or f'{col_type}ConsumedBy' not in self):
             log.error(f'Cannot add Primary{col_type} or Secondary{col_type} '
