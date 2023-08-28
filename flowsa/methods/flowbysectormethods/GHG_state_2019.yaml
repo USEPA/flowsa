@@ -104,7 +104,8 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'324': ''}  # Petroleum fuel
             exclusion_fields:
-              ActivityConsumedBy: '481' # Exclude airlines
+              ActivityConsumedBy: ['481', # Exclude airlines
+                                   'F030', 'F040', 'F050'] # Plus other sectors excluded above
 
       transport_nonroad_N2O: # N2O from petroleum non-highway
         !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:transport_nonroad_N2O

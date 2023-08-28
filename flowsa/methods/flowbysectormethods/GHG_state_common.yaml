@@ -295,7 +295,7 @@ source_names:
               ActivityProducedBy: {'324': ''}  # Petroleum fuel
             exclusion_fields:
               ActivityConsumedBy: ['481', # Exclude airlines
-                                  'F030', 'F040', 'F050'] # Plus other sectors excluded above
+                                   'F030', 'F040', 'F050'] # Plus other sectors excluded above
 
       transport_nonroad_N2O: # N2O from petroleum non-highway
         # National inventory distinguishes by vehicle type (ship, rail, equipment, etc.)
