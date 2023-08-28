@@ -146,7 +146,8 @@ class FlowBySector(_FlowBy):
                     },
                     external_config_path=external_config_path,
                     download_sources_ok=download_sources_ok
-                ).prepare_fbs(external_config_path=external_config_path, download_sources_ok=download_sources_ok)
+                ).prepare_fbs(external_config_path=external_config_path,
+                              download_sources_ok=download_sources_ok)
             )
             # ^^^ This is done with a for loop instead of a dict comprehension
             #     so that later entries in method_config['sources_to_cache']
