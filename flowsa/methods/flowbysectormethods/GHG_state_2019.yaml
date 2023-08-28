@@ -95,8 +95,19 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'324': ''}  # Petroleum fuel
 
-      transport_nonroad: # CH4, N2O from petroleum non-highway
-        !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:transport_nonroad
+      transport_nonroad_CH4: # CH4 from petroleum non-highway
+        !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:transport_nonroad_CH4
+        attribution_source:
+          stateio_Use_Summary:
+            !include:GHG_state_common.yaml:_allocation_types:_use_allocation
+            year: *ghg_year
+            selection_fields:
+              ActivityProducedBy: {'324': ''}  # Petroleum fuel
+            exclusion_fields:
+              ActivityConsumedBy: '481' # Exclude airlines
+
+      transport_nonroad_N2O: # N2O from petroleum non-highway
+        !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:transport_nonroad_N2O
         attribution_source:
           stateio_Use_Summary:
             !include:GHG_state_common.yaml:_allocation_types:_use_allocation
