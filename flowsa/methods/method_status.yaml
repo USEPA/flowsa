@@ -17,4 +17,19 @@ BTS_Airlines:
     Status: Private data
     Type: FileNotFoundError
 
+EPA_NEI_Nonroad:
+    Active: True
+    Status: Max retries exceeded with url - Certificate verify failed
+    Type: HTTPSConnectionPool
+
+EPA_NEI_Onroad:
+    Active: True
+    Status: Max retries exceeded with url - Certificate verify failed
+    Type: HTTPSConnectionPool
+
+EPA_NEI_Nonpoint:
+    Active: True
+    Status: Max retries exceeded with url - Certificate verify failed
+    Type: HTTPSConnectionPool
+
 
