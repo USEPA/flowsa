@@ -176,7 +176,9 @@ EPA_State_GHGI,U.S. Territories - CO2 from Fossil Fuel Combustion - Fossil Fuel 
 EPA_State_GHGI,U.S. Territories - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - US Territories - Natural Gas,,,,exclude - territories
 EPA_State_GHGI,U.S. Territories - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - US Territories - Petroleum,,,,exclude - territories
 EPA_State_GHGI,Electric Power Industry - Incineration of Waste - Incineration,NAICS_2012_Code,562213,,direct
-EPA_State_GHGI,Industry - Natural Gas Systems - Fugitive,NAICS_2012_Code,2111,,direct
+EPA_State_GHGI,Industry - Natural Gas Systems - Fugitive,NAICS_2012_Code,2111,,ng_systems
+EPA_State_GHGI,Industry - Natural Gas Systems - Fugitive,NAICS_2012_Code,2212,,ng_systems
+EPA_State_GHGI,Industry - Natural Gas Systems - Fugitive,NAICS_2012_Code,486,,ng_systems
 EPA_State_GHGI,Industry - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - Industrial,NAICS_2012_Code,31,,industrial_neu
 EPA_State_GHGI,Industry - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - Industrial,NAICS_2012_Code,32,,industrial_neu
 EPA_State_GHGI,Industry - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - Industrial,NAICS_2012_Code,33,,industrial_neu
@@ -189,7 +191,9 @@ EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fos
 EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,928,,transport_petroleum
 EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,F010,,transport_petroleum
 EPA_State_GHGI,U.S. Territories - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - US Territories,,,,exclude - territories
-EPA_State_GHGI,Industry - Petroleum Systems - Fugitive,NAICS_2012_Code,2111,,direct (or 3241?)
+EPA_State_GHGI,Industry - Petroleum Systems - Fugitive,NAICS_2012_Code,2111,,pet_systems
+EPA_State_GHGI,Industry - Petroleum Systems - Fugitive,NAICS_2012_Code,3241,,pet_systems
+EPA_State_GHGI,Industry - Petroleum Systems - Fugitive,NAICS_2012_Code,486,,pet_systems
 EPA_State_GHGI,Agriculture - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary,NAICS_2012_Code,111,,use_table_pet
 EPA_State_GHGI,Agriculture - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary,NAICS_2012_Code,112,,use_table_pet
 EPA_State_GHGI,Transportation - Mobile Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,481,,transport_nonroad

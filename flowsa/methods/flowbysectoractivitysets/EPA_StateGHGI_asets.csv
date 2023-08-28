@@ -88,11 +88,11 @@ exclude,U.S. Territories - CO2 from Fossil Fuel Combustion - Fossil Fuel Combust
 exclude,U.S. Territories - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - US Territories - Natural Gas,
 exclude,U.S. Territories - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - US Territories - Petroleum,
 direct,Electric Power Industry - Incineration of Waste - Incineration,EPA_GHGI_T_2_1
-direct,Industry - Natural Gas Systems - Fugitive,EPA_GHGI_T_3_63
+ng_systems,Industry - Natural Gas Systems - Fugitive,EPA_GHGI_T_3_63
 industrial_neu,Industry - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - Industrial,EPA_GHGI_T_A_14
 transport_petroleum,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,
 exclude,U.S. Territories - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - US Territories,
-direct,Industry - Petroleum Systems - Fugitive,EPA_GHGI_T_3_38
+pet_systems,Industry - Petroleum Systems - Fugitive,EPA_GHGI_T_3_38
 use_table_pet,Agriculture - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary,
 transport_nonroad,Transportation - Mobile Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,negative emissions; align with 'Transportation - Mobile Combustion - Fossil Fuel Combustion - Petroleum - Non-Highway' to avoid double counting
 transport_nonroad,Transportation - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Construction,negative emissions; align with 'Transportation - Mobile Combustion - Fossil Fuel Combustion - Petroleum - Non-Highway' to avoid double counting

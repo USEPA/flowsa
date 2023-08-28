@@ -72,6 +72,60 @@ source_names:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct_ods
         attribution_method: direct
 
+      ng_systems_CH4:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ng_systems
+          FlowName: CH4
+        attribution_method: proportional
+        attribution_source:
+          EPA_GHGI_T_3_68:
+            geoscale: national
+
+      ng_systems_CO2:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ng_systems
+          FlowName: CO2
+        attribution_method: proportional
+        attribution_source:
+          EPA_GHGI_T_3_70:
+            geoscale: national
+
+      ng_systems_N2O:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ng_systems
+          FlowName: N2O
+        attribution_method: proportional
+        attribution_source:
+          EPA_GHGI_T_3_72:
+            geoscale: national
+
+      pet_systems_CH4:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv pet_systems
+          FlowName: CH4
+        attribution_method: proportional
+        attribution_source:
+          EPA_GHGI_T_3_42:
+            geoscale: national
+
+      pet_systems_CO2:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv pet_systems
+          FlowName: CO2
+        attribution_method: proportional
+        attribution_source:
+          EPA_GHGI_T_3_44:
+            geoscale: national
+
+      pet_systems_N2O:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv pet_systems
+          FlowName: N2O
+        attribution_method: proportional
+        attribution_source:
+          EPA_GHGI_T_3_46:
+            geoscale: national
+
       use_table_coal: # commercial coal combustion, non-manufacturing industrial
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_coal
