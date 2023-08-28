@@ -337,7 +337,7 @@ source_names:
         # National inventory distinguishes by vehicle type (ship, rail, equipment, etc.)
         # Exclude air which has no CH4 emissions per national inventory
         # 'Based on this data, CH4 emissions factors for jet aircraft were '
-        # 'changed to zero to rflect the latest emissions testing data...'
+        # 'changed to zero to reflect the latest emissions testing data...'
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_nonroad
           FlowName: CH4
