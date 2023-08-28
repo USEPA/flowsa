@@ -18,6 +18,10 @@ source_names:
   EPA_StateGHGI: # U.S. GHG emissions by state
     !include:GHG_state_common.yaml:source_names:EPA_StateGHGI
     year: *ghg_year
+    clean_parameter: # Override each year for use in allocate_industrial_combustion
+        energy_fba: EIA_MECS_Energy
+        year: 2014
+        ghg_fba: EPA_GHGI_T_A_11 # 2014 Table
     activity_sets:
       !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets
 
