@@ -3,6 +3,10 @@ FlowBySector (FBS) data are attributed to a class, allowing the configuration
 file and other attributes to be attached to the FBS object. The functions
 defined in this file are specific to FBS data.
 """
+# necessary so 'FlowBySector'/'FlowByActivity' can be used in fxn
+# annotations without importing the class to the py script which would lead
+# to circular reasoning
+from __future__ import annotations
 
 import esupy.processed_data_mgmt
 import pandas as pd

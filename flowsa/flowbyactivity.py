@@ -7,6 +7,10 @@ Generation of FBA datasets calls on the functions defined in
 gerneateflowbyactivity.py
 
 """
+# necessary so 'FlowBySector'/'FlowByActivity' can be used in fxn
+# annotations without importing the class to the py script which would lead
+# to circular reasoning
+from __future__ import annotations
 
 from functools import partial, reduce
 from typing import Literal, List

@@ -1,3 +1,8 @@
+# necessary so 'FlowBySector'/'FlowByActivity' can be used in fxn
+# annotations without importing the class to the py script which would lead
+# to circular reasoning
+from __future__ import annotations
+
 import numpy as np
 import pandas as pd
 from flowsa.flowby import FB, get_flowby_from_config
