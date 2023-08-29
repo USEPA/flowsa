@@ -3,8 +3,7 @@ Test functions work, used for CI/CD testing
 """
 import flowsa
 from flowsa import seeAvailableFlowByModels
-from flowsa.common import check_method_status
-from flowsa.flowbyactivity import load_yaml_dict
+from flowsa.common import check_method_status, load_yaml_dict
 
 
 def test_get_flows_by_activity():

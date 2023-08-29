@@ -12,6 +12,7 @@ import random
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import flowsa
+import flowsa.flowbysector
 from flowsa.common import load_crosswalk
 # todo: need to update fxn to use new sector_aggregation - datavis not
 #  currently working
@@ -186,7 +187,7 @@ def stackedBarChart(df,
         for k, v in selection_fields.items():
             df = df[df[k].str.startswith(tuple(v))]
 
-    df = flowsa.FlowBySector(df)
+    df = flowsa.flowbysector.FlowBySector(df)
     # agg sectors for data visualization
     df.config['industry_spec'] = industry_spec
     df = df.sector_aggregation()
