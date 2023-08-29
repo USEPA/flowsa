@@ -5,6 +5,8 @@ import sys
 
 import pytest
 import os
+import pandas as pd
+import numpy as np
 from flowsa import seeAvailableFlowByModels
 from flowsa.common import check_method_status
 from flowsa.flowby import FlowBySector
@@ -14,8 +16,17 @@ from flowsa.test_single_FBS import compare_single_FBS_against_remote
 
 @pytest.mark.generate_fbs
 def test_generate_fbs():
-    """Generate all FBS from methods in repo."""
-    for m in seeAvailableFlowByModels("FBS", print_method=False):
+    """Generate latest year for all FBS from methods in repo."""
+    models = pd.DataFrame(seeAvailableFlowByModels("FBS", print_method=False))
+    models['year'] = models[0].str.extract('.*(\d{4})', expand = False)
+    models['model'] = models.apply(lambda x: x[0].split(x['year']),
+                                   axis=1).str[0]
+    m_last_two = models[0].str.slice(start=-2)
+    models['model'] = np.where(m_last_two.str.startswith('m'),
+                               models['model'] + m_last_two,
+                               models['model'])
+    model_list = models.drop_duplicates(subset='model', keep='last')[0]
+    for m in model_list:
         print("--------------------------------\n"
               f"Method: {m}\n"
               "--------------------------------")
