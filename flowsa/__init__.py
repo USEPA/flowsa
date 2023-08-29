@@ -19,6 +19,7 @@ Flow-By-Sector files are loaded when running these functions
 import os
 import pprint
 import pandas as pd
+import flowsa.exceptions
 from flowsa.common import load_yaml_dict
 from flowsa.flowsa_log import log
 from flowsa.settings import sourceconfigpath, flowbysectormethodpath, \
