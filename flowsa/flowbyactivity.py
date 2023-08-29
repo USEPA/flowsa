@@ -11,6 +11,7 @@ gerneateflowbyactivity.py
 # annotations without importing the class to the py script which would lead
 # to circular reasoning
 from __future__ import annotations
+from typing import TYPE_CHECKING
 
 from functools import partial, reduce
 from typing import Literal, List
@@ -20,6 +21,8 @@ from flowsa import settings, metadata, log, geo, validation, naics, common, \
     sectormapping, generateflowbyactivity
 from flowsa.flowby import _FlowBy, flowby_config, NAME_SEP_CHAR
 
+if TYPE_CHECKING:
+    from flowsa import FlowBySector
 
 class FlowByActivity(_FlowBy):
     _metadata = [*_FlowBy()._metadata]

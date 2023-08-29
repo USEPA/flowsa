@@ -3,7 +3,7 @@ The functions defined in this script can be applied to both
 FlowByActivity and FlowBySector classes.
 """
 
-from typing import List, Literal, TypeVar
+from typing import List, Literal, TypeVar, TYPE_CHECKING
 import pandas as pd
 import numpy as np
 from functools import partial, reduce
@@ -13,6 +13,10 @@ from flowsa.common import get_catalog_info
 from flowsa.flowsa_log import log, vlog
 import esupy.processed_data_mgmt
 import esupy.dqi
+
+if TYPE_CHECKING:
+    from flowsa.flowbysector import FlowBySector
+    from flowsa.flowbyactivity import FlowByActivity
 
 FB = TypeVar('FB', bound='_FlowBy')
 S = TypeVar('S', bound='_FlowBySeries')
