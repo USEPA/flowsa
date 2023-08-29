@@ -1,5 +1,4 @@
-# This workflow will generate the latest version of a FlowBySector file and
-# store as artifact
+# This workflow will generate all FlowBySector files and store as artifact
 
 name: Generate FBS
 
