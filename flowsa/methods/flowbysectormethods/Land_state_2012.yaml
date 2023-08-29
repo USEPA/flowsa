@@ -32,8 +32,7 @@ sources_to_cache:
     selection_fields:
       Class: Land
       FlowName: "Approximate Enclosed Floorspace of All Buildings Onsite"
-      Year: {2014: 2012} # replace year to align with method year
-    estimate_suppressed: !script_function:EIA_MECS estimate_suppressed_mecs_energy
+      Year: {2014: 2012} # replace year to align with method year=
     clean_fba: !script_function:EIA_MECS mecs_land_fba_cleanup
     clean_fba_w_sec: !clean_function:flowbyclean attribute_national_to_states
     clean_source:
