@@ -17,7 +17,7 @@ def assign_naics(df):
     :return: df with assigned Sector columns
     """
 
-    cw = pd.read_csv(externaldatapath + 'VIPNametoNAICStoFF.csv',
+    cw = pd.read_csv(f"{externaldatapath}/VIPNametoNAICStoFF.csv",
                      usecols=['Name', '2012_NAICS_Code'])
     cw['Name'] = cw['Name'].str.lower()
     df['Name'] = df['Activity'].str.split(' - ').str[1].str.lower()
@@ -48,5 +48,5 @@ if __name__ == '__main__':
     # reorder
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" +
-              "NAICS_Crosswalk_" + datasource + ".csv", index=False)
+    df.to_csv(f"{datapath}/activitytosectormapping/"
+              f"NAICS_Crosswalk_{datasource}.csv", index=False)

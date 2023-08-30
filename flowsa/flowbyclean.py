@@ -1,12 +1,17 @@
+# necessary so 'FlowBySector'/'FlowByActivity' can be used in fxn
+# annotations without importing the class to the py script which would lead
+# to circular reasoning
+from __future__ import annotations
+
 import numpy as np
 import pandas as pd
-from flowsa.flowby import FlowBySector, FB, get_catalog_info, \
-    get_flowby_from_config
+from flowsa.flowby import FB, get_flowby_from_config
+from flowsa.common import get_catalog_info
 from flowsa.flowsa_log import log
-from flowsa import (geo, location, getFlowBySector, flowbyfunctions,
-                    FlowByActivity)
+from flowsa import (geo, location, FlowByActivity, FlowBySector)
 from flowsa.naics import map_source_sectors_to_more_aggregated_sectors
 from flowsa.validation import compare_summation_at_sector_lengths_between_two_dfs
+
 
 def return_primary_activity_column(fba: FlowByActivity) -> \
         FlowByActivity:
@@ -397,7 +402,6 @@ def attribute_national_to_states(fba: FlowByActivity, **_) -> FlowByActivity:
         log.warning('Data loss upon census region mapping')
 
     return fba
-
 
 def calculate_flow_per_person(
         fbs: 'FlowBySector',

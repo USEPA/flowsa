@@ -14,13 +14,12 @@ from flowsa.location import US_FIPS, get_state_FIPS
 from flowsa.common import WITHDRAWN_KEYWORD
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units, filter_by_geoscale
-# from flowsa.data_source_scripts.USDA_CoA_Cropland import disaggregate_pastureland, \
-#     disaggregate_cropland
-from flowsa.flowby import FlowByActivity
+from flowsa.flowbyactivity import FlowByActivity
+
 
 def iwms_url_helper(*, build_url, config, **_):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py,
+    This helper function uses the "build_url" input from generateflowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
     string to be replaced with info specific to the data year. This function
     does not parse the data, only modifies the urls from which data is
@@ -58,7 +57,7 @@ def iwms_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications

@@ -7,7 +7,7 @@ Inventory of US GHGs from EPA disaggregated to States
 import pandas as pd
 import io
 from zipfile import ZipFile
-from flowsa.flowby import FlowByActivity
+from flowsa.flowbyactivity import FlowByActivity
 from flowsa.flowsa_log import log
 from flowsa.location import apply_county_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system

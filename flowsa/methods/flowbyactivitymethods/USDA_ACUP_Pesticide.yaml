@@ -1,7 +1,7 @@
 author: US Department of Agriculture
 source_name_bib: Agricultural Chemical Use Program
 citable_url: https://www.nass.usda.gov/Surveys/Guide_to_NASS_Surveys/Chemical_Use/
-date_generated: '2021-06-24'  # updated automatically when flowbyactivity.py is run
+date_generated: '2021-06-24'  # updated automatically when generateflowbyactivity.py is run
 bib_id: USDA_ACUP_Pest
 api_name: USDA_Quickstats
 api_key_required: true

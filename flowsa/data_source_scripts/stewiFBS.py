@@ -13,7 +13,10 @@ import os
 import pandas as pd
 import numpy as np
 from esupy.processed_data_mgmt import read_source_metadata
-from flowsa.flowby import FlowBySector, FlowByActivity
+
+import flowsa.flowbysector
+from flowsa.flowbysector import FlowBySector
+from flowsa.flowbyactivity import FlowByActivity
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.flowsa_log import log
 from flowsa.location import apply_county_FIPS, update_geoscale
@@ -357,5 +360,5 @@ def add_stewicombo_metadata(inventory_name):
 
 if __name__ == "__main__":
     import flowsa
-    fbs = flowsa.flowby.FlowBySector.generateFlowBySector('CRHW_national_2017')
-    fbs = flowsa.flowby.FlowBySector.generateFlowBySector('TRI_DMR_state_2017')
+    fbs = flowsa.flowbysector.FlowBySector.generateFlowBySector('CRHW_national_2017')
+    fbs = flowsa.flowbysector.FlowBySector.generateFlowBySector('TRI_DMR_state_2017')

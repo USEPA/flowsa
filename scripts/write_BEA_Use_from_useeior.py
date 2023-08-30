@@ -60,7 +60,6 @@ CSV manually added to flowsa
 
 """
 
-
 from rpy2.robjects.packages import importr
 from rpy2.robjects import pandas2ri
 from flowsa.settings import externaldatapath
@@ -82,5 +81,4 @@ Industries = model.rx2("BEA").rx2("Industries")
 # Apply it to the df index
 UseIndustryTransactions.index = Industries
 # Write out to csv
-UseIndustryTransactions.to_csv(externaldatapath +
-                               "BEA_2012_Detail_Use_Industry_Transactions.csv")
+UseIndustryTransactions.to_csv(f"{externaldatapath}/BEA_2012_Detail_Use_Industry_Transactions.csv")
