@@ -22,7 +22,7 @@ setup(
         'matplotlib>=3.4.3',
         'numpy>=1.20.1',
         'openpyxl>=3.0.7',
-        'pandas>=1.4.0',
+        'pandas>=1.4.0, <2.1.0',
         'pip>=9',
         'plotly>=5.10.0 ',
         'pycountry>=19.8.18',

@@ -14,7 +14,7 @@ import numpy as np
 from flowsa.location import US_FIPS, get_region_and_division_codes
 from flowsa.common import WITHDRAWN_KEYWORD
 from flowsa.flowsa_log import log
-from flowsa.flowby import FlowByActivity
+from flowsa.flowbyactivity import FlowByActivity
 from flowsa.flowbyclean import load_prepare_clean_source
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.data_source_scripts.EIA_CBECS_Land import \
@@ -23,15 +23,15 @@ from flowsa.data_source_scripts.EIA_CBECS_Land import \
 
 def eia_mecs_URL_helper(*, build_url, config, year, **_):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py,
+    This helper function uses the "build_url" input from generateflowbyactivity.py,
     which is a base url for data imports that requires parts of the url
     text string to be replaced with info specific to the data year. This
     function does not parse the data, only modifies the urls from which data
     is obtained.
     :param build_url: string, base url
     :param config: dictionary, items in FBA method yaml
-    :param args: dictionary, arguments specified when running flowbyactivity.py
-        flowbyactivity.py ('year' and 'source')
+    :param args: dictionary, arguments specified when running generateflowbyactivity.py
+        generateflowbyactivity.py ('year' and 'source')
     :return: list, urls to call, concat, parse, format into
     Flow-By-Activity format
     """
@@ -62,7 +62,7 @@ def eia_mecs_land_call(*, resp, year, **_):
     :param url: string, url
     :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+        generateflowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     # Convert response to dataframe

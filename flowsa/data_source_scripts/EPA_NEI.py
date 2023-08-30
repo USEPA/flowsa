@@ -12,14 +12,14 @@ import pandas as pd
 import numpy as np
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.dataclean import standardize_units
-from flowsa.flowby import FlowByActivity
+from flowsa.flowbyactivity import FlowByActivity
 from flowsa.flowsa_log import log
 from flowsa.location import merge_urb_cnty_pct
 
 
 def epa_nei_url_helper(*, build_url, year, config, **_):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py,
+    This helper function uses the "build_url" input from generateflowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
     string to be replaced with info specific to the data year. This function
     does not parse the data, only modifies the urls from which data is
@@ -50,7 +50,7 @@ def epa_nei_call(*, resp, **_):
     :param _1: string, url (unused)
     :param resp: df, response from url call
     :param _2: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source') (unused)
+        generateflowbyactivity.py ('year' and 'source') (unused)
     :return: pandas dataframe of original source data
     """
     with ZipFile(io.BytesIO(resp.content)) as z:
