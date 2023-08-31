@@ -827,7 +827,8 @@ class FlowByActivity(_FlowBy):
                 # raise ValueError('Some rows in multiple activity sets')
 
             assigned_rows.update(child_fba.row)
-            if not child_fba.empty:
+            if ((not child_fba.empty) and
+                len(child_fba.query('FlowAmount != 0')) > 0):
                 child_fba_list.append(child_fba.drop(columns='row'))
             else:
                 log.error(f'Activity set {child_fba.full_name} is empty. '
