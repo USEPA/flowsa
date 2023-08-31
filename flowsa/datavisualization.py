@@ -158,6 +158,7 @@ def stackedBarChart(df,
                     rows=1,
                     cols=1,
                     filename = 'flowsaBarChart',
+                    axis_title = None,
                     graphic_width = 1200,
                     graphic_height = 1200
                     ):
@@ -293,6 +294,7 @@ def stackedBarChart(df,
     df2 = df2.merge(colors, how='left')
 
     if subplot is None:
+        axis_title = axis_title or f"FlowAmount ({df_unit})"
         for r, c in zip(df2[stacking_col].unique(), df2['Color'].unique()):
             plot_df = df2[df2[stacking_col] == r]
             y_axis_col = plot_df[sector_variable]
@@ -305,9 +307,10 @@ def stackedBarChart(df,
                         orientation='h',
                         marker_color=c
                         ))
-        fig.update_xaxes(title_text=f"FlowAmount ({df_unit})")
+        fig.update_xaxes(title_text=axis_title)
         fig.update_yaxes(title_text="Sector", tickmode='linear')
     else:
+        axis_title = axis_title or f"Flow Total ({plot_df['Unit'][0]})"
         s = 0
         for row in range(1, rows + 1):
             for col in range(1, cols + 1):
@@ -319,13 +322,13 @@ def stackedBarChart(df,
                     if orientation == 'h':
                         x_data = flow_col
                         y_data = sector_col
-                        xaxis_title = f"Flow Total ({plot_df['Unit'][0]})"
+                        xaxis_title = axis_title
                         yaxis_title = ""
                     else:
                         x_data = sector_col
                         y_data = flow_col
                         xaxis_title = ""
-                        yaxis_title = f"Flow Total ({plot_df['Unit'][0]})"
+                        yaxis_title = axis_title
                     fig.add_trace(
                         go.Bar(x=x_data, y=y_data, name=r,
                                 orientation=orientation,
