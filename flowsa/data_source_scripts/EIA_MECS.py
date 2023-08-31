@@ -11,6 +11,7 @@ import io
 
 import pandas as pd
 import numpy as np
+from flowsa import FlowByActivity
 from flowsa.location import US_FIPS, get_region_and_division_codes
 from flowsa.common import WITHDRAWN_KEYWORD
 from flowsa.flowsa_log import log
@@ -532,3 +533,39 @@ def mecs_land_fba_cleanup(fba, **_):
     fba = calculate_total_facility_land_area(fba)
 
     return fba
+
+
+def clean_mecs_energy_fba_for_bea_summary(fba: FlowByActivity, **kwargs):
+    naics_3 = fba.query('ActivityConsumedBy.str.len() == 3')
+    naics_4 = fba.query('ActivityConsumedBy.str.len() == 4 '
+                        '& ActivityConsumedBy.str.startswith("336")')
+    naics_4_sum = (
+        naics_4
+        .assign(ActivityConsumedBy='336')
+        .aggregate_flowby()
+        [['Flowable', 'FlowAmount', 'Unit', 'ActivityConsumedBy']]
+        .rename(columns={'FlowAmount': 'naics_4_sum'})
+    )
+
+    merged = naics_3.merge(naics_4_sum, how='left').fillna({'naics_4_sum': 0})
+    subtracted = (
+        merged
+        .assign(FlowAmount=merged.FlowAmount - merged.naics_4_sum)
+        .drop(columns='naics_4_sum')
+    )
+
+    subtracted.config['naics_4_list'] = list(
+        naics_4.ActivityConsumedBy.unique()
+    )
+
+    return subtracted
+
+
+def clean_mapped_mecs_energy_fba_for_bea_summary(
+    fba: FlowByActivity,
+    **kwargs
+):
+    naics_4_list = fba.config['naics_4_list']
+
+    return fba.query('~(SectorConsumedBy in @naics_4_list '
+                     '& ActivityConsumedBy != SectorConsumedBy)')
