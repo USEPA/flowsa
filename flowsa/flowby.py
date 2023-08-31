@@ -853,8 +853,8 @@ class _FlowBy(pd.DataFrame):
             if not child_df.empty:
                 child_df_list.append(child_df.drop(columns='row'))
             else:
-                log.error('Activity set %s is empty. Check activity set '
-                          'definition!', child_df.full_name)
+                log.error(f'Activity set {child_df.full_name} is empty. '
+                          'Check activity set definition!')
 
         if set(parent_df.row) - assigned_rows:
             log.warning('Some rows from %s not assigned to an activity '
