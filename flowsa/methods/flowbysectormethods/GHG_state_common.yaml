@@ -276,7 +276,7 @@ source_names:
               Class: Other # nonfuel consumption
               Flowable: Total
 
-      use_table_chem: # other process use of carbonates
+      use_table_chem: # other process use of carbonates, urea application
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_chem
         attribution_method: proportional

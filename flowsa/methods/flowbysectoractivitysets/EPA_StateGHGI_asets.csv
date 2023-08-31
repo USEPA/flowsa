@@ -32,8 +32,8 @@ direct,Agriculture - Field Burning of Agricultural Residues - Sunflower,EPA_GHGI
 direct,Agriculture - Field Burning of Agricultural Residues - Tobacco,EPA_GHGI_T_5_29
 direct,Agriculture - Field Burning of Agricultural Residues - Vegetables,EPA_GHGI_T_5_29
 direct,Agriculture - Field Burning of Agricultural Residues - Wheat,EPA_GHGI_T_5_29
-direct,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Dolomite",EPA_GHGI_T_2_1
-direct,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Limestone",EPA_GHGI_T_2_1
+use_table_chem,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Dolomite",EPA_GHGI_T_2_1
+use_table_chem,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Limestone",EPA_GHGI_T_2_1
 direct,Agriculture - Manure Management - American Bison,EPA_GHGI_T_2_1
 direct,Agriculture - Manure Management - Beef Cattle,EPA_GHGI_T_5_7
 direct,Agriculture - Manure Management - Bison,EPA_GHGI_T_5_7
