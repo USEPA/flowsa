@@ -32,8 +32,10 @@ EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Sunflower,
 EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Tobacco,NAICS_2012_Code,11191,,revise WI
 EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Vegetables,NAICS_2012_Code,111219,,revise WI
 EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Wheat,NAICS_2012_Code,11114,,revise WI
-EPA_State_GHGI,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Dolomite",NAICS_2012_Code,3274,,direct
-EPA_State_GHGI,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Limestone",NAICS_2012_Code,3274,,direct
+EPA_State_GHGI,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Dolomite",NAICS_2012_Code,111,,align with national method
+EPA_State_GHGI,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Dolomite",NAICS_2012_Code,112,,align with national method
+EPA_State_GHGI,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Limestone",NAICS_2012_Code,111,,align with national method
+EPA_State_GHGI,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Limestone",NAICS_2012_Code,112,,align with national method
 EPA_State_GHGI,Agriculture - Manure Management - American Bison,NAICS_2012_Code,1129,,direct
 EPA_State_GHGI,Agriculture - Manure Management - Beef Cattle,NAICS_2012_Code,1121,,direct
 EPA_State_GHGI,Agriculture - Manure Management - Bison,NAICS_2012_Code,1129,,direct
