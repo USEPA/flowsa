@@ -11,27 +11,27 @@ EPA_State_GHGI,Agriculture - Enteric Fermentation - Horses,NAICS_2012_Code,1129,
 EPA_State_GHGI,Agriculture - Enteric Fermentation - Mules and Asses,NAICS_2012_Code,1129,,direct
 EPA_State_GHGI,Agriculture - Enteric Fermentation - Sheep,NAICS_2012_Code,1124,,direct
 EPA_State_GHGI,Agriculture - Enteric Fermentation - Swine,NAICS_2012_Code,1122,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Barley,NAICS_2012_Code,1111,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Chickpeas,NAICS_2012_Code,1111,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Cotton,NAICS_2012_Code,1119,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Dry Beans,NAICS_2012_Code,1111,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Grass Hay,NAICS_2012_Code,1119,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Legume Hay,NAICS_2012_Code,1119,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Lentils,NAICS_2012_Code,1111,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Maize,NAICS_2012_Code,1111,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Oats,NAICS_2012_Code,1111,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Other Small Grains,NAICS_2012_Code,1111,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Peanuts,NAICS_2012_Code,1119,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Peas,NAICS_2012_Code,1112,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Potatoes,NAICS_2012_Code,1112,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Rice,NAICS_2012_Code,1111,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Sorghum,NAICS_2012_Code,1111,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Soybeans,NAICS_2012_Code,1111,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Sugarbeets,NAICS_2012_Code,1119,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Sunflower,NAICS_2012_Code,1111,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Tobacco,NAICS_2012_Code,1119,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Vegetables,NAICS_2012_Code,1112,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Wheat,NAICS_2012_Code,1111,,direct
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Barley,NAICS_2012_Code,111199,,revise WI
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Chickpeas,NAICS_2012_Code,111130,,revise WI
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Cotton,NAICS_2012_Code,11192,,revise WI
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Dry Beans,NAICS_2012_Code,111130,,revise WI
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Grass Hay,NAICS_2012_Code,11194,,revise WI
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Legume Hay,NAICS_2012_Code,11194,,revise WI
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Lentils,NAICS_2012_Code,111130,,revise WI
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Maize,NAICS_2012_Code,111150,,revise WI
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Oats,NAICS_2012_Code,111199,,revise WI
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Other Small Grains,NAICS_2012_Code,111199,,revise WI
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Peanuts,NAICS_2012_Code,111992,,revise WI
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Peas,NAICS_2012_Code,111130,,revise WI
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Potatoes,NAICS_2012_Code,111211,,revise WI
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Rice,NAICS_2012_Code,11116,,revise WI
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Sorghum,NAICS_2012_Code,111199,,revise WI
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Soybeans,NAICS_2012_Code,11111,,revise WI
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Sugarbeets,NAICS_2012_Code,111991,,revise WI
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Sunflower,NAICS_2012_Code,111120,,revise WI
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Tobacco,NAICS_2012_Code,11191,,revise WI
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Vegetables,NAICS_2012_Code,111219,,revise WI
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Wheat,NAICS_2012_Code,11114,,revise WI
 EPA_State_GHGI,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Dolomite",NAICS_2012_Code,3274,,direct
 EPA_State_GHGI,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Limestone",NAICS_2012_Code,3274,,direct
 EPA_State_GHGI,Agriculture - Manure Management - American Bison,NAICS_2012_Code,1129,,direct
