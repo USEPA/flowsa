@@ -2,6 +2,7 @@
 
 !include:USEEIO_summary_target.yaml
 year: &ghg_year 2012
+coa_year: &coa_year 2012
 geoscale: state
 
 sources_to_cache:
@@ -89,6 +90,14 @@ source_names:
             year: *ghg_year
             selection_fields:
               ActivityProducedBy: {'325': ''}  # Use of chemicals
+
+      ag: # emissions from urea fertilization
+      # allocated between crops and animals based on USDA land area
+        !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:ag
+        attribution_source:
+          USDA_CoA_Cropland_NAICS:
+            !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:ag:attribution_source:USDA_CoA_Cropland_NAICS
+            year: *coa_year
 
       transport_petroleum: # C02 from petroleum highway
         !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:transport_petroleum
