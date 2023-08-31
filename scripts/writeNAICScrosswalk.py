@@ -19,7 +19,6 @@ import pandas as pd
 
 from flowsa import log
 from flowsa.common import load_crosswalk
-from flowsa.dataclean import replace_NoneType_with_empty_cells, replace_strings_with_NoneType
 from flowsa.settings import datapath, crosswalkpath
 
 
@@ -63,10 +62,12 @@ def update_naics_crosswalk():
                         ]].drop_duplicates().reset_index(drop=True)
     # convert all rows to string
     naics = naics.astype(str)
-    # ensure all None are NoneType
-    naics = replace_strings_with_NoneType(naics)
     # drop rows where all None
-    naics = naics.dropna(how='all')
+    naics = (naics
+             .replace('nan', np.nan)
+             .replace('None', np.nan)
+             .dropna(axis=0, how='all')
+             )
 
     # drop naics > 6 in mastercrosswalk (all manufacturing) because unused
     # and slows functions
@@ -77,7 +78,7 @@ def update_naics_crosswalk():
     # and add to naics list
     missing_naics_df_list = []
     # read in all the crosswalk csv files (ends in toNAICS.csv)
-    for file_name in glob.glob(f'{crosswalkpath}NAICS_Crosswalk_*.csv'):
+    for file_name in glob.glob(f'{crosswalkpath}/NAICS_Crosswalk_*.csv'):
         # skip Statistics Canada GDP because not all sectors relevant
         if not any(s in file_name for s in ('StatCan', 'BEA')):
             df = pd.read_csv(file_name, low_memory=False, dtype=str)
@@ -132,15 +133,16 @@ def update_naics_crosswalk():
     naics_02 = load_naics_02_to_07_crosswalk()
     naics_cw = pd.merge(total_naics, naics_02, how='left')
 
-    # ensure NoneType
-    naics_cw = replace_strings_with_NoneType(naics_cw)
-
     # reorder
     naics_cw = naics_cw[['NAICS_2002_Code', 'NAICS_2007_Code',
                          'NAICS_2012_Code', 'NAICS_2017_Code']]
+    naics_cw = (naics_cw
+                .replace(np.nan, '')
+                .replace('nan', '')
+                )
 
     # save as csv
-    naics_cw.to_csv(datapath + "NAICS_Crosswalk_TimeSeries.csv", index=False)
+    naics_cw.to_csv(f"{datapath}/NAICS_Crosswalk_TimeSeries.csv", index=False)
 
 
 def merge_df_by_crosswalk_lengths(naics_cw, d, l):
@@ -179,7 +181,6 @@ def write_naics_2012_crosswalk():
 
     # extract naics 2012 code column and drop duplicates and empty cells
     cw = cw_load[['NAICS_2012_Code']].drop_duplicates()
-    cw = replace_NoneType_with_empty_cells(cw)
     cw = cw[cw['NAICS_2012_Code'] != '']
     # also drop the existing household and government codes because not all
     # inclusive and does not conform to NAICS length standards
@@ -234,12 +235,12 @@ def write_naics_2012_crosswalk():
     # reorder
     naics_cw = naics_cw.reindex(sorted(naics_cw.columns), axis=1)
     # save as csv
-    naics_cw.to_csv(datapath + "NAICS_2012_Crosswalk.csv", index=False)
+    naics_cw.to_csv(f"{datapath}/NAICS_2012_Crosswalk.csv", index=False)
 
 
 def update_sector_name_df():
     """Update list of naics names with added sectors"""
-    sectors = pd.read_csv(f'{datapath}NAICS_2012_Names.csv', dtype=str)
+    sectors = pd.read_csv(f'{datapath}/NAICS_2012_Names.csv', dtype=str)
 
     # dictionary of new sector names
     new_sectors = pd.DataFrame(
@@ -257,7 +258,7 @@ def update_sector_name_df():
                              ]})
     df = pd.concat([sectors, new_sectors])
     df = df.sort_values("NAICS_2012_Code")
-    df.to_csv(f'{datapath}Sector_2012_Names.csv', index=False)
+    df.to_csv(f'{datapath}/Sector_2012_Names.csv', index=False)
 
 
 if __name__ == '__main__':

@@ -5,16 +5,14 @@
 Functions to generate .bib file for a FlowBySector method
 """
 
-import os
 import pandas as pd
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
-from flowsa.common import load_yaml_dict, \
-    load_values_from_literature_citations_config, \
-    load_fbs_methods_additional_fbas_config, \
-    load_functions_loading_fbas_config, get_flowsa_base_name, \
-    sourceconfigpath, load_yaml_dict
-from flowsa.settings import outputpath, biboutputpath, log
+from esupy.processed_data_mgmt import mkdir_if_missing
+from flowsa.common import load_values_from_literature_citations_config, \
+    get_flowsa_base_name, sourceconfigpath, load_yaml_dict
+from flowsa.flowsa_log import log
+from flowsa.settings import outputpath, biboutputpath
 
 
 def generate_list_of_sources_in_fbs_method(methodname):
@@ -47,21 +45,6 @@ def generate_list_of_sources_in_fbs_method(methodname):
             if 'literature_sources' in attr:
                 for source, date in attr['literature_sources'].items():
                     sources.append([source, date])
-    # load any additional fbas that are called in a fbs method within fxns
-    try:
-        fbas = load_fbs_methods_additional_fbas_config()[methodname]
-        for s, acts_info in fbas.items():
-            for acts, fxn_info in acts_info.items():
-                for fxn, fba_info in fxn_info.items():
-                    for fba, y in fba_info.items():
-                        fxn_config = \
-                            load_functions_loading_fbas_config()[fxn][fba]
-                        sources.append([fxn_config['source'], y])
-    except KeyError:
-        # if no additional fbas than pass
-        log.info(f'There are no additional Flow-By-Activities '
-                 'used in generating %s', methodname)
-        pass
 
     return sources
 
@@ -164,8 +147,8 @@ def generate_fbs_bibliography(methodname):
     # write out bibliography
     writer = BibTexWriter()
     # create directory if missing
-    os.makedirs(outputpath + '/Bibliography', exist_ok=True)
-    with open(f'{biboutputpath}{methodname}.bib', 'w') as bibfile:
+    mkdir_if_missing(outputpath / 'Bibliography')
+    with open(biboutputpath / f'{methodname}.bib', 'w') as bibfile:
         # loop through all entries in bib_list
         for b in bib_list:
             bibfile.write(writer.write(b))

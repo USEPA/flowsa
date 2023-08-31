@@ -40,12 +40,12 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'Turkeys', 'Sector'] = '11233'
     # poultry hatcheries: 11234
     # other poultry production: 11239, manually add row
-    df = df.append(
-        pd.DataFrame([['USGS_WU_Coef', 'Broilers and other chickens',
+    df = pd.concat([df,
+                    pd.DataFrame([['USGS_WU_Coef', 'Broilers and other chickens',
                        'NAICS_2012_Code', '11239']],
                      columns=['ActivitySourceName', 'Activity',
-                              'SectorSourceName', 'Sector']),
-        ignore_index=True)
+                              'SectorSourceName', 'Sector'])],
+                   ignore_index=True)
     # sheep and goat farming: 1124
     # sheep farming: 11241
     df.loc[df['Activity'] == 'Sheep and lambs', 'Sector'] = '11241'
@@ -58,15 +58,16 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'Horses (including ponies, mules, burrows, ' \
                              'and donkeys)', 'Sector'] = '11292'
     # fur-bearing animal and rabbit production: 11293, manually add row
-    df = df.append(
-        pd.DataFrame([['USGS_WU_Coef', 'Broilers and other chickens',
-                       'NAICS_2012_Code', '11293']], columns=[
-            'ActivitySourceName', 'Activity', 'SectorSourceName',
-            'Sector']), ignore_index=True)
+    df = pd.concat([df,
+                    pd.DataFrame([['USGS_WU_Coef', 'Broilers and other chickens',
+                                   'NAICS_2012_Code', '11293']],
+                                 columns=['ActivitySourceName', 'Activity',
+                                          'SectorSourceName', 'Sector'])],
+                   ignore_index=True)
     # all other animal production: 11299, manually add row
-    df = df.append(pd.DataFrame([['USGS_WU_Coef', 'Sheep and lambs',
+    df = pd.concat([df, pd.DataFrame([['USGS_WU_Coef', 'Sheep and lambs',
                                   'NAICS_2012_Code', '11299']], columns=[
-        'ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
+        'ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector'])],
                    ignore_index=True)
 
     return df
@@ -92,5 +93,5 @@ if __name__ == '__main__':
     # sort df
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(f"{datapath}activitytosectormapping/NAICS_Crosswalk_"
+    df.to_csv(f"{datapath}/activitytosectormapping/NAICS_Crosswalk_"
               f"{datasource}.csv", index=False)

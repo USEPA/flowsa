@@ -94,4 +94,4 @@ if __name__ == '__main__':
     FIPS_df["County"] = FIPS_df["County"].apply(clean_str_and_capitalize)
     FIPS_df["State"] = FIPS_df["State"].apply(clean_str_and_capitalize)
 
-    FIPS_df.to_csv(datapath+"FIPS.csv", index=False)
+    FIPS_df.to_csv(f"{datapath}/FIPS.csv", index=False)

@@ -1,0 +1,64 @@
+author: Vermont Department of Environmental Conservation
+source_name: Vermont State Supplementary Emissions Data
+bib_id: StateGHGI_VT
+format: xlsx  # Excel spreadsheet
+url: None
+filename: 'VT_custom_data_summary.xlsx'
+parse_response_fxn: !script_function:StateGHGI VT_supplementary_parse
+years:
+- 2019
+- 2018
+- 2017
+- 2016
+- 2015
+- 2014
+- 2013
+- 2012
+- 2011
+- 2010
+- 2009
+- 2008
+- 2007
+- 2006
+- 2005
+- 2004
+- 2003
+- 2002
+- 2001
+- 2000
+- 1999
+- 1998
+- 1997
+- 1996
+- 1995
+- 1994
+- 1993
+- 1992
+- 1991
+- 1990
+    
+table_dict:
+
+    'Emissions from Natural Gas Distribution':
+        sheetname: 'Sheet1'
+        header: 1
+        nrows: 2
+        SIT_APB_proxy: 'Gas and Oil, Natural Gas, Distribution'
+
+    'Emissions from ODS Substitutes':
+        sheetname: 'Sheet1'
+        header: 7
+        nrows: 5
+        SIT_APB_proxy: 'IP, ODS Substitutes'
+
+    'Emissions from Semiconductor Manufacturing':
+        sheetname: 'Sheet1'
+        header: 16
+        nrows: 7
+        SIT_APB_proxy: 'IP, Semiconductor Manufacturing'
+
+    'Emissions from Solid Waste':
+        sheetname: 'Sheet1'
+        header: 27
+        nrows: 3
+        SIT_APB_proxy: ['Landfills', 'Waste Combustion']

@@ -1,5 +1,8 @@
 !include:EPA_NEI_Common.yaml
 bib_id: EPA_NEI_Nonroad
 url: # no replacement needed in url because only single zip file
-  base_url: ftp://newftp.epa.gov/air/nei/__year__/data_summaries/__version___nonroad_byregions.zip
+  base_url: https://gaftp.epa.gov/air/nei/__year__/data_summaries/__version_____suffix__.zip
+  suffix:
+    base: nonroad_byregions
+    '2020': nonroad_byregion
 parse_response_fxn: !script_function:EPA_NEI epa_nei_nonroad_parse

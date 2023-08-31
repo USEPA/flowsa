@@ -300,6 +300,10 @@ direct_allocation,2310421010,Oil and Gas
 direct_allocation,2310421100,Oil and Gas
 direct_allocation,2310421400,Oil and Gas
 direct_allocation,2310421603,Oil and Gas
+direct_allocation,2310000330,Oil and Gas
+direct_allocation,2310000550,Oil and Gas
+direct_allocation,2310011000,Oil and Gas
+direct_allocation,2310000000,Oil and Gas
 direct_allocation,2805001010,Agriculture - Livestock
 direct_allocation,2805018000,Agriculture - Livestock
 direct_allocation,2805019000,Agriculture - Livestock
@@ -430,6 +434,10 @@ mobile_and_fuel_storage,2285002007,Mobile Sources
 mobile_and_fuel_storage,2285002008,Mobile Sources
 mobile_and_fuel_storage,2285002009,Mobile Sources
 mobile_and_fuel_storage,2285002010,Mobile Sources
+mobile_and_fuel_storage,2280002100,Mobile Sources
+mobile_and_fuel_storage,2280002200,Mobile Sources
+mobile_and_fuel_storage,2280003200,Mobile Sources
+mobile_and_fuel_storage,2280003100,Mobile Sources
 mobile_and_fuel_storage,2501012011,Fuel Storage
 mobile_and_fuel_storage,2501012012,Fuel Storage
 mobile_and_fuel_storage,2501012013,Fuel Storage
@@ -537,6 +545,8 @@ output_allocation,2307060000,Industrial processes
 output_allocation,2308000000,Industrial processes
 output_allocation,2309000000,Industrial processes
 output_allocation,2311010000,Industrial processes
+output_allocation,2311010070,Industrial processes
+output_allocation,2311000000,Industrial processes
 output_allocation,2312000000,Industrial processes
 output_allocation,2325000000,Industrial processes
 output_allocation,2325010000,Industrial processes
@@ -547,6 +557,9 @@ output_allocation,2399010000,Industrial processes
 output_allocation,2420000000,Industrial processes
 output_allocation,2420000055,Industrial processes
 output_allocation,2420000999,Industrial processes
+output_allocation,2305070000,Industrial processes
+output_allocation,2305080000,Industrial processes
+output_allocation,2309100200,Industrial processes
 output_allocation,2103001000,Fuel Combustion - Institutional/Commercial
 output_allocation,2103002000,Fuel Combustion - Institutional/Commercial
 output_allocation,2103004000,Fuel Combustion - Institutional/Commercial

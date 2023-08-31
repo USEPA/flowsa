@@ -3,7 +3,7 @@ Targeted comparison of FBS against remote
 """
 import pytest
 import os
-import flowsa
+from flowsa.flowbysector import FlowBySector
 from flowsa.metadata import set_fb_meta
 from flowsa.settings import paths, diffpath
 from flowsa.validation import compare_FBS_results
@@ -18,21 +18,22 @@ def compare_single_FBS_against_remote(m, outdir=diffpath,
     if not downloaded:
         if run_single:
             # Run a single file even if no comparison available
-            flowsa.flowbysector.main(method=m,
-                                     download_FBAs_if_missing=True)
+            FlowBySector.generateFlowBySector(
+                method=m, download_sources_ok=True)
         else:
             print(f"{m} not found in remote server. Skipping...")
         return
     print("--------------------------------\n"
           f"Method: {m}\n"
           "--------------------------------")
-    df = compare_FBS_results(m, m, compare_to_remote=True)
+    df = compare_FBS_results(m, m, ignore_metasources=True,
+                             compare_to_remote=True)
     df.rename(columns = {'FlowAmount_fbs1': 'FlowAmount_remote',
                          'FlowAmount_fbs2': 'FlowAmount_HEAD'},
               inplace=True)
     if len(df) > 0:
         print(f"Saving differences in {m} to csv")
-        df.to_csv(f"{outdir}{m}_diff.csv", index=False)
+        df.to_csv(f"{outdir}/{m}_diff.csv", index=False)
     else:
         print(f"***No differences found in {m}***")
 

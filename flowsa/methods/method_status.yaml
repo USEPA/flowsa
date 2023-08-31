@@ -12,13 +12,24 @@ USGS_MYB_Phosphate:
     Status: Error in source data links
     Type: HTTPError
 
-Blackhurst_IO:
+BTS_Airlines:
     Active: True
-    Status: Error in HTTP request during testing only
-    Type: HTTPError
+    Status: Private data
+    Type: FileNotFoundError
+
+EPA_NEI_Nonroad:
+    Active: True
+    Status: Max retries exceeded with url - Certificate verify failed
+    Type: SSLError
+
+EPA_NEI_Onroad:
+    Active: True
+    Status: Max retries exceeded with url - Certificate verify failed
+    Type: SSLError
+
+EPA_NEI_Nonpoint:
+    Active: True
+    Status: Max retries exceeded with url - Certificate verify failed
+    Type: SSLError
 
 
-# Flow By Sector
-CNHW_state_2014:
-    Active: True
-    Status: Memory Error # Skip during GH-action testing

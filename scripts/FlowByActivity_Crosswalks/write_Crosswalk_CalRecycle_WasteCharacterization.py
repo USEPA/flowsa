@@ -18,8 +18,8 @@ def assign_naics(df):
     :return: df with assigned Sector columns
     """
     
-    mapping = pd.read_csv(externaldatapath + "California_Commercial_bySector_2014_Mapping.csv",
-                          dtype='str')
+    mapping = pd.read_csv(f"{externaldatapath}/California_Commercial_"
+                          f"bySector_2014_Mapping.csv", dtype='str')
     mapping = mapping.melt(var_name='Activity',
                            value_name='Sector'
                            ).dropna().reset_index(drop=True)
@@ -28,11 +28,10 @@ def assign_naics(df):
     df = df.merge(mapping, on='Activity')
 
     # append Multifamily Sector to PCE
-    df = df.append({'Activity': 'Multifamily',
-                    'ActivitySourceName': 'CalRecycle_WasteCharacterization',
-                    'Sector': 'F010'},
+    df = pd.concat([df, pd.DataFrame(
+        [['Multifamily', 'CalRecycle_WasteCharacterization', 'F010']],
+        columns=['Activity', 'ActivitySourceName', 'Sector'])],
                    ignore_index=True)
-    
     return df
 
 
@@ -55,5 +54,5 @@ if __name__ == '__main__':
     # reorder
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" +
-              "NAICS_Crosswalk_" + datasource + ".csv", index=False)
+    df.to_csv(f"{datapath}/activitytosectormapping/NAICS_Crosswalk_"
+              f"{datasource}.csv", index=False)

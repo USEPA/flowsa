@@ -61,55 +61,65 @@ def assign_naics(df):
 
     # Highways, roads, and railroad rights-of-way, plus airport facilities outside of urban areas.
     df.loc[df['Activity'] == 'Land in rural transportation facilities', 'Sector'] = '484'
-    df = df.append(
-        pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities', '485']],
-                     columns=['ActivitySourceName', 'Activity', 'Sector']
-                     ), ignore_index=True, sort=True)
+    pd.concat([df,
+               pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities', '485']],
+                            columns=['ActivitySourceName', 'Activity', 'Sector']
+                            )], ignore_index=True, sort=True)
     # personal consumption expenditures
-    df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities',
-                                  'F01000']],
-                                columns=['ActivitySourceName', 'Activity', 'Sector']
-                                ), ignore_index=True, sort=True)
+    pd.concat([df,
+               pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities',
+                              'F01000']],
+                            columns=['ActivitySourceName', 'Activity', 'Sector']
+                            )], ignore_index=True, sort=True)
     # state/local gov't passenger transit
-    df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities',
-                                  'S00201']],
-                                columns=['ActivitySourceName', 'Activity', 'Sector']
-                                ), ignore_index=True, sort=True)
+    pd.concat([df,
+               pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities',
+                              'S00201']],
+                            columns=['ActivitySourceName', 'Activity', 'Sector']
+                            )], ignore_index=True, sort=True)
     # railroads
-    df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities',
+    pd.concat([df,
+               pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities',
                                   '482112']],
-                                columns=['ActivitySourceName', 'Activity', 'Sector']
-                                ), ignore_index=True, sort=True)
+                            columns=['ActivitySourceName', 'Activity', 'Sector']
+                            )], ignore_index=True, sort=True)
     # airports
-    df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities',
-                                  '488119']],
-                                columns=['ActivitySourceName', 'Activity', 'Sector']
-                                ), ignore_index=True, sort=True)
+    df = pd.concat([df,
+               pd.DataFrame([['USDA_ERS_MLU', 'Land in rural transportation facilities',
+                              '488119']],
+                            columns=['ActivitySourceName', 'Activity', 'Sector']
+                            )], ignore_index=True, sort=True)
 
     # Densely-populated areas with at least 50,000 people
     # (urbanized areas) and densely-populated areas with /
     # 2,500 to 50,000 people (urban clusters).
     df.loc[df['Activity'] == 'Land in urban areas', 'Sector'] = '481'
-    df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in urban areas', '482']],
+    pd.concat([df,
+               pd.DataFrame([['USDA_ERS_MLU', 'Land in urban areas', '482']],
                                 columns=['ActivitySourceName', 'Activity', 'Sector']
-                                ), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in urban areas', '484']],
+                                )], ignore_index=True, sort=True)
+    pd.concat([df,
+               pd.DataFrame([['USDA_ERS_MLU', 'Land in urban areas', '484']],
                                 columns=['ActivitySourceName', 'Activity', 'Sector']
-                                ), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in urban areas', '485']],
+                                )], ignore_index=True, sort=True)
+    pd.concat([df,
+               pd.DataFrame([['USDA_ERS_MLU', 'Land in urban areas', '485']],
                                 columns=['ActivitySourceName', 'Activity', 'Sector']
-                                ), ignore_index=True, sort=True)
+                                )], ignore_index=True, sort=True)
     # personal consumption expenditures
-    df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in urban areas', 'F01000']],
+    pd.concat([df,
+               pd.DataFrame([['USDA_ERS_MLU', 'Land in urban areas', 'F01000']],
                                 columns=['ActivitySourceName', 'Activity', 'Sector']
-                                ), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in urban areas', '488119']],    # airports
+                                )], ignore_index=True, sort=True)
+    pd.concat([df,
+               pd.DataFrame([['USDA_ERS_MLU', 'Land in urban areas', '488119']],    # airports
                                 columns=['ActivitySourceName', 'Activity', 'Sector']
-                                ), ignore_index=True, sort=True)
+                                )], ignore_index=True, sort=True)
     # city parks/open space
-    df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in urban areas', '712190']],
+    pd.concat([df,
+               pd.DataFrame([['USDA_ERS_MLU', 'Land in urban areas', '712190']],
                                 columns=['ActivitySourceName', 'Activity', 'Sector']
-                                ), ignore_index=True, sort=True)
+                                )], ignore_index=True, sort=True)
     # state/local gov't passenger transit
     df = df.append(pd.DataFrame([['USDA_ERS_MLU', 'Land in urban areas', 'S00201']],
                                 columns=['ActivitySourceName', 'Activity', 'Sector']
@@ -163,5 +173,5 @@ if __name__ == '__main__':
     # sort df
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" +
-              "NAICS_Crosswalk_" + datasource + ".csv", index=False)
+    df.to_csv(f"{datapath}/activitytosectormapping/"
+              f"NAICS_Crosswalk_{datasource}.csv", index=False)

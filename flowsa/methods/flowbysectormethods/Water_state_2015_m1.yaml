@@ -1,84 +1,43 @@
+# This is the 2015 target year method for water m1 which builds off the generic
+# method in Water_common
+
 !include:USEEIO_summary_target.yaml
-target_geoscale: state
+year: 2015
+geoscale: state
+
+sources_to_cache:
+  USDA_IWMS:
+    !include:Water_common.yaml:sources_to_cache:USDA_IWMS
+    year: 2018
+
 source_names:
-  "USGS_NWIS_WU":
-    data_format: 'FBA'
-    class: Water
-    geoscale_to_use: state
-    year: 2015
-    clean_fba_df_fxn: !script_function:USGS_NWIS_WU usgs_fba_data_cleanup
-    clean_fba_w_sec_df_fxn: !script_function:USGS_NWIS_WU usgs_fba_w_sectors_data_cleanup
-    activity_sets:
-      activity_set_1:
-        names:
-        - "Aquaculture"
-        - "Irrigation Golf Courses"
-        - "Public Supply"
-        - "Thermoelectric Power"
-        - "Domestic"
-        allocation_method: direct
-        allocation_source: None
-        allocation_source_class: None
-        allocation_source_year: None
-        allocation_flow: None
-        allocation_compartment: None
-        allocation_from_scale: state
-      activity_set_2:
-        names:
-        - "Industrial"
-        - "Mining"
-        allocation_method: proportional
-        allocation_source: "BLS_QCEW"
-        allocation_source_class: "Employment"
-        allocation_source_year: 2015
-        allocation_flow:
-          - "Number of employees, Federal Government"
-          - "Number of employees, State Government"
-          - "Number of employees, Local Government"
-          - "Number of employees, Private"
-        allocation_compartment: None
-        allocation_from_scale: state
-        clean_allocation_fba_w_sec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
-      activity_set_3:
-        names:
-        - "Irrigation Crop"
-        allocation_method: proportional
-        allocation_source: "USDA_CoA_Cropland"
-        allocation_source_class: "Land"
-        allocation_source_year: 2017
-        allocation_flow:
-          - "AREA HARVESTED, IRRIGATED"
-          - "AREA IN PRODUCTION, IRRIGATED"
-          - "AREA, IRRIGATED"
-          - 'AREA BEARING & NON-BEARING, IRRIGATED'
-          - 'AREA GROWN, IRRIGATED'
-        allocation_compartment: None
-        allocation_from_scale: state
-        clean_allocation_fba_w_sec: !script_function:USDA_CoA_Cropland disaggregate_coa_cropland_to_6_digit_naics_for_water_withdrawal
-        helper_source: "USDA_IWMS"
-        helper_method: multiplication
-        helper_source_class: "Water"
-        helper_source_year: 2018
-        helper_flow: None
-        helper_from_scale: state
-        clean_helper_fba_wsec: !script_function:USDA_IWMS iwms_aggregation
-      activity_set_4:
-        names:
-        - "Livestock"
-        allocation_method: proportional
-        allocation_source: "USDA_CoA_Livestock"
-        allocation_source_class: "Other"
-        allocation_source_year: 2017
-        allocation_flow:
-          - "HEAD"
-          - "NUMBER"
-          - "COLONIES"
-        allocation_compartment:
-          - "NOT SPECIFIED"
-        allocation_from_scale: state
-        helper_source: "USGS_WU_Coef"
-        helper_method: multiplication
-        helper_source_class: "Water"
-        helper_source_year: 2005
-        helper_flow: None
-        helper_from_scale: national
+  USGS_NWIS_WU:
+    !include:Water_common.yaml:source_names:USGS_NWIS_WU
+    activity_sets:  # do not import all activity sets from the common file because common file contains activity sets for multiple methods
+      direct_attribution:
+        !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:direct_attribution
+      employment_attribution:
+        !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:employment_attribution
+        # First attribute employment FBS to NAICS6 and aggregate to NAICS3/4
+        # at the end because we only want to capture the relevant employment
+        # sectors. For example, "Industrial" accounts for sector "1133", but
+        # if we map to NAICS3/4, then the employment will include all child
+        # NAICS of "113" instead of only "1133"
+        industry_spec:
+          default: NAICS_6
+        attribution_method: proportional
+        attribution_source: Employment_state_2015
+      cropland_attribution:
+        !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:cropland_attribution
+        attribution_method: proportional
+        attribution_source:
+          USDA_CoA_Cropland:
+            !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:cropland_attribution:attribution_source:USDA_CoA_Cropland
+            year: 2017
+      livestock_attribution:
+        !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:livestock_attribution
+        attribution_method: proportional
+        attribution_source:
+          USDA_CoA_Livestock:
+            !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:livestock_attribution:attribution_source:USDA_CoA_Livestock
+            year: 2017

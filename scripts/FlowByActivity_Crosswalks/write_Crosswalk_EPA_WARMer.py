@@ -6,7 +6,7 @@ Create a crosswalk for EPA_WARMer from WARM processes.
 """
 
 import pandas as pd
-from flowsa.flowbyactivity import load_yaml_dict
+from flowsa.common import load_yaml_dict
 from flowsa.settings import datapath
 from scripts.FlowByActivity_Crosswalks.common_scripts import order_crosswalk
 
@@ -43,5 +43,5 @@ if __name__ == '__main__':
     # reorder
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(f'{datapath}activitytosectormapping/NAICS_Crosswalk_'
+    df.to_csv(f'{datapath}/activitytosectormapping/NAICS_Crosswalk_'
               f'{datasource}.csv', index=False)
