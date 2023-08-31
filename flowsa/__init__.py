@@ -15,9 +15,11 @@ https://edap-ord-data-commons.s3.amazonaws.com/index.html?prefix=flowsa/
 The most recent version (based on timestamp) of Flow-By-Activity and
 Flow-By-Sector files are loaded when running these functions
 """
+
 import os
 import pprint
 import pandas as pd
+import flowsa.exceptions
 from flowsa.common import load_yaml_dict
 from flowsa.flowsa_log import log
 from flowsa.settings import sourceconfigpath, flowbysectormethodpath, \
@@ -25,10 +27,10 @@ from flowsa.settings import sourceconfigpath, flowbysectormethodpath, \
 from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
 from flowsa.validation import check_for_nonetypes_in_sector_col, \
     check_for_negative_flowamounts
-import flowsa.flowbyactivity
 from flowsa.bibliography import generate_fbs_bibliography
 from flowsa.datavisualization import FBSscatterplot
-from .flowby import FlowByActivity, FlowBySector
+from flowsa.flowbyactivity import FlowByActivity
+from flowsa.flowbysector import FlowBySector
 
 
 def getFlowByActivity(
@@ -65,7 +67,7 @@ def getFlowByActivity(
     # if geographic level specified, only load rows in geo level
     if geographic_level is not None:
         fba = filter_by_geoscale(fba, geographic_level)
-    return pd.DataFrame(fba)
+    return pd.DataFrame(fba.reset_index(drop=True))
 
 
 def getFlowBySector(

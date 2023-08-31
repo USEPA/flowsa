@@ -12,7 +12,7 @@ from string import ascii_uppercase
 from tabula.io import read_pdf
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.location import US_FIPS
-from flowsa.flowby import FlowByActivity
+from flowsa.flowbyactivity import FlowByActivity
 
 
 def epa_wfr_call(*, resp, **_):
@@ -22,7 +22,7 @@ def epa_wfr_call(*, resp, **_):
     :param url: string, url
     :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+        generateflowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     result_list = []

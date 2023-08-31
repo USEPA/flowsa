@@ -48,6 +48,14 @@ source_names:
     # year: *ghg_year
     keep_unmapped_rows: True
     fedefl_mapping: 'GHGI'
+    clean_fba_before_activity_sets: !script_function:EPA_StateGHGI allocate_industrial_combustion
+    clean_parameter: # Override each year for use in allocate_industrial_combustion
+        energy_fba: EIA_MECS_Energy
+        year: 2018
+        ghg_fba: EPA_GHGI_T_A_7 # 2018 Table
+        activities_to_split:
+        - Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal
+        - Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas
     activity_sets:
       direct:
         selection_fields:
@@ -64,7 +72,61 @@ source_names:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct_ods
         attribution_method: direct
 
-      use_table_coal: # commercial coal combustion
+      ng_systems_CH4:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ng_systems
+          FlowName: CH4
+        attribution_method: proportional
+        attribution_source:
+          EPA_GHGI_T_3_68:
+            geoscale: national
+
+      ng_systems_CO2:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ng_systems
+          FlowName: CO2
+        attribution_method: proportional
+        attribution_source:
+          EPA_GHGI_T_3_70:
+            geoscale: national
+
+      ng_systems_N2O:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ng_systems
+          FlowName: N2O
+        attribution_method: proportional
+        attribution_source:
+          EPA_GHGI_T_3_72:
+            geoscale: national
+
+      pet_systems_CH4:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv pet_systems
+          FlowName: CH4
+        attribution_method: proportional
+        attribution_source:
+          EPA_GHGI_T_3_42:
+            geoscale: national
+
+      pet_systems_CO2:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv pet_systems
+          FlowName: CO2
+        attribution_method: proportional
+        attribution_source:
+          EPA_GHGI_T_3_44:
+            geoscale: national
+
+      pet_systems_N2O:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv pet_systems
+          FlowName: N2O
+        attribution_method: proportional
+        attribution_source:
+          EPA_GHGI_T_3_46:
+            geoscale: national
+
+      use_table_coal: # commercial coal combustion, non-manufacturing industrial
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_coal
         attribution_method: proportional
@@ -74,7 +136,7 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'212': ''}  # metal ores and nonmetallic minerals (i.e., coal)
 
-      use_table_pet: # commercial petroleum combustion; mobile ag equipment
+      use_table_pet: # commercial petroleum combustion; mobile ag equipment, industrial petroleum
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_pet
         attribution_method: proportional
@@ -84,7 +146,7 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'324': ''}  # Petroleum fuel
 
-      use_table_gas: # commercial gas combustion
+      use_table_gas: # commercial gas combustion, non-manufacturing industrial
         # This allocaiton is problematic because 22 includes electricity
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_gas
@@ -95,7 +157,50 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'22': ''}  # Electricity and natural gas
 
-      industrial_coal: # CO2 from industrial coal combustion
+      commercial_ch4_n2o: # CH4 and N2O from commercial combustion
+        clean_fba_before_activity_sets: !script_function:EPA_StateGHGI allocate_flows_by_fuel
+        clean_parameter:
+            flow_ratio_source:
+            - Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal
+            - Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas
+            - Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum
+            fba_source: # National tables for identifyng CH4 and N2O ratios to CO2
+            - EPA_GHGI_T_3_7
+            - EPA_GHGI_T_3_8
+            - EPA_GHGI_T_3_9
+            sector: Commercial
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv commercial_ch4_n2o
+        activity_sets:
+          coal:
+            selection_fields:
+              Description: Coal
+            attribution_method: proportional
+            attribution_source:
+              stateio_Use_Summary:
+                <<: *use_table_allocation
+                selection_fields:
+                  ActivityProducedBy: {'212': ''}  # metal ores and nonmetallic minerals (i.e., coal)
+          petroleum:
+            selection_fields:
+              Description: Petroleum
+            attribution_method: proportional
+            attribution_source:
+              stateio_Use_Summary:
+                <<: *use_table_allocation
+                selection_fields:
+                  ActivityProducedBy: {'324': ''}  # Petroleum fuel
+          gas:
+            selection_fields:
+              Description: Natural Gas
+            attribution_method: proportional
+            attribution_source:
+              stateio_Use_Summary:
+                <<: *use_table_allocation
+                selection_fields:
+                  ActivityProducedBy: {'22': ''}  # Electricity and natural gas
+
+      industrial_coal: # CO2 from industrial coal combustion (manufacturing)
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv industrial_coal
         attribution_method: proportional
@@ -105,20 +210,7 @@ source_names:
               Class: Energy
               Flowable: Coal
 
-      industrial_petroleum: # CO2 from industrial petroleum combustion
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv industrial_petroleum
-        attribution_method: proportional
-        attribution_source:
-          EIA_MECS_Energy:
-            selection_fields:
-              Class: Energy
-              Flowable: 
-                - Distillate Fuel Oil
-                - Residual Fuel Oil
-                # - "Other" Should this be included?
-
-      industrial_gas: # CO2 from industrial gas combustion
+      industrial_gas: # CO2 from industrial gas combustion (manufacturing)
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv industrial_gas
         attribution_method: proportional
@@ -132,13 +224,15 @@ source_names:
         clean_fba_before_activity_sets: !script_function:EPA_StateGHGI allocate_flows_by_fuel
         clean_parameter:
             flow_ratio_source:
-            - !from_index:EPA_StateGHGI_asets.csv industrial_coal
-            - !from_index:EPA_StateGHGI_asets.csv industrial_petroleum
-            - !from_index:EPA_StateGHGI_asets.csv industrial_gas
+            - Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal
+            - Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas
+            - Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum
+            - Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment            
             fba_source: # National tables for identifyng CH4 and N2O ratios to CO2
             - EPA_GHGI_T_3_7
             - EPA_GHGI_T_3_8
             - EPA_GHGI_T_3_9
+            sector: Industrial
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv industrial_ch4_n2o
         activity_sets:
@@ -206,7 +300,7 @@ source_names:
               FlowName: AG LAND, CROPLAND, HARVESTED # land in active use
             estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
 
-      transport_petroleum: # C02 from petroleum highway
+      transport_petroleum: # C02 from petroleum highway; ch4, n2o from alternative fuels
         # state inventory assumes all petroleum is "highway"
         # Allocate to all transport types and households by fuel consumption
         selection_fields:
@@ -239,11 +333,30 @@ source_names:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_gasoline
         attribution_method: direct
 
-      transport_nonroad: # CH4, N2O from petroleum non-highway
+      transport_nonroad_CH4: # CH4 from petroleum non-highway
+        # National inventory distinguishes by vehicle type (ship, rail, equipment, etc.)
+        # Exclude air which has no CH4 emissions per national inventory
+        # 'Based on this data, CH4 emissions factors for jet aircraft were '
+        # 'changed to zero to reflect the latest emissions testing data...'
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_nonroad
+          FlowName: CH4
+        attribution_method: proportional
+        attribution_source:
+          stateio_Use_Summary:
+            <<: *use_table_allocation
+            selection_fields:
+              ActivityProducedBy: {'324': ''}  # Petroleum fuel
+            exclusion_fields:
+              ActivityConsumedBy: ['481', # Exclude airlines
+                                   'F030', 'F040', 'F050'] # Plus other sectors excluded above
+
+      transport_nonroad_N2O: # N2O from petroleum non-highway
         # National inventory distinguishes by vehicle type (ship, rail, equipment, etc.)
         # Allocate to ships, rail, air by fuel use
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_nonroad
+          FlowName: N2O
         attribution_method: proportional
         attribution_source:
           stateio_Use_Summary:

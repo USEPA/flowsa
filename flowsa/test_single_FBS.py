@@ -3,7 +3,7 @@ Targeted comparison of FBS against remote
 """
 import pytest
 import os
-from flowsa.flowby import FlowBySector
+from flowsa.flowbysector import FlowBySector
 from flowsa.metadata import set_fb_meta
 from flowsa.settings import paths, diffpath
 from flowsa.validation import compare_FBS_results

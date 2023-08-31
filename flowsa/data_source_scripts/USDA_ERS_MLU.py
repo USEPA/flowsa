@@ -22,7 +22,7 @@ from flowsa.literature_values import \
     get_urban_land_use_for_airports, \
     get_urban_land_use_for_railroads, get_open_space_fraction_of_urban_area
 from flowsa.validation import compare_df_units
-from flowsa.flowby import FlowByActivity
+from flowsa.flowbyactivity import FlowByActivity
 from flowsa.naics import industry_spec_key
 
 
@@ -42,7 +42,7 @@ def mlu_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
