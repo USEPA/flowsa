@@ -20,7 +20,7 @@ def test_generate_fbs():
         print("--------------------------------\n"
               f"Method: {m}\n"
               "--------------------------------")
-        FlowBySector.genereateFlowBySector(
+        FlowBySector.generateFlowBySector(
             method=m, download_sources_ok=True)
 
 
