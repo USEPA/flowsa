@@ -75,7 +75,7 @@ EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS
 EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,71,,commercial_ch4_n2o
 EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,72,,commercial_ch4_n2o
 EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,81,,commercial_ch4_n2o
-EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,81,,commercial_ch4_n2o
+EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,923,,commercial_ch4_n2o
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,NAICS_2012_Code,42,,use_table_coal
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,NAICS_2012_Code,44,,use_table_coal
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,NAICS_2012_Code,45,,use_table_coal
