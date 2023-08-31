@@ -2,11 +2,12 @@
 # All parameters add year specific data when needed to implement for 2013
 # GHGI FBA table names match the 2022 GHGI Report
 # MECS year is 2014
-# CoA year is 2017
+# CoA year is 2012
 
 !include:GHG_national_m1_common.yaml
 ghgi_year: &ghgi_year 2013
 mecs_year: &mecs_year 2014
+coa_year: &coa_year 2012
 
 _industrial_allocation_dict: &industrial_dict
     energy_fba: 'EIA_MECS_Energy'
@@ -55,9 +56,30 @@ source_names:
   "EPA_GHGI_T_5_17": #Direct N2O emissions from agricultural soils
     !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_5_17
     year: *ghgi_year
+    activity_sets: # Update CoA year for some activity_sets
+      !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_5_17:activity_sets
+      cropland: # allocated based on USDA land area harvested
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_5_17:activity_sets:cropland
+        attribution_source:
+          USDA_CoA_Cropland:
+            !include:GHG_national_m1_common.yaml:attribution_sources:_cropland_allocation:USDA_CoA_Cropland
+            year: *coa_year
+            attribution_source:
+              USDA_CoA_Cropland_NAICS:
+                !include:GHG_national_m1_common.yaml:attribution_sources:_cropland_allocation:USDA_CoA_Cropland:attribution_source:USDA_CoA_Cropland_NAICS
+                year: *coa_year
+      pasture: &pasture # allocated based on USDA Animal operation land (acres)
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_5_17:activity_sets:pasture
+        attribution_source:
+          USDA_CoA_Cropland_NAICS:
+            !include:GHG_national_m1_common.yaml:attribution_sources:_animal_land_allocation:USDA_CoA_Cropland_NAICS
+            year: *coa_year
   "EPA_GHGI_T_5_18": #Indirect N2O emissions from agricultural soils
     !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_5_18
     year: *ghgi_year
+    activity_sets: # Update CoA year for some activity_sets
+      !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_5_18:activity_sets
+      pasture: *pasture # allocated based on USDA Animal operation land (acres)
   "EPA_GHGI_T_3_13": #CO2 from mobile combustion
     !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_13
     year: *ghgi_year
