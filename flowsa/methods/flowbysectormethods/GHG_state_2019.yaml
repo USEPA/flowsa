@@ -22,6 +22,15 @@ source_names:
       !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets
 
     ## List these activity sets separately to access the correct use table year
+      make_table_elec: # electricity combustion
+        !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:make_table_elec
+        attribution_source:
+          stateio_Make_Summary:
+            !include:GHG_state_common.yaml:_allocation_types:_use_allocation
+            year: *ghg_year
+            selection_fields:
+              ActivityConsumedBy: {'22': ''}  # utilities
+
       use_table_coal: # commercial coal combustion, non-manufacturing industrial
         !include:GHG_state_common.yaml:source_names:EPA_StateGHGI:activity_sets:use_table_coal
         attribution_source:

@@ -72,6 +72,16 @@ source_names:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct_ods
         attribution_method: direct
 
+      make_table_elec: # electricity combustion
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv make_table_elec
+        attribution_method: proportional
+        attribution_source:
+          stateio_Make_Summary:
+            <<: *use_table_allocation
+            selection_fields:
+              ActivityConsumedBy: {'22': ''}  # utilities
+
       ng_systems_CH4:
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ng_systems

@@ -61,11 +61,11 @@ commercial_ch4_n2o,Commercial - Stationary Combustion - Fossil Fuel Combustion,
 use_table_coal,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,EPA_GHGI_T_A_14
 use_table_gas,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,EPA_GHGI_T_A_14
 use_table_pet,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,EPA_GHGI_T_A_14
-direct,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,
-direct,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Coal,
-direct,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Geothermal,
-direct,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Natural Gas,
-direct,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Petroleum,
+make_table_elec,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,
+make_table_elec,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Coal,
+make_table_elec,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Geothermal,
+make_table_elec,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Natural Gas,
+make_table_elec,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Petroleum,
 industrial_ch4_n2o,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial,
 industrial_coal,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal - Manufacturing,EPA_GHGI_T_A_14
 use_table_coal,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal,

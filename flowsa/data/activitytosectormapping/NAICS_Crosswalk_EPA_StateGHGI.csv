@@ -124,11 +124,21 @@ EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combus
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,NAICS_2012_Code,72,,use_table_pet
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,NAICS_2012_Code,81,,use_table_pet
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,NAICS_2012_Code,923,,use_table_pet
-EPA_State_GHGI,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,NAICS_2012_Code,2211,,direct
-EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Coal,NAICS_2012_Code,2211,,direct
-EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Geothermal,NAICS_2012_Code,2211,,direct
-EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Natural Gas,NAICS_2012_Code,2211,,direct
-EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Petroleum,NAICS_2012_Code,2211,,direct
+EPA_State_GHGI,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,NAICS_2012_Code,2211,,make_table_elec
+EPA_State_GHGI,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,NAICS_2012_Code,S00101,,make_table_elec
+EPA_State_GHGI,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,NAICS_2012_Code,S00202,,make_table_elec
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Coal,NAICS_2012_Code,2211,,make_table_elec
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Coal,NAICS_2012_Code,S00101,,make_table_elec
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Coal,NAICS_2012_Code,S00202,,make_table_elec
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Geothermal,NAICS_2012_Code,2211,,make_table_elec
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Geothermal,NAICS_2012_Code,S00101,,make_table_elec
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Geothermal,NAICS_2012_Code,S00202,,make_table_elec
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Natural Gas,NAICS_2012_Code,2211,,make_table_elec
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Natural Gas,NAICS_2012_Code,S00101,,make_table_elec
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Natural Gas,NAICS_2012_Code,S00202,,make_table_elec
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Petroleum,NAICS_2012_Code,2211,,make_table_elec
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Petroleum,NAICS_2012_Code,S00101,,make_table_elec
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Petroleum,NAICS_2012_Code,S00202,,make_table_elec
 EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial,NAICS_2012_Code,31,,industrial_ch4_n2o
 EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial,NAICS_2012_Code,32,,industrial_ch4_n2o
 EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial,NAICS_2012_Code,33,,industrial_ch4_n2o
