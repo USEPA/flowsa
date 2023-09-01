@@ -67,15 +67,13 @@ electric_power,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossi
 electric_power,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Natural Gas,
 electric_power,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Petroleum,
 industrial_ch4_n2o,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial,
-industrial_coal,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal - Manufacturing,EPA_GHGI_T_A_14
 use_table_coal,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal,
-industrial_gas,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas - Manufacturing,EPA_GHGI_T_A_14
 use_table_gas,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas,
 use_table_pet,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum,EPA_GHGI_T_A_14
 direct,Residential - Stationary Combustion - Fossil Fuel Combustion,
-direct,Residential - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,
-direct,Residential - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,
-direct,Residential - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,
+residential_co2,Residential - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,
+residential_co2,Residential - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,
+residential_co2,Residential - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,
 direct,Transportation - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,
 transport_ng,Transportation - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,EPA_GHGI_T_A_14
 transport_petroleum,Transportation - Mobile Combustion - Fossil Fuel Combustion - Other - Alternative Fuel Highway,
