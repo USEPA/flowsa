@@ -280,7 +280,8 @@ def compare_FBS(df1, df2, ignore_metasources=False):
 
 
 def compare_national_state_fbs(dataname=None, year=None, method=None,
-                               nationalname=None, statename=None):
+                               nationalname=None, statename=None,
+                               compare_metasources=False):
     """
     Developed to compare national and state FBS. Either include
     dataname/year/method OR specify nationalname/statename if want to
@@ -294,6 +295,7 @@ def compare_national_state_fbs(dataname=None, year=None, method=None,
     and githash
     :param statename: str, name of national method, can include version
     and githash
+    :param compare_metasources: bool, include MetaSources in the comparion
     :return:
     """
     # declare string versions of national and state dataframes
@@ -319,6 +321,8 @@ def compare_national_state_fbs(dataname=None, year=None, method=None,
 
     groupby_fields = ['Flowable','Context','SectorProducedBy', 'SectorConsumedBy',
                       'Unit', 'Location', 'FlowUUID']
+    if compare_metasources:
+        groupby_fields = groupby_fields + ['MetaSources']
     subset_fields = groupby_fields + ['FlowAmount']
 
     # attribute national data to state level target sectors, subset df,
@@ -342,7 +346,8 @@ def compare_national_state_fbs(dataname=None, year=None, method=None,
         national_agg
         .merge(state_agg, how='outer', on=groupby_fields)
         .rename(columns={'FlowAmount_x':'national',
-                         'FlowAmount_y':'state'}))
+                         'FlowAmount_y':'state'})
+        .drop(columns='Location'))
     sectors['comp'] = sectors['state'].fillna(0) / sectors['national']
 
     flows = (
