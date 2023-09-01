@@ -908,7 +908,11 @@ class _FlowBy(pd.DataFrame):
         fb_geoscale = geo.scale.from_string(self.config['geoscale'])
         other_geoscale = geo.scale.from_string(other.config['geoscale'])
 
-        if other_geoscale < fb_geoscale:
+        fill_cols = self.config.get('fill_columns')
+        if 'Location' in fill_cols:
+            # Don't harmonize geoscales when updating Location
+            pass
+        elif other_geoscale < fb_geoscale:
             log.info('Aggregating %s from %s to %s', other.full_name,
                      other_geoscale, fb_geoscale)
             other = (
@@ -935,7 +939,6 @@ class _FlowBy(pd.DataFrame):
         if attribution_cols is not None:
             subset_cols = subset_cols + attribution_cols
             groupby_cols = subset_cols + attribution_cols
-        fill_cols = self.config.get('fill_columns')
         if fill_cols is not None:
             subset_cols = subset_cols + [fill_cols]
             groupby_cols = groupby_cols + [fill_cols]
@@ -1060,14 +1063,25 @@ class _FlowBy(pd.DataFrame):
 
             log.info(f'Proportionally attributing on {attribute_cols}')
 
+            # TODO turn off use of Location as merge col temporarily
+            # merged = (
+            #     fb
+            #     .merge(other,
+            #            how='left',
+            #            left_on=attribute_cols + ['temp_location' if
+            #                                      'temp_location' in fb else
+            #                                      'Location'],
+            #            right_on=attribute_cols + ['Location'],
+            #            suffixes=[None, '_other'])
+            #     .fillna({'FlowAmount_other': 0})
+            # )
+
             merged = (
                 fb
                 .merge(other,
                        how='left',
-                       left_on=attribute_cols + ['temp_location' if
-                                                 'temp_location' in fb else
-                                                 'Location'],
-                       right_on=attribute_cols + ['Location'],
+                       left_on=attribute_cols,
+                       right_on=attribute_cols,
                        suffixes=[None, '_other'])
                 .fillna({'FlowAmount_other': 0})
             )
