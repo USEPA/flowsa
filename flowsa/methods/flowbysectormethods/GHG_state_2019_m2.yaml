@@ -26,6 +26,116 @@ source_names:
                 selection_fields:
                   PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct
 
+      electricity_transmission:
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:electricity_transmission
+        attribute:
+          - attribution_method: direct
+          - attribution_method: proportional
+            attribute_on: ['Flowable', 'SectorProducedBy']
+            fill_columns: Location
+            attribution_source:
+              EPA_StateGHGI:
+                geoscale: state
+                fedefl_mapping: GHGI
+                selection_fields:
+                  PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv electricity_transmission
+
+      electric_power:
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:electric_power
+        attribute:
+          - attribution_method: proportional
+            attribution_source:
+              !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:electric_power:attribution_source
+          - attribution_method: proportional
+            attribute_on: ['Flowable', 'SectorProducedBy']
+            fill_columns: Location
+            attribution_source:
+              EPA_StateGHGI:
+                geoscale: state
+                fedefl_mapping: GHGI
+                selection_fields:
+                  PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv electric_power
+
+      liming:
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:liming
+        attribute:
+          - attribution_method: proportional
+            attribution_source:
+              !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:liming:attribution_source
+          - attribution_method: proportional
+            attribute_on: ['Flowable', 'SectorProducedBy']
+            fill_columns: Location
+            attribution_source:
+              EPA_StateGHGI:
+                geoscale: state
+                fedefl_mapping: GHGI
+                selection_fields:
+                  PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv liming
+
+      urea:
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:urea
+        attribute:
+          - attribution_method: proportional
+            attribution_source:
+              !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:urea:attribution_source
+          - attribution_method: proportional
+            attribute_on: ['Flowable', 'SectorProducedBy']
+            fill_columns: Location
+            attribution_source:
+              EPA_StateGHGI:
+                geoscale: state
+                fedefl_mapping: GHGI
+                selection_fields:
+                  PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv urea
+
+      carbonate_use:
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:carbonate_use
+        attribute:
+          - attribution_method: proportional
+            attribution_source:
+              !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:carbonate_use:attribution_source
+          - attribution_method: proportional
+            attribute_on: ['Flowable', 'SectorProducedBy']
+            fill_columns: Location
+            attribution_source:
+              EPA_StateGHGI:
+                geoscale: state
+                fedefl_mapping: GHGI
+                selection_fields:
+                  PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv carbonate_use
+
+      lead:
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:lead
+        attribute:
+          - attribution_method: proportional
+            attribution_source:
+              !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:lead:attribution_source
+          - attribution_method: proportional
+            attribute_on: ['Flowable', 'SectorProducedBy']
+            fill_columns: Location
+            attribution_source:
+              EPA_StateGHGI:
+                geoscale: state
+                fedefl_mapping: GHGI
+                selection_fields:
+                  PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv lead
+
+      nitrous_oxide_use:
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:nitrous_oxide_use
+        attribute:
+          - attribution_method: proportional
+            attribution_source:
+              !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:nitrous_oxide_use:attribution_source
+          - attribution_method: proportional
+            attribute_on: ['Flowable', 'SectorProducedBy']
+            fill_columns: Location
+            attribution_source:
+              EPA_StateGHGI:
+                geoscale: state
+                fedefl_mapping: GHGI
+                selection_fields:
+                  PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv nitrous_oxide_use
+
 
 ## Fossil Fuels
   EPA_GHGI_T_3_68: &natgas #CH4 from Natural Gas Systems
