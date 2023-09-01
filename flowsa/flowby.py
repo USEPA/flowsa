@@ -1062,26 +1062,18 @@ class _FlowBy(pd.DataFrame):
             attribute_cols = self.config.get('attribute_on')
 
             log.info(f'Proportionally attributing on {attribute_cols}')
-
-            # TODO turn off use of Location as merge col temporarily
-            # merged = (
-            #     fb
-            #     .merge(other,
-            #            how='left',
-            #            left_on=attribute_cols + ['temp_location' if
-            #                                      'temp_location' in fb else
-            #                                      'Location'],
-            #            right_on=attribute_cols + ['Location'],
-            #            suffixes=[None, '_other'])
-            #     .fillna({'FlowAmount_other': 0})
-            # )
-
+            left_on = attribute_cols + ['temp_location' if 'temp_location'
+                                        in fb else 'Location']
+            right_on = attribute_cols + ['Location']
+            for l in (left_on, right_on):
+                if 'Location' in self.config.get('fill_columns', []):
+                    l.remove('Location')
             merged = (
                 fb
                 .merge(other,
                        how='left',
-                       left_on=attribute_cols,
-                       right_on=attribute_cols,
+                       left_on=left_on,
+                       right_on=right_on,
                        suffixes=[None, '_other'])
                 .fillna({'FlowAmount_other': 0})
             )
