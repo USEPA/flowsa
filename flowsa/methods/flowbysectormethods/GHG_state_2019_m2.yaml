@@ -13,34 +13,7 @@ source_names:
     geoscale: national
     activity_sets:
       direct:
-        selection_fields:
-          PrimaryActivity:
-            - Abandoned Oil and Gas Wells #CH4
-            - Abandoned Underground Coal Mines #CH4
-            - Adipic Acid Production #N2O
-            - Aluminum Production #CO2
-            - Ammonia Production #CO2
-            - Anaerobic Digestion at Biogas Facilities #CH4 new activity
-            - Caprolactam, Glyoxal, and Glyoxylic Acid Production #N2O
-            - Carbide Production and Consumption #CO2, CH4
-            - Cement Production #CO2
-            - Coal Mining #CO2, CH4
-            - Composting #CH4, N2O
-            - Ferroalloy Production #CO2, CH4
-            - Glass Production #CO2
-            - Landfills #CH4
-            - Lime Production #CO2
-            - Incineration of Waste #CO2, #N2O
-            - Iron and Steel Production & Metallurgical Coke Production #CO2, CH4
-            - Nitric Acid Production #N2O
-            - Phosphoric Acid Production #CO2
-            - Rice Cultivation #CH4
-            - Soda Ash Production #CO2
-            - Titanium Dioxide Production #CO2
-            - Wastewater Treatment #CH4, N2O
-            - Zinc Production #CO2
-          FlowName: ["CO2", "CH4", "N2O"] # HFCs and other flows are pulled elsewhere
-
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:direct
         attribute:
           - attribution_method: direct
           - attribution_method: proportional
@@ -56,17 +29,9 @@ source_names:
 
 ## Fossil Fuels
   EPA_GHGI_T_3_68: &natgas #CH4 from Natural Gas Systems
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_68
     year: *ghg_year
     geoscale: national
-    fedefl_mapping: GHGI
-    selection_fields:
-      PrimaryActivity:
-        - Distribution
-        - Distribution - Post-Meter
-        - Exploration
-        - Processing
-        - Production
-        - Transmission and Storage
     attribute:
       - attribution_method: direct
       - attribution_method: proportional
@@ -85,20 +50,11 @@ source_names:
     fedefl_mapping: GHGI
     activity_sets:
       fertilizer_use: &fertilizer # allocated based on fertilizer use
-        selection_fields:
-          PrimaryActivity:
-            - Organic Amendment Cropland
-            - Residue N Cropland
-            - Synthetic Fertilizer Cropland
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_5_17:activity_sets:fertilizer_use
         attribute:
           - attribution_method: proportional
             attribution_source:
-              BEA_Use_Detail_PRO_BeforeRedef:
-                year: 2012
-                activity_to_sector_mapping: BEA_2012_Detail
-                attribution_method: equal
-                selection_fields:
-                  ActivityProducedBy: {'325310': ''} # Fertilizers
+              !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_5_17:activity_sets:fertilizer_use:attribution_source
           - attribution_method: proportional
             attribute_on: ['Flowable', 'SectorProducedBy']
             fill_columns: Location
