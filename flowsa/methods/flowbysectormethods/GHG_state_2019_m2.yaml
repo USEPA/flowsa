@@ -154,7 +154,29 @@ source_names:
             fedefl_mapping: GHGI
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ng_systems
+  EPA_GHGI_T_3_70: *natgas #CO2 from Natural Gas Systems, mimics CH4
+  EPA_GHGI_T_3_72: *natgas #N2O from Natural Gas Systems, mimics CH4
 
+
+  EPA_GHGI_T_3_42: &petroleum #CH4 from Petroleum Systems
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_42
+    year: *ghg_year
+    geoscale: national
+    attribute:
+      - attribution_method: direct
+      - attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv pet_systems
+  EPA_GHGI_T_3_44: *petroleum #CO2 from Petroleum Systems, mimics CH4
+  EPA_GHGI_T_3_46: *petroleum #N2O from Petroleum Systems, mimics CH4
+
+## Agriculture
   EPA_GHGI_T_5_17: #Direct N2O emissions from agricultural soils
     year: *ghg_year
     geoscale: national
@@ -334,3 +356,22 @@ source_names:
                 fedefl_mapping: GHGI
                 selection_fields:
                   PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_pet
+
+## Other sources
+  EPA_GHGI_T_4_46: #CO2 for selected petrochemicals
+    # TODO update this to use separate activity sets for each source
+
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_46
+    year: *ghg_year
+    geoscale: national
+    attribute:
+      - attribution_method: direct
+      - attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv petrochemicals

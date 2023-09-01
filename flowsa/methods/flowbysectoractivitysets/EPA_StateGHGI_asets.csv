@@ -103,12 +103,12 @@ direct,Industry - Adipic Acid Production - Chemical Industry,EPA_GHGI_T_2_1
 direct,Industry - Ammonia Production - Chemical Industry,EPA_GHGI_T_2_1
 direct,"Industry - Caprolactam, Glyoxal,and Glyoxylic Acid Production - Chemical Industry - Caprolactam Production",EPA_GHGI_T_2_1
 direct,Industry - Nitric Acid Production - Chemical Industry,EPA_GHGI_T_2_1
-direct,Industry - Petrochemical Production - Chemical Industry - Acrylonitrile,EPA_GHGI_T_4_46
-direct,Industry - Petrochemical Production - Chemical Industry - Carbon Black,EPA_GHGI_T_4_46
-direct,Industry - Petrochemical Production - Chemical Industry - Ethylene,EPA_GHGI_T_4_46
-direct,Industry - Petrochemical Production - Chemical Industry - Ethylene Dichloride,EPA_GHGI_T_4_46
-direct,Industry - Petrochemical Production - Chemical Industry - Ethylene Oxide,EPA_GHGI_T_4_46
-direct,Industry - Petrochemical Production - Chemical Industry - Methanol,EPA_GHGI_T_4_46
+petrochemicals,Industry - Petrochemical Production - Chemical Industry - Acrylonitrile,EPA_GHGI_T_4_46
+petrochemicals,Industry - Petrochemical Production - Chemical Industry - Carbon Black,EPA_GHGI_T_4_46
+petrochemicals,Industry - Petrochemical Production - Chemical Industry - Ethylene,EPA_GHGI_T_4_46
+petrochemicals,Industry - Petrochemical Production - Chemical Industry - Ethylene Dichloride,EPA_GHGI_T_4_46
+petrochemicals,Industry - Petrochemical Production - Chemical Industry - Ethylene Oxide,EPA_GHGI_T_4_46
+petrochemicals,Industry - Petrochemical Production - Chemical Industry - Methanol,EPA_GHGI_T_4_46
 direct,Industry - Phosphoric Acid Production - Chemical Industry,EPA_GHGI_T_2_1
 direct,Industry - Carbide Production and Consumption - Chemical Industry - Silicon Carbide Production and Consumption,EPA_GHGI_T_2_1
 direct,Industry - Soda Ash Production - Chemical Industry,EPA_GHGI_T_2_1
