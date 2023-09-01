@@ -909,7 +909,7 @@ class _FlowBy(pd.DataFrame):
         other_geoscale = geo.scale.from_string(other.config['geoscale'])
 
         fill_cols = self.config.get('fill_columns')
-        if 'Location' in fill_cols:
+        if fill_cols and 'Location' in fill_cols:
             # Don't harmonize geoscales when updating Location
             pass
         elif other_geoscale < fb_geoscale:
