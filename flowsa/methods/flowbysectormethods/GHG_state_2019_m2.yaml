@@ -40,6 +40,7 @@ source_names:
             - Wastewater Treatment #CH4, N2O
             - Zinc Production #CO2
           FlowName: ["CO2", "CH4", "N2O"] # HFCs and other flows are pulled elsewhere
+
         attribute:
           - attribution_method: direct
           - attribution_method: proportional
@@ -51,3 +52,59 @@ source_names:
                 fedefl_mapping: GHGI
                 selection_fields:
                   PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct
+
+
+## Fossil Fuels
+  EPA_GHGI_T_3_68: &natgas #CH4 from Natural Gas Systems
+    year: *ghg_year
+    geoscale: national
+    fedefl_mapping: GHGI
+    selection_fields:
+      PrimaryActivity:
+        - Distribution
+        - Distribution - Post-Meter
+        - Exploration
+        - Processing
+        - Production
+        - Transmission and Storage
+    attribute:
+      - attribution_method: direct
+      - attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ng_systems
+
+  EPA_GHGI_T_5_17: #Direct N2O emissions from agricultural soils
+    year: *ghg_year
+    geoscale: national
+    fedefl_mapping: GHGI
+    activity_sets:
+      fertilizer_use: &fertilizer # allocated based on fertilizer use
+        selection_fields:
+          PrimaryActivity:
+            - Organic Amendment Cropland
+            - Residue N Cropland
+            - Synthetic Fertilizer Cropland
+        attribute:
+          - attribution_method: proportional
+            attribution_source:
+              BEA_Use_Detail_PRO_BeforeRedef:
+                year: 2012
+                activity_to_sector_mapping: BEA_2012_Detail
+                attribution_method: equal
+                selection_fields:
+                  ActivityProducedBy: {'325310': ''} # Fertilizers
+          - attribution_method: proportional
+            attribute_on: ['Flowable', 'SectorProducedBy']
+            fill_columns: Location
+            attribution_source:
+              EPA_StateGHGI:
+                geoscale: state
+                fedefl_mapping: GHGI
+                selection_fields:
+                  PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv n2o_soil_direct

@@ -1,8 +1,8 @@
 activity_set,name,note
-direct,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Direct - Cropland,EPA_GHGI_T_5_18
-direct,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Direct - Grassland,EPA_GHGI_T_5_18
-direct,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Indirect - Cropland,EPA_GHGI_T_5_19
-direct,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Indirect - Grassland,EPA_GHGI_T_5_19
+n2o_soil_direct,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Direct - Cropland,EPA_GHGI_T_5_18
+n2o_soil_direct,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Direct - Grassland,EPA_GHGI_T_5_18
+n2o_soil,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Indirect - Cropland,EPA_GHGI_T_5_19
+n2o_soil,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Indirect - Grassland,EPA_GHGI_T_5_19
 direct,Agriculture - Enteric Fermentation - American Bison,EPA_GHGI_T_5_3
 direct,Agriculture - Enteric Fermentation - Beef Cattle,EPA_GHGI_T_5_3
 direct,Agriculture - Enteric Fermentation - Dairy Cattle,EPA_GHGI_T_5_3
