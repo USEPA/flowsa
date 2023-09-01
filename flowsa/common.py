@@ -6,6 +6,7 @@
 
 import os
 from os import path
+import re
 import yaml
 import pandas as pd
 import numpy as np
@@ -120,6 +121,18 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
     or FBS files
     :return: dictionary containing all information in yaml
     """
+    # check if the version and githash are included in the filename, if so,
+    # drop, but return warning that we might be loading a revised version of
+    # the config file. The pattern looks for a "_v" followed by a number
+    # between [0-9] followed by a decimal
+    pattern = '_v[0-9].*'
+    if re.search(pattern, filename):
+        log.warning('Filename includes a github version and githash. Dropping '
+                 'the version and hash to load most up-to-date yaml config '
+                 'file. The yaml config file might not reflect the yaml used '
+                 'to generate the dataframe')
+        filename = re.sub(pattern,'', filename)
+
     if filename in ['source_catalog']:
         folder = datapath
     else:
