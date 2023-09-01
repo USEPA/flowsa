@@ -632,7 +632,6 @@ class _FlowBy(pd.DataFrame):
 
         from flowsa.flowbyactivity import FlowByActivity
 
-        validate = True
         # look for the "attribute" key in the FBS yaml, which will exist if
         # there are multiple, non-recursive attribution methods applied to a
         # data source
@@ -647,6 +646,7 @@ class _FlowBy(pd.DataFrame):
             attribute_config = [attribute_config]
 
         for step_config in attribute_config:
+            validate = True
             grouped: 'FB' = (
                 self
                 .reset_index(drop=True).reset_index()
@@ -909,7 +909,7 @@ class _FlowBy(pd.DataFrame):
         other_geoscale = geo.scale.from_string(other.config['geoscale'])
 
         fill_cols = self.config.get('fill_columns')
-        if 'Location' in fill_cols:
+        if fill_cols and 'Location' in fill_cols:
             # Don't harmonize geoscales when updating Location
             pass
         elif other_geoscale < fb_geoscale:
@@ -1062,26 +1062,18 @@ class _FlowBy(pd.DataFrame):
             attribute_cols = self.config.get('attribute_on')
 
             log.info(f'Proportionally attributing on {attribute_cols}')
-
-            # TODO turn off use of Location as merge col temporarily
-            # merged = (
-            #     fb
-            #     .merge(other,
-            #            how='left',
-            #            left_on=attribute_cols + ['temp_location' if
-            #                                      'temp_location' in fb else
-            #                                      'Location'],
-            #            right_on=attribute_cols + ['Location'],
-            #            suffixes=[None, '_other'])
-            #     .fillna({'FlowAmount_other': 0})
-            # )
-
+            left_on = attribute_cols + ['temp_location' if 'temp_location'
+                                        in fb else 'Location']
+            right_on = attribute_cols + ['Location']
+            for l in (left_on, right_on):
+                if 'Location' in self.config.get('fill_columns', []):
+                    l.remove('Location')
             merged = (
                 fb
                 .merge(other,
                        how='left',
-                       left_on=attribute_cols,
-                       right_on=attribute_cols,
+                       left_on=left_on,
+                       right_on=right_on,
                        suffixes=[None, '_other'])
                 .fillna({'FlowAmount_other': 0})
             )
