@@ -1,0 +1,53 @@
+
+
+
+!include:USEEIO_summary_target.yaml
+year: &ghg_year 2019
+geoscale: state
+
+
+source_names:
+  EPA_GHGI_T_2_1: #U.S. GHG emissions
+    year: *ghg_year
+    fedefl_mapping: GHGI
+    geoscale: national
+    activity_sets:
+      direct:
+        selection_fields:
+          PrimaryActivity:
+            - Abandoned Oil and Gas Wells #CH4
+            - Abandoned Underground Coal Mines #CH4
+            - Adipic Acid Production #N2O
+            - Aluminum Production #CO2
+            - Ammonia Production #CO2
+            - Anaerobic Digestion at Biogas Facilities #CH4 new activity
+            - Caprolactam, Glyoxal, and Glyoxylic Acid Production #N2O
+            - Carbide Production and Consumption #CO2, CH4
+            - Cement Production #CO2
+            - Coal Mining #CO2, CH4
+            - Composting #CH4, N2O
+            - Ferroalloy Production #CO2, CH4
+            - Glass Production #CO2
+            - Landfills #CH4
+            - Lime Production #CO2
+            - Incineration of Waste #CO2, #N2O
+            - Iron and Steel Production & Metallurgical Coke Production #CO2, CH4
+            - Nitric Acid Production #N2O
+            - Phosphoric Acid Production #CO2
+            - Rice Cultivation #CH4
+            - Soda Ash Production #CO2
+            - Titanium Dioxide Production #CO2
+            - Wastewater Treatment #CH4, N2O
+            - Zinc Production #CO2
+          FlowName: ["CO2", "CH4", "N2O"] # HFCs and other flows are pulled elsewhere
+        attribute:
+          - attribution_method: direct
+          - attribution_method: proportional
+            attribute_on: ['Flowable', 'SectorProducedBy']
+            fill_columns: Location
+            attribution_source:
+              EPA_StateGHGI:
+                geoscale: state
+                fedefl_mapping: GHGI
+                selection_fields:
+                  PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct
