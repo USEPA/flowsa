@@ -292,7 +292,7 @@ source_names:
   EPA_GHGI_T_3_13: #CO2 from mobile combustion
     fedefl_mapping: GHGI
     activity_sets:
-      direct_attribution:
+      direct_petroleum:
         selection_fields:
           PrimaryActivity:
             General Aviation Aircraft Aviation Gasoline: General Aviation Aircraft
@@ -301,8 +301,6 @@ source_names:
             Military Aircraft Jet Fuel: Military Aircraft
             Buses Gasoline: Buses
             Buses LPG: Buses
-            Buses Natural Gas: Buses
-            Pipeline Natural Gas: Pipeline Natural Gas
             Motorcycles Gasoline: Motorcycles
             Rail Distillate Fuel Oil: Rail
             Recreational Boats Distillate Fuel Oil: Recreational Boats
@@ -314,6 +312,11 @@ source_names:
             Light-Duty Trucks LPG: Light-Duty Trucks - Households
             Passenger Cars LPG: Passenger Cars - Households
         attribution_method: direct
+      direct_ng:
+        selection_fields:
+          PrimaryActivity:
+            Buses Natural Gas: Buses
+            Pipeline Natural Gas: Pipeline Natural Gas
 
       petroleum_fuels:
         selection_fields:

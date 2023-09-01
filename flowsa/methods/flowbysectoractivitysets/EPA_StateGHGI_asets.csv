@@ -90,7 +90,7 @@ exclude,U.S. Territories - CO2 from Fossil Fuel Combustion - Fossil Fuel Combust
 direct,Electric Power Industry - Incineration of Waste - Incineration,EPA_GHGI_T_2_1
 ng_systems,Industry - Natural Gas Systems - Fugitive,EPA_GHGI_T_3_63
 industrial_neu,Industry - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - Industrial,EPA_GHGI_T_A_14
-transport_petroleum,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,
+transport_petroleum-UPDATENAME,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,
 exclude,U.S. Territories - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - US Territories,
 pet_systems,Industry - Petroleum Systems - Fugitive,EPA_GHGI_T_3_38
 use_table_pet,Agriculture - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary,

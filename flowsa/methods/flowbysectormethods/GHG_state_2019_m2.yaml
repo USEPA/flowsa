@@ -174,3 +174,52 @@ source_names:
                 fedefl_mapping: GHGI
                 selection_fields:
                   PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv n2o_soil_direct
+
+## Mobile Sources
+  EPA_GHGI_T_3_13: #CO2 from mobile combustion
+    year: *ghg_year
+    geoscale: national
+    fedefl_mapping: GHGI
+    activity_sets:
+      direct_petroleum:
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_13:activity_sets:direct_petroleum
+        attribute:
+          - attribution_method: direct
+          - attribution_method: proportional
+            attribute_on: ['Flowable', 'SectorProducedBy']
+            fill_columns: Location
+            attribution_source:
+              EPA_StateGHGI:
+                geoscale: state
+                fedefl_mapping: GHGI
+                selection_fields:
+                  PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_petroleum
+      direct_ng:
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_13:activity_sets:direct_ng
+        attribute:
+          - attribution_method: direct
+          - attribution_method: proportional
+            attribute_on: ['Flowable', 'SectorProducedBy']
+            fill_columns: Location
+            attribution_source:
+              EPA_StateGHGI:
+                geoscale: state
+                fedefl_mapping: GHGI
+                selection_fields:
+                  PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_ng
+
+      petroleum_fuels:
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_13:activity_sets:petroleum_fuels
+        attribute:
+          - attribution_method: proportional
+            attribution_source:
+              !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_13:activity_sets:petroleum_fuels:attribution_source
+          - attribution_method: proportional
+            attribute_on: ['Flowable', 'SectorProducedBy']
+            fill_columns: Location
+            attribution_source:
+              EPA_StateGHGI:
+                geoscale: state
+                fedefl_mapping: GHGI
+                selection_fields:
+                  PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_petroleum
