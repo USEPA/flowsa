@@ -632,7 +632,6 @@ class _FlowBy(pd.DataFrame):
 
         from flowsa.flowbyactivity import FlowByActivity
 
-        validate = True
         # look for the "attribute" key in the FBS yaml, which will exist if
         # there are multiple, non-recursive attribution methods applied to a
         # data source
@@ -647,6 +646,7 @@ class _FlowBy(pd.DataFrame):
             attribute_config = [attribute_config]
 
         for step_config in attribute_config:
+            validate = True
             grouped: 'FB' = (
                 self
                 .reset_index(drop=True).reset_index()
