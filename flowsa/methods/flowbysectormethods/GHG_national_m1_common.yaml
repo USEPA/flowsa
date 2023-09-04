@@ -349,15 +349,25 @@ source_names:
             Medium- and Heavy-Duty Trucks and Buses Gasoline On-Road: Medium- and Heavy-Duty Trucks and Buses
         attribution_method: direct
 
-      petroleum_fuels:
+      petroleum_fuels_diesel:
         selection_fields:
           PrimaryActivity:
-            Passenger Cars Gasoline On-Road: Passenger Cars
             Passenger Cars Diesel On-Road: Passenger Cars
-            Light-Duty Trucks Gasoline On-Road: Light-Duty Trucks
             Light-Duty Trucks Diesel On-Road: Light-Duty Trucks
             Medium- and Heavy-Duty Buses Diesel On-Road: Buses - Distillate Fuel Oil
             Medium- and Heavy-Duty Trucks Diesel On-Road: Medium- and Heavy-Duty Trucks - Distillate Fuel Oil
+        attribution_method: proportional
+        attribution_source:
+          BEA_Use_Detail_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'324110': ''} # purchases of refinery products
+
+      petroleum_fuels_gasoline:
+        selection_fields:
+          PrimaryActivity:
+            Passenger Cars Gasoline On-Road: Passenger Cars
+            Light-Duty Trucks Gasoline On-Road: Light-Duty Trucks
         attribution_method: proportional
         attribution_source:
           BEA_Use_Detail_PRO_BeforeRedef:

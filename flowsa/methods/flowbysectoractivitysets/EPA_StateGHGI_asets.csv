@@ -1,8 +1,8 @@
 activity_set,name,note
-n2o_soil_direct,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Direct - Cropland,EPA_GHGI_T_5_18
-n2o_soil_direct,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Direct - Grassland,EPA_GHGI_T_5_18
-n2o_soil,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Indirect - Cropland,EPA_GHGI_T_5_19
-n2o_soil,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Indirect - Grassland,EPA_GHGI_T_5_19
+n2o_soil_direct,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Direct - Cropland,EPA_GHGI_T_5_17
+n2o_soil_direct,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Direct - Grassland,EPA_GHGI_T_5_17
+n2o_soil_indirect,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Indirect - Cropland,EPA_GHGI_T_5_18
+n2o_soil_indirect,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Indirect - Grassland,EPA_GHGI_T_5_18
 ag_livestock,Agriculture - Enteric Fermentation - American Bison,EPA_GHGI_T_5_3
 ag_livestock,Agriculture - Enteric Fermentation - Beef Cattle,EPA_GHGI_T_5_3
 ag_livestock,Agriculture - Enteric Fermentation - Dairy Cattle,EPA_GHGI_T_5_3
@@ -57,7 +57,7 @@ direct,Industry - Coal Mining - Fugitive - Post-Mining (Underground),EPA_GHGI_T_
 direct,Industry - Coal Mining - Fugitive - Surface Mining,EPA_GHGI_T_2_1
 direct,Industry - Coal Mining - Fugitive - Underground Liberated,EPA_GHGI_T_2_1
 direct,Industry - Coal Mining - Fugitive - Underground Recovered &Used For Energy,EPA_GHGI_T_2_1
-commercial_ch4_n2o,Commercial - Stationary Combustion - Fossil Fuel Combustion,
+ind_com_ch4_n2o,Commercial - Stationary Combustion - Fossil Fuel Combustion,
 use_table_coal,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,EPA_GHGI_T_A_14
 use_table_gas,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,EPA_GHGI_T_A_14
 use_table_pet,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,EPA_GHGI_T_A_14
@@ -66,7 +66,7 @@ electric_power,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossi
 electric_power,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Geothermal,
 electric_power,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Natural Gas,
 electric_power,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Petroleum,
-industrial_ch4_n2o,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial,
+ind_com_ch4_n2o,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial,
 use_table_coal,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal,
 use_table_gas,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas,
 use_table_pet,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum,EPA_GHGI_T_A_14
@@ -143,11 +143,11 @@ direct,Industry - Landfills - Industrial - Landfills - Industrial Landfill - Ind
 direct,Commercial - Landfills - Municipal - Landfills - MSW Landfill - MSW Landfills Net Emissions,EPA_GHGI_T_2_1
 direct,Industry - Wastewater Treatment - Wastewater Treatment and Discharge - Industrial,EPA_GHGI_T_2_1
 direct,Commercial - Wastewater Treatment - Wastewater Treatment and Discharge - Domestic,EPA_GHGI_T_2_1
-transport_machinery,Agriculture - Mobile Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,EPA_GHGI_T_3_14
+transport_nonroad,Agriculture - Mobile Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,EPA_GHGI_T_3_14
 use_table_pet,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment,negative emissions; align with 'Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum' to avoid double counting
-transport_machinery,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,EPA_GHGI_T_3_13
-transport_machinery,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Construction,EPA_GHGI_T_3_14
+transport_nonroad,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,EPA_GHGI_T_3_13
+transport_nonroad,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Construction,EPA_GHGI_T_3_14
 direct,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry,
 transport_nonroad,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,
-industrial_ch4_n2o,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary,negative emissions; align with 'Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial' to avoid double counting
+ind_com_ch4_n2o,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary,negative emissions; align with 'Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial' to avoid double counting
 nitrous_oxide_use,Industry - N2O from Product Uses - Other product manufacture and use,EPA_GHGI_T_2_1
