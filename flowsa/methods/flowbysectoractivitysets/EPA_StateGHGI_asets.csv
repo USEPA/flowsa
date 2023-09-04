@@ -3,48 +3,48 @@ n2o_soil_direct,Agriculture - N2O from Agricultural Soil Management - Agricultur
 n2o_soil_direct,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Direct - Grassland,EPA_GHGI_T_5_18
 n2o_soil,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Indirect - Cropland,EPA_GHGI_T_5_19
 n2o_soil,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Indirect - Grassland,EPA_GHGI_T_5_19
-direct,Agriculture - Enteric Fermentation - American Bison,EPA_GHGI_T_5_3
-direct,Agriculture - Enteric Fermentation - Beef Cattle,EPA_GHGI_T_5_3
-direct,Agriculture - Enteric Fermentation - Dairy Cattle,EPA_GHGI_T_5_3
-direct,Agriculture - Enteric Fermentation - Goats,EPA_GHGI_T_5_3
-direct,Agriculture - Enteric Fermentation - Horses,EPA_GHGI_T_5_3
-direct,Agriculture - Enteric Fermentation - Mules and Asses,EPA_GHGI_T_5_3
-direct,Agriculture - Enteric Fermentation - Sheep,EPA_GHGI_T_5_3
-direct,Agriculture - Enteric Fermentation - Swine,EPA_GHGI_T_5_3
-direct,Agriculture - Field Burning of Agricultural Residues - Barley,EPA_GHGI_T_5_29
-direct,Agriculture - Field Burning of Agricultural Residues - Chickpeas,EPA_GHGI_T_5_29
-direct,Agriculture - Field Burning of Agricultural Residues - Cotton,EPA_GHGI_T_5_29
-direct,Agriculture - Field Burning of Agricultural Residues - Dry Beans,EPA_GHGI_T_5_29
-direct,Agriculture - Field Burning of Agricultural Residues - Grass Hay,EPA_GHGI_T_5_29
-direct,Agriculture - Field Burning of Agricultural Residues - Legume Hay,EPA_GHGI_T_5_29
-direct,Agriculture - Field Burning of Agricultural Residues - Lentils,EPA_GHGI_T_5_29
-direct,Agriculture - Field Burning of Agricultural Residues - Maize,EPA_GHGI_T_5_29
-direct,Agriculture - Field Burning of Agricultural Residues - Oats,EPA_GHGI_T_5_29
-direct,Agriculture - Field Burning of Agricultural Residues - Other Small Grains,EPA_GHGI_T_5_29
-direct,Agriculture - Field Burning of Agricultural Residues - Peanuts,EPA_GHGI_T_5_29
-direct,Agriculture - Field Burning of Agricultural Residues - Peas,EPA_GHGI_T_5_29
-direct,Agriculture - Field Burning of Agricultural Residues - Potatoes,EPA_GHGI_T_5_29
-direct,Agriculture - Field Burning of Agricultural Residues - Rice,EPA_GHGI_T_5_29
-direct,Agriculture - Field Burning of Agricultural Residues - Sorghum,EPA_GHGI_T_5_29
-direct,Agriculture - Field Burning of Agricultural Residues - Soybeans,EPA_GHGI_T_5_29
-direct,Agriculture - Field Burning of Agricultural Residues - Sugarbeets,EPA_GHGI_T_5_29
-direct,Agriculture - Field Burning of Agricultural Residues - Sunflower,EPA_GHGI_T_5_29
-direct,Agriculture - Field Burning of Agricultural Residues - Tobacco,EPA_GHGI_T_5_29
-direct,Agriculture - Field Burning of Agricultural Residues - Vegetables,EPA_GHGI_T_5_29
-direct,Agriculture - Field Burning of Agricultural Residues - Wheat,EPA_GHGI_T_5_29
+ag_livestock,Agriculture - Enteric Fermentation - American Bison,EPA_GHGI_T_5_3
+ag_livestock,Agriculture - Enteric Fermentation - Beef Cattle,EPA_GHGI_T_5_3
+ag_livestock,Agriculture - Enteric Fermentation - Dairy Cattle,EPA_GHGI_T_5_3
+ag_livestock,Agriculture - Enteric Fermentation - Goats,EPA_GHGI_T_5_3
+ag_livestock,Agriculture - Enteric Fermentation - Horses,EPA_GHGI_T_5_3
+ag_livestock,Agriculture - Enteric Fermentation - Mules and Asses,EPA_GHGI_T_5_3
+ag_livestock,Agriculture - Enteric Fermentation - Sheep,EPA_GHGI_T_5_3
+ag_livestock,Agriculture - Enteric Fermentation - Swine,EPA_GHGI_T_5_3
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Barley,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Chickpeas,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Cotton,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Dry Beans,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Grass Hay,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Legume Hay,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Lentils,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Maize,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Oats,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Other Small Grains,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Peanuts,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Peas,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Potatoes,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Rice,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Sorghum,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Soybeans,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Sugarbeets,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Sunflower,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Tobacco,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Vegetables,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Wheat,EPA_GHGI_T_5_29
 liming,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Dolomite",EPA_GHGI_T_2_1
 liming,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Limestone",EPA_GHGI_T_2_1
-direct,Agriculture - Manure Management - American Bison,EPA_GHGI_T_2_1
-direct,Agriculture - Manure Management - Beef Cattle,EPA_GHGI_T_5_7
-direct,Agriculture - Manure Management - Bison,EPA_GHGI_T_5_7
-direct,Agriculture - Manure Management - Dairy Cattle,EPA_GHGI_T_5_7
-direct,Agriculture - Manure Management - Dairy Heifers,EPA_GHGI_T_5_7
-direct,Agriculture - Manure Management - Goats,EPA_GHGI_T_5_7
-direct,Agriculture - Manure Management - Horses,EPA_GHGI_T_5_7
-direct,Agriculture - Manure Management - Mules and Asses,EPA_GHGI_T_5_7
-direct,Agriculture - Manure Management - Poultry,EPA_GHGI_T_5_7
-direct,Agriculture - Manure Management - Sheep,EPA_GHGI_T_5_7
-direct,Agriculture - Manure Management - Swine,EPA_GHGI_T_5_7
+ag_livestock,Agriculture - Manure Management - American Bison,EPA_GHGI_T_2_1
+ag_livestock,Agriculture - Manure Management - Beef Cattle,EPA_GHGI_T_5_7
+ag_livestock,Agriculture - Manure Management - Bison,EPA_GHGI_T_5_7
+ag_livestock,Agriculture - Manure Management - Dairy Cattle,EPA_GHGI_T_5_7
+ag_livestock,Agriculture - Manure Management - Dairy Heifers,EPA_GHGI_T_5_7
+ag_livestock,Agriculture - Manure Management - Goats,EPA_GHGI_T_5_7
+ag_livestock,Agriculture - Manure Management - Horses,EPA_GHGI_T_5_7
+ag_livestock,Agriculture - Manure Management - Mules and Asses,EPA_GHGI_T_5_7
+ag_livestock,Agriculture - Manure Management - Poultry,EPA_GHGI_T_5_7
+ag_livestock,Agriculture - Manure Management - Sheep,EPA_GHGI_T_5_7
+ag_livestock,Agriculture - Manure Management - Swine,EPA_GHGI_T_5_7
 direct,Agriculture - Rice Cultivation,EPA_GHGI_T_2_1
 urea,"Agriculture - Urea Fertilization - CO2 emissions from liming, urea application and other carbon-containing fertilizers",EPA_GHGI_T_2_1
 direct,Industry - Abandoned Oil and Gas Wells - Fugitive - Abandoned Wells,
@@ -136,7 +136,7 @@ direct,Industry - Lime Production - Mineral Industry - Lime Manufacture,EPA_GHGI
 carbonate_use,Industry - Other Process Uses of Carbonates - Mineral Industry,EPA_GHGI_T_2_1
 electricity_transmission,Electric Power Industry - Electrical Transmission and Distribution - Other product manufacture and use - Electric Power Systems,
 electricity_transmission,Electric Power Industry - Electrical Transmission and Distribution - Other product manufacture and use - Equipment OEM,
-direct,Industry - HCFC-22 Production - Production and Use of Fluorinated Gases,EPA_GHGI_T_4_50
+hcfc,Industry - HCFC-22 Production - Production and Use of Fluorinated Gases,EPA_GHGI_T_4_50
 direct,Commercial - Composting,EPA_GHGI_T_2_1
 direct,Commercial - Anaerobic Digestion at Biogas Facility - Anaerobic Digestion at Biogas Facilities,EPA_GHGI_T_2_1
 direct,Industry - Landfills - Industrial - Landfills - Industrial Landfill - Industrial Waste Landfills Net Emissions,EPA_GHGI_T_2_1

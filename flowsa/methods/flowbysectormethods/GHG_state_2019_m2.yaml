@@ -8,12 +8,46 @@ geoscale: state
 
 
 source_names:
+## Directly sourced from State Inventory
+  EPA_StateGHGI:
+    geoscale: state
+    year: *ghg_year
+    fedefl_mapping: GHGI
+    activity_sets:
+      electricity_transmission: #SF6
+      # replicates electricity_transmission from EPA_GHGI_T_2_1
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv electricity_transmission
+        attribution_method: direct
+      petrochemicals: #CO2 for selected petrochemicals
+      # replicates EPA_GHGI_T_4_46
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv petrochemicals
+        attribution_method: direct
+      ag_livestock: #CH4 from Enteric Fermentation, CH4, N2O from manure
+      # replicates EPA_GHGI_T_5_3 and EPA_GHGI_T_5_6
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ag_livestock
+        attribution_method: direct
+      ag_burning: #CH4, N2O, CO and NOx from field burning of residue
+      # replicates EPA_GHGI_T_5_28
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ag_burning
+        attribution_method: direct
+      hcfc: # HFCs from HCFC-22 production
+      # replicates EPA_GHGI_T_4_50
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv hcfc
+        attribution_method: direct
+
+
   EPA_GHGI_T_2_1: #U.S. GHG emissions
     year: *ghg_year
     fedefl_mapping: GHGI
     geoscale: national
     activity_sets:
       direct:
+        ## TODO review these for possible direct attribution from StateGHGI
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:direct
         attribute:
           - attribution_method: direct
@@ -26,20 +60,6 @@ source_names:
                 fedefl_mapping: GHGI
                 selection_fields:
                   PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct
-
-      electricity_transmission:
-        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:electricity_transmission
-        attribute:
-          - attribution_method: direct
-          - attribution_method: proportional
-            attribute_on: ['Flowable', 'SectorProducedBy']
-            fill_columns: Location
-            attribution_source:
-              EPA_StateGHGI:
-                geoscale: state
-                fedefl_mapping: GHGI
-                selection_fields:
-                  PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv electricity_transmission
 
       electric_power:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:electric_power
@@ -136,7 +156,6 @@ source_names:
                 fedefl_mapping: GHGI
                 selection_fields:
                   PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv nitrous_oxide_use
-
 
 ## Fossil Fuels
   EPA_GHGI_T_3_68: &natgas #CH4 from Natural Gas Systems
@@ -357,21 +376,5 @@ source_names:
                 selection_fields:
                   PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_pet
 
-## Other sources
-  EPA_GHGI_T_4_46: #CO2 for selected petrochemicals
-    # TODO update this to use separate activity sets for each source
 
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_46
-    year: *ghg_year
-    geoscale: national
-    attribute:
-      - attribution_method: direct
-      - attribution_method: proportional
-        attribute_on: ['Flowable', 'SectorProducedBy']
-        fill_columns: Location
-        attribution_source:
-          EPA_StateGHGI:
-            geoscale: state
-            fedefl_mapping: GHGI
-            selection_fields:
-              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv petrochemicals
+

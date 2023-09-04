@@ -3,50 +3,50 @@ EPA_State_GHGI,Agriculture - N2O from Agricultural Soil Management - Agricultura
 EPA_State_GHGI,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Direct - Grassland,NAICS_2012_Code,112,,direct
 EPA_State_GHGI,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Indirect - Cropland,NAICS_2012_Code,111,,direct
 EPA_State_GHGI,Agriculture - N2O from Agricultural Soil Management - Agricultural Soil Management - Indirect - Grassland,NAICS_2012_Code,112,,direct
-EPA_State_GHGI,Agriculture - Enteric Fermentation - American Bison,NAICS_2012_Code,1129,,direct
-EPA_State_GHGI,Agriculture - Enteric Fermentation - Beef Cattle,NAICS_2012_Code,1121,,direct
-EPA_State_GHGI,Agriculture - Enteric Fermentation - Dairy Cattle,NAICS_2012_Code,1121,,direct
-EPA_State_GHGI,Agriculture - Enteric Fermentation - Goats,NAICS_2012_Code,1124,,direct
-EPA_State_GHGI,Agriculture - Enteric Fermentation - Horses,NAICS_2012_Code,1129,,direct
-EPA_State_GHGI,Agriculture - Enteric Fermentation - Mules and Asses,NAICS_2012_Code,1129,,direct
-EPA_State_GHGI,Agriculture - Enteric Fermentation - Sheep,NAICS_2012_Code,1124,,direct
-EPA_State_GHGI,Agriculture - Enteric Fermentation - Swine,NAICS_2012_Code,1122,,direct
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Barley,NAICS_2012_Code,111199,,revise WI
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Chickpeas,NAICS_2012_Code,111130,,revise WI
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Cotton,NAICS_2012_Code,11192,,revise WI
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Dry Beans,NAICS_2012_Code,111130,,revise WI
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Grass Hay,NAICS_2012_Code,11194,,revise WI
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Legume Hay,NAICS_2012_Code,11194,,revise WI
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Lentils,NAICS_2012_Code,111130,,revise WI
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Maize,NAICS_2012_Code,111150,,revise WI
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Oats,NAICS_2012_Code,111199,,revise WI
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Other Small Grains,NAICS_2012_Code,111199,,revise WI
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Peanuts,NAICS_2012_Code,111992,,revise WI
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Peas,NAICS_2012_Code,111130,,revise WI
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Potatoes,NAICS_2012_Code,111211,,revise WI
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Rice,NAICS_2012_Code,11116,,revise WI
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Sorghum,NAICS_2012_Code,111199,,revise WI
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Soybeans,NAICS_2012_Code,11111,,revise WI
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Sugarbeets,NAICS_2012_Code,111991,,revise WI
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Sunflower,NAICS_2012_Code,111120,,revise WI
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Tobacco,NAICS_2012_Code,11191,,revise WI
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Vegetables,NAICS_2012_Code,111219,,revise WI
-EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Wheat,NAICS_2012_Code,11114,,revise WI
-EPA_State_GHGI,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Dolomite",NAICS_2012_Code,111,,use_table_chem
-EPA_State_GHGI,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Dolomite",NAICS_2012_Code,112,,use_table_chem
-EPA_State_GHGI,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Limestone",NAICS_2012_Code,111,,use_table_chem
-EPA_State_GHGI,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Limestone",NAICS_2012_Code,112,,use_table_chem
-EPA_State_GHGI,Agriculture - Manure Management - American Bison,NAICS_2012_Code,112990B,,direct
-EPA_State_GHGI,Agriculture - Manure Management - Beef Cattle,NAICS_2012_Code,11211,,direct
-EPA_State_GHGI,Agriculture - Manure Management - Bison,NAICS_2012_Code,112990B,,direct
-EPA_State_GHGI,Agriculture - Manure Management - Dairy Cattle,NAICS_2012_Code,11212,,direct
-EPA_State_GHGI,Agriculture - Manure Management - Dairy Heifers,NAICS_2012_Code,11212,,direct
-EPA_State_GHGI,Agriculture - Manure Management - Goats,NAICS_2012_Code,11242,,direct
-EPA_State_GHGI,Agriculture - Manure Management - Horses,NAICS_2012_Code,112920A,,direct
-EPA_State_GHGI,Agriculture - Manure Management - Mules and Asses,NAICS_2012_Code,112920B,,direct
-EPA_State_GHGI,Agriculture - Manure Management - Poultry,NAICS_2012_Code,1123,,direct
-EPA_State_GHGI,Agriculture - Manure Management - Sheep,NAICS_2012_Code,11241,,direct
-EPA_State_GHGI,Agriculture - Manure Management - Swine,NAICS_2012_Code,1122,,direct
+EPA_State_GHGI,Agriculture - Enteric Fermentation - American Bison,NAICS_2012_Code,1129,,ag_livestock
+EPA_State_GHGI,Agriculture - Enteric Fermentation - Beef Cattle,NAICS_2012_Code,1121,,ag_livestock
+EPA_State_GHGI,Agriculture - Enteric Fermentation - Dairy Cattle,NAICS_2012_Code,1121,,ag_livestock
+EPA_State_GHGI,Agriculture - Enteric Fermentation - Goats,NAICS_2012_Code,1124,,ag_livestock
+EPA_State_GHGI,Agriculture - Enteric Fermentation - Horses,NAICS_2012_Code,1129,,ag_livestock
+EPA_State_GHGI,Agriculture - Enteric Fermentation - Mules and Asses,NAICS_2012_Code,1129,,ag_livestock
+EPA_State_GHGI,Agriculture - Enteric Fermentation - Sheep,NAICS_2012_Code,1124,,ag_livestock
+EPA_State_GHGI,Agriculture - Enteric Fermentation - Swine,NAICS_2012_Code,1122,,ag_livestock
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Barley,NAICS_2012_Code,111199,,ag_burning
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Chickpeas,NAICS_2012_Code,111130,,ag_burning
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Cotton,NAICS_2012_Code,11192,,ag_burning
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Dry Beans,NAICS_2012_Code,111130,,ag_burning
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Grass Hay,NAICS_2012_Code,11194,,ag_burning
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Legume Hay,NAICS_2012_Code,11194,,ag_burning
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Lentils,NAICS_2012_Code,111130,,ag_burning
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Maize,NAICS_2012_Code,111150,,ag_burning
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Oats,NAICS_2012_Code,111199,,ag_burning
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Other Small Grains,NAICS_2012_Code,111199,,ag_burning
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Peanuts,NAICS_2012_Code,111992,,ag_burning
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Peas,NAICS_2012_Code,111130,,ag_burning
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Potatoes,NAICS_2012_Code,111211,,ag_burning
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Rice,NAICS_2012_Code,11116,,ag_burning
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Sorghum,NAICS_2012_Code,111199,,ag_burning
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Soybeans,NAICS_2012_Code,11111,,ag_burning
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Sugarbeets,NAICS_2012_Code,111991,,ag_burning
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Sunflower,NAICS_2012_Code,111120,,ag_burning
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Tobacco,NAICS_2012_Code,11191,,ag_burning
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Vegetables,NAICS_2012_Code,111219,,ag_burning
+EPA_State_GHGI,Agriculture - Field Burning of Agricultural Residues - Wheat,NAICS_2012_Code,11114,,ag_burning
+EPA_State_GHGI,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Dolomite",NAICS_2012_Code,111,,liming
+EPA_State_GHGI,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Dolomite",NAICS_2012_Code,112,,liming
+EPA_State_GHGI,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Limestone",NAICS_2012_Code,111,,liming
+EPA_State_GHGI,"Agriculture - Liming - CO2 emissions from liming, urea application and other carbon-containing fertilizers - Limestone",NAICS_2012_Code,112,,liming
+EPA_State_GHGI,Agriculture - Manure Management - American Bison,NAICS_2012_Code,112990B,,ag_livestock
+EPA_State_GHGI,Agriculture - Manure Management - Beef Cattle,NAICS_2012_Code,11211,,ag_livestock
+EPA_State_GHGI,Agriculture - Manure Management - Bison,NAICS_2012_Code,112990B,,ag_livestock
+EPA_State_GHGI,Agriculture - Manure Management - Dairy Cattle,NAICS_2012_Code,11212,,ag_livestock
+EPA_State_GHGI,Agriculture - Manure Management - Dairy Heifers,NAICS_2012_Code,11212,,ag_livestock
+EPA_State_GHGI,Agriculture - Manure Management - Goats,NAICS_2012_Code,11242,,ag_livestock
+EPA_State_GHGI,Agriculture - Manure Management - Horses,NAICS_2012_Code,112920A,,ag_livestock
+EPA_State_GHGI,Agriculture - Manure Management - Mules and Asses,NAICS_2012_Code,112920B,,ag_livestock
+EPA_State_GHGI,Agriculture - Manure Management - Poultry,NAICS_2012_Code,1123,,ag_livestock
+EPA_State_GHGI,Agriculture - Manure Management - Sheep,NAICS_2012_Code,11241,,ag_livestock
+EPA_State_GHGI,Agriculture - Manure Management - Swine,NAICS_2012_Code,1122,,ag_livestock
 EPA_State_GHGI,Agriculture - Rice Cultivation,NAICS_2012_Code,1111,,direct
 EPA_State_GHGI,"Agriculture - Urea Fertilization - CO2 emissions from liming, urea application and other carbon-containing fertilizers",NAICS_2012_Code,111,,ag
 EPA_State_GHGI,"Agriculture - Urea Fertilization - CO2 emissions from liming, urea application and other carbon-containing fertilizers",NAICS_2012_Code,112,,ag
@@ -124,21 +124,21 @@ EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combus
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,NAICS_2012_Code,72,,use_table_pet
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,NAICS_2012_Code,81,,use_table_pet
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,NAICS_2012_Code,923,,use_table_pet
-EPA_State_GHGI,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,NAICS_2012_Code,2211,,make_table_elec
-EPA_State_GHGI,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,NAICS_2012_Code,S00101,,make_table_elec
-EPA_State_GHGI,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,NAICS_2012_Code,S00202,,make_table_elec
-EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Coal,NAICS_2012_Code,2211,,make_table_elec
-EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Coal,NAICS_2012_Code,S00101,,make_table_elec
-EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Coal,NAICS_2012_Code,S00202,,make_table_elec
-EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Geothermal,NAICS_2012_Code,2211,,make_table_elec
-EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Geothermal,NAICS_2012_Code,S00101,,make_table_elec
-EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Geothermal,NAICS_2012_Code,S00202,,make_table_elec
-EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Natural Gas,NAICS_2012_Code,2211,,make_table_elec
-EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Natural Gas,NAICS_2012_Code,S00101,,make_table_elec
-EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Natural Gas,NAICS_2012_Code,S00202,,make_table_elec
-EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Petroleum,NAICS_2012_Code,2211,,make_table_elec
-EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Petroleum,NAICS_2012_Code,S00101,,make_table_elec
-EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Petroleum,NAICS_2012_Code,S00202,,make_table_elec
+EPA_State_GHGI,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,NAICS_2012_Code,2211,,electric_power
+EPA_State_GHGI,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,NAICS_2012_Code,S00101,,electric_power
+EPA_State_GHGI,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,NAICS_2012_Code,S00202,,electric_power
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Coal,NAICS_2012_Code,2211,,electric_power
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Coal,NAICS_2012_Code,S00101,,electric_power
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Coal,NAICS_2012_Code,S00202,,electric_power
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Geothermal,NAICS_2012_Code,2211,,electric_power
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Geothermal,NAICS_2012_Code,S00101,,electric_power
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Geothermal,NAICS_2012_Code,S00202,,electric_power
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Natural Gas,NAICS_2012_Code,2211,,electric_power
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Natural Gas,NAICS_2012_Code,S00101,,electric_power
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Natural Gas,NAICS_2012_Code,S00202,,electric_power
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Petroleum,NAICS_2012_Code,2211,,electric_power
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Petroleum,NAICS_2012_Code,S00101,,electric_power
+EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Petroleum,NAICS_2012_Code,S00202,,electric_power
 EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial,NAICS_2012_Code,31,,industrial_ch4_n2o
 EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial,NAICS_2012_Code,32,,industrial_ch4_n2o
 EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial,NAICS_2012_Code,33,,industrial_ch4_n2o
@@ -243,12 +243,12 @@ EPA_State_GHGI,Industry - Adipic Acid Production - Chemical Industry,NAICS_2012_
 EPA_State_GHGI,Industry - Ammonia Production - Chemical Industry,NAICS_2012_Code,3313,,direct
 EPA_State_GHGI,"Industry - Caprolactam, Glyoxal,and Glyoxylic Acid Production - Chemical Industry - Caprolactam Production",NAICS_2012_Code,3251,,direct
 EPA_State_GHGI,Industry - Nitric Acid Production - Chemical Industry,NAICS_2012_Code,3253,,direct
-EPA_State_GHGI,Industry - Petrochemical Production - Chemical Industry - Acrylonitrile,NAICS_2012_Code,3251,,direct
-EPA_State_GHGI,Industry - Petrochemical Production - Chemical Industry - Carbon Black,NAICS_2012_Code,3251,,direct
-EPA_State_GHGI,Industry - Petrochemical Production - Chemical Industry - Ethylene,NAICS_2012_Code,3241,,direct
-EPA_State_GHGI,Industry - Petrochemical Production - Chemical Industry - Ethylene Dichloride,NAICS_2012_Code,3251,,direct
-EPA_State_GHGI,Industry - Petrochemical Production - Chemical Industry - Ethylene Oxide,NAICS_2012_Code,3251,,direct
-EPA_State_GHGI,Industry - Petrochemical Production - Chemical Industry - Methanol,NAICS_2012_Code,3251,,direct
+EPA_State_GHGI,Industry - Petrochemical Production - Chemical Industry - Acrylonitrile,NAICS_2012_Code,3251,,petrochemicals
+EPA_State_GHGI,Industry - Petrochemical Production - Chemical Industry - Carbon Black,NAICS_2012_Code,3251,,petrochemicals
+EPA_State_GHGI,Industry - Petrochemical Production - Chemical Industry - Ethylene,NAICS_2012_Code,3241,,petrochemicals
+EPA_State_GHGI,Industry - Petrochemical Production - Chemical Industry - Ethylene Dichloride,NAICS_2012_Code,3251,,petrochemicals
+EPA_State_GHGI,Industry - Petrochemical Production - Chemical Industry - Ethylene Oxide,NAICS_2012_Code,3251,,petrochemicals
+EPA_State_GHGI,Industry - Petrochemical Production - Chemical Industry - Methanol,NAICS_2012_Code,3251,,petrochemicals
 EPA_State_GHGI,Industry - Phosphoric Acid Production - Chemical Industry,NAICS_2012_Code,3253,,direct
 EPA_State_GHGI,Industry - Carbide Production and Consumption - Chemical Industry - Silicon Carbide Production and Consumption,NAICS_2012_Code,3251,,direct
 EPA_State_GHGI,Industry - Soda Ash Production - Chemical Industry,NAICS_2012_Code,3251,,direct
@@ -278,9 +278,9 @@ EPA_State_GHGI,Industry - Lime Production - Mineral Industry - Lime Manufacture,
 EPA_State_GHGI,Industry - Other Process Uses of Carbonates - Mineral Industry,NAICS_2012_Code,31,,use_table_chem
 EPA_State_GHGI,Industry - Other Process Uses of Carbonates - Mineral Industry,NAICS_2012_Code,32,,use_table_chem
 EPA_State_GHGI,Industry - Other Process Uses of Carbonates - Mineral Industry,NAICS_2012_Code,33,,use_table_chem
-EPA_State_GHGI,Electric Power Industry - Electrical Transmission and Distribution - Other product manufacture and use - Electric Power Systems,NAICS_2012_Code,22112,,direct
-EPA_State_GHGI,Electric Power Industry - Electrical Transmission and Distribution - Other product manufacture and use - Equipment OEM,NAICS_2012_Code,22112,,direct
-EPA_State_GHGI,Industry - HCFC-22 Production - Production and Use of Fluorinated Gases,NAICS_2012_Code,325120,,direct
+EPA_State_GHGI,Electric Power Industry - Electrical Transmission and Distribution - Other product manufacture and use - Electric Power Systems,NAICS_2012_Code,22112,,electricity_transmission
+EPA_State_GHGI,Electric Power Industry - Electrical Transmission and Distribution - Other product manufacture and use - Equipment OEM,NAICS_2012_Code,22112,,electricity_transmission
+EPA_State_GHGI,Industry - HCFC-22 Production - Production and Use of Fluorinated Gases,NAICS_2012_Code,325120,,hcfc
 EPA_State_GHGI,Commercial - Composting,NAICS_2012_Code,562219,,direct
 EPA_State_GHGI,Commercial - Anaerobic Digestion at Biogas Facility - Anaerobic Digestion at Biogas Facilities,NAICS_2012_Code,5622,,direct
 EPA_State_GHGI,Industry - Landfills - Industrial - Landfills - Industrial Landfill - Industrial Waste Landfills Net Emissions,NAICS_2012_Code,562212,,direct
