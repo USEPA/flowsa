@@ -13,6 +13,21 @@ source_names:
     year: *ghg_year
     fedefl_mapping: GHGI
     activity_sets:
+      direct:
+      # replicates direct attribution from EPA_GHGI_T_2_1, EPA_GHGI_T_4_80,
+      # and EPA_GHGI_T_4_96
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct
+        attribution_method: direct
+      direct_ods:
+      # replicates direct attribution from EPA_GHGI_T_4_102.households
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct_ods
+        clean_fba_before_mapping: !script_function:EPA_GHGI split_HFCs_by_type
+        clean_parameter:
+            # Proportions of specific HFCs are assigned based on national total
+            flow_fba: EPA_GHGI_T_4_100
+        attribution_method: direct
       electricity_transmission: #SF6
       # replicates electricity_transmission from EPA_GHGI_T_2_1
         selection_fields:
@@ -48,18 +63,6 @@ source_names:
     data_format: FBS
     geoscale: national
     activity_sets:
-      direct:
-        selection_fields:
-          MetaSources: 'EPA_GHGI_T_2_1.direct'
-        attribution_method: proportional
-        attribute_on: ['Flowable', 'SectorProducedBy']
-        fill_columns: Location
-        attribution_source:
-          EPA_StateGHGI:
-            geoscale: state
-            fedefl_mapping: GHGI
-            selection_fields:
-              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct
 
       electric_power:
         selection_fields:
@@ -114,8 +117,6 @@ source_names:
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv carbonate_use
 
-
-
       lead:
         selection_fields:
           MetaSources: 'EPA_GHGI_T_2_1.lead'
@@ -128,8 +129,6 @@ source_names:
             fedefl_mapping: GHGI
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv lead
-
-
 
       nitrous_oxide_use:
         selection_fields:
@@ -145,8 +144,7 @@ source_names:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv nitrous_oxide_use
 
 
-
-      EPA_GHGI_T_3_68:
+      ng_systems:
         selection_fields:
           MetaSources:
             - 'EPA_GHGI_T_3_68'
@@ -162,8 +160,7 @@ source_names:
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ng_systems
 
-
-      EPA_GHGI_T_3_42:
+      pet_systems:
         selection_fields:
           MetaSources:
             - 'EPA_GHGI_T_3_42'
@@ -180,7 +177,7 @@ source_names:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv pet_systems
 
 ## Agriculture
-      direct_n2o:
+      n2o_soil_direct:
         selection_fields:
           MetaSources:
             - 'EPA_GHGI_T_5_17.fertilizer_use'
@@ -196,7 +193,7 @@ source_names:
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv n2o_soil_direct
 
-      indirect_n2o:
+      n2o_soil_indirect:
         selection_fields:
           MetaSources:
             - 'EPA_GHGI_T_5_18.fertilizer_use'
@@ -212,7 +209,7 @@ source_names:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv n2o_soil_indirect
 
 ## Mobile Sources
-      direct_petroleum:
+      transport_petroleum:
         selection_fields:
           MetaSources:
             - 'EPA_GHGI_T_3_13.direct_petroleum'
@@ -227,7 +224,7 @@ source_names:
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_petroleum
 
-      direct_ng:
+      transport_ng:
         selection_fields:
           MetaSources: 'EPA_GHGI_T_3_13.direct_ng'
         attribution_method: proportional
@@ -292,7 +289,7 @@ source_names:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_nonroad
 
 ## Stationary Combustion
-      direct_attribution:
+      stationary_residiential:
         selection_fields:
           MetaSources: 'EPA_GHGI_T_A_6.direct_attribution'
         attribution_method: proportional
@@ -305,7 +302,7 @@ source_names:
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv residential_co2
 
-      coal:
+      stationary_coal:
         selection_fields:
           MetaSources:
             - 'EPA_GHGI_T_A_6.non-manufacturing_coal'
@@ -320,7 +317,7 @@ source_names:
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_coal
 
-      natural_gas:
+      stationary_natural_gas:
         selection_fields:
           MetaSources:
             - 'EPA_GHGI_T_A_6.non-manufacturing_natural_gas'
@@ -335,7 +332,7 @@ source_names:
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_gas
 
-      petroleum_fuels:
+      stationary_petroleum_fuels:
         selection_fields:
           MetaSources: 'EPA_GHGI_T_A_6.petroleum'
         attribution_method: proportional
