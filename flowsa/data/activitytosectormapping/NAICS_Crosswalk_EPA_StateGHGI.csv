@@ -238,7 +238,7 @@ EPA_State_GHGI,Industry - Substitution of Ozone Depleting Substances - Product u
 EPA_State_GHGI,Industry - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Industry,NAICS_2012_Code,32,,ods_substitutes
 EPA_State_GHGI,Industry - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Industry,NAICS_2012_Code,33,,ods_substitutes
 EPA_State_GHGI,Residential - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Residential,NAICS_2012_Code,F010,,direct_ods
-EPA_State_GHGI,Transportation - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Transportation,NAICS_2012_Code,F010,,direct_ods
+EPA_State_GHGI,Transportation - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Transportation,NAICS_2012_Code,F010,,ods_transportation
 EPA_State_GHGI,Industry - Adipic Acid Production - Chemical Industry,NAICS_2012_Code,3251,,direct
 EPA_State_GHGI,Industry - Ammonia Production - Chemical Industry,NAICS_2012_Code,3313,,direct
 EPA_State_GHGI,"Industry - Caprolactam, Glyoxal,and Glyoxylic Acid Production - Chemical Industry - Caprolactam Production",NAICS_2012_Code,3251,,direct
@@ -269,7 +269,7 @@ EPA_State_GHGI,Industry - Iron and Steel Production - Metal Industry - Pellet Pr
 EPA_State_GHGI,Industry - Iron and Steel Production - Metal Industry - Sinter Production,NAICS_2012_Code,3311,,direct
 EPA_State_GHGI,Industry - Iron and Steel Production - Metal Industry - Steel Production,NAICS_2012_Code,3311,,direct
 EPA_State_GHGI,Industry - Lead Production - Metal Industry,NAICS_2012_Code,3314,,direct
-EPA_State_GHGI,Industry - Magnesium Production and Processing - Metal Industry,NAICS_2012_Code,331,,direct
+EPA_State_GHGI,Industry - Magnesium Production and Processing - Metal Industry,NAICS_2012_Code,331,,magnesium
 EPA_State_GHGI,Industry - Zinc Production - Metal Industry,NAICS_2012_Code,3314,,direct
 EPA_State_GHGI,Industry - Carbon Dioxide Consumption - Mineral Industry,,,,exclude
 EPA_State_GHGI,Industry - Cement Production - Mineral Industry - Cement Manufacture,NAICS_2012_Code,3273,,direct
@@ -287,21 +287,21 @@ EPA_State_GHGI,Industry - Landfills - Industrial - Landfills - Industrial Landfi
 EPA_State_GHGI,Commercial - Landfills - Municipal - Landfills - MSW Landfill - MSW Landfills Net Emissions,NAICS_2012_Code,562212,,direct
 EPA_State_GHGI,Industry - Wastewater Treatment - Wastewater Treatment and Discharge - Industrial,NAICS_2012_Code,2213,,direct
 EPA_State_GHGI,Commercial - Wastewater Treatment - Wastewater Treatment and Discharge - Domestic,NAICS_2012_Code,2213,,direct
-EPA_State_GHGI,Agriculture - Mobile Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,111,,transport_machinery
-EPA_State_GHGI,Agriculture - Mobile Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,112,,transport_machinery
-EPA_State_GHGI,Agriculture - Mobile Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,113,,transport_machinery
-EPA_State_GHGI,Agriculture - Mobile Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,114,,transport_machinery
+EPA_State_GHGI,Agriculture - Mobile Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,111,,transport_nonroad
+EPA_State_GHGI,Agriculture - Mobile Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,112,,transport_nonroad
+EPA_State_GHGI,Agriculture - Mobile Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,113,,transport_nonroad
+EPA_State_GHGI,Agriculture - Mobile Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,114,,transport_nonroad
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment,NAICS_2012_Code,11,,use_table_pet
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment,NAICS_2012_Code,21,,use_table_pet
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment,NAICS_2012_Code,23,,use_table_pet
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment,NAICS_2012_Code,31,,use_table_pet
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment,NAICS_2012_Code,32,,use_table_pet
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment,NAICS_2012_Code,33,,use_table_pet
-EPA_State_GHGI,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,111,,transport_machinery
-EPA_State_GHGI,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,112,,transport_machinery
-EPA_State_GHGI,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,113,,transport_machinery
-EPA_State_GHGI,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,114,,transport_machinery
-EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Construction,NAICS_2012_Code,23,,transport_machinery
+EPA_State_GHGI,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,111,,transport_nonroad
+EPA_State_GHGI,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,112,,transport_nonroad
+EPA_State_GHGI,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,113,,transport_nonroad
+EPA_State_GHGI,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,114,,transport_nonroad
+EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Construction,NAICS_2012_Code,23,,transport_nonroad
 EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry,NAICS_2012_Code,2211,,direct
 EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,NAICS_2012_Code,31,,transport_nonroad
 EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,NAICS_2012_Code,32,,transport_nonroad

@@ -98,7 +98,7 @@ transport_nonroad,Transportation - Mobile Combustion - Fossil Fuel Combustion - 
 ods_substitutes,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,EPA_GHGI_T_4_102
 ods_substitutes,Industry - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Industry,EPA_GHGI_T_4_102
 direct_ods,Residential - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Residential,EPA_GHGI_T_4_102
-direct_ods,Transportation - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Transportation,EPA_GHGI_T_4_102
+ods_transportation,Transportation - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Transportation,EPA_GHGI_T_4_102
 direct,Industry - Adipic Acid Production - Chemical Industry,EPA_GHGI_T_2_1
 direct,Industry - Ammonia Production - Chemical Industry,EPA_GHGI_T_2_1
 direct,"Industry - Caprolactam, Glyoxal,and Glyoxylic Acid Production - Chemical Industry - Caprolactam Production",EPA_GHGI_T_2_1
@@ -127,7 +127,7 @@ direct,Industry - Iron and Steel Production - Metal Industry - Pellet Production
 direct,Industry - Iron and Steel Production - Metal Industry - Sinter Production,EPA_GHGI_T_2_1
 direct,Industry - Iron and Steel Production - Metal Industry - Steel Production,EPA_GHGI_T_2_1
 lead,Industry - Lead Production - Metal Industry,EPA_GHGI_T_2_1
-direct,Industry - Magnesium Production and Processing - Metal Industry,EPA_GHGI_T_4_84
+magnesium,Industry - Magnesium Production and Processing - Metal Industry,EPA_GHGI_T_4_84
 direct,Industry - Zinc Production - Metal Industry,EPA_GHGI_T_2_1
 exclude,Industry - Carbon Dioxide Consumption - Mineral Industry,Excluded from national model
 direct,Industry - Cement Production - Mineral Industry - Cement Manufacture,EPA_GHGI_T_2_1

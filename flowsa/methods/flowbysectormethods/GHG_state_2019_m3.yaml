@@ -39,7 +39,7 @@ source_names:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv hcfc
         attribution_method: direct
 
-
+    # direct_ods
 
 
   GHG_national_2019: #U.S. GHG emissions
@@ -371,5 +371,44 @@ source_names:
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ind_com_ch4_n2o
 
+      ods_substitutes:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_4_102.refrigerants'
+            - 'EPA_GHGI_T_4_102.air_conditioning'
+            - 'EPA_GHGI_T_4_102.foams'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ods_substitutes
 
+      ods_transportation:
+        selection_fields:
+          MetaSources: 'EPA_GHGI_T_A_97'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ods_transportation
 
+      magnesium:
+        selection_fields:
+          MetaSources: 'EPA_GHGI_T_4_86'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv magnesium
