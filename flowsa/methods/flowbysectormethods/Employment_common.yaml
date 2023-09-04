@@ -24,3 +24,8 @@ bls_allocation:
   selection_fields:
     PrimaryActivity: !from_index:BLS_QCEW_asets.csv qcew
   attribution_method: direct
+
+employment_fbs_allocation:
+  attribution_method: proportional
+  attribute_on: ['SectorProducedBy']
+  fill_columns: Location
