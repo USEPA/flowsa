@@ -382,6 +382,10 @@ source_names:
         fill_columns: Location
         attribution_source:
           EPA_StateGHGI:
+            clean_fba_before_mapping: !script_function:EPA_GHGI split_HFCs_by_type
+            clean_parameter:
+                # Proportions of specific HFCs are assigned based on national total
+                flow_fba: EPA_GHGI_T_4_100
             geoscale: state
             fedefl_mapping: GHGI
             selection_fields:
@@ -395,6 +399,10 @@ source_names:
         fill_columns: Location
         attribution_source:
           EPA_StateGHGI:
+            clean_fba_before_mapping: !script_function:EPA_GHGI split_HFCs_by_type
+            clean_parameter:
+                # Proportions of specific HFCs are assigned based on national total
+                flow_fba: EPA_GHGI_T_4_100
             geoscale: state
             fedefl_mapping: GHGI
             selection_fields:
