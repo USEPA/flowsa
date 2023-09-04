@@ -77,6 +77,7 @@ EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS
 EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,72,,ind_com_ch4_n2o
 EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,81,,ind_com_ch4_n2o
 EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,923,,ind_com_ch4_n2o
+EPA_State_GHGI,Commercial - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,927,,ind_com_ch4_n2o
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,NAICS_2012_Code,2213,,use_table_coal
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,NAICS_2012_Code,42,,use_table_coal
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,NAICS_2012_Code,44,,use_table_coal
@@ -94,6 +95,7 @@ EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combus
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,NAICS_2012_Code,72,,use_table_coal
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,NAICS_2012_Code,81,,use_table_coal
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,NAICS_2012_Code,923,,use_table_coal
+EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,NAICS_2012_Code,927,,use_table_coal
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,NAICS_2012_Code,2213,,use_table_gas
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,NAICS_2012_Code,42,,use_table_gas
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,NAICS_2012_Code,44,,use_table_gas
@@ -111,6 +113,7 @@ EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combus
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,NAICS_2012_Code,72,,use_table_gas
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,NAICS_2012_Code,81,,use_table_gas
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,NAICS_2012_Code,923,,use_table_gas
+EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,NAICS_2012_Code,927,,use_table_gas
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,NAICS_2012_Code,2213,,use_table_pet
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,NAICS_2012_Code,42,,use_table_pet
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,NAICS_2012_Code,44,,use_table_pet
@@ -128,6 +131,7 @@ EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combus
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,NAICS_2012_Code,72,,use_table_pet
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,NAICS_2012_Code,81,,use_table_pet
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,NAICS_2012_Code,923,,use_table_pet
+EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,NAICS_2012_Code,927,,use_table_pet
 EPA_State_GHGI,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,NAICS_2012_Code,2211,,electric_power
 EPA_State_GHGI,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,NAICS_2012_Code,S00101,,electric_power
 EPA_State_GHGI,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,NAICS_2012_Code,S00202,,electric_power
@@ -250,6 +254,7 @@ EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product
 EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,NAICS_2012_Code,72,,ods_substitutes
 EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,NAICS_2012_Code,81,,ods_substitutes
 EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,NAICS_2012_Code,923,,ods_substitutes
+EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,NAICS_2012_Code,927,,ods_substitutes
 EPA_State_GHGI,Industry - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Industry,NAICS_2012_Code,21,,ods_substitutes
 EPA_State_GHGI,Industry - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Industry,NAICS_2012_Code,23,,ods_substitutes
 EPA_State_GHGI,Industry - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Industry,NAICS_2012_Code,31,,ods_substitutes
