@@ -246,7 +246,8 @@ EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product
 EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,NAICS_2012_Code,42,,ods_substitutes
 EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,NAICS_2012_Code,44,,ods_substitutes
 EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,NAICS_2012_Code,45,,ods_substitutes
-EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,NAICS_2012_Code,493,,ods_substitutes
+EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,NAICS_2012_Code,48,,ods_substitutes
+EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,NAICS_2012_Code,49,,ods_substitutes
 EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,NAICS_2012_Code,51,,ods_substitutes
 EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,NAICS_2012_Code,52,,ods_substitutes
 EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,NAICS_2012_Code,53,,ods_substitutes
@@ -258,8 +259,8 @@ EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product
 EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,NAICS_2012_Code,71,,ods_substitutes
 EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,NAICS_2012_Code,72,,ods_substitutes
 EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,NAICS_2012_Code,81,,ods_substitutes
-EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,NAICS_2012_Code,923,,ods_substitutes
-EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,NAICS_2012_Code,927,,ods_substitutes
+EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,NAICS_2012_Code,92,,ods_substitutes
+EPA_State_GHGI,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,NAICS_2012_Code,F010,,ods_substitutes
 EPA_State_GHGI,Industry - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Industry,NAICS_2012_Code,21,,ods_substitutes
 EPA_State_GHGI,Industry - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Industry,NAICS_2012_Code,23,,ods_substitutes
 EPA_State_GHGI,Industry - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Industry,NAICS_2012_Code,31,,ods_substitutes
