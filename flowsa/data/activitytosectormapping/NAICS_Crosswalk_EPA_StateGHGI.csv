@@ -218,16 +218,15 @@ EPA_State_GHGI,Electric Power Industry - Incineration of Waste - Incineration,NA
 EPA_State_GHGI,Industry - Natural Gas Systems - Fugitive,NAICS_2012_Code,2111,,ng_systems
 EPA_State_GHGI,Industry - Natural Gas Systems - Fugitive,NAICS_2012_Code,2212,,ng_systems
 EPA_State_GHGI,Industry - Natural Gas Systems - Fugitive,NAICS_2012_Code,486,,ng_systems
+EPA_State_GHGI,Industry - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - Industrial,NAICS_2012_Code,212,,industrial_neu
 EPA_State_GHGI,Industry - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - Industrial,NAICS_2012_Code,31,,industrial_neu
 EPA_State_GHGI,Industry - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - Industrial,NAICS_2012_Code,32,,industrial_neu
 EPA_State_GHGI,Industry - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - Industrial,NAICS_2012_Code,33,,industrial_neu
 EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,48,,industrial_neu
 EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,491,,industrial_neu
 EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,492,,industrial_neu
-EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,922,,industrial_neu
-EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,928,,industrial_neu
+EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,92,,industrial_neu
 EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,F010,,industrial_neu
-EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,S00201,,industrial_neu
 EPA_State_GHGI,U.S. Territories - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - US Territories,,,,exclude - territories
 EPA_State_GHGI,Industry - Petroleum Systems - Fugitive,NAICS_2012_Code,2111,,pet_systems
 EPA_State_GHGI,Industry - Petroleum Systems - Fugitive,NAICS_2012_Code,3241,,pet_systems
