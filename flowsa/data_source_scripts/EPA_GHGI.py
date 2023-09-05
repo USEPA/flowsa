@@ -785,7 +785,7 @@ def split_HFCs_by_type(fba: FlowByActivity, **_) -> FlowByActivity:
     attributes_to_save = {
         attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
     }
-
+    original_sum = fba.FlowAmount.sum()
     tbl = fba.config.get('clean_parameter')['flow_fba'] # 4-100
     splits = load_fba_w_standardized_units(datasource=tbl,
                                            year=fba['Year'][0],
@@ -803,6 +803,9 @@ def split_HFCs_by_type(fba: FlowByActivity, **_) -> FlowByActivity:
            .drop(columns=['FlowName', 'FlowAmount'])
            .rename(columns={'Flow': 'FlowName',
                             'value': 'FlowAmount'}))
+    new_sum = fba.FlowAmount.sum()
+    if round(new_sum, 6) != round(original_sum, 6):
+        log.warning('Error: totals do not match when splitting HFCs')
     new_fba = FlowByActivity(fba)
     for attr in attributes_to_save:
         setattr(new_fba, attr, attributes_to_save[attr])
