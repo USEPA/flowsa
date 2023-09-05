@@ -76,7 +76,7 @@ residential_co2,Residential - CO2 from Fossil Fuel Combustion - Fossil Fuel Comb
 residential_co2,Residential - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,
 direct,Transportation - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,
 transport_ng,Transportation - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,EPA_GHGI_T_A_14
-transport_petroleum,Transportation - Mobile Combustion - Fossil Fuel Combustion - Other - Alternative Fuel Highway,
+transport_alt_fuel,Transportation - Mobile Combustion - Fossil Fuel Combustion - Other - Alternative Fuel Highway,
 transport_petroleum,Transportation - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,EPA_GHGI_T_A_14
 transport_diesel,Transportation - Mobile Combustion - Fossil Fuel Combustion - Petroleum - Diesel Highway,EPA_GHGI_T_3_14
 transport_gasoline,Transportation - Mobile Combustion - Fossil Fuel Combustion - Petroleum - Gasoline Highway,EPA_GHGI_T_3_14

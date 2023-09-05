@@ -271,13 +271,26 @@ source_names:
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_gasoline
 
-      transport_ch4_n2o_nonroad:
+      transport_ch4_n2o_alt:
         selection_fields:
           MetaSources:
-            - 'EPA_GHGI_T_3_14.direct_non_road' # Ships, boats, rail
             - 'EPA_GHGI_T_3_14.alt_fuel_on_road'
-            - 'EPA_GHGI_T_3_15.direct_non_road' # Ships, boats, rail, air
             - 'EPA_GHGI_T_3_15.alt_fuel_on_road'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_alt_fuel
+
+      transport_ch4_n2o_nonroad:
+        selection_fields:
+          MetaSources:  # Ships, boats, rail, air
+            - 'EPA_GHGI_T_3_14.direct_non_road'
+            - 'EPA_GHGI_T_3_15.direct_non_road'
         attribution_method: proportional
         attribute_on: ['Flowable', 'SectorProducedBy']
         fill_columns: Location

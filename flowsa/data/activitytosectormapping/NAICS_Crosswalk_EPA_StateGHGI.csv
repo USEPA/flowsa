@@ -182,10 +182,10 @@ EPA_State_GHGI,Residential - CO2 from Fossil Fuel Combustion - Fossil Fuel Combu
 EPA_State_GHGI,Transportation - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,NAICS_2012_Code,482,,direct
 EPA_State_GHGI,Transportation - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,NAICS_2012_Code,485,,transport_ng
 EPA_State_GHGI,Transportation - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,NAICS_2012_Code,486,,transport_ng
-EPA_State_GHGI,Transportation - Mobile Combustion - Fossil Fuel Combustion - Other - Alternative Fuel Highway,NAICS_2012_Code,48,,transport_petroleum
-EPA_State_GHGI,Transportation - Mobile Combustion - Fossil Fuel Combustion - Other - Alternative Fuel Highway,NAICS_2012_Code,491,,transport_petroleum
-EPA_State_GHGI,Transportation - Mobile Combustion - Fossil Fuel Combustion - Other - Alternative Fuel Highway,NAICS_2012_Code,492,,transport_petroleum
-EPA_State_GHGI,Transportation - Mobile Combustion - Fossil Fuel Combustion - Other - Alternative Fuel Highway,NAICS_2012_Code,F010,,transport_petroleum
+EPA_State_GHGI,Transportation - Mobile Combustion - Fossil Fuel Combustion - Other - Alternative Fuel Highway,NAICS_2012_Code,48,,transport_alt_fuel
+EPA_State_GHGI,Transportation - Mobile Combustion - Fossil Fuel Combustion - Other - Alternative Fuel Highway,NAICS_2012_Code,491,,transport_alt_fuel
+EPA_State_GHGI,Transportation - Mobile Combustion - Fossil Fuel Combustion - Other - Alternative Fuel Highway,NAICS_2012_Code,492,,transport_alt_fuel
+EPA_State_GHGI,Transportation - Mobile Combustion - Fossil Fuel Combustion - Other - Alternative Fuel Highway,NAICS_2012_Code,F010,,transport_alt_fuel
 EPA_State_GHGI,Transportation - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,NAICS_2012_Code,48,,transport_petroleum
 EPA_State_GHGI,Transportation - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,NAICS_2012_Code,491,,transport_petroleum
 EPA_State_GHGI,Transportation - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,NAICS_2012_Code,492,,transport_petroleum
