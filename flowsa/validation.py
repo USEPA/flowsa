@@ -321,6 +321,9 @@ def compare_national_state_fbs(dataname=None, year=None, method=None,
 
     groupby_fields = ['Flowable','Context','SectorProducedBy', 'SectorConsumedBy',
                       'Unit', 'Location', 'FlowUUID']
+    for g in groupby_fields:
+        if national[g].isna().all() & state[g].isna().all():
+            groupby_fields.remove(g)
     if compare_metasources:
         groupby_fields = groupby_fields + ['MetaSources']
     subset_fields = groupby_fields + ['FlowAmount']
