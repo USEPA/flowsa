@@ -48,8 +48,8 @@ EPA_State_GHGI,Agriculture - Manure Management - Poultry,NAICS_2012_Code,1123,,a
 EPA_State_GHGI,Agriculture - Manure Management - Sheep,NAICS_2012_Code,11241,,ag_livestock
 EPA_State_GHGI,Agriculture - Manure Management - Swine,NAICS_2012_Code,1122,,ag_livestock
 EPA_State_GHGI,Agriculture - Rice Cultivation,NAICS_2012_Code,1111,,direct
-EPA_State_GHGI,"Agriculture - Urea Fertilization - CO2 emissions from liming, urea application and other carbon-containing fertilizers",NAICS_2012_Code,111,,ag
-EPA_State_GHGI,"Agriculture - Urea Fertilization - CO2 emissions from liming, urea application and other carbon-containing fertilizers",NAICS_2012_Code,112,,ag
+EPA_State_GHGI,"Agriculture - Urea Fertilization - CO2 emissions from liming, urea application and other carbon-containing fertilizers",NAICS_2012_Code,111,,urea
+EPA_State_GHGI,"Agriculture - Urea Fertilization - CO2 emissions from liming, urea application and other carbon-containing fertilizers",NAICS_2012_Code,112,,urea
 EPA_State_GHGI,Industry - Abandoned Oil and Gas Wells - Fugitive - Abandoned Wells,NAICS_2012_Code,2111,,direct
 EPA_State_GHGI,Industry - Abandoned Underground Coal Mines - Fugitive - Coal Mining - Abandoned Coal Mines - Liberated,NAICS_2012_Code,2121,,direct
 EPA_State_GHGI,Industry - Abandoned Underground Coal Mines - Fugitive - Coal Mining - Abandoned Coal Mines - Recovered &Used,NAICS_2012_Code,2121,,direct
@@ -176,9 +176,9 @@ EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combusti
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum,NAICS_2012_Code,32,,use_table_pet
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum,NAICS_2012_Code,33,,use_table_pet
 EPA_State_GHGI,Residential - Stationary Combustion - Fossil Fuel Combustion,NAICS_2012_Code,F010,,direct
-EPA_State_GHGI,Residential - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,NAICS_2012_Code,F010,,direct
-EPA_State_GHGI,Residential - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,NAICS_2012_Code,F010,,direct
-EPA_State_GHGI,Residential - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,NAICS_2012_Code,F010,,direct
+EPA_State_GHGI,Residential - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,NAICS_2012_Code,F010,,residential_co2
+EPA_State_GHGI,Residential - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,NAICS_2012_Code,F010,,residential_co2
+EPA_State_GHGI,Residential - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,NAICS_2012_Code,F010,,residential_co2
 EPA_State_GHGI,Transportation - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,NAICS_2012_Code,482,,direct
 EPA_State_GHGI,Transportation - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,NAICS_2012_Code,485,,transport_ng
 EPA_State_GHGI,Transportation - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,NAICS_2012_Code,486,,transport_ng
@@ -283,9 +283,9 @@ EPA_State_GHGI,Industry - Phosphoric Acid Production - Chemical Industry,NAICS_2
 EPA_State_GHGI,Industry - Carbide Production and Consumption - Chemical Industry - Silicon Carbide Production and Consumption,NAICS_2012_Code,32518,,direct
 EPA_State_GHGI,Industry - Soda Ash Production - Chemical Industry,NAICS_2012_Code,32519,,direct
 EPA_State_GHGI,Industry - Titanium Dioxide Production - Chemical Industry,NAICS_2012_Code,32519,,direct
-EPA_State_GHGI,Industry - Urea Consumption for Non-Agricultural Purposes - Chemical Industry - Urea Consumption for Non-Agricultural Uses,NAICS_2012_Code,31,,use_table_chem
-EPA_State_GHGI,Industry - Urea Consumption for Non-Agricultural Purposes - Chemical Industry - Urea Consumption for Non-Agricultural Uses,NAICS_2012_Code,32,,use_table_chem
-EPA_State_GHGI,Industry - Urea Consumption for Non-Agricultural Purposes - Chemical Industry - Urea Consumption for Non-Agricultural Uses,NAICS_2012_Code,33,,use_table_chem
+EPA_State_GHGI,Industry - Urea Consumption for Non-Agricultural Purposes - Chemical Industry - Urea Consumption for Non-Agricultural Uses,NAICS_2012_Code,31,,urea
+EPA_State_GHGI,Industry - Urea Consumption for Non-Agricultural Purposes - Chemical Industry - Urea Consumption for Non-Agricultural Uses,NAICS_2012_Code,32,,urea
+EPA_State_GHGI,Industry - Urea Consumption for Non-Agricultural Purposes - Chemical Industry - Urea Consumption for Non-Agricultural Uses,NAICS_2012_Code,33,,urea
 EPA_State_GHGI,Industry - Electronics Industry - Micro-Electro-Mechanical Devices,NAICS_2012_Code,3332,,direct
 EPA_State_GHGI,Industry - Electronics Industry - Photovoltaics,NAICS_2012_Code,334413,,direct
 EPA_State_GHGI,Industry - Electronics Industry - Semiconductor Manufacture,NAICS_2012_Code,3344,,direct
@@ -298,16 +298,16 @@ EPA_State_GHGI,Industry - Iron and Steel Production - Metal Industry - Other Act
 EPA_State_GHGI,Industry - Iron and Steel Production - Metal Industry - Pellet Production,NAICS_2012_Code,3311,,direct
 EPA_State_GHGI,Industry - Iron and Steel Production - Metal Industry - Sinter Production,NAICS_2012_Code,3311,,direct
 EPA_State_GHGI,Industry - Iron and Steel Production - Metal Industry - Steel Production,NAICS_2012_Code,3311,,direct
-EPA_State_GHGI,Industry - Lead Production - Metal Industry,NAICS_2012_Code,3314,,direct
+EPA_State_GHGI,Industry - Lead Production - Metal Industry,NAICS_2012_Code,3314,,lead
 EPA_State_GHGI,Industry - Magnesium Production and Processing - Metal Industry,NAICS_2012_Code,331,,magnesium
 EPA_State_GHGI,Industry - Zinc Production - Metal Industry,NAICS_2012_Code,3314,,direct
 EPA_State_GHGI,Industry - Carbon Dioxide Consumption - Mineral Industry,,,,exclude
 EPA_State_GHGI,Industry - Cement Production - Mineral Industry - Cement Manufacture,NAICS_2012_Code,3273,,direct
 EPA_State_GHGI,Industry - Glass Production - Mineral Industry,NAICS_2012_Code,3272,,direct
 EPA_State_GHGI,Industry - Lime Production - Mineral Industry - Lime Manufacture,NAICS_2012_Code,3274,,direct
-EPA_State_GHGI,Industry - Other Process Uses of Carbonates - Mineral Industry,NAICS_2012_Code,31,,use_table_chem
-EPA_State_GHGI,Industry - Other Process Uses of Carbonates - Mineral Industry,NAICS_2012_Code,32,,use_table_chem
-EPA_State_GHGI,Industry - Other Process Uses of Carbonates - Mineral Industry,NAICS_2012_Code,33,,use_table_chem
+EPA_State_GHGI,Industry - Other Process Uses of Carbonates - Mineral Industry,NAICS_2012_Code,31,,carbonate_use
+EPA_State_GHGI,Industry - Other Process Uses of Carbonates - Mineral Industry,NAICS_2012_Code,32,,carbonate_use
+EPA_State_GHGI,Industry - Other Process Uses of Carbonates - Mineral Industry,NAICS_2012_Code,33,,carbonate_use
 EPA_State_GHGI,Electric Power Industry - Electrical Transmission and Distribution - Other product manufacture and use - Electric Power Systems,NAICS_2012_Code,22112,,electricity_transmission
 EPA_State_GHGI,Electric Power Industry - Electrical Transmission and Distribution - Other product manufacture and use - Equipment OEM,NAICS_2012_Code,22112,,electricity_transmission
 EPA_State_GHGI,Industry - HCFC-22 Production - Production and Use of Fluorinated Gases,NAICS_2012_Code,325120,,hcfc
@@ -349,6 +349,6 @@ EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile No
 EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary,NAICS_2012_Code,31,,ind_com_ch4_n2o
 EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary,NAICS_2012_Code,32,,ind_com_ch4_n2o
 EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary,NAICS_2012_Code,33,,ind_com_ch4_n2o
-EPA_State_GHGI,Industry - N2O from Product Uses - Other product manufacture and use,NAICS_2012_Code,621,,use_table_chem
-EPA_State_GHGI,Industry - N2O from Product Uses - Other product manufacture and use,NAICS_2012_Code,622,,use_table_chem
-EPA_State_GHGI,Industry - N2O from Product Uses - Other product manufacture and use,NAICS_2012_Code,623,,use_table_chem
+EPA_State_GHGI,Industry - N2O from Product Uses - Other product manufacture and use,NAICS_2012_Code,621,,nitrous_oxide_use
+EPA_State_GHGI,Industry - N2O from Product Uses - Other product manufacture and use,NAICS_2012_Code,622,,nitrous_oxide_use
+EPA_State_GHGI,Industry - N2O from Product Uses - Other product manufacture and use,NAICS_2012_Code,623,,nitrous_oxide_use
