@@ -132,9 +132,9 @@ EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combus
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,NAICS_2012_Code,81,,use_table_pet
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,NAICS_2012_Code,923,,use_table_pet
 EPA_State_GHGI,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,NAICS_2012_Code,927,,use_table_pet
-EPA_State_GHGI,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,NAICS_2012_Code,2211,,electric_power
-EPA_State_GHGI,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,NAICS_2012_Code,S00101,,electric_power
-EPA_State_GHGI,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,NAICS_2012_Code,S00202,,electric_power
+EPA_State_GHGI,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,NAICS_2012_Code,2211,,electric_ch4_n2o
+EPA_State_GHGI,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,NAICS_2012_Code,S00101,,electric_ch4_n2o
+EPA_State_GHGI,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,NAICS_2012_Code,S00202,,electric_ch4_n2o
 EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Coal,NAICS_2012_Code,2211,,electric_power
 EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Coal,NAICS_2012_Code,S00101,,electric_power
 EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Coal,NAICS_2012_Code,S00202,,electric_power
@@ -147,6 +147,10 @@ EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossi
 EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Petroleum,NAICS_2012_Code,2211,,electric_power
 EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Petroleum,NAICS_2012_Code,S00101,,electric_power
 EPA_State_GHGI,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Petroleum,NAICS_2012_Code,S00202,,electric_power
+EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial,NAICS_2012_Code,11,,ind_com_ch4_n2o
+EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial,NAICS_2012_Code,21,,ind_com_ch4_n2o
+EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial,NAICS_2012_Code,2212,,ind_com_ch4_n2o
+EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial,NAICS_2012_Code,23,,ind_com_ch4_n2o
 EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial,NAICS_2012_Code,31,,ind_com_ch4_n2o
 EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial,NAICS_2012_Code,32,,ind_com_ch4_n2o
 EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial,NAICS_2012_Code,33,,ind_com_ch4_n2o
@@ -155,15 +159,18 @@ EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combusti
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal,NAICS_2012_Code,33,,use_table_coal
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal,NAICS_2012_Code,11,,use_table_coal
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal,NAICS_2012_Code,21,,use_table_coal
+EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal,NAICS_2012_Code,2212,,use_table_coal
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal,NAICS_2012_Code,23,,use_table_coal
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas,NAICS_2012_Code,31,,use_table_gas
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas,NAICS_2012_Code,32,,use_table_gas
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas,NAICS_2012_Code,33,,use_table_gas
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas,NAICS_2012_Code,11,,use_table_gas
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas,NAICS_2012_Code,21,,use_table_gas
+EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas,NAICS_2012_Code,2212,,use_table_gas
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas,NAICS_2012_Code,23,,use_table_gas
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum,NAICS_2012_Code,11,,use_table_pet
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum,NAICS_2012_Code,21,,use_table_pet
+EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum,NAICS_2012_Code,2212,,use_table_pet
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum,NAICS_2012_Code,23,,use_table_pet
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum,NAICS_2012_Code,31,,use_table_pet
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum,NAICS_2012_Code,32,,use_table_pet
@@ -214,14 +221,13 @@ EPA_State_GHGI,Industry - Natural Gas Systems - Fugitive,NAICS_2012_Code,486,,ng
 EPA_State_GHGI,Industry - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - Industrial,NAICS_2012_Code,31,,industrial_neu
 EPA_State_GHGI,Industry - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - Industrial,NAICS_2012_Code,32,,industrial_neu
 EPA_State_GHGI,Industry - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - Industrial,NAICS_2012_Code,33,,industrial_neu
-EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,481,,transport_petroleum
-EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,482,,transport_petroleum
-EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,483,,transport_petroleum
-EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,484,,transport_petroleum
-EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,485,,transport_petroleum
-EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,491,,transport_petroleum
-EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,928,,transport_petroleum
-EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,F010,,transport_petroleum
+EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,48,,industrial_neu
+EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,491,,industrial_neu
+EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,492,,industrial_neu
+EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,922,,industrial_neu
+EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,928,,industrial_neu
+EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,F010,,industrial_neu
+EPA_State_GHGI,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,NAICS_2012_Code,S00201,,industrial_neu
 EPA_State_GHGI,U.S. Territories - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - US Territories,,,,exclude - territories
 EPA_State_GHGI,Industry - Petroleum Systems - Fugitive,NAICS_2012_Code,2111,,pet_systems
 EPA_State_GHGI,Industry - Petroleum Systems - Fugitive,NAICS_2012_Code,3241,,pet_systems
@@ -261,6 +267,7 @@ EPA_State_GHGI,Industry - Substitution of Ozone Depleting Substances - Product u
 EPA_State_GHGI,Industry - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Industry,NAICS_2012_Code,32,,ods_substitutes
 EPA_State_GHGI,Industry - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Industry,NAICS_2012_Code,33,,ods_substitutes
 EPA_State_GHGI,Residential - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Residential,NAICS_2012_Code,F010,,direct_ods
+EPA_State_GHGI,Transportation - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Transportation,NAICS_2012_Code,48,,ods_transportation
 EPA_State_GHGI,Transportation - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Transportation,NAICS_2012_Code,F010,,ods_transportation
 EPA_State_GHGI,Industry - Adipic Acid Production - Chemical Industry,NAICS_2012_Code,3251,,direct
 EPA_State_GHGI,Industry - Ammonia Production - Chemical Industry,NAICS_2012_Code,3313,,direct
@@ -316,6 +323,7 @@ EPA_State_GHGI,Agriculture - Mobile Combustion - Fossil Fuel Combustion - Mobile
 EPA_State_GHGI,Agriculture - Mobile Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,114,,transport_nonroad
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment,NAICS_2012_Code,11,,use_table_pet
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment,NAICS_2012_Code,21,,use_table_pet
+EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment,NAICS_2012_Code,2212,,use_table_pet
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment,NAICS_2012_Code,23,,use_table_pet
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment,NAICS_2012_Code,31,,use_table_pet
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment,NAICS_2012_Code,32,,use_table_pet

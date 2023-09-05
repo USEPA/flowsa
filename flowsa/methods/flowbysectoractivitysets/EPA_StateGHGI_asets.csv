@@ -61,7 +61,7 @@ ind_com_ch4_n2o,Commercial - Stationary Combustion - Fossil Fuel Combustion,
 use_table_coal,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,EPA_GHGI_T_A_14
 use_table_gas,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,EPA_GHGI_T_A_14
 use_table_pet,Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,EPA_GHGI_T_A_14
-electric_power,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,
+electric_ch4_n2o,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation,
 electric_power,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Coal,
 electric_power,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Geothermal,
 electric_power,Electric Power Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Natural Gas,
@@ -88,7 +88,7 @@ exclude,U.S. Territories - CO2 from Fossil Fuel Combustion - Fossil Fuel Combust
 direct,Electric Power Industry - Incineration of Waste - Incineration,EPA_GHGI_T_2_1
 ng_systems,Industry - Natural Gas Systems - Fugitive,EPA_GHGI_T_3_63
 industrial_neu,Industry - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - Industrial,EPA_GHGI_T_A_14
-transport_petroleum-UPDATENAME,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,
+industrial_neu,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,
 exclude,U.S. Territories - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - US Territories,
 pet_systems,Industry - Petroleum Systems - Fugitive,EPA_GHGI_T_3_38
 use_table_pet,Agriculture - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary,

@@ -353,11 +353,13 @@ source_names:
             - 'EPA_GHGI_T_3_8.coal_nonmanufacturing'
             - 'EPA_GHGI_T_3_8.ng_manufacturing'
             - 'EPA_GHGI_T_3_8.coal_manufacturing'
+            - 'EPA_GHGI_T_3_8.fuel_oil'
             - 'EPA_GHGI_T_3_9.natural_gas_nonmanufacturing'
             - 'EPA_GHGI_T_3_9.fuel_oil'
             - 'EPA_GHGI_T_3_9.coal_nonmanufacturing'
             - 'EPA_GHGI_T_3_9.ng_manufacturing'
             - 'EPA_GHGI_T_3_9.coal_manufacturing'
+            - 'EPA_GHGI_T_3_9.fuel_oil'
         attribution_method: proportional
         attribute_on: ['Flowable', 'SectorProducedBy']
         fill_columns: Location
@@ -367,6 +369,42 @@ source_names:
             fedefl_mapping: GHGI
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ind_com_ch4_n2o
+
+      electric_ch4_n2o:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_3_8.electric_power'
+            - 'EPA_GHGI_T_3_9.electric_power'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv electric_ch4_n2o
+
+      industrial_neu:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_3_22.coal'
+            - 'EPA_GHGI_T_3_22.petroleum'
+            - 'EPA_GHGI_T_3_22.natural_gas'
+            - 'EPA_GHGI_T_3_22.transportation_lubricants'
+            - 'EPA_GHGI_T_3_22b.coal'
+            - 'EPA_GHGI_T_3_22b.petroleum'
+            - 'EPA_GHGI_T_3_22b.natural_gas'
+            - 'EPA_GHGI_T_3_22b.transportation_lubricants'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv industrial_neu
 
       ods_substitutes:
         selection_fields:
