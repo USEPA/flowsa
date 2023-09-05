@@ -327,17 +327,24 @@ EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combusti
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment,NAICS_2012_Code,31,,use_table_pet
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment,NAICS_2012_Code,32,,use_table_pet
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment,NAICS_2012_Code,33,,use_table_pet
-EPA_State_GHGI,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,111,,transport_nonroad
-EPA_State_GHGI,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,112,,transport_nonroad
-EPA_State_GHGI,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,113,,transport_nonroad
-EPA_State_GHGI,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,114,,transport_nonroad
+EPA_State_GHGI,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,111,,tbd
+EPA_State_GHGI,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,112,,tbd
+EPA_State_GHGI,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,113,,tbd
+EPA_State_GHGI,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,NAICS_2012_Code,114,,tbd
 EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Construction,NAICS_2012_Code,211,,transport_nonroad_construction
 EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Construction,NAICS_2012_Code,212,,transport_nonroad_construction
 EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Construction,NAICS_2012_Code,213111,,transport_nonroad_construction
 EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry,NAICS_2012_Code,2211,,direct
-EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,NAICS_2012_Code,31,,transport_nonroad
-EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,NAICS_2012_Code,32,,transport_nonroad
-EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,NAICS_2012_Code,33,,transport_nonroad
+EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,NAICS_2012_Code,485,,transport_nonroad_other
+EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,NAICS_2012_Code,487,,transport_nonroad_other
+EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,NAICS_2012_Code,488,,transport_nonroad_other
+EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,NAICS_2012_Code,492,,transport_nonroad_other
+EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,NAICS_2012_Code,5321,,transport_nonroad_other
+EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,NAICS_2012_Code,5324,,transport_nonroad_other
+EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,NAICS_2012_Code,6219,,transport_nonroad_other
+EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,NAICS_2012_Code,7139,,transport_nonroad_other
+EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,NAICS_2012_Code,8111,,transport_nonroad_other
+EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,NAICS_2012_Code,8113,,transport_nonroad_other
 EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary,NAICS_2012_Code,31,,ind_com_ch4_n2o
 EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary,NAICS_2012_Code,32,,ind_com_ch4_n2o
 EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary,NAICS_2012_Code,33,,ind_com_ch4_n2o
