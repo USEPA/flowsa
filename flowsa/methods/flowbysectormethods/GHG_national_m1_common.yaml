@@ -338,15 +338,25 @@ source_names:
   EPA_GHGI_T_3_14: &mobile #CH4 from mobile combustion
     fedefl_mapping: GHGI
     activity_sets:
-      direct_attribution:
+      direct_gasoline:
+        selection_fields:
+          PrimaryActivity:
+            Motorcycles Gasoline On-Road: Motorcycles
+            Medium- and Heavy-Duty Trucks and Buses Gasoline On-Road: Medium- and Heavy-Duty Trucks and Buses
+        attribution_method: direct
+
+      direct_diesel:
+        selection_fields:
+          PrimaryActivity:
+            Medium- and Heavy-Duty Trucks and Buses Diesel On-Road: Medium- and Heavy-Duty Trucks and Buses
+        attribution_method: direct
+
+      direct_non_road:
         selection_fields:
           PrimaryActivity:
             Rail Non-Road: Rail
             Ships and Boats Non-Road: Ships and Boats
             Aircraft Non-Road: General Aviation Aircraft
-            Motorcycles Gasoline On-Road: Motorcycles
-            Medium- and Heavy-Duty Trucks and Buses Diesel On-Road: Medium- and Heavy-Duty Trucks and Buses
-            Medium- and Heavy-Duty Trucks and Buses Gasoline On-Road: Medium- and Heavy-Duty Trucks and Buses
         attribution_method: direct
 
       petroleum_fuels_diesel:

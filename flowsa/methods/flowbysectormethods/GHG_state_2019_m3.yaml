@@ -241,7 +241,9 @@ source_names:
         selection_fields:
           MetaSources:
             - 'EPA_GHGI_T_3_14.petroleum_fuels_diesel'
+            - 'EPA_GHGI_T_3_14.direct_diesel'
             - 'EPA_GHGI_T_3_15.petroleum_fuels_diesel'
+            - 'EPA_GHGI_T_3_15.direct_diesel'
         attribution_method: proportional
         attribute_on: ['Flowable', 'SectorProducedBy']
         fill_columns: Location
@@ -256,7 +258,9 @@ source_names:
         selection_fields:
           MetaSources:
             - 'EPA_GHGI_T_3_14.petroleum_fuels_gasoline'
+            - 'EPA_GHGI_T_3_14.direct_gasoline'
             - 'EPA_GHGI_T_3_15.petroleum_fuels_gasoline'
+            - 'EPA_GHGI_T_3_15.direct_gasoline'
         attribution_method: proportional
         attribute_on: ['Flowable', 'SectorProducedBy']
         fill_columns: Location
@@ -270,8 +274,10 @@ source_names:
       transport_ch4_n2o_nonroad:
         selection_fields:
           MetaSources:
+            - 'EPA_GHGI_T_3_14.direct_non_road' # Ships, boats, rail
             - 'EPA_GHGI_T_3_14.other_non_road'
             - 'EPA_GHGI_T_3_14.alt_fuel_on_road'
+            - 'EPA_GHGI_T_3_15.direct_non_road' # Ships, boats, rail, air
             - 'EPA_GHGI_T_3_15.other_non_road'
             - 'EPA_GHGI_T_3_15.alt_fuel_on_road'
         attribution_method: proportional
