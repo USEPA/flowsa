@@ -32,9 +32,8 @@ def usgs_URL_helper(*, build_url, config, **_):
     """
     # initiate url list for usgs data
     urls_usgs = []
-    # call on state acronyms from common.py (and remove entry for DC)
+    # call on state acronyms from common.py
     state_abbrevs = abbrev_us_state
-    state_abbrevs = {k: v for (k, v) in state_abbrevs.items() if k != "DC"}
     # replace "__aggLevel__" in build_url to create three urls
     for c in config['agg_levels']:
         # at national level, remove most of the url
@@ -395,7 +394,7 @@ def usgs_fba_data_cleanup(fba: FlowByActivity) -> FlowByActivity:
 
     # drop flowname = 'total' rows when possible to prevent double counting
     # subset data where flowname = total and where it does not
-    vlog.info('Drop rows where the FlowName is total to prevent'
+    vlog.info('Drop rows where the FlowName is total to prevent '
               'double counting at the state and county levels. '
               'Retain rows at national level')
     df2 = dfc[dfc['FlowName'] == 'total']
