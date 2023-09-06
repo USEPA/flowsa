@@ -1,0 +1,10 @@
+author: U.S. Bureau of Economic Analysis
+source_name: BEA_Detail_Make_AfterRedef
+source_url: 'https://www.bea.gov/industry/input-output-accounts-data'
+original_data_download_date: '2021-06-15'
+bib_id: BEA_Detail_Make_AfterRedef
+format: csv
+url: None
+parse_response_fxn: !script_function:BEA bea_parse
+years:
+  - 2002

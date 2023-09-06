@@ -1,16 +1,16 @@
-BEA_GDP_GrossOutput:
+BEA_Detail_GDP_GrossOutput:
   data_format: FBA
   class:
     - Money
   activity_schema: BEA_2012_Detail_Code
   sector_hierarchy: "flat"
-BEA_Make_AR:
+BEA_Detail_Make_AfterRedef:
   data_format: FBA
   class:
     - Money
   activity_schema: BEA_2012_Detail_Code
   sector_hierarchy: "flat"
-BEA_Make_Detail_BeforeRedef:
+BEA_Detail_Make_BeforeRedef:
   data_format: FBA
   class:
     - Money
@@ -22,7 +22,7 @@ BEA_Marine_Bunker_Fuel:
     - Energy
   activity_schema: None
   sector_hierarchy: "flat"
-BEA_Use_Detail_PRO_BeforeRedef:
+BEA_Detail_Use_PRO_BeforeRedef:
   data_format: FBA
   class:
     - Money
