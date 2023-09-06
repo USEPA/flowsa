@@ -138,7 +138,18 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
     # calculate total residential area from the American Housing Survey
     residential_land_area = get_area_of_urban_land_occupied_by_houses_2013()
     df_residential = fba[fba[sector_col] == 'F01000']
-    df_residential = df_residential.assign(FlowAmount=residential_land_area)
+     # if it is state data, take weighted avg using land area
+    if fba.config['geoscale'] == 'state':
+        df_residential = (df_residential
+                          .assign(rural_res=residential_land_area,
+                                  total_area=df_residential['FlowAmount'].sum(),
+                                  FlowAmount=lambda x: x['FlowAmount']/x[
+                                      'total_area'] * x['rural_res']
+                                  )
+                          )
+    else:
+        df_residential = df_residential.assign(FlowAmount=residential_land_area)
+    df_residential['group_id'] = 0
 
     # make an assumption about the percent of urban area that is open space
     openspace_multiplier = get_open_space_fraction_of_urban_area()
@@ -212,7 +223,8 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
         [df_residential, df_openspace, df_airport, df_railroad, df_highway2],
         ignore_index=True, sort=False).reset_index(drop=True)
 
-    return allocated_urban_areas_df
+    return allocated_urban_areas_df.drop(columns=['rurl_res', 'total_area'],
+                                         errors='ignore')
 
 
 def allocate_usda_ers_mlu_land_in_rural_transportation_areas(
