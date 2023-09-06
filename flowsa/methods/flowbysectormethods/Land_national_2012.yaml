@@ -40,9 +40,11 @@ sources_to_cache:
 source_names:
   EIA_CBECS_Land:
     <<: *_eia_cbecs_land
+
   EIA_MECS_Land:
     <<: *_eia_mecs_land
-  "BLM_PLS":
+
+  BLM_PLS:
     fedefl_mapping: BLM_PLS
     selection_fields:
       Class: Land
@@ -57,6 +59,7 @@ source_names:
           PrimaryActivity: !from_index:BLM_PLS_2012_asets.csv hardrock_mining
         attribution_method: proportional
         attribution_source: Employment_national_2012
+
   USDA_ERS_MLU:
     fedefl_mapping: USDA_ERS_MLU
     geoscale: state
@@ -127,7 +130,6 @@ source_names:
          PrimaryActivity:
           - 'Land in rural transportation facilities'
         clean_fba_w_sec: !script_function:USDA_ERS_MLU allocate_usda_ers_mlu_land_in_rural_transportation_areas
-        geoscale: national
         attribution_method: direct
       urban:
         selection_fields:
