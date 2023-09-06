@@ -147,33 +147,3 @@ def bea_make_ar_parse(*, year, **_):
     df['DataCollection'] = 5  # tmp
 
     return df
-
-
-def subset_BEA_table(df_load, attr, **_):
-    """
-    Modify loaded BEA table (make or use) based on data in the FBA method yaml
-    :param df_load: df, flowbyactivity format
-    :param attr: dictionary, attribute data from method yaml for activity set
-    :return: modified BEA dataframe
-    """
-    df2 = pd.DataFrame()
-    # extract commodity to filter and which Activity column used to filter
-    for commodity, ActivityCol in attr['clean_parameter'].items():
-        df = df_load.loc[df_load[ActivityCol] == commodity].reset_index(
-            drop=True)
-
-        # set column to None to enable generalizing activity column later
-        df.loc[:, ActivityCol] = None
-        if set(fbs_activity_fields).issubset(df.columns):
-            for v in activity_fields.values():
-                if v[0]['flowbyactivity'] == ActivityCol:
-                    SectorCol = v[1]['flowbysector']
-            df.loc[:, SectorCol] = None
-        df2 = pd.concat([df, df2])
-
-    # aggregate cols
-    df3 = aggregator(df2, list(df2.select_dtypes(include=['object',
-                                                          'int']).columns))
-
-    return df3
-
