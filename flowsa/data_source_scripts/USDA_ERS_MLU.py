@@ -57,6 +57,9 @@ def mlu_parse(*, df_list, source, year, **_):
                  var_name="FlowName",
                  value_name="FlowAmount")
 
+    # rename states to match with FIPS crosswalk
+    df = df.replace('District of Columbia', 'District Of Columbia')
+
     # load fips codes and merge
     fips = get_all_state_FIPS_2()
     fips['State'] = fips['State'].apply(lambda x: x.title())
