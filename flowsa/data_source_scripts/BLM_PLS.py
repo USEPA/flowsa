@@ -25,6 +25,12 @@ def split(row, header, sub_header, next_line):
     :param next_line: next row
     :return: data appropriately split
     """
+    # ensure space after "Leases"
+    row["one"] = (row["one"]
+                  .replace("Leases", " Leases ")
+                  .replace("  ", " ")
+                  .strip()
+                  )
 
     flow_amount = ""
     num_in_state = False
@@ -107,13 +113,15 @@ def split(row, header, sub_header, next_line):
                 elif "Leases" in split_str_one[2] or "III" in \
                         split_str_one[2] or "Act" in split_str_one:
                     if next_line:
-
                         column = 6
                     else:
                         if isinstance(split_str_two, float):
                             column = 2
                         else:
-                            if len(split_str_two) == 0:
+                            if (len(split_str_two) == 0) & \
+                                    (split_str_one[2] == "Leases"):
+                                column = 6
+                            elif len(split_str_two) == 0:
                                 column = 2
                             elif split_str_two[0] == "None":
                                 column = 8
@@ -140,8 +148,9 @@ def split(row, header, sub_header, next_line):
                             column = 6
                     elif len(split_str_one) == 7:
                         if "/" in split_str_one[2]:
-                            if "/" in split_str_one[3]:
-                                column = 7
+                            column = 6
+                        elif split_str_one[3]:
+                            column = 7
 
                 else:
                     if any(i.isdigit() for i in split_str_one[1]):
@@ -178,6 +187,8 @@ def split(row, header, sub_header, next_line):
         flow_amount = split_str_one[5]
     elif column == 8:
         flow_amount = split_str_one[6]
+    elif column == 0:
+        log.warning('FlowAmount is 0, check split() allocations.')
 
     if next_line:
         location_str = "Total"
@@ -493,8 +504,13 @@ def blm_pls_call(*, resp, year, **_):
                 pdf_page = read_pdf(io.BytesIO(resp.content),
                                     pages=page_number, stream=True,
                                     guess=False)[0]
+                # drop nan rows
+                pdf_page = (pdf_page
+                            .dropna(axis=0, how='all')
+                            .reset_index(drop=True))
 
-                if pdf_page.shape[1] == 1:
+                page_shape = pdf_page.shape[1]
+                if page_shape == 1:
                     pdf_page.columns = ["one"]
                 else:
                     pdf_page.columns = ["one", "two"]
@@ -558,7 +574,7 @@ def blm_pls_call(*, resp, year, **_):
                                 else:
                                     row_one_str = row["one"]
 
-                                if pdf_page.shape[1] == 1 and \
+                                if page_shape == 1 and \
                                         row["one"] == "Total":
                                     next_line = True
                                 elif row_one_str.strip() == "Total" or \
@@ -576,6 +592,9 @@ def blm_pls_call(*, resp, year, **_):
     df["LocationStr"] = location_str
     df["ActivityConsumedBy"] = flow_name
     df["FlowAmount"] = flow_value
+
+    # drop where flowamount is null, at times due to duplicated info
+    df = df.query("FlowAmount != ''").reset_index(drop=True)
 
     return df
 
