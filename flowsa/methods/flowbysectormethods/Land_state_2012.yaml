@@ -7,48 +7,63 @@ year: 2012
 geoscale: state
 
 sources_to_cache:
-  # Attribute national (instead of census regions) to states since regional
-  # data is only "all buildings" and not broken out by floors
   EIA_CBECS_Land: &_eia_cbecs_land # commercial land use
     fedefl_mapping: EIA_CBECS_Land
     geoscale: national
     selection_fields:
       Class: Land
-      Location: '00000'
+      Location: !include:Location_common.yaml:_national_location
     clean_fba: !script_function:EIA_CBECS_Land cbecs_land_fba_cleanup
-    clean_fba_w_sec: !clean_function:flowbyclean attribute_national_to_states
-    clean_source:
-      Employment_state_2012:
-        geoscale: state
     activity_sets:
       cbecs_land: # all activities in eia cbecs land crosswalk
         selection_fields:
           PrimaryActivity: !from_index:EIA_CBECS_Land_2012_asets.csv cbecs_land
-        attribution_method: direct
+        attribute:
+          - attribution_method: proportional
+            attribution_source:
+              Employment_national_2012:
+                geoscale: national
+          - attribution_method: proportional
+            attribute_on: ['PrimarySector']
+            fill_columns: Location
+            attribution_source:
+              Employment_state_2012:
+                geoscale: state
   EIA_MECS_Land: &_eia_mecs_land  # manufacturing land use
     fedefl_mapping: EIA_MECS_Land
     year: 2014
     geoscale: national
+    industry_spec:
+      default: NAICS_6
     selection_fields:
       Class: Land
+      Location: !include:Location_common.yaml:_national_location
       FlowName: "Approximate Enclosed Floorspace of All Buildings Onsite"
-      Year: {2014: 2012} # replace year to align with method year=
+      Year: {2014: 2012} # replace year to align with method year
     clean_fba: !script_function:EIA_MECS mecs_land_fba_cleanup
-    clean_fba_w_sec: !clean_function:flowbyclean attribute_national_to_states
-    clean_source:
-      Employment_state_2014:
-        geoscale: state
     activity_sets:
       mecs_land: # all activities in eia mecs land crosswalk
         selection_fields:
           PrimaryActivity: !from_index:EIA_MECS_Land_2014_asets.csv mecs_land
-        attribution_method: direct
+        attribute:
+          - attribution_method: proportional
+            attribution_source:
+              Employment_national_2014:
+                geoscale: national
+          - attribution_method: proportional
+            attribute_on: ['PrimarySector']
+            fill_columns: Location
+            attribution_source:
+              Employment_state_2014:  # use 2014 bc MECS is 2014
+                geoscale: state
 
 source_names:
   EIA_CBECS_Land:
     <<: *_eia_cbecs_land
+
   EIA_MECS_Land:
     <<: *_eia_mecs_land
+
   BLM_PLS:
     fedefl_mapping: BLM_PLS
     selection_fields:
@@ -64,6 +79,7 @@ source_names:
          PrimaryActivity: !from_index:BLM_PLS_2012_asets.csv hardrock_mining
         attribution_method: proportional
         attribution_source: Employment_state_2012
+
   USDA_ERS_MLU:
     fedefl_mapping: USDA_ERS_MLU
     selection_fields:
