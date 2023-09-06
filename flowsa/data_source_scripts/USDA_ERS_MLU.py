@@ -359,4 +359,4 @@ def allocate_usda_ers_mlu_other_land(
         fba['FlowAmount'] = np.where(fba['SectorConsumedBy'].isin(household),
                                      rural_res, fba['FlowAmount'])
 
-    return fba.drop(columns=['rurl_res', 'total_area'], errors='ignore')
+    return fba.drop(columns=['rural_res', 'total_area'], errors='ignore')
