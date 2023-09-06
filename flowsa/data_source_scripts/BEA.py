@@ -12,138 +12,66 @@ in scripts/write_BEA_Use_from_useeior.py
 
 import pandas as pd
 from flowsa.location import US_FIPS
-from flowsa.common import fbs_activity_fields
-from flowsa.schema import activity_fields
 from flowsa.settings import externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 
-
-def bea_gdp_parse(*, year, **_):
+def bea_parse(*, source, year, **_):
     """
-    Combine, parse, and format the provided dataframes
-    :param year: year
-    :return: df, parsed and partially formatted to flowbyactivity
-        specifications
+    Parse BEA data for GrossOutput, Make, and Use tables
+    :param source:
+    :param year:
+    :return:
     """
-    # Read directly into a pandas df
-    df_raw = pd.read_csv(f"{externaldatapath}/BEA_GDP_GrossOutput_IO.csv")
 
-    df = df_raw.rename(columns={'Unnamed: 0': 'ActivityProducedBy'})
+    if 'Make' in source:
+        filename = source.replace('_Make_', f'_Make_{year}_')
+    elif 'Use' in source:
+        filename = source.replace('_Use_', f'_Use_{year}_')
+    else:
+        filename = source
 
-    # use "melt" fxn to convert colummns into rows
-    df = df.melt(id_vars=["ActivityProducedBy"],
-                 var_name="Year",
-                 value_name="FlowAmount")
+    df = pd.read_csv(externaldatapath / f"{filename}.csv")
 
-    df = df[df['Year'] == year]
-    # hardcode data
-    df["Class"] = "Money"
-    df["FlowType"] = "TECHNOSPHERE_FLOW"
-    df['Description'] = 'BEA_2012_Detail_Code'
-    df['FlowName'] = 'Gross Output'
-    df["SourceName"] = "BEA_GDP_GrossOutput"
-    df["Location"] = US_FIPS
-    # original unit in million USD
-    df['FlowAmount'] = df['FlowAmount'] * 1000000
-    # state FIPS codes have not changed over last decade
-    df['LocationSystem'] = "FIPS_2015"
-    df["Unit"] = "USD"
-    df['DataReliability'] = 5  # tmp
-    df['DataCollection'] = 5  # tmp
+    if 'BeforeRedef' in source:
+        df = df.rename(columns={'Unnamed: 0': 'ActivityProducedBy'})
+        # use "melt" fxn to convert colummns into rows
+        df = df.melt(id_vars=["ActivityProducedBy"],
+                     var_name="ActivityConsumedBy",
+                     value_name="FlowAmount")
+    elif '_Make_AfterRedef' in source:
+        # strip whitespace
+        for c in list(df.select_dtypes(include=['object']).columns):
+            df[c] = df[c].apply(lambda x: x.strip())
+        # drop rows of data
+        df = df[df['Industry'] == df['Commodity']].reset_index(drop=True)
+        # drop columns
+        df = df.drop(columns=['Commodity', 'CommodityDescription'])
+        # rename columns
+        df = df.rename(columns={'Industry': 'ActivityProducedBy',
+                                'IndustryDescription': 'Description',
+                                'ProVal': 'FlowAmount',
+                                'IOYear': 'Year'})
+    elif 'GrossOutput' in source:
+        df = df.rename(columns={'Unnamed: 0': 'ActivityProducedBy'})
+        df = df.melt(id_vars=["ActivityProducedBy"],
+                     var_name="Year",
+                     value_name="FlowAmount")
+        df = df[df['Year'] == year]
 
-    return df
+    df = df.reset_index(drop=True)
 
-
-def bea_use_detail_br_parse(*, year, **_):
-    """
-    Combine, parse, and format the provided dataframes
-    :param year: year)
-    :return: df, parsed and partially formatted to
-        flowbyactivity specifications
-    """
-    csv_load = (f"{externaldatapath}/BEA_{str(year)}"
-                f"_Detail_Use_PRO_BeforeRedef.csv")
-    df_raw = pd.read_csv(csv_load)
-
-    df = bea_detail_parse(df_raw, year)
-    df["SourceName"] = "BEA_Use_Detail_PRO_BeforeRedef"
-
-    return df
-
-
-def bea_make_detail_br_parse(*, year, **_):
-    """
-    Combine, parse, and format the provided dataframes
-    :param year: year
-    :return: df, parsed and partially formatted to
-        flowbyactivity specifications
-    """
-    # Read directly into a pandas df
-    csv_load = (f"{externaldatapath}/BEA_{str(year)}"
-                f"_Detail_Make_BeforeRedef.csv")
-    df_raw = pd.read_csv(csv_load)
-
-    df = bea_detail_parse(df_raw, year)
-    df["SourceName"] = "BEA_Make_Detail_BeforeRedef"
-
-    return df
-
-
-def bea_detail_parse(df_raw, year):
-    df = df_raw.rename(columns={'Unnamed: 0': 'ActivityProducedBy'})
-
-    # use "melt" fxn to convert colummns into rows
-    df = df.melt(id_vars=["ActivityProducedBy"],
-                 var_name="ActivityConsumedBy",
-                 value_name="FlowAmount")
-
+    # columns relevant to all BEA data
+    df["SourceName"] = source
     df['Year'] = str(year)
-    # hardcode data
     df['FlowName'] = f"USD{str(year)}"
     df["Class"] = "Money"
     df["FlowType"] = "TECHNOSPHERE_FLOW"
-    df['Description'] = 'BEA_2012_Detail_Code'
     df["Location"] = US_FIPS
-    df['LocationSystem'] = "FIPS_2015"
-    # original unit in million USD
-    df['FlowAmount'] = df['FlowAmount'] * 1000000
-    df["Unit"] = "USD"
-    df['DataReliability'] = 5  # tmp
-    df['DataCollection'] = 5  # tmp
-    return df
-
-
-def bea_make_ar_parse(*, year, **_):
-    """
-    Combine, parse, and format the provided dataframes
-    :param dataframe_list: list of dataframes to concat and format
-    :param args: dictionary, used to run generateflowbyactivity.py
-        ('year' and 'source')
-    :return: df, parsed and partially formatted to
-        flowbyactivity specifications
-    """
-    df_load = pd.read_csv(f"{externaldatapath}/BEA"
-                          f"_{year}_Make_AfterRedef.csv", dtype="str")
-    # strip whitespace
-    df = df_load.apply(lambda x: x.str.strip())
-    # drop rows of data
-    df = df[df['Industry'] == df['Commodity']].reset_index(drop=True)
-    # drop columns
-    df = df.drop(columns=['Commodity', 'CommodityDescription'])
-    # rename columns
-    df = df.rename(columns={'Industry': 'ActivityProducedBy',
-                            'IndustryDescription': 'Description',
-                            'ProVal': 'FlowAmount',
-                            'IOYear': 'Year'})
-    df.loc[:, 'FlowAmount'] = df['FlowAmount'].astype(float) * 1000000
-    # hard code data
-    df['Class'] = 'Money'
-    df['SourceName'] = 'BEA_Make_AR'
-    df['Unit'] = 'USD'
-    df['Location'] = US_FIPS
     df = assign_fips_location_system(df, year)
-    df['FlowName'] = 'Gross Output Producer Value After Redef'
+    df['FlowAmount'] = df['FlowAmount']
+    df["Unit"] = "Million USD"
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 5  # tmp
+    df['Description'] = filename
 
     return df
