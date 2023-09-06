@@ -118,7 +118,7 @@ source_names:
             Electric Power Sector: Electric Power #CO2
         attribution_method: proportional
         attribution_source:
-          BEA_Make_Detail_BeforeRedef:
+          BEA_Detail_Make_BeforeRedef:
             <<: *bea
             primary_action_type: Produced
             selection_fields:
@@ -545,7 +545,7 @@ source_names:
             Wood Electric Power: Wood Electric Power
         attribution_method: proportional
         attribution_source:
-          BEA_Make_Detail_BeforeRedef:
+          BEA_Detail_Make_BeforeRedef:
             <<: *bea
             primary_action_type: Produced
             selection_fields:
@@ -816,7 +816,7 @@ source_names:
       PrimaryActivity: Magnesium Production and Processing
     attribution_method: proportional
     attribution_source:
-      BEA_Make_Detail_BeforeRedef:
+      BEA_Detail_Make_BeforeRedef:
         <<: *bea
         selection_fields:
           ActivityConsumedBy: {T008: ''}  # Total Output
