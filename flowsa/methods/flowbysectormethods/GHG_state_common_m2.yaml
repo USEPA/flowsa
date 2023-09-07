@@ -1,4 +1,6 @@
-
+## Method 2 uses as its source the national GHG Flow-by-sector (detail)
+# with emissions data attributed to states based on reported emissions
+# in the State Inventory
 
 
 !include:USEEIO_summary_target.yaml
@@ -7,8 +9,7 @@ geoscale: state
 
 
 source_names:
-## Directly sourced from State Inventory
-  EPA_StateGHGI:
+  EPA_StateGHGI: ## Directly sourced from State Inventory FBA
     geoscale: state
     year: *ghg_year
     fedefl_mapping: GHGI
@@ -54,12 +55,8 @@ source_names:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv hcfc
         attribution_method: direct
 
-    # direct_ods
-
-
-  GHG_national_2019: #U.S. GHG emissions
+  GHG_national_common_m1: #U.S. GHG emissions
     year: *ghg_year
-    fedefl_mapping: GHGI
     data_format: FBS
     geoscale: national
     activity_sets:
