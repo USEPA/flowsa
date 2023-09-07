@@ -232,7 +232,10 @@ class FlowBySector(_FlowBy):
                        how='left')
                 .rename(columns={'target_naics': f'Sector{direction}'})
                 .drop(columns='source_naics')
-                .aggregate_flowby()
+                .aggregate_flowby(columns_to_group_by = (
+                    fbs.groupby_cols + ['group_id'] if 'group_id' in fbs
+                    else None)
+                    )
             )
 
         return fbs
@@ -261,7 +264,6 @@ class FlowBySector(_FlowBy):
             self
             .function_socket('clean_fbs')
             .select_by_fields()
-            .sector_aggregation()  # convert to proper industry spec.
             .convert_fips_to_geoscale()
             .attribute_flows_to_sectors(external_config_path=external_config_path,
                                         download_sources_ok=download_sources_ok)

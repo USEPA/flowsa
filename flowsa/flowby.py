@@ -667,7 +667,7 @@ class _FlowBy(pd.DataFrame):
                     .rename(columns={'SourceName': 'MetaSources'})
                 )
             elif self.config['data_format'] in ['FBS']:
-                fb = grouped.copy()
+                fb = grouped.sector_aggregation()  # convert to proper industry spec.
 
             # subset the fb configuration so it only includes the
             # attribution_method currently being assessed - rather than all
