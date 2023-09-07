@@ -23,4 +23,5 @@ Tbtu,MJ,1055055900
 MT CO2e,MMT CO2e,0.000001
 employees,p,1
 Thousand USD,USD,1000
+Million USD,USD,1000000
 kg/employee,kg/p,1
