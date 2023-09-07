@@ -8,7 +8,8 @@ import pandas as pd
 import numpy as np
 from functools import partial, reduce
 from copy import deepcopy
-from flowsa import (settings, literature_values, flowsa_yaml, geo, schema)
+from flowsa import (settings, literature_values, flowsa_yaml, geo, schema,
+                    naics)
 from flowsa.common import get_catalog_info
 from flowsa.flowsa_log import log, vlog
 import esupy.processed_data_mgmt
@@ -724,7 +725,7 @@ class _FlowBy(pd.DataFrame):
             elif attribution_method == 'equal':
                 log.info(f"Equally attributing {self.full_name} to "
                          f"target sectors.")
-                attributed_fb = fb.equally_attribute()                
+                attributed_fb = fb.equally_attribute()
 
             elif attribution_method != 'direct':
                 log.error('Attribution method for %s not recognized: %s',
@@ -1284,6 +1285,68 @@ class _FlowBy(pd.DataFrame):
                            'temp_location'],
                   errors='ignore')
             .reset_index(drop=True)
+        )
+
+    def equally_attribute(self: 'FB') -> 'FB':
+        '''
+        This function takes a FlowByActivity dataset with SectorProducedBy and
+        SectorConsumedBy columns already added and attributes flows from any
+        activity which is mapped to multiple industries/sectors equally across
+        those industries/sectors, by NAICS level. In other words, if an
+        activity is mapped to multiple industries/sectors, the flow amount is
+        equally divided across the relevant 2-digit NAICS industries. Then,
+        within each 2-digit industry the flow amount for that industry is
+        equally divided across the relevant 3-digit NAICS industries; within
+        each of those, the flow amount is equally divided across relevant
+        4-digit NAICS industries, and so on.
+
+        For example:
+        Suppose that activity A has a flow amount of 12 and is mapped to
+        industries 111210, 111220, and 213110, a flow amount of 3 will be
+        attributed to 111210, a flow amount of 3 to 111220, and a flow amount
+        of 6 to 213110.
+
+        Attribution happens according to the primary sector first (see
+        documentation for
+        flowby.FlowByActivity.add_primary_secondary_sector_columns() for
+        details on how the primary sector is determined; in most cases, the
+        primary sector is the (only) non-null value out of SectorProducedBy or
+        SectorConsumedBy). If necessary, flow amounts are further (equally)
+        subdivided based on the secondary sector.
+        '''
+        naics_key = naics.map_target_sectors_to_less_aggregated_sectors(
+            self.config['industry_spec'])
+
+        fba = self.add_primary_secondary_columns('Sector')
+
+        groupby_cols = ['group_id', 'Location']
+        for rank in ['Primary', 'Secondary']:
+            fba = (
+                fba
+                .merge(naics_key, how='left', left_on=f'{rank}Sector',
+                       right_on='target_naics')
+                .assign(
+                    **{f'_unique_naics_{n}_by_group': lambda x, i=n: (
+                            x.groupby(groupby_cols if i == 2
+                                      else [*groupby_cols, f'_naics_{i-1}'],
+                                      dropna=False)
+                            [[f'_naics_{i}']]
+                            .transform('nunique', dropna=False)
+                        )
+                        for n in range(2, 8)},
+                    FlowAmount=lambda x: reduce(
+                        lambda x, y: x / y,
+                        [x.FlowAmount, *[x[f'_unique_naics_{n}_by_group']
+                                         for n in range(2, 8)]]
+                    )
+                )
+                .drop(columns=naics_key.columns.values.tolist())
+            )
+            groupby_cols.append(f'{rank}Sector')
+
+        return fba.drop(
+            columns=['PrimarySector', 'SecondarySector',
+                     *[f'_unique_naics_{n}_by_group' for n in range(2, 8)]]
         )
 
     def add_primary_secondary_columns(
