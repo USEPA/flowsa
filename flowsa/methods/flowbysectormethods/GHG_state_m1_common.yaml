@@ -62,19 +62,79 @@ source_names:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct
         attribution_method: direct
 
-      direct_ods:
+      n2o_soil_direct:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv n2o_soil_direct
+        attribution_method: direct
+
+      n2o_soil_indirect:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv n2o_soil_indirect
+        attribution_method: direct
+
+      ag_livestock:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ag_livestock
+        attribution_method: direct
+
+      ag_burning:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ag_burning
+        attribution_method: direct
+
+      residential_co2:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv residential_co2
+        attribution_method: direct
+
+      petrochemicals:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv petrochemicals
+        attribution_method: direct
+
+      lead:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv lead
+        attribution_method: direct
+
+      magnesium:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv magnesium
+        attribution_method: direct
+
+      electricity_transmission:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv electricity_transmission
+        attribution_method: direct
+
+      hcfc:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv hcfc
+        attribution_method: direct
+
+      ods_transportation:
         clean_fba_before_mapping: !script_function:EPA_GHGI split_HFCs_by_type
         clean_parameter:
             # Proportions of specific HFCs are assigned based on national total
             flow_fba: EPA_GHGI_T_4_100
         #TODO reconsider mapping for transportation HFCS
         selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct_ods
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ods_transportation
         attribution_method: direct
 
-      make_table_elec: # electricity combustion
+      electric_power: # electricity combustion
         selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv make_table_elec
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv electric_power
+        attribution_method: proportional
+        attribution_source:
+          stateio_Make_Summary:
+            <<: *use_table_allocation
+            selection_fields:
+              ActivityConsumedBy: {'22': ''}  # utilities
+
+      electric_ch4_n2o: # electricity combustion
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv electric_ch4_n2o
         attribution_method: proportional
         attribution_source:
           stateio_Make_Summary:
@@ -180,7 +240,7 @@ source_names:
             - EPA_GHGI_T_3_9
             sector: Commercial
         selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv commercial_ch4_n2o
+          PrimaryActivity: Commercial - Stationary Combustion - Fossil Fuel Combustion # ind_com_ch4_n2o
         activity_sets:
           coal:
             selection_fields:
@@ -244,7 +304,9 @@ source_names:
             - EPA_GHGI_T_3_9
             sector: Industrial
         selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv industrial_ch4_n2o
+          PrimaryActivity:
+            - Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary # ind_com_ch4_n2o
+            - Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial
         activity_sets:
           coal:
             selection_fields:
@@ -286,9 +348,9 @@ source_names:
               Class: Other # nonfuel consumption
               Flowable: Total
 
-      use_table_chem: # other process use of carbonates, urea application
+      carbonate_use: # other process use of carbonates
         selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_chem
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv carbonate_use
         attribution_method: proportional
         attribution_source:
           stateio_Use_Summary:
@@ -296,10 +358,20 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'325': ''}  # Use of chemicals
 
-      ag: # emissions from urea fertilization
+      nitrous_oxide_use: # N2O from Product uses
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv nitrous_oxide_use
+        attribution_method: proportional
+        attribution_source:
+          stateio_Use_Summary:
+            <<: *use_table_allocation
+            selection_fields:
+              ActivityProducedBy: {'325': ''}  # Use of chemicals
+
+      urea: # emissions from urea fertilization
       # allocated between crops and animals based on USDA land area
         selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ag
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv urea
         attribution_method: proportional
         attribution_source:
           USDA_CoA_Cropland_NAICS:
@@ -374,9 +446,19 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'324': ''}  # Petroleum fuel
 
-      transport_machinery: # CO2 (ag only), CH4, N2O from petroleum non-highway (ag & constrution)
+      transport_nonroad_ag: # CO2 (ag only), CH4, N2O from petroleum non-highway (ag & constrution)
         selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_machinery
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_nonroad_ag
+        attribution_method: proportional
+        attribution_source:
+          stateio_Use_Summary:
+            <<: *use_table_allocation
+            selection_fields:
+              ActivityProducedBy: {'333': ''}  # Machinery
+
+      transport_nonroad_construction: # CH4, N2O from petroleum non-highway (ag & constrution)
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_nonroad_construction
         attribution_method: proportional
         attribution_source:
           stateio_Use_Summary:

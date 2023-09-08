@@ -154,6 +154,9 @@ EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Indus
 EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial,NAICS_2012_Code,31,,ind_com_ch4_n2o
 EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial,NAICS_2012_Code,32,,ind_com_ch4_n2o
 EPA_State_GHGI,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial,NAICS_2012_Code,33,,ind_com_ch4_n2o
+EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal - Manufacturing,NAICS_2012_Code,31,,industrial_coal (only used in m1)
+EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal - Manufacturing,NAICS_2012_Code,32,,industrial_coal (only used in m1)
+EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal - Manufacturing,NAICS_2012_Code,33,,industrial_coal (only used in m1)
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal,NAICS_2012_Code,31,,use_table_coal
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal,NAICS_2012_Code,32,,use_table_coal
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal,NAICS_2012_Code,33,,use_table_coal
@@ -161,6 +164,9 @@ EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combusti
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal,NAICS_2012_Code,21,,use_table_coal
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal,NAICS_2012_Code,2212,,use_table_coal
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal,NAICS_2012_Code,23,,use_table_coal
+EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas - Manufacturing,NAICS_2012_Code,31,,industrial_gas (only used in m1)
+EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas - Manufacturing,NAICS_2012_Code,32,,industrial_gas (only used in m1)
+EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas - Manufacturing,NAICS_2012_Code,33,,industrial_gas (only used in m1)
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas,NAICS_2012_Code,31,,use_table_gas
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas,NAICS_2012_Code,32,,use_table_gas
 EPA_State_GHGI,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas,NAICS_2012_Code,33,,use_table_gas
