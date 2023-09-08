@@ -781,8 +781,8 @@ class _FlowBy(pd.DataFrame):
                     log.info(f"No change in {self.full_name} FlowAmount after "
                              "attribution.")
                 else:
-                    log.info(f"Percent change in {self.full_name} after "
-                             f"attribution is {percent_change}%")
+                    log.warning(f"Percent change in {self.full_name} after "
+                                f"attribution is {percent_change}%")
 
             # run function to clean fbs after attribution
             attributed_fb = attributed_fb.function_socket(
