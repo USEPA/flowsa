@@ -123,7 +123,7 @@ source_names:
         !include:GHG_state_m1_common.yaml:source_names:EPA_StateGHGI:activity_sets:urea
         attribution_source:
           USDA_CoA_Cropland_NAICS:
-            !include:GHG_state_m1_common.yaml:source_names:EPA_StateGHGI:activity_sets:ag:attribution_source:USDA_CoA_Cropland_NAICS
+            !include:GHG_state_m1_common.yaml:source_names:EPA_StateGHGI:activity_sets:urea:attribution_source:USDA_CoA_Cropland_NAICS
             year: *coa_year
 
       transport_petroleum: # C02 from petroleum highway
