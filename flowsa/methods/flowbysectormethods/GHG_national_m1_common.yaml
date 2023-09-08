@@ -345,11 +345,12 @@ source_names:
             Medium- and Heavy-Duty Trucks and Buses Gasoline On-Road: Medium- and Heavy-Duty Trucks and Buses
         attribution_method: direct
 
-      direct_diesel:
-        selection_fields:
-          PrimaryActivity:
-            Medium- and Heavy-Duty Trucks and Buses Diesel On-Road: Medium- and Heavy-Duty Trucks and Buses
-        attribution_method: direct
+      # This activity is only in older FBAs
+      # direct_diesel:
+      #   selection_fields:
+      #     PrimaryActivity:
+      #       Medium- and Heavy-Duty Trucks and Buses Diesel On-Road: Medium- and Heavy-Duty Trucks and Buses
+      #   attribution_method: direct
 
       direct_non_road:
         selection_fields:
@@ -430,7 +431,7 @@ source_names:
 
 
 ## Stationary Combustion
-  GHGI_CO2_stationary_combustion_and_transport: # CO2 emissions from stationary combustion
+  GHGI_CO2_stationary_combustion: # CO2 emissions from stationary combustion
     fedefl_mapping: GHGI
     # year: # override this
     clean_fba_before_activity_sets: !script_function:EPA_GHGI allocate_industrial_combustion
@@ -468,7 +469,7 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'221200': ''} # purchases of natural gas
 
-      coal_manufacturing: # Industrial Coal for Manufacturing
+      coal_manufacturing_co2: # Industrial Coal for Manufacturing
         selection_fields:
           PrimaryActivity:
             Industrial Other Coal Industrial - Manufacturing: Coal Industrial - Manufacturing
