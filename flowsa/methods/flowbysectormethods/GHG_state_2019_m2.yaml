@@ -3,7 +3,7 @@
 # in the State Inventory
 
 
-!include:GHG_state_common_m2.yaml
+!include:GHG_state_m2_common.yaml
 year: &ghg_year 2019
 geoscale: state
 
@@ -11,11 +11,11 @@ geoscale: state
 source_names:
 ## Directly sourced from State Inventory
   EPA_StateGHGI:
-    !include:GHG_state_common_m2.yaml:source_names:EPA_StateGHGI
+    !include:GHG_state_m2_common.yaml:source_names:EPA_StateGHGI
     year: *ghg_year
     activity_sets:
-      !include:GHG_state_common_m2.yaml:source_names:EPA_StateGHGI:activity_sets
+      !include:GHG_state_m2_common.yaml:source_names:EPA_StateGHGI:activity_sets
 
   GHG_national_2019_m1: #U.S. GHG emissions
-    !include:GHG_state_common_m2.yaml:source_names:GHG_national_common_m1
+    !include:GHG_state_m2_common.yaml:source_names:GHG_national_common_m1
     year: *ghg_year
