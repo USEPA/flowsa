@@ -233,9 +233,8 @@ def assign_fips_location_system(df, year_of_data):
     elif 2010 <= year_of_data < 2013:
         df['LocationSystem'] = 'FIPS_2010'
     elif year_of_data < 2010:
-        log.warning(
-            "Missing FIPS codes from crosswalk for %s. "
-            "Assigning to FIPS_2010", str(year_of_data))
+        log.warning(f"Missing FIPS codes from crosswalk for {year_of_data}. "
+                    f"Assigning to FIPS_2010")
         df['LocationSystem'] = 'FIPS_2010'
 
     return df
