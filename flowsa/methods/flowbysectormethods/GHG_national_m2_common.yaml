@@ -72,7 +72,6 @@ source_names:
             - Ferroalloy Production #CO2, CH4
             - Glass Production #CO2
             - Landfills #CH4
-            - Lead Production #CO2
             - Lime Production #CO2
             - Incineration of Waste #CO2, #N2O
             - Iron and Steel Production & Metallurgical Coke Production #CO2, CH4
@@ -103,6 +102,11 @@ source_names:
             selection_fields:
               ActivityConsumedBy: {'22': ''} # Utilities (221100)
 
+      liming:
+        selection_fields:
+          PrimaryActivity: Liming #CO2
+        attribution_method: equal
+
       urea:
         selection_fields:
           PrimaryActivity:
@@ -114,6 +118,11 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'325': ''} # Chemicals (325310)
 
+      urea_fertilizer:
+        selection_fields:
+          PrimaryActivity: Urea Fertilization #CO2
+        attribution_method: equal
+
       carbonate_use:
         selection_fields:
           PrimaryActivity: Other Process Uses of Carbonates #CO2
@@ -123,6 +132,11 @@ source_names:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'325': ''} # Chemicals (325180)
+
+      lead:
+        selection_fields:
+          PrimaryActivity: Lead Production #CO2
+        attribution_method: direct
 
       nitrous_oxide_use:
         selection_fields:
@@ -134,12 +148,6 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'325': ''} # Chemicals (325120)
 
-      equal:
-        selection_fields:
-          PrimaryActivity:
-            - Liming #CO2
-            - Urea Fertilization #CO2
-        attribution_method: equal
 
 
 ## Fossil Fuels
@@ -608,7 +616,7 @@ source_names:
             - Industry Industrial Other Coal
         attribution_method: direct
 
-      petroleum: # consumed petroleum products
+      petroleum_neu: # consumed petroleum products
         selection_fields:
           PrimaryActivity:
             'Industry Asphalt & Road Oil': Industry Petroleum Products Non-energy
@@ -642,7 +650,7 @@ source_names:
             #     selection_fields:
             #       ActivityProducedBy: {'324110': ''} # purchases of refineries
 
-      natural_gas: # consumed nat gas to chemical plants
+      natural_gas_neu: # consumed nat gas to chemical plants
         selection_fields:
           PrimaryActivity: Industry Natural Gas to Chemical Plants
         attribution_method: proportional

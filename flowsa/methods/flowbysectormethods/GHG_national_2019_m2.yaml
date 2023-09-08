@@ -189,17 +189,17 @@ source_names:
     year: *ghgi_year
     activity_sets: # Update EIA_MECS year for some activity_sets
       !include:GHG_national_m2_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets
-      petroleum:
-        !include:GHG_national_m2_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:petroleum
+      petroleum_neu:
+        !include:GHG_national_m2_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:petroleum_neu
         attribution_source:
           EIA_MECS_Energy:
-            !include:GHG_national_m2_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:petroleum:attribution_source:EIA_MECS_Energy
+            !include:GHG_national_m2_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:petroleum_neu:attribution_source:EIA_MECS_Energy
               year: *mecs_year
-      natural_gas:
-        !include:GHG_national_m2_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:natural_gas
+      natural_gas_neu:
+        !include:GHG_national_m2_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:natural_gas_neu
         attribution_source:
           EIA_MECS_Energy:
-            !include:GHG_national_m2_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:natural_gas:attribution_source:EIA_MECS_Energy
+            !include:GHG_national_m2_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:natural_gas_neu:attribution_source:EIA_MECS_Energy
               year: *mecs_year
       transportation_lubricants:
         !include:GHG_national_m2_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:transportation_lubricants
