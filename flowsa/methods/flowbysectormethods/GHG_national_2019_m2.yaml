@@ -216,17 +216,17 @@ source_names:
     clean_parameter: *industrial_dict
     activity_sets: # Update EIA_MECS and BEA year for some activity_sets
       !include:GHG_national_m2_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets
-      non-manufacturing_coal:
-        !include:GHG_national_m2_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:non-manufacturing_coal
+      non_manufacturing_coal:
+        !include:GHG_national_m2_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:non_manufacturing_coal
         attribution_source:
           BEA_Summary_Use_PRO_BeforeRedef:
-            !include:GHG_national_m2_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:non-manufacturing_coal:attribution_source:BEA_Summary_Use_PRO_BeforeRedef
+            !include:GHG_national_m2_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:non_manufacturing_coal:attribution_source:BEA_Summary_Use_PRO_BeforeRedef
               year: *ghgi_year
-      non-manufacturing_natural_gas:
-        !include:GHG_national_m2_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:non-manufacturing_natural_gas
+      non_manufacturing_natural_gas:
+        !include:GHG_national_m2_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:non_manufacturing_natural_gas
         attribution_source:
           BEA_Summary_Use_PRO_BeforeRedef:
-            !include:GHG_national_m2_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:non-manufacturing_natural_gas:attribution_source:BEA_Summary_Use_PRO_BeforeRedef
+            !include:GHG_national_m2_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:non_manufacturing_natural_gas:attribution_source:BEA_Summary_Use_PRO_BeforeRedef
               year: *ghgi_year
 
       coal_manufacturing:

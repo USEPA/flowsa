@@ -220,18 +220,18 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'221200': ''} # purchases of natural gas
 
-      non-manufacturing_coal:
+      non_manufacturing_coal:
         selection_fields:
           MetaSources:
-            - 'EPA_GHGI_T_A_5.non-manufacturing_coal'
-            - 'EPA_GHGI_T_A_6.non-manufacturing_coal'
-            - 'EPA_GHGI_T_A_7.non-manufacturing_coal'
-            - 'EPA_GHGI_T_A_8.non-manufacturing_coal'
-            - 'EPA_GHGI_T_A_9.non-manufacturing_coal'
-            - 'EPA_GHGI_T_A_10.non-manufacturing_coal'
-            - 'EPA_GHGI_T_A_11.non-manufacturing_coal'
-            - 'EPA_GHGI_T_A_12.non-manufacturing_coal'
-            - 'EPA_GHGI_T_A_13.non-manufacturing_coal'
+            - 'EPA_GHGI_T_A_5.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_6.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_7.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_8.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_9.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_10.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_11.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_12.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_13.non_manufacturing_coal'
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_PRO_BeforeRedef:
@@ -239,18 +239,18 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'212100': ''} # purchases of coal
 
-      non-manufacturing_natural_gas: # Applies to non-manufacturing sectors like ag and mining
+      non_manufacturing_natural_gas: # Applies to non-manufacturing sectors like ag and mining
         selection_fields:
           MetaSources:
-            - 'EPA_GHGI_T_A_5.non-manufacturing_natural_gas'
-            - 'EPA_GHGI_T_A_6.non-manufacturing_natural_gas'
-            - 'EPA_GHGI_T_A_7.non-manufacturing_natural_gas'
-            - 'EPA_GHGI_T_A_8.non-manufacturing_natural_gas'
-            - 'EPA_GHGI_T_A_9.non-manufacturing_natural_gas'
-            - 'EPA_GHGI_T_A_10.non-manufacturing_natural_gas'
-            - 'EPA_GHGI_T_A_11.non-manufacturing_natural_gas'
-            - 'EPA_GHGI_T_A_12.non-manufacturing_natural_gas'
-            - 'EPA_GHGI_T_A_13.non-manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_5.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_6.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_7.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_8.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_9.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_10.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_11.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_12.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_13.non_manufacturing_natural_gas'
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_PRO_BeforeRedef:

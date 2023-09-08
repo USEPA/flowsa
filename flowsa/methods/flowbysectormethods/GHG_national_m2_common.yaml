@@ -411,7 +411,7 @@ source_names:
           PrimaryActivity: Total (All Fuels) Residential
         attribution_method: direct
 
-      non-manufacturing_coal:
+      non_manufacturing_coal:
         selection_fields:
           PrimaryActivity:
             Commercial Coal Commercial: Coal Commercial
@@ -423,7 +423,7 @@ source_names:
             selection_fields:
               ActivityProducedBy: {'212': ''} # purchases of coal (212100)
 
-      non-manufacturing_natural_gas: # Applies to non-manufacturing sectors like ag and mining
+      non_manufacturing_natural_gas: # Applies to non-manufacturing sectors like ag and mining
         selection_fields:
           PrimaryActivity:
             - Natural Gas Commercial
