@@ -10,4 +10,5 @@ if __name__ == "__main__":
     parser.add_argument('--year', help='FBA year')
     args = vars(parser.parse_args())
 
-    flowsa.flowbyactivity.main(source=args['source'], year=args['year'])
+    flowsa.generateflowbyactivity.main(
+        source=args['source'], year=args['year'])

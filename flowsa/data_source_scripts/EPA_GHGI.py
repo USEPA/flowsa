@@ -817,4 +817,4 @@ if __name__ == "__main__":
     import flowsa
     # fba = flowsa.getFlowByActivity('EPA_GHGI_T_4_101', 2016)
     # df = clean_HFC_fba(fba)
-    fba = flowsa.flowbyactivity.main(year=2017, source='EPA_GHGI')
+    fba = flowsa.generateflowbyactivity.main(year=2017, source='EPA_GHGI')
