@@ -17,35 +17,6 @@ source_names:
   "EPA_GHGI_T_2_1": #U.S. GHG emissions
     !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_2_1
     year: *ghgi_year
-    activity_sets: # Update BEA year for some activity_sets
-      !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets
-      electric_power:
-        !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:electric_power
-        attribution_source:
-          BEA_Summary_Make_BeforeRedef:
-            !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:electric_power:attribution_source:BEA_Summary_Make_BeforeRedef
-              year: *ghgi_year
-
-      urea:
-        !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:urea
-        attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:urea:attribution_source:BEA_Summary_Use_PRO_BeforeRedef
-              year: *ghgi_year
-
-      carbonate_use:
-        !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:carbonate_use
-        attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:carbonate_use:attribution_source:BEA_Summary_Use_PRO_BeforeRedef
-              year: *ghgi_year
-
-      nitrous_oxide_use:
-        !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:nitrous_oxide_use
-        attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:nitrous_oxide_use:attribution_source:BEA_Summary_Use_PRO_BeforeRedef
-              year: *ghgi_year
 
   "EPA_GHGI_T_3_68": #CH4 from Natural Gas Systems
     !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_68
@@ -154,26 +125,6 @@ source_names:
   "EPA_GHGI_T_4_102": # HFCs and PFCs from ODS Substitutes
     !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_102
     year: *ghgi_year
-    activity_sets: # Update BEA year for some activity_sets
-      !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_102:activity_sets
-      refrigerants:
-        !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_102:activity_sets:refrigerants
-        attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_102:activity_sets:refrigerants:attribution_source:BEA_Summary_Use_PRO_BeforeRedef
-              year: *ghgi_year
-      air_conditioning:
-        !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_102:activity_sets:air_conditioning
-        attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_102:activity_sets:air_conditioning:attribution_source:BEA_Summary_Use_PRO_BeforeRedef
-              year: *ghgi_year
-      foams:
-        !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_102:activity_sets:foams
-        attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_102:activity_sets:foams:attribution_source:BEA_Summary_Use_PRO_BeforeRedef
-              year: *ghgi_year
 
   "EPA_GHGI_T_A_97": # HFCs from Transportation
     !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_A_97
@@ -216,12 +167,6 @@ source_names:
     clean_parameter: *industrial_dict
     activity_sets: # Update EIA_MECS and BEA year for some activity_sets
       !include:GHG_national_m2_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets
-      non_manufacturing_coal:
-        !include:GHG_national_m2_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:non_manufacturing_coal
-        attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            !include:GHG_national_m2_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:non_manufacturing_coal:attribution_source:BEA_Summary_Use_PRO_BeforeRedef
-              year: *ghgi_year
       non_manufacturing_natural_gas:
         !include:GHG_national_m2_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:non_manufacturing_natural_gas
         attribution_source:
@@ -255,12 +200,6 @@ source_names:
     clean_parameter: *industrial_dict
     activity_sets: # Update EIA_MECS and BEA year for some activity_sets
       !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets
-      electric_power:
-        !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:electric_power
-        attribution_source:
-          BEA_Summary_Make_BeforeRedef:
-            !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:electric_power:attribution_source:BEA_Summary_Make_BeforeRedef
-              year: *ghgi_year
 
       fuel_oil:
         !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:fuel_oil
@@ -273,12 +212,6 @@ source_names:
         attribution_source:
           BEA_Summary_Use_PRO_BeforeRedef:
             !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:natural_gas_nonmanufacturing:attribution_source:BEA_Summary_Use_PRO_BeforeRedef
-              year: *ghgi_year
-      coal_nonmanufacturing:
-        !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:coal_nonmanufacturing
-        attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:coal_nonmanufacturing:attribution_source:BEA_Summary_Use_PRO_BeforeRedef
               year: *ghgi_year
 
       coal_manufacturing:

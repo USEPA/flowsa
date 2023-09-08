@@ -12,7 +12,7 @@ geoscale: national
 _mecs_year: &mecs_year 2018
 
 _attribution_sources:
-  BEA: &bea
+  BEA: &bea_summary
     year: *ghg_year
     activity_to_sector_mapping: BEA_2012_Summary
     # selection_fields:
@@ -24,10 +24,22 @@ _attribution_sources:
                            'Total Final Uses (GDP)',
                            'Total Intermediate']
       ActivityProducedBy: ['Total Commodity Output']
-
     attribution_method: equal
     ## No attribution supplied (will use equal) because target level for
     ## modeling is BEA summary level.
+
+  BEA_detail: &bea_detail
+    year: 2012
+    activity_to_sector_mapping: BEA_2012_Detail
+    # selection_fields:
+    #   ActivityProducedBy: {'324': ''}  # Petroleum 324110
+    exclusion_fields: # Avoid unnecessary warnings about not being mapped to sectors
+      ActivityConsumedBy: ['F03000', 'F04000', 'F05000', 'F02E00',
+                           'F06E00', 'F07E00', 'F10E00',
+                           'T001', 'T004', 'T007']
+      ActivityProducedBy: ['T007']
+    attribution_method: equal
+
 
   EIA_MECS_Energy: &mecs_energy
     year: *mecs_year
@@ -45,7 +57,7 @@ _attribution_sources:
     # attribution_method: proportional
     # attribution_source: # Include in main method
     #   BEA_Summary_Use_PRO_BeforeRedef:
-    #     <<: *bea
+    #     <<: *bea_summary
     #     selection_fields:
     #       ActivityProducedBy: {'XXXXX': ''}
 
@@ -97,10 +109,10 @@ source_names:
             Electric Power Sector: Electric Power #CO2
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Make_BeforeRedef:
-            <<: *bea
+          BEA_Detail_Make_BeforeRedef:
+            <<: *bea_detail
             selection_fields:
-              ActivityConsumedBy: {'22': ''} # Utilities (221100)
+              ActivityConsumedBy: {'221100': ''} # Utilities (221100)
 
       liming:
         selection_fields:
@@ -113,10 +125,10 @@ source_names:
             - Urea Consumption for Non-Agricultural Purposes #CO2
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea
+          BEA_Detail_Use_PRO_BeforeRedef:
+            <<: *bea_detail
             selection_fields:
-              ActivityProducedBy: {'325': ''} # Chemicals (325310)
+              ActivityProducedBy: {'325310': ''} # Chemicals (325310)
 
       urea_fertilizer:
         selection_fields:
@@ -128,10 +140,10 @@ source_names:
           PrimaryActivity: Other Process Uses of Carbonates #CO2
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea
+          BEA_Detail_Use_PRO_BeforeRedef:
+            <<: *bea_detail
             selection_fields:
-              ActivityProducedBy: {'325': ''} # Chemicals (325180)
+              ActivityProducedBy: {'325180': ''} # Chemicals (325180)
 
       lead:
         selection_fields:
@@ -143,10 +155,11 @@ source_names:
           PrimaryActivity: N2O from Product Uses #N2O
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea
+          BEA_Detail_Use_PRO_BeforeRedef:
+            <<: *bea_detail
+
             selection_fields:
-              ActivityProducedBy: {'325': ''} # Chemicals (325120)
+              ActivityProducedBy: {'325120': ''} # Chemicals (325120)
 
 
 
@@ -296,7 +309,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea
+            <<: *bea_summary
             selection_fields:
               ActivityProducedBy: {'324': ''} # purchases of refinery products (324110)
 
@@ -336,7 +349,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea
+            <<: *bea_summary
             selection_fields:
               ActivityProducedBy: {'324': ''} # purchases of refinery products (324110)
 
@@ -348,7 +361,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea
+            <<: *bea_summary
             selection_fields:
               ActivityProducedBy: {'324': ''} # purchases of refinery products (324110)
 
@@ -358,7 +371,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea
+            <<: *bea_summary
             selection_fields:
               ActivityProducedBy: {'333': ''} # purchases of construction/mining equipment (333120)
 
@@ -368,7 +381,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea
+            <<: *bea_summary
             selection_fields:
               ActivityProducedBy: {'333': ''} # purchases of farm machinery (333111)
 
@@ -378,7 +391,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea
+            <<: *bea_summary
             selection_fields:
               ActivityProducedBy: {'324': ''} # purchases of refinery products (324110)
 
@@ -389,7 +402,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea
+            <<: *bea_summary
             selection_fields:
               ActivityProducedBy: {'22': ''} # purchases of natural gas (221200)
 
@@ -418,10 +431,10 @@ source_names:
             Industrial Other Coal Industrial: Coal Industrial
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea
+          BEA_Detail_Use_PRO_BeforeRedef:
+            <<: *bea_detail
             selection_fields:
-              ActivityProducedBy: {'212': ''} # purchases of coal (212100)
+              ActivityProducedBy: {'212100': ''} # purchases of coal (212100)
 
       non_manufacturing_natural_gas: # Applies to non-manufacturing sectors like ag and mining
         selection_fields:
@@ -431,7 +444,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea
+            <<: *bea_summary
             selection_fields:
               ActivityProducedBy: {'22': ''} # purchases of natural gas (221200)
 
@@ -450,7 +463,7 @@ source_names:
                 - Coke and Breeze
             # attribution_source: TODO do we need attribution of MECS data?
             #   BEA_Summary_Use_PRO_BeforeRedef:
-            #     <<: *bea
+            #     <<: *bea_summary
             #     selection_fields:
             #       ActivityProducedBy: {'212100': ''} # purchases of coal
 
@@ -467,7 +480,7 @@ source_names:
               FlowName: Natural Gas
             # attribution_source:
             #   BEA_Summary_Use_PRO_BeforeRedef:
-            #     <<: *bea
+            #     <<: *bea_summary
             #     selection_fields:
             #       ActivityProducedBy: {'221200': ''} # purchases of natural gas
 
@@ -479,7 +492,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea
+            <<: *bea_summary
             selection_fields:
               ActivityProducedBy: {'324': ''} # purchases of refinery products (324110)
 
@@ -512,10 +525,10 @@ source_names:
             Wood Electric Power: Wood Electric Power
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Make_BeforeRedef:
-            <<: *bea
+          BEA_Detail_Make_BeforeRedef:
+            <<: *bea_detail
             selection_fields:
-              ActivityConsumedBy: {'22': ''}  # Electricity (221100)
+              ActivityConsumedBy: {'221100': ''}  # Electricity (221100)
       fuel_oil:
         selection_fields:
           PrimaryActivity:
@@ -524,7 +537,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea
+            <<: *bea_summary
             selection_fields:
               ActivityProducedBy: {'324': ''}  # purchases of refinery products (324110)
 
@@ -538,7 +551,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea
+            <<: *bea_summary
             selection_fields:
               ActivityProducedBy: {'22': ''}  # purchases of natural gas (221200)
 
@@ -547,10 +560,10 @@ source_names:
           PrimaryActivity: Coal Industrial
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea
+          BEA_Detail_Use_PRO_BeforeRedef:
+            <<: *bea_detail
             selection_fields:
-              ActivityProducedBy: {'212': ''}  # purchases of coal (212100)
+              ActivityProducedBy: {'212100': ''}  # purchases of coal (212100)
 
       coal_manufacturing:
         selection_fields:
@@ -564,7 +577,7 @@ source_names:
               FlowName: Coal
             # attribution_source:
             #   BEA_Summary_Use_PRO_BeforeRedef:
-            #     <<: *bea
+            #     <<: *bea_summary
             #     selection_fields:
             #       ActivityProducedBy: {'212100': ''} # purchases of coal
 
@@ -582,7 +595,7 @@ source_names:
               FlowName: Natural Gas
             # attribution_source:
             #   BEA_Summary_Use_PRO_BeforeRedef:
-            #     <<: *bea
+            #     <<: *bea_summary
             #     selection_fields:
             #       ActivityProducedBy: {'221200': ''} # purchases of natural gas
 
@@ -646,7 +659,7 @@ source_names:
                 - Hydrocarbon Gas Liquids, excluding natural gasoline
             # attribution_source:
             #   BEA_Summary_Use_PRO_BeforeRedef:
-            #     <<: *bea
+            #     <<: *bea_summary
             #     selection_fields:
             #       ActivityProducedBy: {'324110': ''} # purchases of refineries
 
@@ -663,7 +676,7 @@ source_names:
               Unit: Trillion Btu
             # attribution_source:
             #   BEA_Summary_Use_PRO_BeforeRedef:
-            #     <<: *bea
+            #     <<: *bea_summary
             #     selection_fields:
             #       ActivityProducedBy: {'221200': ''} # purchases of natural gas
 
@@ -673,7 +686,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea
+            <<: *bea_summary
             selection_fields:
               ActivityProducedBy: {'324': ''} # use of petroleum products (324110)
 
@@ -715,10 +728,10 @@ source_names:
             - Industrial Process Refrigeration
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea
+          BEA_Detail_Use_PRO_BeforeRedef:
+            <<: *bea_detail
             selection_fields:
-              ActivityProducedBy: {'333': ''} # Air conditioning equipment (333415)
+              ActivityProducedBy: {'333415': ''} # Air conditioning equipment (333415)
 
       air_conditioning:
         selection_fields:
@@ -726,10 +739,10 @@ source_names:
             - Commercial Stationary Air Conditioning
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea
+          BEA_Detail_Use_PRO_BeforeRedef:
+            <<: *bea_detail
             selection_fields:
-              ActivityProducedBy: {'333': ''} # Air conditioning equipment (333415)
+              ActivityProducedBy: {'333415': ''} # Air conditioning equipment (333415)
 
       foams:
         selection_fields:
@@ -737,11 +750,13 @@ source_names:
             - Foams
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea
+          BEA_Detail_Use_PRO_BeforeRedef:
+            <<: *bea_detail
             selection_fields:
               ActivityProducedBy:
-                '326': '' # Polystyrene foam & Urethane and other foam (326140 & 326150)
+              ActivityProducedBy:
+                '326140': '' # Polystyrene foam
+                '326150': '' # Urethane and other foam
 
 
       # 'Mobile Air Conditioning' and 'Transport Refrigeration' come from
