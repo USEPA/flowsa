@@ -646,7 +646,7 @@ class _FlowBy(pd.DataFrame):
         if isinstance(attribute_config, dict):
             attribute_config = [attribute_config]
 
-        for step_config in attribute_config:
+        for index, step_config in enumerate(attribute_config):
             validate = True
             grouped: 'FB' = (
                 self
@@ -657,7 +657,9 @@ class _FlowBy(pd.DataFrame):
             if len(grouped) == 0:
                 log.warning(f'No data remaining in {self.full_name}.')
                 return self
-            if self.config['data_format'] in ['FBA', 'FBS_outside_flowsa']:
+            if index > 0:
+                fb = grouped.copy()
+            elif self.config['data_format'] in ['FBA', 'FBS_outside_flowsa']:
                 fb: 'FlowByActivity' = (
                     grouped
                     .map_to_sectors(external_config_path=external_config_path)
@@ -793,10 +795,6 @@ class _FlowBy(pd.DataFrame):
                                'descendants'], errors='ignore')
                 .drop(columns=step_config.get('drop_columns', []))
             )
-            # reset datatype to FBS because otherwise when we loop through
-            # to the next attribution method, the FBA will be re-cleaned and
-            # have additional sector columns appended
-            self.config.update({'data_format': 'FBS'})
 
         return self
 
