@@ -658,6 +658,8 @@ class _FlowBy(pd.DataFrame):
                 log.warning(f'No data remaining in {self.full_name}.')
                 return self
             if index > 0:
+                # On subsequent attributions, do not re-clean or append
+                # additional sector columns
                 fb = grouped.copy()
             elif self.config['data_format'] in ['FBA', 'FBS_outside_flowsa']:
                 fb: 'FlowByActivity' = (
