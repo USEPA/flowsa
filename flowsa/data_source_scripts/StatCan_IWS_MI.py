@@ -145,7 +145,8 @@ def convert_statcan_data_to_US_water_use(df, attr, download_FBA_if_missing):
     # load us gdp
     # load Canadian GDP data
     us_gdp_load = load_fba_w_standardized_units(
-        datasource='BEA_GDP_GrossOutput', year=attr['allocation_source_year'],
+        datasource='BEA_Detail_GrossOutput_IO', year=attr[
+            'allocation_source_year'],
         flowclass='Money', download_FBA_if_missing=download_FBA_if_missing)
 
     # load bea crosswalk

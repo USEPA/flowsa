@@ -8,7 +8,8 @@ import pandas as pd
 import numpy as np
 from functools import partial, reduce
 from copy import deepcopy
-from flowsa import (settings, literature_values, flowsa_yaml, geo, schema)
+from flowsa import (settings, literature_values, flowsa_yaml, geo, schema,
+                    naics)
 from flowsa.common import get_catalog_info
 from flowsa.flowsa_log import log, vlog
 import esupy.processed_data_mgmt
@@ -632,7 +633,6 @@ class _FlowBy(pd.DataFrame):
 
         from flowsa.flowbyactivity import FlowByActivity
 
-        validate = True
         # look for the "attribute" key in the FBS yaml, which will exist if
         # there are multiple, non-recursive attribution methods applied to a
         # data source
@@ -646,7 +646,8 @@ class _FlowBy(pd.DataFrame):
         if isinstance(attribute_config, dict):
             attribute_config = [attribute_config]
 
-        for step_config in attribute_config:
+        for index, step_config in enumerate(attribute_config):
+            validate = True
             grouped: 'FB' = (
                 self
                 .reset_index(drop=True).reset_index()
@@ -656,7 +657,11 @@ class _FlowBy(pd.DataFrame):
             if len(grouped) == 0:
                 log.warning(f'No data remaining in {self.full_name}.')
                 return self
-            if self.config['data_format'] in ['FBA', 'FBS_outside_flowsa']:
+            if index > 0:
+                # On subsequent attributions, do not re-clean or append
+                # additional sector columns
+                fb = grouped.copy()
+            elif self.config['data_format'] in ['FBA', 'FBS_outside_flowsa']:
                 fb: 'FlowByActivity' = (
                     grouped
                     .map_to_sectors(external_config_path=external_config_path)
@@ -666,7 +671,7 @@ class _FlowBy(pd.DataFrame):
                     .rename(columns={'SourceName': 'MetaSources'})
                 )
             elif self.config['data_format'] in ['FBS']:
-                fb = grouped.copy()
+                fb = grouped.sector_aggregation()  # convert to proper industry spec.
 
             # subset the fb configuration so it only includes the
             # attribution_method currently being assessed - rather than all
@@ -724,7 +729,7 @@ class _FlowBy(pd.DataFrame):
             elif attribution_method == 'equal':
                 log.info(f"Equally attributing {self.full_name} to "
                          f"target sectors.")
-                attributed_fb = fb.equally_attribute()                
+                attributed_fb = fb.equally_attribute()
 
             elif attribution_method != 'direct':
                 log.error('Attribution method for %s not recognized: %s',
@@ -776,8 +781,8 @@ class _FlowBy(pd.DataFrame):
                     log.info(f"No change in {self.full_name} FlowAmount after "
                              "attribution.")
                 else:
-                    log.info(f"Percent change in {self.full_name} after "
-                             f"attribution is {percent_change}%")
+                    log.warning(f"Percent change in {self.full_name} after "
+                                f"attribution is {percent_change}%")
 
             # run function to clean fbs after attribution
             attributed_fb = attributed_fb.function_socket(
@@ -792,10 +797,6 @@ class _FlowBy(pd.DataFrame):
                                'descendants'], errors='ignore')
                 .drop(columns=step_config.get('drop_columns', []))
             )
-            # reset datatype to FBS because otherwise when we loop through
-            # to the next attribution method, the FBA will be re-cleaned and
-            # have additional sector columns appended
-            self.config.update({'data_format': 'FBS'})
 
         return self
 
@@ -908,7 +909,11 @@ class _FlowBy(pd.DataFrame):
         fb_geoscale = geo.scale.from_string(self.config['geoscale'])
         other_geoscale = geo.scale.from_string(other.config['geoscale'])
 
-        if other_geoscale < fb_geoscale:
+        fill_cols = self.config.get('fill_columns')
+        if fill_cols and 'Location' in fill_cols:
+            # Don't harmonize geoscales when updating Location
+            pass
+        elif other_geoscale < fb_geoscale:
             log.info('Aggregating %s from %s to %s', other.full_name,
                      other_geoscale, fb_geoscale)
             other = (
@@ -935,7 +940,6 @@ class _FlowBy(pd.DataFrame):
         if attribution_cols is not None:
             subset_cols = subset_cols + attribution_cols
             groupby_cols = subset_cols + attribution_cols
-        fill_cols = self.config.get('fill_columns')
         if fill_cols is not None:
             subset_cols = subset_cols + [fill_cols]
             groupby_cols = groupby_cols + [fill_cols]
@@ -1059,15 +1063,18 @@ class _FlowBy(pd.DataFrame):
             attribute_cols = self.config.get('attribute_on')
 
             log.info(f'Proportionally attributing on {attribute_cols}')
-
+            left_on = attribute_cols + ['temp_location' if 'temp_location'
+                                        in fb else 'Location']
+            right_on = attribute_cols + ['Location']
+            for l in (left_on, right_on):
+                if 'Location' in self.config.get('fill_columns', []):
+                    l.remove('Location')
             merged = (
                 fb
                 .merge(other,
                        how='left',
-                       left_on=attribute_cols + ['temp_location' if
-                                                 'temp_location' in fb else
-                                                 'Location'],
-                       right_on=attribute_cols + ['Location'],
+                       left_on=left_on,
+                       right_on=right_on,
                        suffixes=[None, '_other'])
                 .fillna({'FlowAmount_other': 0})
             )
@@ -1278,6 +1285,68 @@ class _FlowBy(pd.DataFrame):
                            'temp_location'],
                   errors='ignore')
             .reset_index(drop=True)
+        )
+
+    def equally_attribute(self: 'FB') -> 'FB':
+        '''
+        This function takes a FlowByActivity dataset with SectorProducedBy and
+        SectorConsumedBy columns already added and attributes flows from any
+        activity which is mapped to multiple industries/sectors equally across
+        those industries/sectors, by NAICS level. In other words, if an
+        activity is mapped to multiple industries/sectors, the flow amount is
+        equally divided across the relevant 2-digit NAICS industries. Then,
+        within each 2-digit industry the flow amount for that industry is
+        equally divided across the relevant 3-digit NAICS industries; within
+        each of those, the flow amount is equally divided across relevant
+        4-digit NAICS industries, and so on.
+
+        For example:
+        Suppose that activity A has a flow amount of 12 and is mapped to
+        industries 111210, 111220, and 213110, a flow amount of 3 will be
+        attributed to 111210, a flow amount of 3 to 111220, and a flow amount
+        of 6 to 213110.
+
+        Attribution happens according to the primary sector first (see
+        documentation for
+        flowby.FlowByActivity.add_primary_secondary_sector_columns() for
+        details on how the primary sector is determined; in most cases, the
+        primary sector is the (only) non-null value out of SectorProducedBy or
+        SectorConsumedBy). If necessary, flow amounts are further (equally)
+        subdivided based on the secondary sector.
+        '''
+        naics_key = naics.map_target_sectors_to_less_aggregated_sectors(
+            self.config['industry_spec'])
+
+        fba = self.add_primary_secondary_columns('Sector')
+
+        groupby_cols = ['group_id', 'Location']
+        for rank in ['Primary', 'Secondary']:
+            fba = (
+                fba
+                .merge(naics_key, how='left', left_on=f'{rank}Sector',
+                       right_on='target_naics')
+                .assign(
+                    **{f'_unique_naics_{n}_by_group': lambda x, i=n: (
+                            x.groupby(groupby_cols if i == 2
+                                      else [*groupby_cols, f'_naics_{i-1}'],
+                                      dropna=False)
+                            [[f'_naics_{i}']]
+                            .transform('nunique', dropna=False)
+                        )
+                        for n in range(2, 8)},
+                    FlowAmount=lambda x: reduce(
+                        lambda x, y: x / y,
+                        [x.FlowAmount, *[x[f'_unique_naics_{n}_by_group']
+                                         for n in range(2, 8)]]
+                    )
+                )
+                .drop(columns=naics_key.columns.values.tolist())
+            )
+            groupby_cols.append(f'{rank}Sector')
+
+        return fba.drop(
+            columns=['PrimarySector', 'SecondarySector',
+                     *[f'_unique_naics_{n}_by_group' for n in range(2, 8)]]
         )
 
     def add_primary_secondary_columns(

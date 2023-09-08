@@ -237,5 +237,5 @@ def remove_flow_overlap(df, aggregate_flow, contributing_flows):
 
 if __name__ == '__main__':
     import flowsa
-    flowsa.flowbyactivity.main(source='EPA_NEI_Onroad', year='2020')
+    flowsa.generateflowbyactivity.main(source='EPA_NEI_Onroad', year='2020')
     fba = flowsa.getFlowByActivity('EPA_NEI_Onroad', '2020')

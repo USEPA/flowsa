@@ -279,6 +279,89 @@ def compare_FBS(df1, df2, ignore_metasources=False):
     return df_m
 
 
+def compare_national_state_fbs(dataname=None, year=None, method=None,
+                               nationalname=None, statename=None,
+                               compare_metasources=False):
+    """
+    Developed to compare national and state FBS. Either include
+    dataname/year/method OR specify nationalname/statename if want to
+    compare specific githash versions of the FBS
+
+    :param dataname: str, Only want the beginning of the flowname, so for
+    example, in "Water_national_2015", the dataname is "Water"
+    :param year: str, method year
+    :param method: str, if there is a method, include here
+    :param nationalname: str, name of national method, can include version
+    and githash
+    :param statename: str, name of national method, can include version
+    and githash
+    :param compare_metasources: bool, include MetaSources in the comparion
+    :return:
+    """
+    # declare string versions of national and state dataframes
+    if nationalname is not None:
+        n = nationalname
+        s = statename
+    else:
+        if method is None:
+            method = ''
+        else:
+            method = f'_{method}'
+
+        n = f'{dataname}_national_{year}{method}'
+        s = f'{dataname}_state_{year}{method}'
+
+    # load the FBS as dataframes
+    national = FlowBySector.getFlowBySector(n)
+    state = FlowBySector.getFlowBySector(s)
+
+    # load state level target sectors - assumption state will always be
+    # equal or more aggregated than national
+    state_target = state.config['industry_spec']
+
+    groupby_fields = ['Flowable','Context','SectorProducedBy', 'SectorConsumedBy',
+                      'Unit', 'Location', 'FlowUUID']
+    for g in groupby_fields:
+        if national[g].isna().all() & state[g].isna().all():
+            groupby_fields.remove(g)
+    if compare_metasources:
+        groupby_fields = groupby_fields + ['MetaSources']
+    subset_fields = groupby_fields + ['FlowAmount']
+
+    # attribute national data to state level target sectors, subset df,
+    # and aggregate
+    national_agg = (
+        national
+        .sector_aggregation(industry_spec=state_target)[subset_fields]
+        .aggregate_flowby()
+    )
+
+    # attribute state data to national location, subset df,
+    # and aggregate
+    state_agg = (
+        state
+        .convert_fips_to_geoscale(target_geoscale='national')[subset_fields]
+        .aggregate_flowby()
+    )
+
+    # compare FBS results
+    sectors = pd.DataFrame(
+        national_agg
+        .merge(state_agg, how='outer', on=groupby_fields)
+        .rename(columns={'FlowAmount_x':'national',
+                         'FlowAmount_y':'state'})
+        .drop(columns='Location'))
+    sectors['comp'] = sectors['state'].fillna(0) / sectors['national']
+
+    flows = (
+        sectors
+        .groupby('Flowable').agg({'state':'sum','national':'sum'})
+        .reset_index())
+    flows['comp'] = round(flows['state'] / flows['national'], 3)
+
+    return sectors, flows
+
+
 def compare_geographic_totals(
     df_subset, df_load, sourcename, attr, activity_set, activity_names,
     df_type='FBA', subnational_geoscale=None
