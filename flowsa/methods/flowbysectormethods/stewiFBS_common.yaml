@@ -1,6 +1,7 @@
 
 GRDREL:
     data_format: FBS_outside_flowsa
+    activity_schema: NAICS_2012_Code
     FBS_datapull_fxn: !script_function:stewiFBS stewicombo_to_sector
     # Below are arguments needed by the stewicombo_to_sector function
     inventory_dict:
@@ -11,6 +12,7 @@ GRDREL:
 
 TRI_DMR:
     data_format: FBS_outside_flowsa
+    activity_schema: NAICS_2012_Code
     FBS_datapull_fxn: !script_function:stewiFBS stewicombo_to_sector
     # Below are arguments needed by the stewicombo_to_sector function
     inventory_dict:
@@ -22,6 +24,7 @@ TRI_DMR:
 
 CRHW:
     data_format: FBS_outside_flowsa
+    activity_schema: NAICS_2012_Code
     FBS_datapull_fxn: !script_function:stewiFBS stewi_to_sector
     # Below are arguments needed by the stewicombo_to_sector function
     inventory_dict:

@@ -308,6 +308,7 @@ source_names:
 
   stewiFBS:
     data_format: FBS_outside_flowsa
+    activity_schema: NAICS_2012_Code
     FBS_datapull_fxn: !script_function:stewiFBS stewicombo_to_sector
     # inventory_dict: # assign in primary method
     #   NEI: 2017
