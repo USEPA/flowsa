@@ -2,12 +2,67 @@
 
 # FlowByActivity
 
-USGS_MYB_Potash:
+USGS_MYB_Barite:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+USGS_MYB_Gallium:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+USGS_MYB_Gypsum:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+USGS_MYB_IronOre:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+USGS_MYB_Kyanite:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+USGS_MYB_Mica:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+USGS_MYB_Niobium:
     Active: False
     Status: Error in source data links
     Type: HTTPError
 
 USGS_MYB_Phosphate:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+USGS_MYB_Potash:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+USGS_MYB_SandGravelIndustrial:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+USGS_MYB_StoneCrushed:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+USGS_MYB_Vermiculite:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+USGS_MYB_Zeolites:
     Active: False
     Status: Error in source data links
     Type: HTTPError
