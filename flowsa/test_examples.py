@@ -23,6 +23,10 @@ def test_get_flows_by_sector():
     flowsa.getFlowBySector('GHG_national_2016_m1',
                            download_FBAs_if_missing=True)
 
+    flowsa.getFlowBySector('CNHW_national_2018',
+                           download_FBAs_if_missing=True,
+                           download_FBS_if_missing=True)
+
 
 def test_write_bibliography():
     flowsa.writeFlowBySectorBibliography('Water_national_2015_m1')

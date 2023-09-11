@@ -80,5 +80,5 @@ if __name__ == "__main__":
     # source = 'stateio_Industry_GO'
     # source = 'stateio_Make_Summary'
     source = 'stateio_Use_Summary'
-    flowsa.flowbyactivity.main(year=2017, source=source)
+    flowsa.generateflowbyactivity.main(year=2017, source=source)
     fba = flowsa.getFlowByActivity(source, 2017)

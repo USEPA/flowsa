@@ -224,5 +224,5 @@ def clean_up_state_data(fba, source_dict, method, **_):
 
 if __name__ == '__main__':
     import flowsa
-    flowsa.flowbyactivity.main(source='EPA_SIT', year='2019')
+    flowsa.generateflowbyactivity.main(source='EPA_SIT', year='2019')
     fba = flowsa.getFlowByActivity('EPA_SIT', '2019')

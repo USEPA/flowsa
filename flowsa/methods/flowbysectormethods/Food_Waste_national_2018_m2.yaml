@@ -10,6 +10,7 @@ geoscale: national
 
 source_names:
   CNHW_national_2018:
+    data_format: FBS
     selection_fields:
       Flowable: {'Food': 'Food Waste'}
     activity_sets:

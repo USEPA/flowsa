@@ -36,7 +36,7 @@ if __name__ == '__main__':
     # select years to pull unique activity names
     year = '2002'
     # datasource
-    datasource = 'BEA_Make_AR'
+    datasource = 'BEA_Detail_Make_AfterRedef'
     # df of unique ers activity names
     df = unique_activity_names(datasource, year)
     # add manual naics 2012 assignments
