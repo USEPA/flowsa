@@ -187,7 +187,7 @@ source_names:
           PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv mobile_and_fuel_storage
         attribution_method: proportional
         attribution_source:
-          BEA_Use_Detail_PRO_BeforeRedef:
+          BEA_Detail_Use_PRO_BeforeRedef:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'324110': ''}  # Petroleum
@@ -197,7 +197,7 @@ source_names:
           PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv fertilizers
         attribution_method: proportional
         attribution_source:
-          BEA_Use_Detail_PRO_BeforeRedef:
+          BEA_Detail_Use_PRO_BeforeRedef:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'325310': ''}  # Fertilizers
@@ -218,7 +218,7 @@ source_names:
             - Trifluralin
         attribution_method: proportional
         attribution_source:
-          BEA_Use_Detail_PRO_BeforeRedef:
+          BEA_Detail_Use_PRO_BeforeRedef:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'325320': ''}  # Pesticides
@@ -228,7 +228,7 @@ source_names:
           PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv output_allocation
         attribution_method: proportional
         # attribution_source: # document in primary method file
-        #   BEA_GDP_GrossOutput:
+        #   BEA_Detail_GrossOutput_IO:
         #     year: 2017
         #     geoscale: national
         #     activity_to_sector_mapping: BEA_2012_Detail
@@ -269,7 +269,7 @@ source_names:
           PrimaryActivity: !from_index:NEI_Nonroad_asets.csv offroad_vehicles_equipment
         attribution_method: proportional
         attribution_source:
-          BEA_Use_Detail_PRO_BeforeRedef:
+          BEA_Detail_Use_PRO_BeforeRedef:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'324110': ''}  # Petroleum
@@ -301,13 +301,14 @@ source_names:
           PrimaryActivity: !from_index:NEI_Onroad_asets.csv onroad_vehicles_gas_stations
         attribution_method: proportional
         attribution_source:
-          BEA_Use_Detail_PRO_BeforeRedef:
+          BEA_Detail_Use_PRO_BeforeRedef:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'324110': ''}  # Petroleum
 
   stewiFBS:
     data_format: FBS_outside_flowsa
+    activity_schema: NAICS_2012_Code
     FBS_datapull_fxn: !script_function:stewiFBS stewicombo_to_sector
     # inventory_dict: # assign in primary method
     #   NEI: 2017

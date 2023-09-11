@@ -7,6 +7,7 @@ geoscale: state
 
 source_names:
   CNHW_CA_2014:
+    data_format: FBS
     activity_sets:
       employment:
         exclusion_fields:

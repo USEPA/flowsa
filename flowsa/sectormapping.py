@@ -231,7 +231,7 @@ def get_BEA_industry_output(region, io_level, year):
         if io_level == 'detail':
             raise TypeError ('detail models not available for states')
     elif region == 'national':
-        fba = 'BEA_GDP_GrossOutput'
+        fba = 'BEA_Detail_GrossOutput_IO'
 
     # Get output by BEA sector
     bea = flowsa.getFlowByActivity(fba, year)

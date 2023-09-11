@@ -215,5 +215,5 @@ def allocate_industrial_combustion(fba: FlowByActivity, **_) -> FlowByActivity:
 
 if __name__ == '__main__':
     import flowsa
-    flowsa.flowbyactivity.main(source='EPA_StateGHGI', year='2017')
+    flowsa.generateflowbyactivity.main(source='EPA_StateGHGI', year='2017')
     fba = flowsa.getFlowByActivity('EPA_StateGHGI', '2017')

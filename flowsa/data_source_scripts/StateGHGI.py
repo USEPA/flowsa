@@ -249,5 +249,5 @@ def VT_remove_dupicate_activities(df_subset):
 
 if __name__ == '__main__':
     import flowsa
-    flowsa.flowbyactivity.main(source='StateGHGI_ME', year='2019')
+    flowsa.generateflowbyactivity.main(source='StateGHGI_ME', year='2019')
     fba = flowsa.getFlowByActivity('StateGHGI_ME', '2019')

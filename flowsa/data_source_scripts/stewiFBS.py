@@ -339,6 +339,8 @@ def prepare_stewi_fbs(df_load, config) -> 'FlowBySector':
             config=config,
             ).prepare_fbs()
 
+    fbs.config.update({'data_format': 'FBS'})
+
     return fbs
 
 

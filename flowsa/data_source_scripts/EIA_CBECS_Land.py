@@ -313,7 +313,7 @@ def calculate_floorspace_based_on_number_of_floors(fba_load):
     fba3 = fba3.assign(Description='Building Footprint')
     fba4 = fba3.aggregate_flowby()
 
-    return fba4
+    return fba4.drop(columns=['DivisionFactor'])
 
 
 def disaggregate_eia_cbecs_mercentile(df_load):

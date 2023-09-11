@@ -28,7 +28,7 @@ source_names:
           PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv output_allocation
         attribution_method: proportional
         attribution_source:
-          BEA_GDP_GrossOutput:
+          BEA_Detail_GrossOutput_IO:
             year: 2020
             geoscale: national
             activity_to_sector_mapping: BEA_2012_Detail
