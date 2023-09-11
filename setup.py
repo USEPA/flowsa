@@ -37,8 +37,8 @@ setup(
     ],
     url='https://github.com/USEPA/FLOWSA',
     license='MIT',
-    author='Catherine Birney, Ben Young, Matthew Chambers, Melissa Conner, '
-           'Jacob Specht, Mo Li, and Wesley Ingwersen',
+    author='Catherine Birney, Ben Young, Matthew Chambers, and Wesley '
+           'Ingwersen',
     author_email='ingwersen.wesley@epa.gov',
     classifiers=[
         "Development Status :: 5 - Production/Stable",
