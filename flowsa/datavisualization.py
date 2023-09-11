@@ -176,7 +176,7 @@ def stackedBarChart(df,
     # if the df provided is a string, load the fbs method, otherwise use the
     # df provided
     if (type(df)) == str:
-        df = flowsa.getFlowBySector(df)
+        df = flowsa.FlowBySector.getFlowBySector(df)
 
     if generalize_AttributionSources:
         df['AttributionSources'] = np.where(
@@ -190,7 +190,8 @@ def stackedBarChart(df,
 
     df = flowsa.flowbysector.FlowBySector(df)
     # agg sectors for data visualization
-    df.config['industry_spec'] = industry_spec
+    if industry_spec is not None:
+        df.config['industry_spec'] = industry_spec
     df = df.sector_aggregation()
     df = flowsa.flowbyfunctions.collapse_fbs_sectors(df)
 

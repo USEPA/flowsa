@@ -3,6 +3,13 @@
 # coding=utf-8
 
 """
+Flow-By-Activity (FBA) datasets are environmental and economic data that are
+generally pulled from publicly available data sources and formatted into
+standardized tables (defined in
+https://github.com/USEPA/flowsa/blob/master/format%20specs/FlowByActivity.md).
+These data are generally unchanged from the source data, with the exception
+of formatting.
+
 See source_catalog.yaml for available FlowByActivity datasets and
 available parameters for getFlowByActivity().
 Examples of use of flowsa. Read parquet files as dataframes.

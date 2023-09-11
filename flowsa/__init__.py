@@ -27,7 +27,7 @@ from flowsa.settings import sourceconfigpath, flowbysectormethodpath, \
 from flowsa.flowbyfunctions import collapse_fbs_sectors, filter_by_geoscale
 from flowsa.validation import check_for_nonetypes_in_sector_col, \
     check_for_negative_flowamounts
-from flowsa.bibliography import generate_fbs_bibliography
+# from flowsa.bibliography import generate_fbs_bibliography
 from flowsa.datavisualization import FBSscatterplot
 from flowsa.flowbyactivity import FlowByActivity
 from flowsa.flowbysector import FlowBySector
@@ -123,17 +123,17 @@ def collapse_FlowBySector(
 
     return fbs_collapsed
 
-
-def writeFlowBySectorBibliography(methodname):
-    """
-    Generate bibliography for FlowBySectorMethod in local directory
-    :param methodname: string, FBS methodname for which to create .bib file
-    :return: .bib file save to local directory
-    """
-    # Generate a single .bib file for a list of Flow-By-Sector method names
-    # and save file to local directory
-    log.info(f'Write bibliography to {biboutputpath / methodname}.bib')
-    generate_fbs_bibliography(methodname)
+# todo: will reintroduce option to create bibliography post 2.0 release
+# def writeFlowBySectorBibliography(methodname):
+#     """
+#     Generate bibliography for FlowBySectorMethod in local directory
+#     :param methodname: string, FBS methodname for which to create .bib file
+#     :return: .bib file save to local directory
+#     """
+#     # Generate a single .bib file for a list of Flow-By-Sector method names
+#     # and save file to local directory
+#     log.info(f'Write bibliography to {biboutputpath / methodname}.bib')
+#     generate_fbs_bibliography(methodname)
 
 
 def seeAvailableFlowByModels(flowbytype, print_method=True):

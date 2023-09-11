@@ -56,6 +56,7 @@ source_names:
       Compartment: air
       Description:  # prevent double counting with "Public Supply deliveries to"
         - Domestic deliveries from public supply, in Mgal/d
+        - Public Supply total deliveries, in Mgal/d
     clean_fba_before_activity_sets: !script_function:USGS_NWIS_WU usgs_fba_data_cleanup
     activity_sets:
 

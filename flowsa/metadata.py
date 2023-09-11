@@ -112,7 +112,7 @@ def return_fbs_method_data(source_name, config):
                     v['inventory_dict'])
             continue
 
-        cat = (get_catalog_info(k)['data_format']
+        cat = (get_catalog_info(k).get('data_format', v.get('data_format', ''))
                .replace('FBS', 'FlowBySector')
                .replace('FBA', 'FlowByActivity'))
 

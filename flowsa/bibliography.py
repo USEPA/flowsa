@@ -4,6 +4,7 @@
 """
 Functions to generate .bib file for a FlowBySector method
 """
+# todo: modify the functions for recursive yaml method
 
 import pandas as pd
 from bibtexparser.bwriter import BibTexWriter
@@ -70,85 +71,85 @@ def load_source_dict(sourcename):
     return config
 
 
-def generate_fbs_bibliography(methodname):
-    """
-    Generate bibliography for a FlowBySector
-    :param methodname: string, methodname to create a bibliiography
-    :return: a .bib file saved in local directory
-    """
-
-    from flowsa.metadata import getMetadata
-
-    # create list of sources in method
-    sources = generate_list_of_sources_in_fbs_method(methodname)
-
-    # loop through list of sources, load source method
-    # yaml, and create bib entry
-    bib_list = []
-    source_set = set()
-    for source in sources:
-        # drop list duplicates and any where year is None (because allocation
-        # is a function, not a datasource)
-        if source[1] != 'None':
-            try:
-                config = \
-                    load_values_from_literature_citations_config()[source[0]]
-            except KeyError:
-                try:
-                    config = getMetadata(source[0], source[1])
-                    # flatten the dictionary so can treat all
-                    # dictionaries the same when pulling info
-                    config = pd.json_normalize(config, sep='_')
-                    config.columns = \
-                        config.columns.str.replace('tool_meta_', '')
-                    config = config.to_dict(orient='records')[0]
-                except KeyError or AttributeError:
-                    log.info('Could not find metadata for %s', source[0])
-                    continue
-            if config is not None:
-                # ensure data sources are not duplicated
-                # when different source names
-                try:
-                    if (config['source_name'], config['author'], source[1],
-                            config['source_url']) not in source_set:
-                        source_set.add((config['source_name'],
-                                        config['author'],
-                                        source[1],
-                                        config['source_url']))
-
-                        # if there is a date downloaded, use in
-                        # citation over date generated
-                        if 'original_data_download_date' in config:
-                            bib_date = config['original_data_download_date']
-                        elif 'date_accessed' in config:
-                            bib_date = config['date_accessed']
-                        else:
-                            bib_date = config['date_created']
-
-                        db = BibDatabase()
-                        db.entries = [{
-                            'title': f"{config['source_name']} "
-                                     f"{str(source[1])}",
-                            'author': config['author'],
-                            'year': str(source[1]),
-                            'url': config['tool_meta']['source_url'],
-                            'urldate': bib_date,
-                            'ID': config['tool_meta']['bib_id'] + '_' + str(source[1]),
-                            'ENTRYTYPE': 'misc'
-                        }]
-                        # append each entry to a list of BibDatabase entries
-                        bib_list.append(db)
-                except KeyError:
-                    log.exception('Missing information needed to '
-                                  'create bib for %s, %s', source[0],
-                                  source[1])
-                    continue
-
-    # write out bibliography
-    writer = BibTexWriter()
-    # create directory if missing
-    mkdir_if_missing(outputpath / 'Bibliography')
-    with open(biboutputpath / f'{methodname}.bib', 'w') as bibfile:
-        # loop through all entries in bib_list
-        for b in bib_list:
-            bibfile.write(writer.write(b))
+# def generate_fbs_bibliography(methodname):
+#     """
+#     Generate bibliography for a FlowBySector
+#     :param methodname: string, methodname to create a bibliiography
+#     :return: a .bib file saved in local directory
+#     """
+#
+#     from flowsa.metadata import getMetadata
+#
+#     # create list of sources in method
+#     sources = generate_list_of_sources_in_fbs_method(methodname)
+#
+#     # loop through list of sources, load source method
+#     # yaml, and create bib entry
+#     bib_list = []
+#     source_set = set()
+#     for source in sources:
+#         # drop list duplicates and any where year is None (because allocation
+#         # is a function, not a datasource)
+#         if source[1] != 'None':
+#             try:
+#                 config = \
+#                     load_values_from_literature_citations_config()[source[0]]
+#             except KeyError:
+#                 try:
+#                     config = getMetadata(source[0], source[1])
+#                     # flatten the dictionary so can treat all
+#                     # dictionaries the same when pulling info
+#                     config = pd.json_normalize(config, sep='_')
+#                     config.columns = \
+#                         config.columns.str.replace('tool_meta_', '')
+#                     config = config.to_dict(orient='records')[0]
+#                 except KeyError or AttributeError:
+#                     log.info('Could not find metadata for %s', source[0])
+#                     continue
+#             if config is not None:
+#                 # ensure data sources are not duplicated
+#                 # when different source names
+#                 try:
+#                     if (config['source_name'], config['author'], source[1],
+#                             config['source_url']) not in source_set:
+#                         source_set.add((config['source_name'],
+#                                         config['author'],
+#                                         source[1],
+#                                         config['source_url']))
+#
+#                         # if there is a date downloaded, use in
+#                         # citation over date generated
+#                         if 'original_data_download_date' in config:
+#                             bib_date = config['original_data_download_date']
+#                         elif 'date_accessed' in config:
+#                             bib_date = config['date_accessed']
+#                         else:
+#                             bib_date = config['date_created']
+#
+#                         db = BibDatabase()
+#                         db.entries = [{
+#                             'title': f"{config['source_name']} "
+#                                      f"{str(source[1])}",
+#                             'author': config['author'],
+#                             'year': str(source[1]),
+#                             'url': config['tool_meta']['source_url'],
+#                             'urldate': bib_date,
+#                             'ID': config['tool_meta']['bib_id'] + '_' + str(source[1]),
+#                             'ENTRYTYPE': 'misc'
+#                         }]
+#                         # append each entry to a list of BibDatabase entries
+#                         bib_list.append(db)
+#                 except KeyError:
+#                     log.exception('Missing information needed to '
+#                                   'create bib for %s, %s', source[0],
+#                                   source[1])
+#                     continue
+#
+#     # write out bibliography
+#     writer = BibTexWriter()
+#     # create directory if missing
+#     mkdir_if_missing(outputpath / 'Bibliography')
+#     with open(biboutputpath / f'{methodname}.bib', 'w') as bibfile:
+#         # loop through all entries in bib_list
+#         for b in bib_list:
+#             bibfile.write(writer.write(b))

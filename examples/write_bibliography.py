@@ -6,8 +6,11 @@
 Writes a .bib for sources in a FlowBySector method yaml
 """
 
-import flowsa
+# todo: will reintroduce option to write bibliography for recursive
+#  method post v2.0 release
 
-
-# write .bib file to local directory for a Flow-By-Sector method
-flowsa.writeFlowBySectorBibliography('Land_national_2012')
+# import flowsa
+#
+#
+# # write .bib file to local directory for a Flow-By-Sector method
+# flowsa.writeFlowBySectorBibliography('Land_national_2012')
