@@ -2,6 +2,84 @@
 Description of parameters in flowbysectormethods yamls. All values are
 strings unless noted.
 
+## Recursive vs Sequential Attribution
+The FBS methods are designed to handle recursive and sequential attribution 
+methods. 
+
+### Recursive Attribution Methods
+Recursive attribution methods allow application of unlimited attribution 
+methods on a primary data source. For example, a primary data source 
+(such as `USDA_ERS_MLU`) can be _proportionally_ attributed to sectors with 
+an attribution source (`USDA_CoA_Cropland`) _after_ `USDA_CoA_Cropland` is 
+_proportionally_ attributed to a higher resolution of sectors with another 
+attribution source `USDA_CoA_Cropland_NAICS`. To apply recursive 
+attribution in the FBS method yaml, all attribution sources are written by 
+being continually indented, as demonstrated bellow. The yaml is essentially 
+read bottom-up, where the last attribution method listed is applied to the 
+data source above until reaching the primary data source. 
+
+```
+  USDA_ERS_MLU:
+    fedefl_mapping: USDA_ERS_MLU
+    geoscale: state
+    selection_fields:
+      Class: Land
+    activity_sets:
+      cropland_crops:
+        selection_fields:
+         PrimaryActivity: 'Cropland used for crops'
+        attribution_method: proportional
+        attribution_source:
+          USDA_CoA_Cropland:
+            selection_fields:
+              Class: Land
+              FlowName: "AREA HARVESTED"
+            attribution_method: proportional
+            attribution_source:
+              USDA_CoA_Cropland_NAICS:
+                selection_fields:
+                  Class: Land
+                  FlowName: "AG LAND, CROPLAND, HARVESTED"
+                attribution_method: direct
+             
+```
+
+### Sequential Attribution Methods
+Sequential attribution is defined by listing each attribution method to be 
+applied to a data source. The first attribution method in the list is 
+applied first, then the next, until all methods in the list are applied. 
+For example, after loading `EIA_CBECS_Land` and subsetting into an activity 
+set, the data can first be _proportionally_ attributed using 
+`Employment_national_2012`. After attribution, a second 
+_proportional_attribution_ method can be applied using 
+`Employment_state_2012` data. 
+
+```
+  EIA_CBECS_Land: # commercial land use
+    fedefl_mapping: EIA_CBECS_Land
+    geoscale: national
+    selection_fields:
+      Class: Land
+      Location: !include:Location_common.yaml:_national_location
+    clean_fba: !script_function:EIA_CBECS_Land cbecs_land_fba_cleanup
+    activity_sets:
+      cbecs_land: # all activities in eia cbecs land crosswalk
+        selection_fields:
+          PrimaryActivity: !from_index:EIA_CBECS_Land_2012_asets.csv cbecs_land
+        attribute:
+          - attribution_method: proportional
+            attribution_source:
+              Employment_national_2012:
+                geoscale: national
+          - attribution_method: proportional
+            attribute_on: ['PrimarySector']
+            fill_columns: Location
+            attribution_source:
+              Employment_state_2012:
+                geoscale: state
+
+```
+
 ## Special notation
 Flowsa FBA and FBS method files include custom yaml configurations as defined
 in `flowsa_yaml.py` using the custom `FlowsaLoader` class.
@@ -67,11 +145,11 @@ any level, and are inherited from higher-level sources.
   the name (e.g., `activity_set_1`) of the activity set as found in the csv file.
 - _exclusion_fields_: A dictionary that allows subsetting source data by column.
   See description in `flowby.select_by_fields()`. 
+- _attribute_: (optional) include for sequential attribution. Follow with list of _attribution_method_ parameters. 
 - _attribution_method_: currently written for `direct`, `proportional`, 
   `multiplication`, `equal`, `inheritance`. See "Method Descriptions" below.
 - _attribution_source_: The data source used to attribute the primary data 
-  source.
-   By default attribution is performed on the primary activity column.
+  source. By default attribution is performed on the primary activity column.
 
 #### Optional cleaning functions
 These parameters assign functions for additional processing of FlowBy objects.
