@@ -4,8 +4,8 @@
 <!-- badges: end -->
 
 # flowsa
-`flowsa` is a data processing library attributing resources (environmental, 
-monetary, and human), wastes, emissions, and losses to sectors, typically 
+`flowsa` is a data processing library attributing the flows of resources 
+(environmental, monetary, and human), wastes, emissions, and losses to sectors, typically 
 [NAICS codes](https://www.census.gov/naics/). `flowsa` aggregates, combines,
 and allocates data from a variety of sources. The sources can be found in the 
 [GitHub wiki](https://github.com/USEPA/flowsa/wiki/Available-Data#flow-by-activity-datasets) 
@@ -48,6 +48,9 @@ where vX.X.X can be replaced with the version you wish to install under
 
 ### Additional Information on Installation, Examples, Detailed Documentation
 For more information on `flowsa` see the [wiki](https://github.com/USEPA/flowsa/wiki).
+
+### Accessing datsets output by FLOWSA
+FBA and FBS datasets can be accessed on [EPA's Data Commons](https://dmap-data-commons-ord.s3.amazonaws.com/index.html?prefix=flowsa/) without running the Python code. 
 
 ## Disclaimer
 
