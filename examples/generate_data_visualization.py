@@ -15,41 +15,54 @@ import matplotlib.pyplot as plt
 
 
 ########## Produce facet graph of resources associated with cropland sectors ##########
-# sectors = ['112']
-# sector_length_display = 6
-# plottype = 'facet_graph'
-# method_dict = {'Water Withdrawal 2015': 'Water_national_2015_m1',
-#                'Land Use 2012': 'Land_national_2012',
-#                'Employment 2017': 'Employment_national_2017'}
-#
-#
-# dv.FBSscatterplot(method_dict, plottype,
-#                   sector_length_display=sector_length_display,
-#                   sectors_to_include=sectors,
-#                   plot_title='Direct Resource Use for Livestock'
-#                   )
-# # Can manually adjust the figure pop up before saving
-# plt.savefig(plotoutputpath / "livestock_resource_use.png", dpi=300)
-#
-#
-# ########## Compare the results between water method 1 and method 2 ##########
-# sectors = ['21']
-# sector_length_display = 6
-# plottype = 'method_comparison'
-# method_dict = {'Water Withdrawal 2015 M1': 'Water_national_2015_m1',
-#                'Water Withdrawal 2015 M2': 'Water_national_2015_m2'}
-#
-# flowsa.generateFBSplot(method_dict, plottype,
-#                        sector_length_display=sector_length_display,
-#                        sectors_to_include=sectors,
-#                        plot_title='Comparison of 2015 National Water '
-#                                   'Withdrawals Method 1 and Method 2 for '
-#                                   'Mining Sectors'
-#                        )
-# # Can manually adjust the figure pop up before saving
-# plt.savefig(plotoutputpath / "mining_water_comp.png", dpi=300)
+sectors = ['112']
+sector_length_display = 6
+plottype = 'facet_graph'
+method_dict = {'Water Withdrawal 2015': 'Water_national_2015_m1',
+               'Land Use 2012': 'Land_national_2012',
+               'Employment 2017': 'Employment_national_2017'}
 
 
+dv.FBSscatterplot(method_dict, plottype,
+                  sector_length_display=sector_length_display,
+                  sectors_to_include=sectors,
+                  plot_title='Direct Resource Use for Livestock'
+                  )
+# Can manually adjust the figure pop up before saving
+plt.savefig(plotoutputpath / "livestock_resource_use.png", dpi=300)
+
+
+########## Compare the results between water method 1 and method 2 ##########
+sectors = ['21']
+sector_length_display = 6
+plottype = 'method_comparison'
+method_dict = {'National Employment 2015': 'Employment_national_2015',
+               'National Employment 2018': 'Employment_national_2018'}
+
+flowsa.FBSscatterplot(method_dict, plottype,
+                       sector_length_display=sector_length_display,
+                       sectors_to_include=sectors,
+                       plot_title='Comparison of 2015 and 2018 Employment '
+                                  'for Mining Sectors'
+                       )
+# Can manually adjust the figure pop up before saving
+plt.savefig(plotoutputpath / "mining_employment_comp.png", dpi=300)
+
+
+####### GHG Bar Chart ############
+# Option 1 - GHG emissions by GHG
+dv.stackedBarChart('GHG_national_2018_m1',
+                   selection_fields={'SectorProducedBy': ['111110', '112120', '325312']},
+                   filename='GHGEmissions')
+
+# Option 2 - specify indicator, much have LCIAformatter installed
+# https://github.com/USEPA/LCIAformatter
+dv.stackedBarChart('GHG_national_2018_m1', impact_cat='Global warming',
+                   selection_fields={'SectorProducedBy': ['111110', '112120', '325312']},
+                   filename='GHGEmissionsGlobalWarming')
+
+
+# todo: will update the sankey code for recursive method post v2.0 release
 ########## Compare food waste flows via Sankey ##########
 # methodnames = ['Food_Waste_national_2018_m1', 'Food_Waste_national_2018_m2']
 # target_sector_level = 'NAICS_2'
@@ -84,16 +97,3 @@ import matplotlib.pyplot as plt
 #     subplot_titles=['m1', 'm2'],
 #     filename='FoodWasteSankey'
 # )
-
-
-####### GHG Bar Chart ############
-# Option 1 - GHG emissions by GHG
-# dv.stackedBarChart('GHG_national_2018_m1',
-#                    selection_fields={'Sector': ['111110', '112120', '325312']},
-#                    filename='GHGEmissions')
-#
-# # Option 2 - specify indicator, much have LCIAformatter installed
-# # https://github.com/USEPA/LCIAformatter
-# dv.stackedBarChart('GHG_national_2018_m1', impact_cat='Global warming',
-#                    selection_fields={'Sector': ['111110', '112120', '325312']},
-#                    filename='GHGEmissionsGlobalWarming')
