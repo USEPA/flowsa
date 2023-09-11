@@ -2608,7 +2608,7 @@ def usgs_molybdenum_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = str(0)
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = pd.concat([dataframe, data], ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -3932,7 +3932,7 @@ def soda_parse(*, df_list, source, year, **_):
                         des_str = str(df.iloc[index]["NAICS code"])
                         data["Description"] = des_str
                 if df.iloc[index]["End use"].strip() != "Glass:":
-                    dataframe = pd.concat([dataframe, data], ignore_index=True)
+                    dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                     dataframe = assign_fips_location_system(
                         dataframe, str(year))
     return dataframe
