@@ -6,71 +6,71 @@ Functions to generate .bib file for a FlowBySector method
 """
 # todo: modify the functions for recursive yaml method
 
-# import pandas as pd
-# from bibtexparser.bwriter import BibTexWriter
-# from bibtexparser.bibdatabase import BibDatabase
-# from esupy.processed_data_mgmt import mkdir_if_missing
-# from flowsa.common import load_values_from_literature_citations_config, \
-#     get_flowsa_base_name, sourceconfigpath, load_yaml_dict
-# from flowsa.flowsa_log import log
-# from flowsa.settings import outputpath, biboutputpath
-#
-#
-# def generate_list_of_sources_in_fbs_method(methodname):
-#     """
-#     Determine what FlowByActivities are used to generate a FlowBySector
-#     :param methodname: string, FlowBySector method
-#     :return: list, pairs of FlowByActivity source names and years
-#     """
-#     sources = []
-#     # load the fbs method yaml
-#     fbs_yaml = load_yaml_dict(methodname, flowbytype='FBS')
-#
-#     # create list of data and allocation data sets
-#     fbs = fbs_yaml['source_names']
-#     for fbs_k, fbs_v in fbs.items():
-#         try:
-#             sources.append([fbs_k, fbs_v['year']])
-#         except KeyError:
-#             log.info('Could not append %s to datasource '
-#                      'list because missing year', fbs_k)
-#             continue
-#         activities = fbs_v['activity_sets']
-#         for aset, attr in activities.items():
-#             if attr['allocation_source'] != 'None':
-#                 sources.append([attr['allocation_source'],
-#                                 attr['allocation_source_year']])
-#             if 'helper_source' in attr:
-#                 sources.append([attr['helper_source'],
-#                                 attr['helper_source_year']])
-#             if 'literature_sources' in attr:
-#                 for source, date in attr['literature_sources'].items():
-#                     sources.append([source, date])
-#
-#     return sources
-#
-#
-# def load_source_dict(sourcename):
-#     """
-#     Load the yaml method file for a flowbyactivity dataset
-#     or for a value from the literature
-#     :param sourcename: string, FBA source name or value from the lit name
-#     :return: dictionary, the method file
-#     """
-#
-#     try:
-#         # check if citation info is for values in the literature
-#         config_load = load_values_from_literature_citations_config()
-#         config = config_load[sourcename]
-#     except KeyError:
-#         # else check if file exists, then try loading
-#         # citation information from source yaml
-#         sourcename = get_flowsa_base_name(sourceconfigpath, sourcename, "yaml")
-#         config = load_yaml_dict(sourcename, flowbytype='FBA')
-#
-#     return config
-#
-#
+import pandas as pd
+from bibtexparser.bwriter import BibTexWriter
+from bibtexparser.bibdatabase import BibDatabase
+from esupy.processed_data_mgmt import mkdir_if_missing
+from flowsa.common import load_values_from_literature_citations_config, \
+    get_flowsa_base_name, sourceconfigpath, load_yaml_dict
+from flowsa.flowsa_log import log
+from flowsa.settings import outputpath, biboutputpath
+
+
+def generate_list_of_sources_in_fbs_method(methodname):
+    """
+    Determine what FlowByActivities are used to generate a FlowBySector
+    :param methodname: string, FlowBySector method
+    :return: list, pairs of FlowByActivity source names and years
+    """
+    sources = []
+    # load the fbs method yaml
+    fbs_yaml = load_yaml_dict(methodname, flowbytype='FBS')
+
+    # create list of data and allocation data sets
+    fbs = fbs_yaml['source_names']
+    for fbs_k, fbs_v in fbs.items():
+        try:
+            sources.append([fbs_k, fbs_v['year']])
+        except KeyError:
+            log.info('Could not append %s to datasource '
+                     'list because missing year', fbs_k)
+            continue
+        activities = fbs_v['activity_sets']
+        for aset, attr in activities.items():
+            if attr['allocation_source'] != 'None':
+                sources.append([attr['allocation_source'],
+                                attr['allocation_source_year']])
+            if 'helper_source' in attr:
+                sources.append([attr['helper_source'],
+                                attr['helper_source_year']])
+            if 'literature_sources' in attr:
+                for source, date in attr['literature_sources'].items():
+                    sources.append([source, date])
+
+    return sources
+
+
+def load_source_dict(sourcename):
+    """
+    Load the yaml method file for a flowbyactivity dataset
+    or for a value from the literature
+    :param sourcename: string, FBA source name or value from the lit name
+    :return: dictionary, the method file
+    """
+
+    try:
+        # check if citation info is for values in the literature
+        config_load = load_values_from_literature_citations_config()
+        config = config_load[sourcename]
+    except KeyError:
+        # else check if file exists, then try loading
+        # citation information from source yaml
+        sourcename = get_flowsa_base_name(sourceconfigpath, sourcename, "yaml")
+        config = load_yaml_dict(sourcename, flowbytype='FBA')
+
+    return config
+
+
 # def generate_fbs_bibliography(methodname):
 #     """
 #     Generate bibliography for a FlowBySector
