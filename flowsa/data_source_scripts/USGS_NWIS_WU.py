@@ -32,9 +32,8 @@ def usgs_URL_helper(*, build_url, config, **_):
     """
     # initiate url list for usgs data
     urls_usgs = []
-    # call on state acronyms from common.py (and remove entry for DC)
+    # call on state acronyms from common.py
     state_abbrevs = abbrev_us_state
-    state_abbrevs = {k: v for (k, v) in state_abbrevs.items() if k != "DC"}
     # replace "__aggLevel__" in build_url to create three urls
     for c in config['agg_levels']:
         # at national level, remove most of the url
@@ -365,18 +364,7 @@ def usgs_fba_data_cleanup(fba: FlowByActivity) -> FlowByActivity:
     fba['FlowAmount'] = np.where(fba['Unit'] == 'Bgal/d',
                  fba['FlowAmount'] * 1000, fba['FlowAmount'])
     fba['Unit'] = np.where(fba['Unit'] == 'Bgal/d', 'Mgal/d', fba['Unit'])
-    # drop wastewater data
-    # fba = fba[fba['FlowName'] != 'wastewater']
-    # drop rows of commercial data (because only exists for 3 states),
-    # causes issues because linked with public supply
-    # also drop closed-loop or once-through cooling (thermoelectric power)
-    # to avoid double counting
-    # vlog.info('Removing all rows for Commercial Data because does not '
-    #           'exist for all states and causes issues as information '
-    #           'on Public Supply deliveries.')
-    # dfa = fba[~fba['Description'].str.lower().str.contains(
-    #     'commercial|closed-loop cooling|once-through')]
-    # calculate_flowamount_diff_between_dfs(fba, dfa)
+
     # calculated NET PUBLIC SUPPLY by subtracting out deliveries to domestic
     vlog.info('Modify the public supply values to generate '
               'NET public supply by subtracting out deliveries to domestic')
@@ -395,7 +383,7 @@ def usgs_fba_data_cleanup(fba: FlowByActivity) -> FlowByActivity:
 
     # drop flowname = 'total' rows when possible to prevent double counting
     # subset data where flowname = total and where it does not
-    vlog.info('Drop rows where the FlowName is total to prevent'
+    vlog.info('Drop rows where the FlowName is total to prevent '
               'double counting at the state and county levels. '
               'Retain rows at national level')
     df2 = dfc[dfc['FlowName'] == 'total']
@@ -414,11 +402,6 @@ def usgs_fba_data_cleanup(fba: FlowByActivity) -> FlowByActivity:
     # concat the two df
     dfd = pd.concat([df1, df2, df3], ignore_index=True, sort=False)
 
-    # In 2015, there is data for consumptive water use for
-    # thermo and crop, drop because do not calculate consumptive water loss
-    # for all water categories
-    # dfd = dfd[dfd['Compartment'] != 'air'].reset_index(drop=True)
-
     return dfd
 
 
@@ -429,7 +412,8 @@ def calculate_net_public_supply(df_load: FlowByActivity):
     greater than/equal to the Domestic deliveries because water can be
     withdrawn in one county and delivered in another (water can also cross
     state lines). Therefore, can/do end up with NEGATIVE net public supply
-    values and PS water should only be used at a national level
+    values (especially at county-level) and PS water is most accurate at
+    national level
 
     Domestic deliveries are subtracted from public supply. An assumption is
     made that PS deliveries to domestic is fresh water. The national level
@@ -450,17 +434,6 @@ def calculate_net_public_supply(df_load: FlowByActivity):
         ['Industrial', 'Thermoelectric Power',
          'Thermoelectric Power Closed-loop cooling',
          'Thermoelectric Power Once-through cooling'])]
-    # drop duplicate info of "Public Supply deliveries to"
-    # df1_sub = df1_sub.loc[~df1_sub['Description'].str.contains(
-    #     "Public Supply total deliveries")]
-    # df1_sub = df1_sub.loc[~df1_sub['Description'].str.contains(
-    #     "deliveries from public supply")]
-
-    # calculate data drop
-    # vlog.info('Dropping rows that contain "deliveries from public '
-    #           'supply" to avoid double counting with rows of "Public '
-    #           'Supply deliveries to"')
-    # calculate_flowamount_diff_between_dfs(df1, df1_sub)
 
     # drop county level values because cannot use county data
     vlog.info('Dropping county level public supply withdrawals '
@@ -501,6 +474,7 @@ def calculate_net_public_supply(df_load: FlowByActivity):
     # create flowratio for ground/surface
     df_w_modified.loc[:, 'FlowRatio'] = \
         df_w_modified['FlowAmount'] / df_w_modified['FlowTotal']
+
     # calculate new, net total public supply withdrawals
     # will end up with negative values due to instances of water
     # deliveries coming form surrounding counties
@@ -520,8 +494,12 @@ def calculate_net_public_supply(df_load: FlowByActivity):
                              net_ps[['FlowName', 'Compartment',
                                      'Location', 'FlowRatio']],
                              how='left',
-                             left_on='Location',
-                             right_on='Location')
+                             on='Location')
+    # DC has flowratio of 0, so replace (net public supply = 0)
+    df_d_modified['FlowRatio'] = np.where(
+        (df_d_modified['Location'] == '11000') &
+        (df_d_modified['FlowRatio'].isna()),
+        0.5, df_d_modified['FlowRatio'])
     df_d_modified.loc[:, 'FlowAmount'] = \
         df_d_modified['FlowAmount'] * df_d_modified['FlowRatio']
     df_d_modified = df_d_modified.drop(columns=["FlowRatio"])

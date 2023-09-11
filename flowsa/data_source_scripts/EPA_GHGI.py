@@ -715,7 +715,8 @@ def get_manufacturing_energy_ratios(parameter_dict):
     # Filter MECS for total national energy consumption for manufacturing sectors
     mecs = load_fba_w_standardized_units(datasource=parameter_dict.get('energy_fba'),
                                          year=mecs_year,
-                                         flowclass='Energy')
+                                         flowclass='Energy',
+                                         download_FBA_if_missing=True)
     mecs = (mecs.loc[(mecs['ActivityConsumedBy'] == '31-33') &
                      (mecs['Location'] == '00000') &
                      (mecs['Description'].isin(['Table 3.2', 'Table 2.2'])) &
@@ -725,7 +726,8 @@ def get_manufacturing_energy_ratios(parameter_dict):
     # Load energy consumption data by fuel from GHGI
     ghgi = load_fba_w_standardized_units(datasource=parameter_dict.get('ghg_fba'),
                                          year=mecs_year,
-                                         flowclass='Energy')
+                                         flowclass='Energy',
+                                         download_FBA_if_missing=True)
     ghgi = ghgi[ghgi['ActivityConsumedBy']=='Industrial'].reset_index(drop=True)
 
     pct_dict = {}
@@ -783,10 +785,11 @@ def split_HFCs_by_type(fba: FlowByActivity, **_) -> FlowByActivity:
     attributes_to_save = {
         attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
     }
-
+    original_sum = fba.FlowAmount.sum()
     tbl = fba.config.get('clean_parameter')['flow_fba'] # 4-100
     splits = load_fba_w_standardized_units(datasource=tbl,
-                                           year=fba['Year'][0])
+                                           year=fba['Year'][0],
+                                           download_FBA_if_missing=True)
     splits['pct'] = splits['FlowAmount'] / splits['FlowAmount'].sum()
     splits = splits[['FlowName', 'pct']]
 
@@ -800,6 +803,9 @@ def split_HFCs_by_type(fba: FlowByActivity, **_) -> FlowByActivity:
            .drop(columns=['FlowName', 'FlowAmount'])
            .rename(columns={'Flow': 'FlowName',
                             'value': 'FlowAmount'}))
+    new_sum = fba.FlowAmount.sum()
+    if round(new_sum, 6) != round(original_sum, 6):
+        log.warning('Error: totals do not match when splitting HFCs')
     new_fba = FlowByActivity(fba)
     for attr in attributes_to_save:
         setattr(new_fba, attr, attributes_to_save[attr])
@@ -811,4 +817,4 @@ if __name__ == "__main__":
     import flowsa
     # fba = flowsa.getFlowByActivity('EPA_GHGI_T_4_101', 2016)
     # df = clean_HFC_fba(fba)
-    fba = flowsa.flowbyactivity.main(year=2017, source='EPA_GHGI')
+    fba = flowsa.generateflowbyactivity.main(year=2017, source='EPA_GHGI')

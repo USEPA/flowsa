@@ -227,7 +227,7 @@ def cdd_processing(fba, source_dict):
 
 if __name__ == "__main__":
     import flowsa
-    flowsa.flowbyactivity.main(source='EPA_CDDPath', year=2018)
+    flowsa.generateflowbyactivity.main(source='EPA_CDDPath', year=2018)
     fba = flowsa.getFlowByActivity(datasource='EPA_CDDPath', year=2018)
 
     # fbs = flowsa.getFlowBySector(methodname='CDD_concrete_national_2014')

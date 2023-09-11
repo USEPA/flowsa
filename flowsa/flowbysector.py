@@ -212,14 +212,16 @@ class FlowBySector(_FlowBy):
 
         return fbs
 
-    def sector_aggregation(self):
+    def sector_aggregation(self, industry_spec=None):
         """
         In the event activity sets in an FBS are at a less aggregated target
         sector level than the overall target level, aggregate the sectors to
         the FBS target scale
         :return:
         """
-        naics_key = naics.industry_spec_key(self.config['industry_spec'])
+        if industry_spec is None:
+            industry_spec = self.config['industry_spec']
+        naics_key = naics.industry_spec_key(industry_spec)
 
         fbs = self
         for direction in ['ProducedBy', 'ConsumedBy']:
@@ -230,7 +232,10 @@ class FlowBySector(_FlowBy):
                        how='left')
                 .rename(columns={'target_naics': f'Sector{direction}'})
                 .drop(columns='source_naics')
-                .aggregate_flowby()
+                .aggregate_flowby(columns_to_group_by = (
+                    fbs.groupby_cols + ['group_id'] if 'group_id' in fbs
+                    else None)
+                    )
             )
 
         return fbs
@@ -259,7 +264,6 @@ class FlowBySector(_FlowBy):
             self
             .function_socket('clean_fbs')
             .select_by_fields()
-            .sector_aggregation()  # convert to proper industry spec.
             .convert_fips_to_geoscale()
             .attribute_flows_to_sectors(external_config_path=external_config_path,
                                         download_sources_ok=download_sources_ok)
