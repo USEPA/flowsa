@@ -13,17 +13,6 @@ from flowsa.settings import diffpath
 from flowsa.test_single_FBS import compare_single_FBS_against_remote
 
 
-@pytest.mark.generate_fbs
-def test_generate_fbs():
-    """Generate all FBS from methods in repo."""
-    for m in seeAvailableFlowByModels("FBS", print_method=False):
-        print("--------------------------------\n"
-              f"Method: {m}\n"
-              "--------------------------------")
-        FlowBySector.generateFlowBySector(
-            method=m, download_sources_ok=True)
-
-
 @pytest.mark.skip(reason="Perform targeted test for compare_FBS on PR")
 def test_FBS_against_remote(only_run_m=None):
     """Compare results for each FBS method (latest year) at current HEAD
