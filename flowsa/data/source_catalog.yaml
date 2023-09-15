@@ -157,7 +157,7 @@ EIA_SEDS:
   data_format: FBA
   class:
     - Energy
-    - Money
+    - Other
   sector_hierarchy: "flat"
 Employment_national:
   data_format: FBS
