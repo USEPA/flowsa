@@ -100,6 +100,18 @@ source_names:
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv urea
 
+      urea_fertilizer:
+        selection_fields:
+          MetaSources: 'EPA_GHGI_T_2_1.urea_fertilizer'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv urea_fertilizer
 
       carbonate_use:
         selection_fields:

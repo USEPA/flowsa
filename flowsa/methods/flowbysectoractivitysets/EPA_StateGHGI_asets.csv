@@ -46,7 +46,7 @@ ag_livestock,Agriculture - Manure Management - Poultry,EPA_GHGI_T_5_7
 ag_livestock,Agriculture - Manure Management - Sheep,EPA_GHGI_T_5_7
 ag_livestock,Agriculture - Manure Management - Swine,EPA_GHGI_T_5_7
 direct,Agriculture - Rice Cultivation,EPA_GHGI_T_2_1
-urea,"Agriculture - Urea Fertilization - CO2 emissions from liming, urea application and other carbon-containing fertilizers",EPA_GHGI_T_2_1
+urea_fertilizer,"Agriculture - Urea Fertilization - CO2 emissions from liming, urea application and other carbon-containing fertilizers",EPA_GHGI_T_2_1
 direct,Industry - Abandoned Oil and Gas Wells - Fugitive - Abandoned Wells,
 direct,Industry - Abandoned Underground Coal Mines - Fugitive - Coal Mining - Abandoned Coal Mines - Liberated,EPA_GHGI_T_2_1
 direct,Industry - Abandoned Underground Coal Mines - Fugitive - Coal Mining - Abandoned Coal Mines - Recovered &Used,EPA_GHGI_T_2_1

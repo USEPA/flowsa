@@ -48,8 +48,8 @@ EPA_State_GHGI,Agriculture - Manure Management - Poultry,NAICS_2012_Code,1123,,a
 EPA_State_GHGI,Agriculture - Manure Management - Sheep,NAICS_2012_Code,11241,,ag_livestock
 EPA_State_GHGI,Agriculture - Manure Management - Swine,NAICS_2012_Code,1122,,ag_livestock
 EPA_State_GHGI,Agriculture - Rice Cultivation,NAICS_2012_Code,1111,,direct
-EPA_State_GHGI,"Agriculture - Urea Fertilization - CO2 emissions from liming, urea application and other carbon-containing fertilizers",NAICS_2012_Code,111,,urea
-EPA_State_GHGI,"Agriculture - Urea Fertilization - CO2 emissions from liming, urea application and other carbon-containing fertilizers",NAICS_2012_Code,112,,urea
+EPA_State_GHGI,"Agriculture - Urea Fertilization - CO2 emissions from liming, urea application and other carbon-containing fertilizers",NAICS_2012_Code,111,,urea_fertilizer
+EPA_State_GHGI,"Agriculture - Urea Fertilization - CO2 emissions from liming, urea application and other carbon-containing fertilizers",NAICS_2012_Code,112,,urea_fertilizer
 EPA_State_GHGI,Industry - Abandoned Oil and Gas Wells - Fugitive - Abandoned Wells,NAICS_2012_Code,2111,,direct
 EPA_State_GHGI,Industry - Abandoned Underground Coal Mines - Fugitive - Coal Mining - Abandoned Coal Mines - Liberated,NAICS_2012_Code,2121,,direct
 EPA_State_GHGI,Industry - Abandoned Underground Coal Mines - Fugitive - Coal Mining - Abandoned Coal Mines - Recovered &Used,NAICS_2012_Code,2121,,direct
