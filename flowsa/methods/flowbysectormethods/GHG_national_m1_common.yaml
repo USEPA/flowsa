@@ -131,20 +131,28 @@ source_names:
         attribution_source:
           BEA_Detail_Use_PRO_BeforeRedef:
             <<: *bea
-            # primary_action_type: Consumed
             selection_fields:
               ActivityProducedBy: {'327400': ''} # Lime
 
       urea:
         selection_fields:
           PrimaryActivity:
-            - Urea Fertilization #CO2
             - Urea Consumption for Non-Agricultural Purposes #CO2
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_PRO_BeforeRedef:
             <<: *bea
-            # primary_action_type: Consumed
+            selection_fields:
+              ActivityProducedBy: {'325310': ''} # Fertilizers
+
+      urea_fertilizer:
+        selection_fields:
+          PrimaryActivity:
+            - Urea Fertilization #CO2
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_PRO_BeforeRedef:
+            <<: *bea
             selection_fields:
               ActivityProducedBy: {'325310': ''} # Fertilizers
 
@@ -155,7 +163,6 @@ source_names:
         attribution_source:
           BEA_Detail_Use_PRO_BeforeRedef:
             <<: *bea
-            # primary_action_type: Consumed
             selection_fields:
               ActivityProducedBy: {'325180': ''} # Other Basic Inorganic Chemicals
 

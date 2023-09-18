@@ -174,11 +174,11 @@ source_names:
             !include:GHG_national_m2_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:non_manufacturing_natural_gas:attribution_source:BEA_Summary_Use_PRO_BeforeRedef
               year: *ghgi_year
 
-      coal_manufacturing:
-        !include:GHG_national_m2_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:coal_manufacturing
+      coal_manufacturing_co2:
+        !include:GHG_national_m2_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:coal_manufacturing_co2
         attribution_source:
           EIA_MECS_Energy:
-            !include:GHG_national_m2_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:coal_manufacturing:attribution_source:EIA_MECS_Energy
+            !include:GHG_national_m2_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:coal_manufacturing_co2:attribution_source:EIA_MECS_Energy
               year: *mecs_year
       natural_gas_manufacturing: # Industrial Natural Gas for manufacturing
         !include:GHG_national_m2_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:natural_gas_manufacturing

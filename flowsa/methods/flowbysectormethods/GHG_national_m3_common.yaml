@@ -76,7 +76,7 @@ source_names:
     # year: *ghgi_year
     activity_sets:
       ## Table 2.1
-      electric_power:
+      electric_power_co2:
         selection_fields:
           MetaSources: 'EPA_GHGI_T_2_1.electric_power'
         attribution_method: equal
@@ -261,15 +261,15 @@ source_names:
       coal_manufacturing_co2: # Industrial Coal for Manufacturing
         selection_fields:
           MetaSources:
-            - 'EPA_GHGI_T_A_5.coal_manufacturing'
-            - 'EPA_GHGI_T_A_6.coal_manufacturing'
-            - 'EPA_GHGI_T_A_7.coal_manufacturing'
-            - 'EPA_GHGI_T_A_8.coal_manufacturing'
-            - 'EPA_GHGI_T_A_9.coal_manufacturing'
-            - 'EPA_GHGI_T_A_10.coal_manufacturing'
-            - 'EPA_GHGI_T_A_11.coal_manufacturing'
-            - 'EPA_GHGI_T_A_12.coal_manufacturing'
-            - 'EPA_GHGI_T_A_13.coal_manufacturing'
+            - 'EPA_GHGI_T_A_5.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_6.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_7.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_8.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_9.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_10.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_11.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_12.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_13.coal_manufacturing_co2'
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -532,7 +532,7 @@ source_names:
         #       ActivityProducedBy: {'327400': ''} # Lime
 
       urea_fertilizer:
-        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:urea
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:urea_fertilizer
         selection_fields: # Only uses one activity from this activity_set
           PrimaryActivity:
             - Urea Fertilization #CO2
