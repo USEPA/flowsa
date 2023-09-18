@@ -4,7 +4,7 @@
 
 
 !include:GHG_state_m2_common.yaml
-year: &ghg_year 2019
+year: &ghg_year 2020
 geoscale: state
 
 
@@ -16,6 +16,6 @@ source_names:
     activity_sets:
       !include:GHG_state_m2_common.yaml:source_names:EPA_StateGHGI:activity_sets
 
-  GHG_national_2019_m2: #U.S. GHG emissions
+  GHG_national_2020_m2: #U.S. GHG emissions
     !include:GHG_state_m2_common.yaml:source_names:GHG_national_common_m2
     year: *ghg_year
