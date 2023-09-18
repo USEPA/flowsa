@@ -295,7 +295,7 @@ EPA_State_GHGI,Industry - Urea Consumption for Non-Agricultural Purposes - Chemi
 EPA_State_GHGI,Industry - Electronics Industry - Micro-Electro-Mechanical Devices,NAICS_2012_Code,3332,,direct
 EPA_State_GHGI,Industry - Electronics Industry - Photovoltaics,NAICS_2012_Code,334413,,direct
 EPA_State_GHGI,Industry - Electronics Industry - Semiconductor Manufacture,NAICS_2012_Code,3344,,direct
-EPA_State_GHGI,Industry - Electronics Industry - Semiconductor Manufacture - Heat Transfer Fluids,NAICS_2012_Code,3344,,direct
+EPA_State_GHGI,Industry - Electronics Industry - Semiconductor Manufacture - Heat Transfer Fluids,NAICS_2012_Code,3344,,direct_ods
 EPA_State_GHGI,Industry - Aluminum Production - Metal Industry,NAICS_2012_Code,3313,,direct
 EPA_State_GHGI,Industry - Ferroalloy Production - Metal Industry,NAICS_2012_Code,3311,,direct
 EPA_State_GHGI,Industry - Iron and Steel Production - Metal Industry - Iron Production,NAICS_2012_Code,3311,,direct

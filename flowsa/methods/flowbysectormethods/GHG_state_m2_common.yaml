@@ -24,10 +24,17 @@ source_names:
       # replicates direct attribution from EPA_GHGI_T_4_102.households
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct_ods
+        exclusion_fields:
+          FlowName: 'SF6' # Handle this flow without splitting
         clean_fba_before_mapping: !script_function:EPA_GHGI split_HFCs_by_type
         clean_parameter:
             # Proportions of specific HFCs are assigned based on national total
             flow_fba: EPA_GHGI_T_4_100
+        attribution_method: direct
+      direct_ods2:
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct_ods
+          FlowName: 'SF6' # Handle this flow without splitting (see above)
         attribution_method: direct
       electricity_transmission: #SF6
       # replicates electricity_transmission from EPA_GHGI_T_2_1
@@ -374,7 +381,7 @@ source_names:
         selection_fields:
           MetaSources:
             - 'EPA_GHGI_T_A_6.non_manufacturing_coal'
-            - 'EPA_GHGI_T_A_6.coal_manufacturing'
+            - 'EPA_GHGI_T_A_6.coal_manufacturing_co2'
         attribution_method: proportional
         attribute_on: ['Flowable', 'SectorProducedBy']
         fill_columns: Location
@@ -457,12 +464,12 @@ source_names:
         selection_fields:
           MetaSources:
             - 'EPA_GHGI_T_3_22.coal'
-            - 'EPA_GHGI_T_3_22.petroleum'
-            - 'EPA_GHGI_T_3_22.natural_gas'
+            - 'EPA_GHGI_T_3_22.petroleum_neu'
+            - 'EPA_GHGI_T_3_22.natural_gas_neu'
             - 'EPA_GHGI_T_3_22.transportation_lubricants'
             - 'EPA_GHGI_T_3_22b.coal'
-            - 'EPA_GHGI_T_3_22b.petroleum'
-            - 'EPA_GHGI_T_3_22b.natural_gas'
+            - 'EPA_GHGI_T_3_22b.petroleum_neu'
+            - 'EPA_GHGI_T_3_22b.natural_gas_neu'
             - 'EPA_GHGI_T_3_22b.transportation_lubricants'
         attribution_method: proportional
         attribute_on: ['Flowable', 'SectorProducedBy']

@@ -119,7 +119,7 @@ urea,Industry - Urea Consumption for Non-Agricultural Purposes - Chemical Indust
 direct,Industry - Electronics Industry - Micro-Electro-Mechanical Devices,
 direct,Industry - Electronics Industry - Photovoltaics,
 direct,Industry - Electronics Industry - Semiconductor Manufacture,
-direct,Industry - Electronics Industry - Semiconductor Manufacture - Heat Transfer Fluids,
+direct_ods,Industry - Electronics Industry - Semiconductor Manufacture - Heat Transfer Fluids,
 direct,Industry - Aluminum Production - Metal Industry,EPA_GHGI_T_2_1
 direct,Industry - Ferroalloy Production - Metal Industry,EPA_GHGI_T_2_1
 direct,Industry - Iron and Steel Production - Metal Industry - Iron Production,EPA_GHGI_T_2_1
