@@ -1,4 +1,4 @@
-## Method 2 uses as its source the national GHG Flow-by-sector (detail)
+## Method 2 uses as its source the national GHG Flow-by-sector (summary, m2)
 # with emissions data attributed to states based on reported emissions
 # in the State Inventory
 
@@ -55,7 +55,7 @@ source_names:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv hcfc
         attribution_method: direct
 
-  GHG_national_common_m1: #U.S. GHG emissions
+  GHG_national_common_m2: #U.S. GHG emissions
     year: *ghg_year
     data_format: FBS
     geoscale: national
