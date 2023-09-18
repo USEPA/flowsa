@@ -149,7 +149,7 @@ transport_nonroad_ag,Agriculture - Mobile Combustion - Fossil Fuel Combustion - 
 use_table_pet,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment,negative emissions; align with 'Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum' to avoid double counting
 tbd,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,EPA_GHGI_T_3_13
 transport_nonroad_construction,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Construction,EPA_GHGI_T_3_14
-direct,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry,
+temp_drop,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry,
 transport_nonroad_other,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,
 ind_com_ch4_n2o,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary,negative emissions; align with 'Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial' to avoid double counting
 nitrous_oxide_use,Industry - N2O from Product Uses - Other product manufacture and use,EPA_GHGI_T_2_1
