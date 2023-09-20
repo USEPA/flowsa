@@ -1,481 +1,576 @@
-# This is the general method reference file for state models.
-# Year-specific GHG files import this file to define attribution rules
-# that are further customized
+## Method 1 uses as its source the national GHG Flow-by-sector (summary, m1)
+# with emissions data attributed to states based on reported emissions
+# in the State Inventory
+
 
 !include:USEEIO_summary_target.yaml
-# year: &ghg_year 2019
+year: &ghg_year 2019
 geoscale: state
 
-_allocation_types:
-  _use_allocation: &use_table_allocation
-    # year: *ghg_year
-    geoscale: state
-    activity_to_sector_mapping: BEA_2012_Summary
-    # selection_fields:
-    #   ActivityProducedBy: {'324': ''}  # Petroleum 324110
-    exclusion_fields:
-      ActivityConsumedBy: ['F030', 'F040', 'F050', 'F051', 
-                           'F02E', 'F06E', 'F07E', 'F10E']
-    attribution_method: equal
-    ## No attribution supplied (will use equal) because target level for
-    ## modeling is BEA summary level.
-
-sources_to_cache:
-  EIA_MECS_Energy:
-    year: 2018
-    geoscale: state
-    selection_fields:
-      # Class: Energy # Define class for each application of cached source
-      Unit: Trillion Btu
-      Description:
-          - Table 2.2
-          - Table 3.2
-    # Flowable: Natural gas # Define class for each application of cached source
-    exclusion_fields:
-      Location: '00000'
-    estimate_suppressed: !script_function:EIA_MECS estimate_suppressed_mecs_energy
-    attribution_method: proportional
-    attribution_source: # Required to attribute a few sectors to full target sector level
-      Employment_state_2018: # Update to MECS year
-        geoscale: national # Uses national at this stage prior to attributing to states
-        year: 2018
-    clean_fba_after_attribution: !script_function:EIA_MECS clean_mapped_mecs_energy_fba_to_state
-    clean_source: Employment_state_2018 ## Update to MECS year
 
 source_names:
-  EPA_StateGHGI: # U.S. GHG emissions by state
+  EPA_StateGHGI: ## Directly sourced from State Inventory FBA
     geoscale: state
-    # year: *ghg_year
-    keep_unmapped_rows: True
-    fedefl_mapping: 'GHGI'
-    clean_fba_before_activity_sets: !script_function:EPA_StateGHGI allocate_industrial_combustion
-    clean_parameter: # Override each year for use in allocate_industrial_combustion
-        energy_fba: EIA_MECS_Energy
-        year: 2018
-        ghg_fba: EPA_GHGI_T_A_7 # 2018 Table
-        activities_to_split:
-        - Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal
-        - Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas
+    year: *ghg_year
+    fedefl_mapping: GHGI
     activity_sets:
       direct:
+      # replicates direct attribution from EPA_GHGI_T_2_1, EPA_GHGI_T_4_80,
+      # and EPA_GHGI_T_4_96
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct
         attribution_method: direct
-
-      n2o_soil_direct:
+      direct_ods:
+      # replicates direct attribution from EPA_GHGI_T_4_102.households
         selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv n2o_soil_direct
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct_ods
+        exclusion_fields:
+          FlowName: 'SF6' # Handle this flow without splitting
+        clean_fba_before_mapping: !script_function:EPA_GHGI split_HFCs_by_type
+        clean_parameter:
+            # Proportions of specific HFCs are assigned based on national total
+            flow_fba: EPA_GHGI_T_4_100
         attribution_method: direct
-
-      n2o_soil_indirect:
+      direct_ods2:
         selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv n2o_soil_indirect
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct_ods
+          FlowName: 'SF6' # Handle this flow without splitting (see above)
         attribution_method: direct
-
-      ag_livestock:
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ag_livestock
-        attribution_method: direct
-
-      ag_burning:
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ag_burning
-        attribution_method: direct
-
-      residential_co2:
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv residential_co2
-        attribution_method: direct
-
-      petrochemicals:
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv petrochemicals
-        attribution_method: direct
-
-      lead:
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv lead
-        attribution_method: direct
-
-      magnesium:
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv magnesium
-        attribution_method: direct
-
-      electricity_transmission:
+      electricity_transmission: #SF6
+      # replicates electricity_transmission from EPA_GHGI_T_2_1
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv electricity_transmission
         attribution_method: direct
-
-      hcfc:
+      petrochemicals: #CO2 for selected petrochemicals
+      # replicates EPA_GHGI_T_4_46
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv petrochemicals
+        attribution_method: direct
+      ag_livestock: #CH4 from Enteric Fermentation, CH4, N2O from manure
+      # replicates EPA_GHGI_T_5_3 and EPA_GHGI_T_5_6
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ag_livestock
+        attribution_method: direct
+      ag_burning: #CH4, N2O, CO and NOx from field burning of residue
+      # replicates EPA_GHGI_T_5_28
+        selection_fields:
+          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ag_burning
+        attribution_method: direct
+      hcfc: # HFCs from HCFC-22 production
+      # replicates EPA_GHGI_T_4_50
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv hcfc
         attribution_method: direct
 
-      ods_transportation:
-        clean_fba_before_mapping: !script_function:EPA_GHGI split_HFCs_by_type
-        clean_parameter:
-            # Proportions of specific HFCs are assigned based on national total
-            flow_fba: EPA_GHGI_T_4_100
-        #TODO reconsider mapping for transportation HFCS
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ods_transportation
-        attribution_method: direct
+  GHG_national_common_m1: #U.S. GHG emissions, summary model
+    year: *ghg_year
+    data_format: FBS
+    geoscale: national
+    activity_sets:
 
-      electric_power: # electricity combustion
+      electric_power:
         selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv electric_power
+          MetaSources: 'EPA_GHGI_T_2_1.electric_power'
         attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
         attribution_source:
-          stateio_Make_Summary:
-            <<: *use_table_allocation
-            selection_fields:
-              ActivityConsumedBy: {'22': ''}  # utilities
-
-      electric_ch4_n2o: # electricity combustion
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv electric_ch4_n2o
-        attribution_method: proportional
-        attribution_source:
-          stateio_Make_Summary:
-            <<: *use_table_allocation
-            selection_fields:
-              ActivityConsumedBy: {'22': ''}  # utilities
-
-      ng_systems_CH4:
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ng_systems
-          FlowName: CH4
-        attribution_method: proportional
-        attribution_source:
-          EPA_GHGI_T_3_68:
-            geoscale: national
-
-      ng_systems_CO2:
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ng_systems
-          FlowName: CO2
-        attribution_method: proportional
-        attribution_source:
-          EPA_GHGI_T_3_70:
-            geoscale: national
-
-      ng_systems_N2O:
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ng_systems
-          FlowName: N2O
-        attribution_method: proportional
-        attribution_source:
-          EPA_GHGI_T_3_72:
-            geoscale: national
-
-      pet_systems_CH4:
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv pet_systems
-          FlowName: CH4
-        attribution_method: proportional
-        attribution_source:
-          EPA_GHGI_T_3_42:
-            geoscale: national
-
-      pet_systems_CO2:
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv pet_systems
-          FlowName: CO2
-        attribution_method: proportional
-        attribution_source:
-          EPA_GHGI_T_3_44:
-            geoscale: national
-
-      pet_systems_N2O:
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv pet_systems
-          FlowName: N2O
-        attribution_method: proportional
-        attribution_source:
-          EPA_GHGI_T_3_46:
-            geoscale: national
-
-      use_table_coal: # commercial coal combustion, non-manufacturing industrial
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_coal
-        attribution_method: proportional
-        attribution_source:
-          stateio_Use_Summary:
-            <<: *use_table_allocation
-            selection_fields:
-              ActivityProducedBy: {'212': ''}  # metal ores and nonmetallic minerals (i.e., coal)
-
-      use_table_pet: # commercial petroleum combustion; mobile ag equipment, industrial petroleum
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_pet
-        attribution_method: proportional
-        attribution_source:
-          stateio_Use_Summary:
-            <<: *use_table_allocation
-            selection_fields:
-              ActivityProducedBy: {'324': ''}  # Petroleum fuel
-
-      use_table_gas: # commercial gas combustion, non-manufacturing industrial
-        # This allocaiton is problematic because 22 includes electricity
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_gas
-        attribution_method: proportional
-        attribution_source:
-          stateio_Use_Summary:
-            <<: *use_table_allocation
-            selection_fields:
-              ActivityProducedBy: {'22': ''}  # Electricity and natural gas
-
-      commercial_ch4_n2o: # CH4 and N2O from commercial combustion
-        clean_fba_before_activity_sets: !script_function:EPA_StateGHGI allocate_flows_by_fuel
-        clean_parameter:
-            flow_ratio_source:
-            - Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal
-            - Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas
-            - Commercial - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum
-            fba_source: # National tables for identifyng CH4 and N2O ratios to CO2
-            - EPA_GHGI_T_3_7
-            - EPA_GHGI_T_3_8
-            - EPA_GHGI_T_3_9
-            sector: Commercial
-        selection_fields:
-          PrimaryActivity: Commercial - Stationary Combustion - Fossil Fuel Combustion # ind_com_ch4_n2o
-        activity_sets:
-          coal:
-            selection_fields:
-              Description: Coal
-            attribution_method: proportional
-            attribution_source:
-              stateio_Use_Summary:
-                <<: *use_table_allocation
-                selection_fields:
-                  ActivityProducedBy: {'212': ''}  # metal ores and nonmetallic minerals (i.e., coal)
-          petroleum:
-            selection_fields:
-              Description: Petroleum
-            attribution_method: proportional
-            attribution_source:
-              stateio_Use_Summary:
-                <<: *use_table_allocation
-                selection_fields:
-                  ActivityProducedBy: {'324': ''}  # Petroleum fuel
-          gas:
-            selection_fields:
-              Description: Natural Gas
-            attribution_method: proportional
-            attribution_source:
-              stateio_Use_Summary:
-                <<: *use_table_allocation
-                selection_fields:
-                  ActivityProducedBy: {'22': ''}  # Electricity and natural gas
-
-      industrial_coal: # CO2 from industrial coal combustion (manufacturing)
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv industrial_coal
-        attribution_method: proportional
-        attribution_source:
-          EIA_MECS_Energy:
-            selection_fields:
-              Class: Energy
-              Flowable: Coal
-
-      industrial_gas: # CO2 from industrial gas combustion (manufacturing)
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv industrial_gas
-        attribution_method: proportional
-        attribution_source:
-          EIA_MECS_Energy:
-            selection_fields:
-              Class: Energy
-              Flowable: Natural Gas
-
-      industrial_ch4_n2o: # CH4 and N2O from industrial combustion
-        clean_fba_before_activity_sets: !script_function:EPA_StateGHGI allocate_flows_by_fuel
-        clean_parameter:
-            flow_ratio_source:
-            - Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal
-            - Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas
-            - Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum
-            - Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment            
-            fba_source: # National tables for identifyng CH4 and N2O ratios to CO2
-            - EPA_GHGI_T_3_7
-            - EPA_GHGI_T_3_8
-            - EPA_GHGI_T_3_9
-            sector: Industrial
-        selection_fields:
-          PrimaryActivity:
-            - Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary # ind_com_ch4_n2o
-            - Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial
-        activity_sets:
-          coal:
-            selection_fields:
-              Description: Coal
-            attribution_method: proportional
-            attribution_source:
-              EIA_MECS_Energy:
-                selection_fields:
-                  Class: Energy
-                  Flowable: Coal
-          petroleum:
-            selection_fields:
-              Description: Petroleum
-            attribution_method: proportional
-            attribution_source:
-              EIA_MECS_Energy:
-                selection_fields:
-                  Class: Energy
-                  Flowable:
-                    - Distillate Fuel Oil
-                    - Residual Fuel Oil
-          gas:
-            selection_fields:
-              Description: Natural Gas
-            attribution_method: proportional
-            attribution_source:
-              EIA_MECS_Energy:
-                selection_fields:
-                  Class: Energy
-                  Flowable: Natural Gas
-
-      industrial_neu: # CO2 from non energy use of fossil fuels - industrial
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv industrial_neu
-        attribution_method: proportional
-        attribution_source:
-          EIA_MECS_Energy:
-            selection_fields:
-              Class: Other # nonfuel consumption
-              Flowable: Total
-
-      carbonate_use: # other process use of carbonates
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv carbonate_use
-        attribution_method: proportional
-        attribution_source:
-          stateio_Use_Summary:
-            <<: *use_table_allocation
-            selection_fields:
-              ActivityProducedBy: {'325': ''}  # Use of chemicals
-
-      nitrous_oxide_use: # N2O from Product uses
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv nitrous_oxide_use
-        attribution_method: proportional
-        attribution_source:
-          stateio_Use_Summary:
-            <<: *use_table_allocation
-            selection_fields:
-              ActivityProducedBy: {'325': ''}  # Use of chemicals
-
-      urea: # emissions from urea fertilization
-      # allocated between crops and animals based on USDA land area
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv urea
-        attribution_method: proportional
-        attribution_source:
-          USDA_CoA_Cropland_NAICS:
-            year: 2017
+          EPA_StateGHGI:
             geoscale: state
+            fedefl_mapping: GHGI
             selection_fields:
-              Class: Land
-              FlowName: AG LAND, CROPLAND, HARVESTED # land in active use
-            estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv electric_power
 
-      transport_petroleum: # C02 from petroleum highway; ch4, n2o from alternative fuels
-        # state inventory assumes all petroleum is "highway"
-        # Allocate to all transport types and households by fuel consumption
+      liming:
         selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_petroleum
+          MetaSources: 'EPA_GHGI_T_2_1.liming'
         attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
         attribution_source:
-          stateio_Use_Summary:
-            <<: *use_table_allocation
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
             selection_fields:
-              ActivityProducedBy: {'324': ''}  # Petroleum fuel
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv liming
 
-      transport_ng: # C02 from natural gas transportation
-        # National inventory shows all ng transport emissions coming from pipelines
+      urea:
         selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_ng
-        attribution_method: direct
-
-      transport_diesel: # CH4, N2O from diesel highway
-        # Assigned to truck transport to align with national inventory
-        # Medium- and Heavy-Duty Trucks and Buses
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_diesel
-        attribution_method: direct
-
-      transport_gasoline: # CH4, N2O from gasoline highway
-        # Assigned to households to align with national inventory
-        # Light-Duty Trucks
-        # Passenger Cars
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_gasoline
-        attribution_method: direct
-
-      transport_nonroad_CH4: # CH4 from petroleum non-highway
-        # National inventory distinguishes by vehicle type (ship, rail, equipment, etc.)
-        # Exclude air which has no CH4 emissions per national inventory
-        # 'Based on this data, CH4 emissions factors for jet aircraft were '
-        # 'changed to zero to reflect the latest emissions testing data...'
-        selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_nonroad
-          FlowName: CH4
+          MetaSources: 'EPA_GHGI_T_2_1.urea'
         attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
         attribution_source:
-          stateio_Use_Summary:
-            <<: *use_table_allocation
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
             selection_fields:
-              ActivityProducedBy: {'324': ''}  # Petroleum fuel
-            exclusion_fields:
-              ActivityConsumedBy: ['481', # Exclude airlines
-                                   'F030', 'F040', 'F050'] # Plus other sectors excluded above
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv urea
 
-      transport_nonroad_N2O: # N2O from petroleum non-highway
-        # National inventory distinguishes by vehicle type (ship, rail, equipment, etc.)
-        # Allocate to ships, rail, air by fuel use
+      urea_fertilizer:
         selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_nonroad
-          FlowName: N2O
+          MetaSources: 'EPA_GHGI_T_2_1.urea_fertilizer'
         attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
         attribution_source:
-          stateio_Use_Summary:
-            <<: *use_table_allocation
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
             selection_fields:
-              ActivityProducedBy: {'324': ''}  # Petroleum fuel
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv urea_fertilizer
 
-      transport_nonroad_ag: # CO2 (ag only), CH4, N2O from petroleum non-highway (ag & constrution)
+      carbonate_use:
         selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_nonroad_ag
+          MetaSources: 'EPA_GHGI_T_2_1.carbonate_use'
         attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
         attribution_source:
-          stateio_Use_Summary:
-            <<: *use_table_allocation
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
             selection_fields:
-              ActivityProducedBy: {'333': ''}  # Machinery
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv carbonate_use
 
-      transport_nonroad_construction: # CH4, N2O from petroleum non-highway (ag & constrution)
+      lead:
         selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_nonroad_construction
+          MetaSources: 'EPA_GHGI_T_2_1.lead'
         attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
         attribution_source:
-          stateio_Use_Summary:
-            <<: *use_table_allocation
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
             selection_fields:
-              ActivityProducedBy: {'333': ''}  # Machinery
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv lead
 
-      ods_substitutes: # CO2e from ODS substitutes
-        clean_fba_before_mapping: !script_function:EPA_GHGI split_HFCs_by_type
-        clean_parameter:
-            # Proportions of specific HFCs are assigned based on national total
-            flow_fba: EPA_GHGI_T_4_100
+      nitrous_oxide_use:
         selection_fields:
-          PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ods_substitutes
+          MetaSources: 'EPA_GHGI_T_2_1.nitrous_oxide_use'
         attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
         attribution_source:
-          stateio_Use_Summary:
-            <<: *use_table_allocation
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
             selection_fields:
-              ActivityProducedBy: {'333': ''}  # Poor proxy for A/C equipment
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv nitrous_oxide_use
+
+
+      ng_systems:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_3_68'
+            - 'EPA_GHGI_T_3_70'
+            - 'EPA_GHGI_T_3_72'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ng_systems
+
+      pet_systems:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_3_42'
+            - 'EPA_GHGI_T_3_44'
+            - 'EPA_GHGI_T_3_46'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv pet_systems
+
+## Agriculture
+      n2o_soil_direct:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_5_17.fertilizer_use'
+            - 'EPA_GHGI_T_5_17.cropland'
+            - 'EPA_GHGI_T_5_17.pasture'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv n2o_soil_direct
+
+      n2o_soil_indirect:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_5_18.fertilizer_use'
+            - 'EPA_GHGI_T_5_18.pasture'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv n2o_soil_indirect
+
+## Mobile Sources
+      transport_petroleum:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_3_13.direct_petroleum'
+            - 'EPA_GHGI_T_3_13.petroleum_fuels'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_petroleum
+
+      transport_ng:
+        selection_fields:
+          MetaSources: 'EPA_GHGI_T_3_13.direct_ng'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_ng
+
+      transport_ch4_n2o_diesel:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_3_14.petroleum_fuels_diesel'
+            - 'EPA_GHGI_T_3_14.direct_diesel'
+            - 'EPA_GHGI_T_3_15.petroleum_fuels_diesel'
+            - 'EPA_GHGI_T_3_15.direct_diesel'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_diesel
+
+      transport_ch4_n2o_gasoline:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_3_14.petroleum_fuels_gasoline'
+            - 'EPA_GHGI_T_3_14.direct_gasoline'
+            - 'EPA_GHGI_T_3_15.petroleum_fuels_gasoline'
+            - 'EPA_GHGI_T_3_15.direct_gasoline'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_gasoline
+
+      transport_ch4_n2o_alt:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_3_14.alt_fuel_on_road'
+            - 'EPA_GHGI_T_3_15.alt_fuel_on_road'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_alt_fuel
+
+      transport_ch4_n2o_nonroad:
+        selection_fields:
+          MetaSources:  # Ships, boats, rail, air
+            - 'EPA_GHGI_T_3_14.direct_non_road'
+            - 'EPA_GHGI_T_3_15.direct_non_road'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_nonroad
+
+      transport_ch4_n2o_nonroad_other:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_3_14.other_non_road'
+            - 'EPA_GHGI_T_3_15.other_non_road'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_nonroad_other
+
+      transport_ch4_n2o_nonroad_ag:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_3_14.farm_non_road'
+            - 'EPA_GHGI_T_3_15.farm_non_road'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_nonroad_ag
+
+      transport_ch4_n2o_nonroad_construction:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_3_14.construction_and_mining'
+            - 'EPA_GHGI_T_3_15.construction_and_mining'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_nonroad_construction
+
+
+## Stationary Combustion
+      stationary_residential:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_A_5.direct_attribution'
+            - 'EPA_GHGI_T_A_6.direct_attribution'
+            - 'EPA_GHGI_T_A_7.direct_attribution'
+            - 'EPA_GHGI_T_A_8.direct_attribution'
+            - 'EPA_GHGI_T_A_9.direct_attribution'
+            - 'EPA_GHGI_T_A_10.direct_attribution'
+            - 'EPA_GHGI_T_A_11.direct_attribution'
+            - 'EPA_GHGI_T_A_12.direct_attribution'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv residential_co2
+
+      stationary_coal:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_A_5.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_5.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_6.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_6.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_7.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_7.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_8.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_8.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_9.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_9.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_10.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_10.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_11.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_11.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_12.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_12.coal_manufacturing_co2'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_coal
+
+      stationary_natural_gas:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_A_5.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_5.natural_gas_manufacturing'
+            - 'EPA_GHGI_T_A_6.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_6.natural_gas_manufacturing'
+            - 'EPA_GHGI_T_A_7.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_7.natural_gas_manufacturing'
+            - 'EPA_GHGI_T_A_8.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_8.natural_gas_manufacturing'
+            - 'EPA_GHGI_T_A_9.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_9.natural_gas_manufacturing'
+            - 'EPA_GHGI_T_A_10.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_10.natural_gas_manufacturing'
+            - 'EPA_GHGI_T_A_11.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_11.natural_gas_manufacturing'
+            - 'EPA_GHGI_T_A_12.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_12.natural_gas_manufacturing'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_gas
+
+      stationary_petroleum_fuels:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_A_5.petroleum'
+            - 'EPA_GHGI_T_A_6.petroleum'
+            - 'EPA_GHGI_T_A_7.petroleum'
+            - 'EPA_GHGI_T_A_8.petroleum'
+            - 'EPA_GHGI_T_A_9.petroleum'
+            - 'EPA_GHGI_T_A_10.petroleum'
+            - 'EPA_GHGI_T_A_11.petroleum'
+            - 'EPA_GHGI_T_A_12.petroleum'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_pet
+
+      stationary_ch4_n2o:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_3_8.natural_gas_nonmanufacturing'
+            - 'EPA_GHGI_T_3_8.fuel_oil'
+            - 'EPA_GHGI_T_3_8.coal_nonmanufacturing'
+            - 'EPA_GHGI_T_3_8.ng_manufacturing'
+            - 'EPA_GHGI_T_3_8.coal_manufacturing'
+            - 'EPA_GHGI_T_3_8.fuel_oil'
+            - 'EPA_GHGI_T_3_9.natural_gas_nonmanufacturing'
+            - 'EPA_GHGI_T_3_9.fuel_oil'
+            - 'EPA_GHGI_T_3_9.coal_nonmanufacturing'
+            - 'EPA_GHGI_T_3_9.ng_manufacturing'
+            - 'EPA_GHGI_T_3_9.coal_manufacturing'
+            - 'EPA_GHGI_T_3_9.fuel_oil'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ind_com_ch4_n2o
+
+      electric_ch4_n2o:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_3_8.electric_power'
+            - 'EPA_GHGI_T_3_9.electric_power'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv electric_ch4_n2o
+
+      industrial_neu:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_3_22.coal'
+            - 'EPA_GHGI_T_3_22.petroleum_neu'
+            - 'EPA_GHGI_T_3_22.natural_gas_neu'
+            - 'EPA_GHGI_T_3_22.transportation_lubricants'
+            - 'EPA_GHGI_T_3_22b.coal'
+            - 'EPA_GHGI_T_3_22b.petroleum_neu'
+            - 'EPA_GHGI_T_3_22b.natural_gas_neu'
+            - 'EPA_GHGI_T_3_22b.transportation_lubricants'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv industrial_neu
+
+      ods_substitutes:
+        selection_fields:
+          MetaSources:
+            - 'EPA_GHGI_T_4_102.refrigerants'
+            - 'EPA_GHGI_T_4_102.air_conditioning'
+            - 'EPA_GHGI_T_4_102.foams'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            clean_fba_before_mapping: !script_function:EPA_GHGI split_HFCs_by_type
+            clean_parameter:
+                # Proportions of specific HFCs are assigned based on national total
+                flow_fba: EPA_GHGI_T_4_100
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ods_substitutes
+
+      ods_transportation:
+        selection_fields:
+          MetaSources: 'EPA_GHGI_T_A_97'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            clean_fba_before_mapping: !script_function:EPA_GHGI split_HFCs_by_type
+            clean_parameter:
+                # Proportions of specific HFCs are assigned based on national total
+                flow_fba: EPA_GHGI_T_4_100
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ods_transportation
+
+      magnesium:
+        selection_fields:
+          MetaSources: 'EPA_GHGI_T_4_86'
+        attribution_method: proportional
+        attribute_on: ['Flowable', 'SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          EPA_StateGHGI:
+            geoscale: state
+            fedefl_mapping: GHGI
+            selection_fields:
+              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv magnesium
