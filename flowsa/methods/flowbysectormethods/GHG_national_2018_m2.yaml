@@ -1,0 +1,145 @@
+# This is a 2018 target year specific implementation of GHG_national_m2
+# All parameters add year specific data when needed to implement for 2018
+# GHGI FBA table names match the 2022 GHGI Report
+# MECS year is 2018
+# CoA year is 2017
+
+!include:GHG_national_m2_common.yaml
+ghgi_year: &ghgi_year 2018
+mecs_year: &mecs_year 2018
+
+source_names:
+  GHG_national_2018_m1: # National Summary model
+    !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1
+    year: *ghgi_year
+    activity_sets: # Update MECS year for some activity sets
+      !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets
+
+      coal_manufacturing_co2: # Industrial Coal for Manufacturing
+        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:coal_manufacturing_co2
+        attribution_source:
+          EIA_MECS_Energy:
+            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:coal_manufacturing_co2:attribution_source:EIA_MECS_Energy
+              year: *mecs_year
+
+      natural_gas_manufacturing: # Industrial Natural Gas for manufacturing
+        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:natural_gas_manufacturing
+        attribution_source:
+          EIA_MECS_Energy:
+            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:natural_gas_manufacturing:attribution_source:EIA_MECS_Energy
+              year: *mecs_year
+
+      coal_manufacturing:
+        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:coal_manufacturing
+        attribution_source:
+          EIA_MECS_Energy:
+            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:coal_manufacturing:attribution_source:EIA_MECS_Energy
+              year: *mecs_year
+
+      ng_manufacturing:
+        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:ng_manufacturing
+        attribution_source:
+          EIA_MECS_Energy:
+            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:ng_manufacturing:attribution_source:EIA_MECS_Energy
+              year: *mecs_year
+
+      petroleum_neu: # consumed petroleum products
+        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:petroleum_neu
+        attribution_source:
+          EIA_MECS_Energy:
+            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:petroleum_neu:attribution_source:EIA_MECS_Energy
+              year: *mecs_year
+
+      natural_gas_neu: # consumed nat gas to chemical plants
+        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:natural_gas_neu
+        attribution_source:
+          EIA_MECS_Energy:
+            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:natural_gas_neu:attribution_source:EIA_MECS_Energy
+              year: *mecs_year
+
+
+  EPA_GHGI_T_2_1: #U.S. GHG emissions
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_2_1
+    year: *ghgi_year
+  EPA_GHGI_T_3_68: #CH4 from Natural Gas Systems
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_68
+    year: *ghgi_year
+  EPA_GHGI_T_3_70: #CO2 from Natural Gas Systems mimics CH4
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_70
+    year: *ghgi_year
+  EPA_GHGI_T_3_72: #N2O from Natural Gas Systems, not used in original method, mimics CH4
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_72
+    year: *ghgi_year
+
+  EPA_GHGI_T_3_42: #CH4 from Petroleum Systems
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_42
+    year: *ghgi_year
+  EPA_GHGI_T_3_44: #CO2 from Petroleum Systems mimics CH4
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_44
+    year: *ghgi_year
+  EPA_GHGI_T_3_46: #N2O from Petroleum Systems, not in prior method, mimics CH4
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_46
+    year: *ghgi_year
+
+## Agriculture
+  EPA_GHGI_T_5_28: #CH4, N2O, CO and NOx from field burning of residues
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_5_28
+    year: *ghgi_year
+  EPA_GHGI_T_5_3:  #CH4 from Enteric Fermentation
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_5_3
+    year: *ghgi_year
+  EPA_GHGI_T_5_6: #CH4 and N2O from manure, mimics enteric fermentation
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_5_6
+    year: *ghgi_year
+
+## Mobile Sources
+  EPA_GHGI_T_3_13: #CO2 from mobile combustion
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_13
+    year: *ghgi_year
+  EPA_GHGI_T_3_14: &mobile #CH4 from mobile combustion
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_14
+    year: *ghgi_year
+  EPA_GHGI_T_3_15: #N2O from mobile combustion duplicates method for CH4
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_15
+    year: *ghgi_year
+
+## Stationary Combustion
+  EPA_GHGI_T_A_7:
+    !include:GHG_national_m2_common.yaml:source_names:GHGI_CO2_stationary_combustion
+    year: *ghgi_year
+  EPA_GHGI_T_3_8: # CH4 emissions from stationary combustion
+     !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_8
+    year: *ghgi_year
+  EPA_GHGI_T_3_9: # N2O emissions from stationary combustion
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_9
+    year: *ghgi_year
+
+## Other sources
+  EPA_GHGI_T_4_46: #CO2 for selected petrochemicals
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_46
+    year: *ghgi_year
+
+  EPA_GHGI_T_3_22b: # Fossil fuel for non-energy uses
+    !include:GHG_national_m2_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions
+    year: *ghgi_year
+
+## Other Emissions
+  EPA_GHGI_T_4_50: # HFCs from HCFC-22 production
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_50
+    year: *ghgi_year
+
+  EPA_GHGI_T_4_96: # HFCs and other emissions from electronics manufacture
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_96
+    year: *ghgi_year
+
+  EPA_GHGI_T_4_102: # HFCs and PFCs from ODS Substitutes
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_102
+    year: *ghgi_year
+
+  EPA_GHGI_T_A_97: # HFCs from Transportation
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_A_97
+    year: *ghgi_year
+
+  EPA_GHGI_T_4_80: # PFCs from aluminum production
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_80
+    year: *ghgi_year
