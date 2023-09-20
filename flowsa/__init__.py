@@ -138,10 +138,10 @@ def collapse_FlowBySector(
 
 def seeAvailableFlowByModels(flowbytype, print_method=True):
     """
-    Return available Flow-By-Activity or Flow-By-Sector models
+    Console print and return available Flow-By-Activity or Flow-By-Sector models
     :param flowbytype: 'FBA' or 'FBS'
     :param print_method: False to skip printing to console
-    :return: console printout of available models
+    :return: dict or list of available models
     """
 
     # return fba directory path dependent on FBA or FBS
