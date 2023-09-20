@@ -18,7 +18,7 @@ flowsa/methods/flowbysectormethods/Employment_national_2018.yaml) only contains
 employment data in the SectorProducedBy column, as there are not flows of
 employment between sectors.
 
-Tables are standardized into a table defined in
+Tables are standardized into a table format defined in
 https://github.com/USEPA/flowsa/blob/master/format%20specs/FlowBySector.md.
 
 Retrieves stored data in the FlowBySector format
