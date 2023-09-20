@@ -1,4 +1,4 @@
-# Data Quality Pedigree Mattix
+# Data Quality Pedigree Matrix
 
 The following table is an update of
 'Table 3 Updated Data Quality Pedigree Matrix – Flow Indicators' from [USEPA 2016 'Guidance on Data Quality Assessment for Life Cycle Inventory Data'](https://cfpub.epa.gov/si/si_public_record_report.cfm?Lab=NRMRL&dirEntryId=321834)
