@@ -110,7 +110,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Make_BeforeRedef:
-            <<: *bea
+            <<: *bea_detail
             primary_action_type: Produced
             selection_fields:
               ActivityConsumedBy: {'221100': ''} # Electricity
@@ -142,7 +142,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_PRO_BeforeRedef:
-            <<: *bea
+            <<: *bea_detail
             selection_fields:
               ActivityProducedBy: {'325180': ''} # Other Basic Inorganic Chemicals
 
@@ -157,7 +157,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_PRO_BeforeRedef:
-            <<: *bea
+            <<: *bea_detail
             selection_fields:
               ActivityProducedBy: {'325120': ''} # Industrial gases
 
@@ -425,7 +425,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_PRO_BeforeRedef:
-            <<: *bea
+            <<: *bea_detail
             selection_fields:
               ActivityProducedBy: {'212100': ''} # purchases of coal
 
@@ -519,7 +519,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Make_BeforeRedef:
-            <<: *bea
+            <<: *bea_detail
             primary_action_type: Produced
             selection_fields:
               ActivityConsumedBy: {'221100': ''}  # Electricity
@@ -556,7 +556,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_PRO_BeforeRedef:
-            <<: *bea
+            <<: *bea_detail
             selection_fields:
               ActivityProducedBy: {'212100': ''}  # purchases of coal
 
@@ -723,7 +723,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_PRO_BeforeRedef:
-            <<: *bea
+            <<: *bea_detail
             selection_fields:
               ActivityProducedBy: {'333415': ''} # Air conditioning equipment
 
@@ -734,7 +734,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_PRO_BeforeRedef:
-            <<: *bea
+            <<: *bea_detail
             selection_fields:
               ActivityProducedBy: {'333415': ''} # Air conditioning equipment
 
@@ -745,7 +745,7 @@ source_names:
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_PRO_BeforeRedef:
-            <<: *bea
+            <<: *bea_detail
             selection_fields:
               ActivityProducedBy:
                 '326140': '' # Polystyrene foam
