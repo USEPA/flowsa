@@ -4,9 +4,9 @@
 
 """
 Flow-By-Sector (FBS) datasets are environmental, economic, and other data that
-are attributed to economic sectors, generally North American Industrial
-Classification (NAICS) Codes. These datasets capture flows of env/econ data
-from sectors that produce the data to the sectors that consume the data.
+are attributed to economic sectors, generally by North American Industrial
+Classification (NAICS) Codes. These datasets capture env/econ flows from sectors
+that produce to the sectors that consume.
 For example, Water_national_2015_m1 (https://github.com/USEPA/flowsa/blob/
 master/flowsa/methods/flowbysectormethods/Water_national_2015_m1.yaml)
 captures the flow of withdrawn water through the economy. This dataset
