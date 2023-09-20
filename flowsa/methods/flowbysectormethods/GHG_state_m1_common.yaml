@@ -4,14 +4,14 @@
 
 
 !include:USEEIO_summary_target.yaml
-year: &ghg_year 2019
+# year: &ghg_year 2019
 geoscale: state
 
 
 source_names:
   EPA_StateGHGI: ## Directly sourced from State Inventory FBA
     geoscale: state
-    year: *ghg_year
+    # year: *ghg_year
     fedefl_mapping: GHGI
     activity_sets:
       direct:
@@ -63,7 +63,7 @@ source_names:
         attribution_method: direct
 
   GHG_national_common_m1: #U.S. GHG emissions, summary model
-    year: *ghg_year
+    # year: *ghg_year
     data_format: FBS
     geoscale: national
     activity_sets:
@@ -375,6 +375,7 @@ source_names:
             - 'EPA_GHGI_T_A_10.direct_attribution'
             - 'EPA_GHGI_T_A_11.direct_attribution'
             - 'EPA_GHGI_T_A_12.direct_attribution'
+            - 'EPA_GHGI_T_A_13.direct_attribution'
         attribution_method: proportional
         attribute_on: ['Flowable', 'SectorProducedBy']
         fill_columns: Location
@@ -404,6 +405,8 @@ source_names:
             - 'EPA_GHGI_T_A_11.coal_manufacturing_co2'
             - 'EPA_GHGI_T_A_12.non_manufacturing_coal'
             - 'EPA_GHGI_T_A_12.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_13.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_13.coal_manufacturing_co2'
         attribution_method: proportional
         attribute_on: ['Flowable', 'SectorProducedBy']
         fill_columns: Location
@@ -433,6 +436,8 @@ source_names:
             - 'EPA_GHGI_T_A_11.natural_gas_manufacturing'
             - 'EPA_GHGI_T_A_12.non_manufacturing_natural_gas'
             - 'EPA_GHGI_T_A_12.natural_gas_manufacturing'
+            - 'EPA_GHGI_T_A_13.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_13.natural_gas_manufacturing'
         attribution_method: proportional
         attribute_on: ['Flowable', 'SectorProducedBy']
         fill_columns: Location
@@ -454,6 +459,7 @@ source_names:
             - 'EPA_GHGI_T_A_10.petroleum'
             - 'EPA_GHGI_T_A_11.petroleum'
             - 'EPA_GHGI_T_A_12.petroleum'
+            - 'EPA_GHGI_T_A_13.petroleum'
         attribution_method: proportional
         attribute_on: ['Flowable', 'SectorProducedBy']
         fill_columns: Location
