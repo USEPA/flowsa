@@ -33,7 +33,7 @@ import flowsa
 # see available FBS models
 flowsa.seeAvailableFlowByModels('FBS')
 
-# load FBS from local directory, if does not exist, method will run
+# load FBS from local directory, if does not exist, method will download
 fbs_water = flowsa.getFlowBySector('Water_national_2015_m1',
                                    download_FBAs_if_missing=True)
 
