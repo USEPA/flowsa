@@ -153,7 +153,7 @@ def seeAvailableFlowByModels(flowbytype, print_method=True):
         raise ValueError("flowbytype must be 'FBA' or 'FBS'")
 
     # list of file names (drop extension) for yaml files in flow directory
-    fb_names = [os.path.splitext(f)[0 for f in fb_dir if f.endswith('.yaml')]
+    fb_names = [os.path.splitext(f)[0] for f in fb_dir if f.endswith('.yaml')]
     
     # further reduce list of file names by excluding common and summary_target
     exclude = ["_common", "_summary_target"]
