@@ -150,7 +150,7 @@ def seeAvailableFlowByModels(flowbytype, print_method=True):
     elif flowbytype == 'FBS':
         fb_dir = os.listdir(flowbysectormethodpath)
     else:
-        raise ValueError("flowbytype must be 'FBA' or 'FBS')"
+        raise ValueError("flowbytype must be 'FBA' or 'FBS'")
 
     # list of file names (drop extension) for yaml files in flow directory
     fb_names = [os.path.splitext(f)[0 for f in fb_dir if f.endswith('.yaml')]
