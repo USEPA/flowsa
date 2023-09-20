@@ -1,9 +1,9 @@
-# This is the general method reference file for method 3 (Detail)
-# Year-specific GHG_national_m3 files import this file to define attribution rules
+# This is the general method reference file for method 2 (Detail)
+# Year-specific GHG_national_m2 files import this file to define attribution rules
 # that are further customized
-# m3 for the GHG national utilizes a full 6-digit NAICS attribution based on
-# the exisiting summary level national FBS (method 2), except where Direct attribution
-# is available at the detail level and uses method 1
+# m2 for the GHG national utilizes a full 6-digit NAICS attribution based on
+# the exisiting summary level national FBS (method 1), except where Direct attribution
+# is available at the detail level and uses the GHGI as the primary source
 
 industry_spec:
   default: NAICS_6
@@ -71,7 +71,7 @@ attribution_sources:
       estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
 
 source_names:
-  GHG_national_m2: # National Summary model
+  GHG_national_m1: # National Summary model
     data_format: FBS
     # year: *ghgi_year
     activity_sets:
@@ -509,7 +509,7 @@ source_names:
               ActivityConsumedBy: {T008: ''}  # Total Output
 
 
-
+## For tables requiring direct attribution, reattribute the original GHGI
   EPA_GHGI_T_2_1: #U.S. GHG emissions
     # year: # override this
     fedefl_mapping: GHGI
@@ -520,31 +520,41 @@ source_names:
       electricity_transmission:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:electricity_transmission
 
+      # replace equal attribution in summary model
       liming:
-        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:liming
-        # selection_fields:
-        #   PrimaryActivity: Liming  #CO2
-        # attribution_method: proportional
-        # attribution_source:
-        #   BEA_Detail_Use_PRO_BeforeRedef:
-        #     <<: *bea
-        #     selection_fields:
-        #       ActivityProducedBy: {'327400': ''} # Lime
+        selection_fields:
+          PrimaryActivity: Liming  #CO2
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'327400': ''} # Lime
 
+      # replace equal attribution in summary model
       urea_fertilizer:
-        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:urea_fertilizer
-        selection_fields: # Only uses one activity from this activity_set
+        selection_fields:
           PrimaryActivity:
             - Urea Fertilization #CO2
-        # attribution_method: proportional
-        # attribution_source:
-        #   BEA_Detail_Use_PRO_BeforeRedef:
-        #     <<: *bea
-        #     selection_fields:
-        #       ActivityProducedBy: {'325310': ''} # Fertilizers
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'325310': ''} # Fertilizers
 
+      # replace equal attribution in summary model
       lead:
-        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:lead
+        selection_fields:
+          PrimaryActivity: Lead Production #CO2
+        attribution_method: proportional
+        attribution_source:
+          USGS_MYB_Lead:
+            # year: 2016 Override with appropriate year
+            selection_fields:
+              ActivityProducedBy:
+                - Primary lead, refined content, domestic ores and base bullion
+                - Secondary lead, lead content
 
 
 ## Fossil Fuels
