@@ -1,0 +1,21 @@
+## Method 1 uses as its source the national GHG Flow-by-sector (summary)
+# with emissions data attributed to states based on reported emissions
+# in the State Inventory
+
+
+!include:GHG_state_m1_common.yaml
+year: &ghg_year 2015
+geoscale: state
+
+
+source_names:
+## Directly sourced from State Inventory
+  EPA_StateGHGI:
+    !include:GHG_state_m1_common.yaml:source_names:EPA_StateGHGI
+    year: *ghg_year
+    activity_sets:
+      !include:GHG_state_m1_common.yaml:source_names:EPA_StateGHGI:activity_sets
+
+  GHG_national_2015_m1: #U.S. GHG emissions, summary model
+    !include:GHG_state_m1_common.yaml:source_names:GHG_national_common_m1
+    year: *ghg_year
