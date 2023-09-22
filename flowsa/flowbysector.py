@@ -14,10 +14,9 @@ from pandas import ExcelWriter
 from flowsa import settings, metadata, common, exceptions, geo, naics
 from flowsa.common import get_catalog_info
 from flowsa.flowby import _FlowBy, flowby_config, get_flowby_from_config
+from flowsa.flowbyfunctions import collapse_fbs_sectors
 from flowsa.settings import DEFAULT_DOWNLOAD_IF_MISSING
 from flowsa.flowsa_log import reset_log_file, log
-from flowsa.validation import check_for_negative_flowamounts, \
-    check_for_nonetypes_in_sector_col
 
 
 class FlowBySector(_FlowBy):
@@ -404,9 +403,11 @@ def collapse_FlowBySector(
     :param methodname: string, Name of an available method for the given class
     :return: dataframe in flow by sector format
     """
-    fbs = flowsa.flowbysector.getFlowBySector(methodname, fbsconfigpath,
-                                              download_FBAs_if_missing,
-                                              download_FBS_if_missing)
+    from flowsa.validation import check_for_negative_flowamounts, \
+    check_for_nonetypes_in_sector_col
+
+    fbs = getFlowBySector(methodname, fbsconfigpath,
+                          download_FBAs_if_missing, download_FBS_if_missing)
     fbs_collapsed = collapse_fbs_sectors(fbs)
 
     # check data for NoneType in sector column
