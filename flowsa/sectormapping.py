@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 from esupy.mapping import apply_flow_mapping
 import flowsa
+import flowsa.flowbyactivity
 from flowsa.common import get_flowsa_base_name, load_crosswalk
 from flowsa.dataclean import standardize_units
 from flowsa.flowsa_log import log
@@ -234,7 +235,7 @@ def get_BEA_industry_output(region, io_level, year):
         fba = 'BEA_Detail_GrossOutput_IO'
 
     # Get output by BEA sector
-    bea = flowsa.getFlowByActivity(fba, year)
+    bea = flowsa.flowbyactivity.getFlowByActivity(fba, year)
     bea = (
         bea.drop(columns=bea.columns.difference(
             ['FlowAmount','ActivityProducedBy','Location']))

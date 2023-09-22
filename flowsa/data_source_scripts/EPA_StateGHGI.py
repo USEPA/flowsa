@@ -7,6 +7,8 @@ Inventory of US GHGs from EPA disaggregated to States
 import pandas as pd
 import io
 from zipfile import ZipFile
+
+import flowsa.flowbyactivity
 from flowsa.flowbyactivity import FlowByActivity
 from flowsa.flowsa_log import log
 from flowsa.location import apply_county_FIPS
@@ -110,7 +112,7 @@ def allocate_flows_by_fuel(fba: FlowByActivity, **_) -> FlowByActivity:
     else:
         activity_list = alist
     source_fba = pd.concat([
-        flowsa.getFlowByActivity(x, year) for x in 
+        flowsa.flowbyactivity.getFlowByActivity(x, year) for x in
         fba.config['clean_parameter']['fba_source']
         ], ignore_index=True)
 
@@ -140,8 +142,9 @@ def allocate_flows_by_fuel(fba: FlowByActivity, **_) -> FlowByActivity:
               )
 
     # prepare dataframe from StateGHGI including CO2 flows by fuel type
-    fba1 = (pd.concat([(flowsa.getFlowByActivity('EPA_StateGHGI', year)
-                       .query('ActivityProducedBy in @activity_list')),
+    fba1 = (pd.concat([(
+                           flowsa.flowbyactivity.getFlowByActivity('EPA_StateGHGI', year)
+                           .query('ActivityProducedBy in @activity_list')),
                       fba.copy()],
                      ignore_index=True)
            .assign(Fuel=lambda x: x['ActivityProducedBy']
@@ -216,4 +219,4 @@ def allocate_industrial_combustion(fba: FlowByActivity, **_) -> FlowByActivity:
 if __name__ == '__main__':
     import flowsa
     flowsa.generateflowbyactivity.main(source='EPA_StateGHGI', year='2017')
-    fba = flowsa.getFlowByActivity('EPA_StateGHGI', '2017')
+    fba = flowsa.flowbyactivity.getFlowByActivity('EPA_StateGHGI', '2017')

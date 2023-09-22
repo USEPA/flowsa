@@ -28,15 +28,16 @@ Retrieves stored data in the FlowBySector format
 
 """
 
-import flowsa
+from flowsa.common import seeAvailableFlowByModels
+import flowsa.flowbysector
 
 # see available FBS models
-flowsa.seeAvailableFlowByModels('FBS')
+seeAvailableFlowByModels('FBS')
 
 # load FBS from local directory, if does not exist, method will download
-fbs_water = flowsa.getFlowBySector('Water_national_2015_m1',
-                                   download_FBAs_if_missing=True)
+fbs_water = flowsa.flowbysector.getFlowBySector('Water_national_2015_m1',
+                                                download_FBAs_if_missing=True)
 
 # collapse the FBS - output has 'Sector' column instead of
 # 'SectorProducedBy' and 'SectorConsumedBy' columns
-fbs_water_collapsed = flowsa.collapse_FlowBySector('Water_national_2015_m1')
+fbs_water_collapsed = flowsa.flowbysector.collapse_FlowBySector('Water_national_2015_m1')

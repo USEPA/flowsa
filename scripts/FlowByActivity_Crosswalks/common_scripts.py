@@ -7,6 +7,7 @@
 
 import pandas as pd
 import flowsa
+import flowsa.flowbyactivity
 
 
 def unique_activity_names(datasource, year, **_):
@@ -22,7 +23,7 @@ def unique_activity_names(datasource, year, **_):
     """
 
     # create single df representing all selected years
-    df = flowsa.getFlowByActivity(datasource, year)
+    df = flowsa.flowbyactivity.getFlowByActivity(datasource, year)
 
     # return additional columns used to return unique activity names,
     # if specified

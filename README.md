@@ -29,7 +29,7 @@ the [Wiki](https://github.com/USEPA/flowsa/wiki/Available-Data#flow-by-activity-
 
 `import flowsa` \
 `flowsa.seeAvailableFlowByModels('FBA')` \
-`flowsa.getFlowByActivity(datasource="USDA_CoA_Cropland", year=2017)`
+`flowsa.return_FBA(datasource="USDA_CoA_Cropland", year=2017)`
 
 ### Flow-By-Sector (FBS) Datasets
 Flow-By-Sector datasets are tables of environmental and other data 
@@ -38,7 +38,7 @@ FBS datasets can be found in the [Wiki](https://github.com/USEPA/flowsa/wiki/Ava
 
 `import flowsa` \
 `flowsa.seeAvailableFlowByModels('FBS')` \
-`flowsa.getFlowBySector('Water_national_2015_m1')`
+`flowsa.return_FBS('Water_national_2015_m1')`
 
 ## Installation
 `pip install git+https://github.com/USEPA/flowsa.git@vX.X.X#egg=flowsa`

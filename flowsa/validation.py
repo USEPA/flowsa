@@ -8,6 +8,7 @@ Functions to check data is loaded and transformed correctly
 import pandas as pd
 import numpy as np
 import flowsa
+import flowsa.flowbysector
 from flowsa.flowbysector import FlowBySector
 from flowsa.flowbyfunctions import aggregator, collapse_fbs_sectors
 from flowsa.flowsa_log import log, vlog
@@ -211,15 +212,15 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
     import flowsa
 
     # load first file
-    df1 = flowsa.getFlowBySector(fbs1,
-                                 download_FBS_if_missing=compare_to_remote)
+    df1 = flowsa.flowbysector.getFlowBySector(fbs1,
+                                              download_FBS_if_missing=compare_to_remote)
     # load second file
     if compare_to_remote:
         # Generate the FBS locally and then immediately load
         df2 = FlowBySector.generateFlowBySector(
             method=fbs2, download_sources_ok=True)
     else:
-        df2 = flowsa.getFlowBySector(fbs2)
+        df2 = flowsa.flowbysector.getFlowBySector(fbs2)
     df_m = compare_FBS(df1, df2, ignore_metasources=ignore_metasources)
 
     return df_m
@@ -312,8 +313,8 @@ def compare_national_state_fbs(dataname=None, year=None, method=None,
         s = f'{dataname}_state_{year}{method}'
 
     # load the FBS as dataframes
-    national = FlowBySector.getFlowBySector(n)
-    state = FlowBySector.getFlowBySector(s)
+    national = FlowBySector.return_FBS(n)
+    state = FlowBySector.return_FBS(s)
 
     # load state level target sectors - assumption state will always be
     # equal or more aggregated than national
@@ -554,20 +555,20 @@ def calculate_industry_coefficients(fbs_load, year,region,
 
 if __name__ == "__main__":
     df1 = calculate_industry_coefficients(
-            flowsa.getFlowBySector('Water_national_2015_m1'), 2015,
+            flowsa.flowbysector.getFlowBySector('Water_national_2015_m1'), 2015,
             "national", "summary", False)
     df2 = calculate_industry_coefficients(
-            flowsa.getFlowBySector('GRDREL_national_2017'), 2017,
+            flowsa.flowbysector.getFlowBySector('GRDREL_national_2017'), 2017,
             "national", "summary", True)
     df3 = calculate_industry_coefficients(
-            flowsa.getFlowBySector('GRDREL_national_2017'), 2017,
+            flowsa.flowbysector.getFlowBySector('GRDREL_national_2017'), 2017,
             "national", "detail", True)
     df4 = calculate_industry_coefficients(
-            flowsa.getFlowBySector('GRDREL_state_2017'), 2017,
+            flowsa.flowbysector.getFlowBySector('GRDREL_state_2017'), 2017,
             "national", "detail", True)
     try:
         df5 = calculate_industry_coefficients(
-                flowsa.getFlowBySector('GRDREL_state_2017'), 2017,
+                flowsa.flowbysector.getFlowBySector('GRDREL_state_2017'), 2017,
                 "state", "detail", True)
     except TypeError:
         df5 = None

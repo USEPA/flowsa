@@ -9,13 +9,14 @@ Public Land Statistics
 
 import numpy as np
 import flowsa
+import flowsa.flowbyactivity
 from flowsa.settings import flowbysectoractivitysetspath
 
 datasource = 'BLM_PLS'
 year = '2012'
 
 if __name__ == '__main__':
-    df_import = flowsa.getFlowByActivity(datasource, year)
+    df_import = flowsa.flowbyactivity.getFlowByActivity(datasource, year)
 
     df = (df_import[['ActivityConsumedBy']]
           .drop_duplicates()

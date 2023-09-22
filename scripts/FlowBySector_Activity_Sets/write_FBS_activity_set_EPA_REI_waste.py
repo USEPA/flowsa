@@ -6,13 +6,14 @@ Write the csv called on in flowbysectormethods yaml files for rei waste flows
 """
 
 import flowsa
+import flowsa.flowbyactivity
 from flowsa.settings import flowbysectoractivitysetspath
 
 datasource = 'EPA_REI'
 year = '2012'
 
 if __name__ == '__main__':
-    df_import = flowsa.getFlowByActivity(datasource, year)
+    df_import = flowsa.flowbyactivity.getFlowByActivity(datasource, year)
 
     df = (df_import[['ActivityProducedBy', 'ActivityConsumedBy',
                      'Description']]

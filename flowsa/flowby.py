@@ -49,14 +49,14 @@ def get_flowby_from_config(
     external_data_path = config.get('external_data_path')
 
     if config['data_format'] == 'FBA':
-        return FlowByActivity.getFlowByActivity(
+        return FlowByActivity.return_FBA(
             full_name=name,
             config=config,
             download_ok=download_sources_ok,
             external_data_path=external_data_path
         )
     elif config['data_format'] == 'FBS':
-        return FlowBySector.getFlowBySector(
+        return FlowBySector.return_FBS(
             method=name,
             config=config,
             external_config_path=external_config_path,

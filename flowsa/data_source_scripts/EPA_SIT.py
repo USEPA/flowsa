@@ -8,6 +8,8 @@ data directory. Parses EPA SIT data to flowbyactivity format.
 
 import pandas as pd
 import os
+
+import flowsa.flowbyactivity
 from flowsa.settings import externaldatapath
 from flowsa.flowbyactivity import FlowByActivity
 from flowsa.flowbyfunctions import assign_fips_location_system, \
@@ -225,4 +227,4 @@ def clean_up_state_data(fba, source_dict, method, **_):
 if __name__ == '__main__':
     import flowsa
     flowsa.generateflowbyactivity.main(source='EPA_SIT', year='2019')
-    fba = flowsa.getFlowByActivity('EPA_SIT', '2019')
+    fba = flowsa.flowbyactivity.getFlowByActivity('EPA_SIT', '2019')

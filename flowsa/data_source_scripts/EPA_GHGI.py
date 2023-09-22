@@ -815,6 +815,6 @@ def split_HFCs_by_type(fba: FlowByActivity, **_) -> FlowByActivity:
 
 if __name__ == "__main__":
     import flowsa
-    # fba = flowsa.getFlowByActivity('EPA_GHGI_T_4_101', 2016)
+    # fba = flowsa.return_FBA('EPA_GHGI_T_4_101', 2016)
     # df = clean_HFC_fba(fba)
     fba = flowsa.generateflowbyactivity.main(year=2017, source='EPA_GHGI')
