@@ -4,9 +4,9 @@
 
 """
 Flow-By-Sector (FBS) datasets are environmental, economic, and other data that
-are attributed to economic sectors, generally North American Industrial
-Classification (NAICS) Codes. These datasets capture flows of env/econ data
-from sectors that produce the data to the sectors that consume the data.
+are attributed to economic sectors, generally by North American Industrial
+Classification (NAICS) Codes. These datasets capture env/econ flows from sectors
+that produce to the sectors that consume.
 For example, Water_national_2015_m1 (https://github.com/USEPA/flowsa/blob/
 master/flowsa/methods/flowbysectormethods/Water_national_2015_m1.yaml)
 captures the flow of withdrawn water through the economy. This dataset
@@ -18,7 +18,7 @@ flowsa/methods/flowbysectormethods/Employment_national_2018.yaml) only contains
 employment data in the SectorProducedBy column, as there are not flows of
 employment between sectors.
 
-Tables are standardized into a table defined in
+Tables are standardized into a table format defined in
 https://github.com/USEPA/flowsa/blob/master/format%20specs/FlowBySector.md.
 
 Retrieves stored data in the FlowBySector format
@@ -33,7 +33,7 @@ import flowsa
 # see available FBS models
 flowsa.seeAvailableFlowByModels('FBS')
 
-# load FBS from local directory, if does not exist, method will run
+# load FBS from local directory, if does not exist, method will download
 fbs_water = flowsa.getFlowBySector('Water_national_2015_m1',
                                    download_FBAs_if_missing=True)
 

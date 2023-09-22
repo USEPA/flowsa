@@ -80,7 +80,7 @@ def getFlowBySector(
     """
     Loads stored FlowBySector output or generates it if it doesn't exist,
     then loads
-    :param methodname: string, Name of an available method for the given class
+    :param methodname: str, name of an available method for the given class
     :param fbsconfigpath: str, path to the FBS method file if loading a file
         from outside the flowsa repository
     :param download_FBAs_if_missing: bool, if True will attempt to load FBAS
@@ -138,48 +138,46 @@ def collapse_FlowBySector(
 
 def seeAvailableFlowByModels(flowbytype, print_method=True):
     """
-    Return available Flow-By-Activity or Flow-By-Sector models
+    Console print and return available Flow-By-Activity or Flow-By-Sector models
     :param flowbytype: 'FBA' or 'FBS'
     :param print_method: False to skip printing to console
-    :return: console printout of available models
+    :return: dict or list of available models
     """
 
-    # return fba directory path dependent on FBA or FBS
+    # fb directory contents dependent on FBA or FBS
     if flowbytype == 'FBA':
-        fb_directory = sourceconfigpath
+        fb_dir = os.listdir(sourceconfigpath)
+    elif flowbytype == 'FBS':
+        fb_dir = os.listdir(flowbysectormethodpath)
     else:
-        fb_directory = flowbysectormethodpath
+        raise ValueError("flowbytype must be 'FBA' or 'FBS'")
 
-    # empty dictionary
-    fb_dict = {}
-    # empty df
-    fb_df = []
-    # run through all files and append
-    for file in os.listdir(fb_directory):
-        if file.endswith(".yaml"):
-            if all(s not in file for s in ["_common", "_summary_target"]):
-                # drop file extension
-                f = os.path.splitext(file)[0]
-                if flowbytype == 'FBA':
-                    s = load_yaml_dict(f, 'FBA')
-                    try:
-                        years = s['years']
-                    except KeyError:
-                        years = 'YAML missing information on years'
-                    fb_dict.update({f: years})
-                # else if FBS
-                else:
-                    fb_df.append(f)
-
-    # determine format of data to print
+    # list of file names (drop extension) for yaml files in flow directory
+    fb_names = [os.path.splitext(f)[0] for f in fb_dir if f.endswith('.yaml')]
+    
+    # further reduce list of file names by excluding common and summary_target
+    exclude = ["_common", "_summary_target"]
+    fb_names = [f for f in fb_names if all(s not in f for s in exclude)]
+    
     if flowbytype == 'FBA':
-        data_print = fb_dict
+        # create empty dictionary, this will be the data format to print FBA
+        data_print = {}
+        # iterate over names to build dict for FBA and handling years
+        for f in fb_names:
+            s = load_yaml_dict(f, 'FBA')
+            try:
+                years = s['years']
+            except KeyError:
+                years = 'YAML missing information on years'
+            data_print.update({f: years})
     else:
-        data_print = fb_df
+        # data format to print FBS
+        data_print = fb_names
 
     if print_method:
         # print data in human-readable format
         pprint.pprint(data_print, width=79, compact=True)
+
     return data_print
 
 

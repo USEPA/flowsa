@@ -36,7 +36,7 @@ fba_usgs = flowsa.getFlowByActivity(datasource="USGS_NWIS_WU",
                                     year=2015,
                                     flowclass='Water',
                                     geographic_level='state'
-                                    ).reset_index(drop=True)
+                                    )
 
 # save output to csv, maintain leading 0s in location col
 fba_usgs.Location = fba_usgs.Location.apply('="{}"'.format)
