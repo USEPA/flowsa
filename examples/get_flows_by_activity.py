@@ -21,23 +21,21 @@ Examples of use of flowsa. Read parquet files as dataframes.
     :return: a pandas DataFrame in FlowByActivity format
 
 """
-
-from flowsa.common import seeAvailableFlowByModels
-import flowsa.flowbyactivity
+from flowsa import getFlowByActivity, seeAvailableFlowByModels
 from flowsa.settings import fbaoutputpath
 
 # see all datasources and years available in flowsa
 seeAvailableFlowByModels('FBA')
 
 # Load all information for EIA MECS Land
-fba_mecs = flowsa.flowbyactivity.getFlowByActivity(datasource="EIA_MECS_Land", year=2014)
+fba_mecs = getFlowByActivity(datasource="EIA_MECS_Land", year=2014)
 
 # only load state level water data and save as csv
-fba_usgs = flowsa.flowbyactivity.getFlowByActivity(datasource="USGS_NWIS_WU",
-                                                   year=2015,
-                                                   flowclass='Water',
-                                                   geographic_level='state'
-                                                   )
+fba_usgs = getFlowByActivity(datasource="USGS_NWIS_WU",
+                             year=2015,
+                             flowclass='Water',
+                             geographic_level='state'
+                             )
 
 # save output to csv, maintain leading 0s in location col
 fba_usgs.Location = fba_usgs.Location.apply('="{}"'.format)
