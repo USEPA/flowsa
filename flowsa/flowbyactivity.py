@@ -171,8 +171,8 @@ class FlowByActivity(_FlowBy):
             .assign(ConversionFactor=lambda x: x.ConversionFactor.fillna(1))
         )
         if mapping.empty:
-            log.error('Elementary flow list entries for %s not found',
-                      mapping_subset)
+            log.error(f'Elementary flow list entries for {mapping_subset} not '
+                      f'found')
             return FlowByActivity(self, mapped=True)
 
         mapped_fba = fba.merge(mapping,
@@ -200,13 +200,13 @@ class FlowByActivity(_FlowBy):
         )
 
         if any(mapped_fba.mapped == 'both'):
-            log.info('Units standardized to %s by mapping to federal '
-                     'elementary flow list', list(mapping.TargetUnit.unique()))
+            log.info(f'Units standardized to '
+                     f'{list(mapping.TargetUnit.unique())} by mapping to '
+                     f'federal elementary flow list')
         if any(mapped_fba.mapped == 'left_only'):
-            log.warning('Some units not standardized by mapping to federal '
-                        'elementary flows list: %s',
-                        list(mapped_fba
-                             .query('mapped == "left_only"').Unit.unique()))
+            log.warning(f"Some units not standardized by mapping to federal "
+                        f"elementary flows list: "
+                        f"{list(mapped_fba.query('mapped == left_only').Unit.unique())}")
 
         return mapped_fba.drop(columns='mapped')
 
@@ -269,10 +269,9 @@ class FlowByActivity(_FlowBy):
         geoscale_name_columns = [s.name.title() for s in geo.scale
                                  if s.has_fips_level]
 
-        log.info('Determining appropriate source geoscale for %s; '
-                 'target geoscale is %s',
-                 self.full_name,
-                 target_geoscale.name.lower())
+        log.info(f'Determining appropriate source geoscale for '
+                 f'{self.full_name}; target geoscale is '
+                 f'{target_geoscale.name.lower()}')
 
         highest_reporting_level_by_geoscale = [
             (self
@@ -323,11 +322,9 @@ class FlowByActivity(_FlowBy):
         )
 
         if len(fba_at_source_geoscale.source_geoscale.unique()) > 1:
-            log.warning('%s has multiple source geoscales: %s',
-                        fba_at_source_geoscale.full_name,
-                        ', '.join([s.name.lower() for s in
-                                   fba_at_source_geoscale
-                                   .source_geoscale.unique()]))
+            log.warning(f"{fba_at_source_geoscale.full_name} has multiple "
+                        f"source geoscales: "
+                        f"{', '.join([s.name.lower() for s in fba_at_source_geoscale.source_geoscale.unique()])}")
         else:
             log.info('%s source geoscale is %s',
                      fba_at_source_geoscale.full_name,

@@ -143,12 +143,11 @@ def map_fbs_flows(fbs, from_fba_source, v, **kwargs):
     ignore_source_name = False
     if 'mfl_mapping' in v:
         mapping_files = v['mfl_mapping']
-        log.info("Mapping flows in %s to material flow list", from_fba_source)
+        log.info(f"Mapping flows in {from_fba_source} to material flow list")
         flow_type = 'WASTE_FLOW'
         ignore_source_name = True
     else:
-        log.info("Mapping flows in %s to federal elementary flow list",
-                 from_fba_source)
+        log.info(f"Mapping flows in {from_fba_source} to federal elementary flow list")
         if 'fedefl_mapping' in v:
             mapping_files = v['fedefl_mapping']
             ignore_source_name = True
@@ -271,7 +270,7 @@ def map_to_material_crosswalk(df, source, source_attr):
     material_crosswalk = source_attr.get('material_crosswalk')
     field_names = source_attr.get('material_crosswalk_field_dict')
 
-    log.info(f'Mapping flows in %s to %s', source, material_crosswalk)
+    log.info(f'Mapping flows in {source} to {material_crosswalk}')
     mapped_df = apply_flow_mapping(df, source,
                                    flow_type='ELEMENTARY_FLOW',
                                    field_dict=field_names,
