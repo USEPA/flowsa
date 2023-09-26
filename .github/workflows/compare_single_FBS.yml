@@ -39,7 +39,7 @@ jobs:
           METHOD: ${{ github.event.inputs.method }}
       run: |
         echo "Method: ${{ github.event.inputs.method }}"
-        python flowsa/test_single_FBS.py --method $METHOD
+        python tests/test_single_FBS.py --method $METHOD
 
     - name: Upload files
       if: always()
