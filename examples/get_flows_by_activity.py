@@ -10,14 +10,15 @@ https://github.com/USEPA/flowsa/blob/master/format%20specs/FlowByActivity.md).
 These data are generally unchanged from the source data, with the exception
 of formatting.
 
-See source_catalog.yaml for available FlowByActivity datasets and
-available parameters for getFlowByActivity().
-Examples of use of flowsa. Read parquet files as dataframes.
+`getFlowByActivity()` has required and optional parameters
     :param datasource: str, the code of the datasource.
     :param year: int, a year, e.g. 2012
     :param flowclass: str, a 'Class' of the flow. Optional. E.g. 'Water'
     :param geographic_level: str, a geographic level of the data.
-    Optional. E.g. 'national', 'state', 'county'.
+        Optional. E.g. 'national', 'state', 'county'.
+    :param download_FBA_if_missing: bool, if True will attempt to load from
+        remote server prior to generating if file not found locally,
+        optional, default is False
     :return: a pandas DataFrame in FlowByActivity format
 
 """
