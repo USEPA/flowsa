@@ -7,10 +7,10 @@ import pytest
 import os
 import pandas as pd
 import numpy as np
-from flowsa import seeAvailableFlowByModels, FlowBySector
-from flowsa.common import check_method_status
+from flowsa.flowbysector import FlowBySector
+from flowsa.common import check_method_status, seeAvailableFlowByModels
 from flowsa.settings import diffpath
-from flowsa.test_single_FBS import compare_single_FBS_against_remote
+from tests.test_single_FBS import compare_single_FBS_against_remote
 
 
 @pytest.mark.generate_fbs

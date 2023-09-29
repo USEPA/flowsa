@@ -2,11 +2,11 @@
 Test FBA config and urls during github action
 """
 import pytest
-from flowsa import seeAvailableFlowByModels
 import flowsa.exceptions
 from flowsa.generateflowbyactivity import assemble_urls_for_query,\
     call_urls
-from flowsa.common import check_method_status, load_yaml_dict
+from flowsa.common import check_method_status, load_yaml_dict, \
+    seeAvailableFlowByModels
 
 
 @pytest.mark.skip(reason="Perform targeted test for test_FBA_urls on PR")

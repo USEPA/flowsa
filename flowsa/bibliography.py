@@ -10,6 +10,7 @@ import pandas as pd
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 from esupy.processed_data_mgmt import mkdir_if_missing
+
 from flowsa.common import load_values_from_literature_citations_config, \
     get_flowsa_base_name, sourceconfigpath, load_yaml_dict
 from flowsa.flowsa_log import log
@@ -32,8 +33,8 @@ def generate_list_of_sources_in_fbs_method(methodname):
         try:
             sources.append([fbs_k, fbs_v['year']])
         except KeyError:
-            log.info('Could not append %s to datasource '
-                     'list because missing year', fbs_k)
+            log.info(f'Could not append {fbs_k} to datasource '
+                     'list because missing year')
             continue
         activities = fbs_v['activity_sets']
         for aset, attr in activities.items():
@@ -153,3 +154,16 @@ def load_source_dict(sourcename):
 #         # loop through all entries in bib_list
 #         for b in bib_list:
 #             bibfile.write(writer.write(b))
+
+
+# todo: will reintroduce option to create bibliography post 2.0 release
+# def writeFlowBySectorBibliography(methodname):
+#     """
+#     Generate bibliography for FlowBySectorMethod in local directory
+#     :param methodname: string, FBS methodname for which to create .bib file
+#     :return: .bib file save to local directory
+#     """
+#     # Generate a single .bib file for a list of Flow-By-Sector method names
+#     # and save file to local directory
+#     log.info(f'Write bibliography to {biboutputpath / methodname}.bib')
+#     generate_fbs_bibliography(methodname)

@@ -7,13 +7,14 @@ related EIA CBECS
 """
 
 import flowsa
+import flowsa.flowbyactivity
 from flowsa.settings import flowbysectoractivitysetspath
 
 datasource = 'EIA_CBECS_Land'
 year = '2012'
 
 if __name__ == '__main__':
-    df_import = flowsa.getFlowByActivity(datasource, year)
+    df_import = flowsa.flowbyactivity.getFlowByActivity(datasource, year)
 
     activities_to_drop = ['All buildings', 'Mercantile', 'Health care']
 

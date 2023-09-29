@@ -11,10 +11,12 @@ from __future__ import annotations
 import esupy.processed_data_mgmt
 import pandas as pd
 from pandas import ExcelWriter
-from flowsa import settings, metadata, common, exceptions, log, geo, naics
+from flowsa import settings, metadata, common, exceptions, geo, naics
 from flowsa.common import get_catalog_info
 from flowsa.flowby import _FlowBy, flowby_config, get_flowby_from_config
-from flowsa.flowsa_log import reset_log_file
+from flowsa.flowbyfunctions import collapse_fbs_sectors
+from flowsa.settings import DEFAULT_DOWNLOAD_IF_MISSING
+from flowsa.flowsa_log import reset_log_file, log
 
 
 class FlowBySector(_FlowBy):
@@ -62,7 +64,7 @@ class FlowBySector(_FlowBy):
         return _FBSSeries
 
     @classmethod
-    def getFlowBySector(
+    def return_FBS(
         cls,
         method: str,
         config: dict = None,
@@ -358,3 +360,59 @@ class _FBSSeries(pd.Series):
     @property
     def _constructor_expanddim(self) -> 'FlowBySector':
         return FlowBySector
+
+
+def getFlowBySector(
+        methodname,
+        fbsconfigpath=None,
+        download_FBAs_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
+        download_FBS_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
+        **kwargs
+        ) -> pd.DataFrame:
+    """
+    Loads stored FlowBySector output or generates it if it doesn't exist,
+    then loads
+    :param methodname: str, name of an available method for the given class
+    :param fbsconfigpath: str, path to the FBS method file if loading a file
+        from outside the flowsa repository
+    :param download_FBAs_if_missing: bool, if True will attempt to load FBAS
+        used in generating the FBS from remote server prior to generating if
+        file not found locally
+    :param download_FBS_if_missing: bool, if True will attempt to load from
+        remote server prior to generating if file not found locally
+    :return: dataframe in flow by sector format
+    """
+    fbs = FlowBySector.return_FBS(
+        method=methodname,
+        external_config_path=fbsconfigpath,
+        download_sources_ok=download_FBAs_if_missing,
+        download_fbs_ok=download_FBS_if_missing,
+        **kwargs
+    )
+    return pd.DataFrame(fbs)
+
+
+def collapse_FlowBySector(
+        methodname,
+        fbsconfigpath=None,
+        download_FBAs_if_missing=DEFAULT_DOWNLOAD_IF_MISSING,
+        download_FBS_if_missing=DEFAULT_DOWNLOAD_IF_MISSING
+        ) -> pd.DataFrame:
+    """
+    Returns fbs with one sector column in place of two
+    :param methodname: string, Name of an available method for the given class
+    :return: dataframe in flow by sector format
+    """
+    from flowsa.validation import check_for_negative_flowamounts, \
+    check_for_nonetypes_in_sector_col
+
+    fbs = getFlowBySector(methodname, fbsconfigpath,
+                          download_FBAs_if_missing, download_FBS_if_missing)
+    fbs_collapsed = collapse_fbs_sectors(fbs)
+
+    # check data for NoneType in sector column
+    fbs_collapsed = check_for_nonetypes_in_sector_col(fbs_collapsed)
+    # check data for negative FlowAmount values
+    fbs_collapsed = check_for_negative_flowamounts(fbs_collapsed)
+
+    return fbs_collapsed
