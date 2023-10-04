@@ -7,6 +7,20 @@
 # year: &ghg_year 2019
 geoscale: state
 
+_allocation_types:
+  _use_allocation: &use_table_allocation
+    # year: *ghg_year
+    geoscale: state
+    activity_to_sector_mapping: BEA_2012_Summary
+    # selection_fields:
+    #   ActivityProducedBy: {'324': ''}  # Petroleum 324110
+    exclusion_fields:
+      ActivityConsumedBy: ['F030', 'F040', 'F050', 'F051', 
+                           'F02E', 'F06E', 'F07E', 'F10E']
+    attribution_method: equal
+    ## No attribution supplied (will use equal) because target level for
+    ## modeling is BEA summary level.
+
 
 source_names:
   EPA_StateGHGI: ## Directly sourced from State Inventory FBA
@@ -231,14 +245,15 @@ source_names:
             - 'EPA_GHGI_T_3_13.direct_petroleum'
             - 'EPA_GHGI_T_3_13.petroleum_fuels'
         attribution_method: proportional
-        attribute_on: ['Flowable', 'SectorProducedBy']
+        attribute_on: ['PrimarySector'] # SPB for emissions, SCB for Use table
         fill_columns: Location
         attribution_source:
-          EPA_StateGHGI:
-            geoscale: state
-            fedefl_mapping: GHGI
+          stateio_Use_Summary:
+            <<: *use_table_allocation
+            # year: *ghg_year
             selection_fields:
-              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_petroleum
+              ActivityProducedBy: {'324': ''}  # Petroleum fuel
+
 
       transport_ng:
         selection_fields:
