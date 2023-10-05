@@ -272,18 +272,16 @@ source_names:
         selection_fields:
           MetaSources:
             - 'EPA_GHGI_T_3_14.petroleum_fuels_diesel'
-            - 'EPA_GHGI_T_3_14.direct_diesel'
             - 'EPA_GHGI_T_3_15.petroleum_fuels_diesel'
-            - 'EPA_GHGI_T_3_15.direct_diesel'
         attribution_method: proportional
-        attribute_on: ['Flowable', 'SectorProducedBy']
+        attribute_on: ['PrimarySector'] # SPB for emissions, SCB for Use table
         fill_columns: Location
         attribution_source:
-          EPA_StateGHGI:
-            geoscale: state
-            fedefl_mapping: GHGI
+          stateio_Use_Summary:
+            <<: *use_table_allocation
+            # year: *ghg_year
             selection_fields:
-              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_diesel
+              ActivityProducedBy: {'324': ''}  # Petroleum fuel
 
       transport_ch4_n2o_gasoline:
         selection_fields:
@@ -293,14 +291,14 @@ source_names:
             - 'EPA_GHGI_T_3_15.petroleum_fuels_gasoline'
             - 'EPA_GHGI_T_3_15.direct_gasoline'
         attribution_method: proportional
-        attribute_on: ['Flowable', 'SectorProducedBy']
+        attribute_on: ['PrimarySector'] # SPB for emissions, SCB for Use table
         fill_columns: Location
         attribution_source:
-          EPA_StateGHGI:
-            geoscale: state
-            fedefl_mapping: GHGI
+          stateio_Use_Summary:
+            <<: *use_table_allocation
+            # year: *ghg_year
             selection_fields:
-              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_gasoline
+              ActivityProducedBy: {'324': ''}  # Petroleum fuel
 
       transport_ch4_n2o_alt:
         selection_fields:
@@ -323,14 +321,14 @@ source_names:
             - 'EPA_GHGI_T_3_14.direct_non_road'
             - 'EPA_GHGI_T_3_15.direct_non_road'
         attribution_method: proportional
-        attribute_on: ['Flowable', 'SectorProducedBy']
+        attribute_on: ['PrimarySector'] # SPB for emissions, SCB for Use table
         fill_columns: Location
         attribution_source:
-          EPA_StateGHGI:
-            geoscale: state
-            fedefl_mapping: GHGI
+          stateio_Use_Summary:
+            <<: *use_table_allocation
+            # year: *ghg_year
             selection_fields:
-              PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_nonroad
+              ActivityProducedBy: {'324': ''}  # Petroleum fuel
 
       transport_ch4_n2o_nonroad_other:
         selection_fields:
