@@ -19,7 +19,7 @@ and Flow-By-Sector (FBS) datasets
 1. _"literature_values.py"_
 1. _"location.py"_
 1. _"metadata.py"_
-1. _"naics.py"_
+1. _"sectors.py"_
 1. _"schema.py"_
 1. _"sectormapping.py"_
 1. _"settings.py"_

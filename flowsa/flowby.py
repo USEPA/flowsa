@@ -1314,7 +1314,7 @@ class _FlowBy(pd.DataFrame):
         SectorConsumedBy). If necessary, flow amounts are further (equally)
         subdivided based on the secondary sector.
         '''
-        naics_key = naics.map_target_sectors_to_less_aggregated_sectors(
+        naics_key = sectors.map_target_sectors_to_less_aggregated_sectors(
             self.config['industry_spec'])
 
         fba = self.add_primary_secondary_columns('Sector')

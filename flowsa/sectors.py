@@ -6,6 +6,10 @@ from flowsa.flowbyfunctions import aggregator
 from flowsa.flowsa_log import vlog, log
 from . import (common, settings)
 
+bea_level_key = {"Sector": 0,
+                 "Summary": 1,
+                 "Detail": 2}
+
 
 naics_crosswalk = pd.read_csv(
     settings.datapath / 'NAICS_2012_Crosswalk.csv', dtype='object'
