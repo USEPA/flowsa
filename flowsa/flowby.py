@@ -1314,8 +1314,10 @@ class _FlowBy(pd.DataFrame):
         SectorConsumedBy). If necessary, flow amounts are further (equally)
         subdivided based on the secondary sector.
         '''
-        naics_key = sectors.map_target_sectors_to_less_aggregated_sectors(
+        naics_key = \
+            sectormapping.map_target_sectors_to_less_aggregated_sectors(
             self.config['industry_spec'])
+        len_sectors = len(naics_key.columns)
 
         fba = self.add_primary_secondary_columns('Sector')
 
@@ -1326,18 +1328,18 @@ class _FlowBy(pd.DataFrame):
                 .merge(naics_key, how='left', left_on=f'{rank}Sector',
                        right_on='target_sectors')
                 .assign(
-                    **{f'_unique_naics_{n}_by_group': lambda x, i=n: (
+                    **{f'_unique_sectors_{n}_by_group': lambda x, i=n: (
                             x.groupby(groupby_cols if i == 2
-                                      else [*groupby_cols, f'_naics_{i-1}'],
+                                      else [*groupby_cols, f'_sectors_{i-1}'],
                                       dropna=False)
-                            [[f'_naics_{i}']]
+                            [[f'_sectors_{i}']]
                             .transform('nunique', dropna=False)
                         )
-                        for n in range(2, 8)},
+                        for n in range(2, len_sectors)},
                     FlowAmount=lambda x: reduce(
                         lambda x, y: x / y,
-                        [x.FlowAmount, *[x[f'_unique_naics_{n}_by_group']
-                                         for n in range(2, 8)]]
+                        [x.FlowAmount, *[x[f'_unique_sectors_{n}_by_group']
+                                         for n in range(2, len_sectors)]]
                     )
                 )
                 .drop(columns=naics_key.columns.values.tolist())
@@ -1346,8 +1348,8 @@ class _FlowBy(pd.DataFrame):
 
         return fba.drop(
             columns=['PrimarySector', 'SecondarySector',
-                     *[f'_unique_naics_{n}_by_group' for n in range(2, 8)]]
-        )
+                     *[f'_unique_naics_{n}_by_group' for n in range(2, 8)]],
+            errors='ignore')
 
     def add_primary_secondary_columns(
         self: FB,
