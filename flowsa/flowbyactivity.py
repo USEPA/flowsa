@@ -389,7 +389,8 @@ class FlowByActivity(_FlowBy):
             define_parentincompletechild_descendants, \
             drop_parentincompletechild_descendants
 
-        naics_key = sectors.industry_spec_key(self.config['industry_spec'])
+        naics_key = sectormapping.industry_spec_key(
+            self.config['industry_spec'])
 
         activity_schema = self.config['activity_schema'] if isinstance(
             self.config['activity_schema'], str) else self.config.get(
@@ -414,7 +415,7 @@ class FlowByActivity(_FlowBy):
             if activity_schema != f"NAICS_{self.config['target_sector_year']}_Code":
                 log.info(f"Converting {activity_schema} to NAICS"
                          f"_{self.config['target_sector_year']}_Code")
-                self = sectors.convert_naics_year(
+                self = sectormapping.convert_naics_year(
                     self,
                     f"NAICS_{self.config['target_sector_year']}_Code",
                     activity_schema)
@@ -640,7 +641,7 @@ class FlowByActivity(_FlowBy):
                 for direction in ['ProducedBy', 'ConsumedBy']:
                     fba_w_naics = (
                         fba_w_naics
-                        .merge(sectors.year_crosswalk(source_year,
+                        .merge(sectormapping.year_crosswalk(source_year,
                                                       target_year),
                                how='left',
                                left_on=f'Sector{direction}',
