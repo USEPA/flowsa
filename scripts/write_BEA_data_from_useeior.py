@@ -29,7 +29,7 @@ The Detail_Use_SUT_2017 was pulled from
 USEEIOR's Detail_Use_SUT_2017.rda on 10/12/2023.
 
 The original file is found here:
-https://github.com/USEPA/useeior/blob/master/data/Detail_Use_SUT_2017.rd
+https://github.com/USEPA/useeior/blob/e02d979f099bbd60625e9c31099f89c111f2d654/data/Detail_Use_SUT_2017.rda
 
 csv obtained by running the following code in Rstudio:
 use2017 <- get('Detail_Use_SUT_2017')
@@ -61,7 +61,7 @@ The Detail_Supply_2017 was pulled from
 USEEIOR's Detail_Supply_2017.rda on 10/12/2023.
 
 The original file is found here:
-https://github.com/USEPA/useeior/blob/master/data/Detail_Use_2012_PRO_BeforeRedef.rda
+https://github.com/USEPA/useeior/blob/e02d979f099bbd60625e9c31099f89c111f2d654/data/Detail_Supply_2017.rda
 
 csv obtained by running the following code in Rstudio:
 supply2017 <- get('Detail_Supply_2017')
