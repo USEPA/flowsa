@@ -1,4 +1,4 @@
-# write_BEA_Use_from_useeior.py (scripts)
+# write_BEA_data_from_useeior.py (scripts)
 # !/usr/bin/env python3
 # coding=utf-8
 
@@ -29,7 +29,7 @@ The Detail_Use_SUT_2017 was pulled from
 USEEIOR's Detail_Use_SUT_2017.rda on 10/12/2023.
 
 The original file is found here:
-https://github.com/USEPA/useeior/blob/master/data/Detail_Use_2012_PRO_BeforeRedef.rda
+https://github.com/USEPA/useeior/blob/master/data/Detail_Use_SUT_2017.rd
 
 csv obtained by running the following code in Rstudio:
 use2017 <- get('Detail_Use_SUT_2017')
@@ -55,6 +55,20 @@ CSV manually added to flowsa
 https://github.com/USEPA/useeior/commit/2eece7a
 "date_last_modified": ["2021-09-29"],
 "date_accessed": ["2022-07-27"]
+
+---
+The Detail_Supply_2017 was pulled from
+USEEIOR's Detail_Supply_2017.rda on 10/12/2023.
+
+The original file is found here:
+https://github.com/USEPA/useeior/blob/master/data/Detail_Use_2012_PRO_BeforeRedef.rda
+
+csv obtained by running the following code in Rstudio:
+supply2017 <- get('Detail_Supply_2017')
+write.csv(supply2017, file='Detail_Supply_2017.csv')
+CSV manually added to flowsa
+The metadata file 'Detail_Supply_2017_metadata.json' was manually copied from useeior/extdata/metadata
+---
 
 ---
 The BEA_Detail_GrossOutput was pulled from
