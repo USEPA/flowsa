@@ -21,7 +21,6 @@ source_names:
     year: *year
     data_format: FBS
 
-  # If necessary can get stewi data directly from source
   stewiFBS:
     !include:CAP_HAP_common.yaml:source_names:stewiFBS
     inventory_dict:
