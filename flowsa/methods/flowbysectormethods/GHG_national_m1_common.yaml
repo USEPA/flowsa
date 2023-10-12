@@ -6,7 +6,7 @@
 
 !include:USEEIO_summary_target.yaml
 year: &ghg_year 2016
-target_naics_year: 2012
+target_sector_year: 2012
 geoscale: national
 
 _mecs_year: &mecs_year 2018

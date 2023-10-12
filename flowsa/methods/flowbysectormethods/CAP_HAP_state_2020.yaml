@@ -6,7 +6,7 @@
 
 
 !include:USEEIO_summary_target.yaml
-target_naics_year: 2012
+target_sector_year: 2012
 geoscale: state
 _emission_year: &year 2020
 

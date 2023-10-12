@@ -4,7 +4,7 @@
 industry_spec:
   default: NAICS_6
 year: 2010
-target_naics_year: 2012
+target_sector_year: 2012
 geoscale: national
 
 sources_to_cache:

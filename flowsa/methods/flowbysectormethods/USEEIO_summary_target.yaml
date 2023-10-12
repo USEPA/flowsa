@@ -11,4 +11,4 @@ industry_spec:
   NAICS_4: ['221', '336', '541']
 # In USEEIO models 221 (Utilities) is disaggregated to 2211, 2212, and 2213
 # '336' and '541' carry over from the BEA summary sectors
-target_naics_year: 2012
+target_sector_year: 2012

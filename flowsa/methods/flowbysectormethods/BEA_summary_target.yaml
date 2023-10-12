@@ -12,4 +12,4 @@ industry_spec:
 # Note 531, 532, 533, and 92* are not resolved at the 3 digit NAICS
 # but they do not resolve at higher resolution and so using 3-digit NAICS
 # is sufficient
-target_naics_year: 2012
+target_sector_year: 2012

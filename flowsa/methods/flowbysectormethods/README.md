@@ -118,7 +118,7 @@ industry_spec:
 ```
 
 - _year_: specify the target year of the FBS
-- _target_naics_year_: specify NAICS version `2007`, `2012`, `2017`.
+- _target_sector_year_: specify NAICS version `2007`, `2012`, `2017`.
   At this time, only NAICS_2012_Code is supported.
 - _geoscale_: level of geographic aggregation in output parquet
   (`national`, `state`, or `county`).
