@@ -10,7 +10,7 @@ A script to get Use table transactions from a useeior EEIOmodel.
 
 
 ---
-The BEA_Detail_Use_PRO_BeforeRedef was pulled from
+The BEA_Detail_Use_PRO_BeforeRedef_2012 was pulled from
 USEEIOR's Detail_Use_2012_PRO_BeforeRedef.rda on 08/11/2022.
 
 The original file is found here:
@@ -23,6 +23,22 @@ write.csv(bea, file='BEA_Detail_Use_2012_PRO_BeforeRedef.csv')
 CSV manually added to flowsa
 
 ---
+
+---
+The Detail_Use_SUT_2017 was pulled from
+USEEIOR's Detail_Use_SUT_2017.rda on 10/12/2023.
+
+The original file is found here:
+https://github.com/USEPA/useeior/blob/master/data/Detail_Use_2012_PRO_BeforeRedef.rda
+
+csv obtained by running the following code in Rstudio:
+use2017 <- get('Detail_Use_SUT_2017')
+write.csv(use2017, file='Detail_Use_SUT_2017.csv')
+CSV manually added to flowsa
+The metadata file 'Detail_Use_SUT_2017_metadata.json' was manually copied from useeior/extdata/metadata
+
+---
+
 
 The BEA_2012_Detail_Make_BeforeRedef was pulled from USEEIOR's
 Detail_Make_2012_BeforeRedef.rda on 08/11/2022.
