@@ -1,0 +1,21 @@
+# This method disaggregates a Summary Use table for target use based on the
+# best available Detail Use table
+
+industry_spec:
+  default: NAICS_6 ## <- Update to BEA Schema??
+  # default: BEA_2012_Detail_Code
+year: 2018
+target_naics_year: 2017 # <- this may not be working
+geoscale: national
+
+source_names:
+  BEA_Summary_Use_SUT:
+    geoscale: national
+    year: 2018
+    activity_to_sector_mapping: BEA_2017_Summary
+    attribution_method: proportional
+    attribution_source: 
+      BEA_Detail_Use_SUT:
+        year: 2017
+        activity_to_sector_mapping: BEA_2017_Detail
+
