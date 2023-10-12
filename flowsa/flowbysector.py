@@ -221,7 +221,7 @@ class FlowBySector(_FlowBy):
         """
         if industry_spec is None:
             industry_spec = self.config['industry_spec']
-        naics_key = sectors.industry_spec_key(industry_spec)
+        naics_key = sectormapping.industry_spec_key(industry_spec)
 
         fbs = self
         for direction in ['ProducedBy', 'ConsumedBy']:
@@ -294,7 +294,7 @@ class FlowBySector(_FlowBy):
                 return fb_at_source_sectors
             fb_at_target_sectors = (
                 fb_at_source_sectors
-                .merge(sectors.industry_spec_key(industry_spec),
+                .merge(sectormapping.industry_spec_key(industry_spec),
                        how='left',
                        left_on='SectorProducedBy', right_on='source_sectors')
                 .assign(

@@ -11,6 +11,7 @@ and Flow-By-Sector (FBS) datasets
 1. _"flowbyactivity.py"_
 1. _"flowbyclean.py"_
 1. _"flowbyfunctions.py"_
+1. _"flowmapping.py"_
 1. _"flowbysector.py"_
 1. _"flowby_log.py"_
 1. _"flowsa_yaml.py"_
@@ -19,7 +20,6 @@ and Flow-By-Sector (FBS) datasets
 1. _"literature_values.py"_
 1. _"location.py"_
 1. _"metadata.py"_
-1. _"sectors.py"_
 1. _"schema.py"_
 1. _"sectormapping.py"_
 1. _"settings.py"_
