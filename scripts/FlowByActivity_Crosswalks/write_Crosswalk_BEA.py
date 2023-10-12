@@ -19,7 +19,7 @@ def write_BEA_crosswalk(level='Detail', year=2012):
 
     df = cw.rename(columns={f"NAICS_{year}_Code": "Sector",
                             f"BEA_{year}_{level}_Code":"Activity"})
-    df['SectorSourceName'] = 'NAICS_{year}_Code'
+    df['SectorSourceName'] = f'NAICS_{year}_Code'
     df['ActivitySourceName'] = f'BEA_{year}_{level}_Code'
     df.dropna(subset=["Sector"], inplace=True)
     # assign sector type
