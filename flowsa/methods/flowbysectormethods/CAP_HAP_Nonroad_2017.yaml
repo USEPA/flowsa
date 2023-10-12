@@ -1,0 +1,38 @@
+# This is the 2017 target year method for CAP_HAP which builds off the generic
+# method in CAP_HAP_common. This state level method is at the detail level.
+# This FBS is for the Nonroad portion ONLY
+
+industry_spec:
+  default: NAICS_6
+target_naics_year: 2012
+geoscale: state
+
+_emission_year: &year 2017
+
+_attribution_sources:
+  BEA_Detail_Use_PRO_BeforeRedef: &bea
+  # UPDATE_BEA_2017_DETAIL: &bea
+    year: 2012
+    geoscale: national
+    activity_to_sector_mapping: BEA_2012_Detail
+    # activity_to_sector_mapping: BEA_2017_Detail
+    attribution_method: proportional
+    attribution_source:
+      Employment_national_2012:
+        data_format: FBS
+        year: 2012
+
+source_names:
+  EPA_NEI_Nonroad:
+    !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonroad
+    year: *year
+    activity_sets:
+      !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonroad:activity_sets
+      offroad_vehicles_equipment:
+        !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonroad:activity_sets:offroad_vehicles_equipment
+        attribution_source:
+          BEA_Detail_Use_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'324110': ''}  # Petroleum
+

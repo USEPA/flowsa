@@ -1,0 +1,79 @@
+# This is the 2017 target year method for CAP_HAP which builds off the generic
+# method in CAP_HAP_common. This state level method is at the detail level.
+# This FBS is for the Nonpoint portion ONLY
+
+industry_spec:
+  default: NAICS_6
+target_naics_year: 2012
+geoscale: state
+
+_emission_year: &year 2017
+
+_attribution_sources:
+  BEA_Detail_Use_PRO_BeforeRedef: &bea
+  # UPDATE_BEA_2017_DETAIL: &bea
+    year: 2012
+    geoscale: national
+    activity_to_sector_mapping: BEA_2012_Detail
+    # activity_to_sector_mapping: BEA_2017_Detail
+    attribution_method: proportional
+    attribution_source:
+      Employment_national_2012:
+        data_format: FBS
+        year: 2012
+
+sources_to_cache:
+  EIA_MECS_Energy:
+    !include:CAP_HAP_common.yaml:sources_to_cache:EIA_MECS_Energy_state
+    year: 2018
+    attribution_source:
+      Employment_state_2018: # Update to MECS year
+        geoscale: national # Uses national at this stage prior to attributing to states
+        year: 2018
+    clean_source: Employment_state_2018
+
+source_names:
+  EPA_NEI_Nonpoint:
+    !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonpoint
+    year: *year
+    activity_sets:
+      !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonpoint:activity_sets
+
+      # Update some activities with correct BEA year
+      mobile_and_fuel_storage:
+        !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonpoint:activity_sets:mobile_and_fuel_storage
+        attribution_source:
+          BEA_Detail_Use_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'324110': ''}  # Petroleum
+
+      fertilizers:
+        !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonpoint:activity_sets:fertilizers
+        attribution_source:
+          BEA_Detail_Use_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'325310': ''}  # Fertilizers
+
+      pesticides:
+        !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonpoint:activity_sets:pesticides
+        attribution_source:
+          BEA_Detail_Use_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'325320': ''}  # Pesticides
+
+      output_allocation: # Gross Output
+        !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonpoint:activity_sets:output_allocation
+        attribution_source:
+          BEA_Detail_GrossOutput_IO:
+            year: 2017
+            geoscale: national
+            activity_to_sector_mapping: BEA_2012_Detail
+            attribution_method: proportional
+            attribution_source:
+              Employment_national_2017:
+                data_format: FBS
+                year: 2017
+
