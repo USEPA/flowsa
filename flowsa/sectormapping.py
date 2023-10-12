@@ -6,9 +6,10 @@ from flowsa.flowbyfunctions import aggregator
 from flowsa.flowsa_log import vlog, log
 from . import (common, settings, log)
 
-bea_level_key = {"Sector": 0,
-                 "Summary": 1,
-                 "Detail": 2}
+bea_level_key = {"Sector":  "2",
+                 "Summary": "3",
+                 "Detail":  "4"
+                 }
 
 
 def return_sector_crosswalk(
@@ -127,21 +128,30 @@ def map_target_sectors_to_less_aggregated_sectors(
     #                                          'target_sectors': additional_sectors})])
 
     # drop source_sectors that are more aggregated than target_sectors, reorder
-    for n in (2, 7):
-        sectors[f'NAICS_{n}'] = np.where(
-            sectors[f'NAICS_{n}'].str.len() > sectors[
-                'target_sectors'].str.len(),
-            np.nan,
-            sectors[f'NAICS_{n}'])
+    if 'NAICS' in industry_spec['default']:
+        for n in (2, 7):
+            sectors[f'NAICS_{n}'] = np.where(
+                sectors[f'NAICS_{n}'].str.len() > sectors[
+                    'target_sectors'].str.len(),
+                np.nan,
+                sectors[f'NAICS_{n}'])
+    elif 'BEA' in industry_spec['default']:
+        bea_cols = [col for col in sectors.columns if 'BEA' in col] + [
+            'target_sectors']
+        sectors = sectors[bea_cols]
 
     # rename columns to align with previous code
-    sectors = sectors.rename(columns={'NAICS_2': '_naics_2',
-                                      'NAICS_3': '_naics_3',
-                                      'NAICS_4': '_naics_4',
-                                      'NAICS_5': '_naics_5',
-                                      'NAICS_6': '_naics_6',
-                                      'NAICS_7': '_naics_7'}
-                             )
+    sectors = sectors.rename(columns={
+        'NAICS_2': '_sectors_2',
+        'NAICS_3': '_sectors_3',
+        'NAICS_4': '_sectors_4',
+        'NAICS_5': '_sectors_5',
+        'NAICS_6': '_sectors_6',
+        'NAICS_7': '_sectors_7',
+        'BEA_2012_Sector_Code': f'_sectors_{bea_level_key["Sector"]}',
+        'BEA_2012_Summary_Code': f'_sectors_{bea_level_key["Summary"]}',
+        'BEA_2012_Detail_Code': f'_sectors_{bea_level_key["Detail"]}'
+    })
 
     return sectors.drop_duplicates().reset_index(drop=True)
 
