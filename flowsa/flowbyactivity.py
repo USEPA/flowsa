@@ -17,7 +17,7 @@ from functools import partial, reduce
 from typing import Literal, List
 import fedelemflowlist
 import pandas as pd
-from flowsa import settings, metadata, log, geo, validation, naics, common, \
+from flowsa import settings, metadata, log, geo, validation, sectors, common, \
     sectormapping, generateflowbyactivity
 from flowsa.flowby import _FlowBy, flowby_config, NAME_SEP_CHAR
 

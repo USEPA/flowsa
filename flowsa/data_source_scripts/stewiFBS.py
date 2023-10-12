@@ -21,7 +21,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.flowsa_log import log
 from flowsa.location import apply_county_FIPS, update_geoscale
 from flowsa.settings import process_adjustmentpath
-from flowsa.naics import convert_naics_year
+from flowsa.sectors import convert_naics_year
 import stewicombo
 import stewi
 from stewicombo.globals import addChemicalMatches, compile_metadata,\

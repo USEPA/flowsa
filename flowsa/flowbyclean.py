@@ -9,7 +9,7 @@ from flowsa.flowby import FB, get_flowby_from_config
 from flowsa.common import get_catalog_info
 from flowsa.flowsa_log import log
 from flowsa import (geo, location, FlowByActivity, FlowBySector)
-from flowsa.naics import map_source_sectors_to_more_aggregated_sectors
+from flowsa.sectors import map_source_sectors_to_more_aggregated_sectors
 from flowsa.validation import compare_summation_at_sector_lengths_between_two_dfs
 
 
@@ -194,13 +194,14 @@ def estimate_suppressed_sectors_equal_attribution(
     :param fba:
     :return:
     """
-    from flowsa.naics import map_source_sectors_to_less_aggregated_sectors
+    from flowsa.sectors import map_source_sectors_to_less_aggregated_sectors
     # todo: update function to work for any number of sector lengths
     # todo: update to loop through both sector columns, see equally_attribute()
 
     log.info('Estimating suppressed data by equally attributing parent to '
              'child sectors.')
-    naics_key = map_source_sectors_to_more_aggregated_sectors()
+    naics_key = map_source_sectors_to_more_aggregated_sectors(
+        fba.config['industry_spec'])
     # forward fill
     naics_key = naics_key.T.ffill().T
 
