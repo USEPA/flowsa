@@ -130,9 +130,9 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
     naics_key = industry_spec_key(fba.config['industry_spec'])
     df_fha = (df_fha
               .merge(naics_key, how='left', left_on='NAICS_2012_Code',
-                     right_on='source_naics')
-              .drop(columns=['NAICS_2012_Code', 'source_naics'])
-              .rename(columns={'target_naics': sector_col})
+                     right_on='source_sectors')
+              .drop(columns=['NAICS_2012_Code', 'source_sectors'])
+              .rename(columns={'target_sectors': sector_col})
               )
 
     # calculate total residential area from the American Housing Survey
@@ -261,9 +261,9 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(
     naics_key = industry_spec_key(fba.config['industry_spec'])
     df_fha = (df_fha
               .merge(naics_key, how='left', left_on='NAICS_2012_Code',
-                     right_on='source_naics')
-              .drop(columns=['NAICS_2012_Code', 'source_naics'])
-              .rename(columns={'target_naics': sector_col})
+                     right_on='source_sectors')
+              .drop(columns=['NAICS_2012_Code', 'source_sectors'])
+              .rename(columns={'target_sectors': sector_col})
               )
 
     # make an assumption about the percent of rural transport

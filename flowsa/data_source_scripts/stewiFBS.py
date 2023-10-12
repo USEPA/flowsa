@@ -170,10 +170,10 @@ def reassign_process_to_sectors(df, year, file_list, external_config_path):
 
     # Eliminate duplicate adjustments
     df_adj = df_adj.drop_duplicates()
-    if sum(df_adj.duplicated(subset=['source_naics', 'source_process'],
+    if sum(df_adj.duplicated(subset=['source_sectors', 'source_process'],
                              keep=False)) > 0:
         log.warning('duplicate process adjustments')
-        df_adj = df_adj.drop_duplicates(subset=['source_naics',
+        df_adj = df_adj.drop_duplicates(subset=['source_sectors',
                                                 'source_process'])
 
     # obtain and prepare SCC dataset
@@ -200,7 +200,7 @@ def reassign_process_to_sectors(df, year, file_list, external_config_path):
     #TODO: expand naics list in scc file to include child naics automatically
     df_fbp = df_fbp.merge(df_adj, how='inner',
                           left_on=['NAICS', 'Process'],
-                          right_on=['source_naics', 'source_process'])
+                          right_on=['source_sectors', 'source_process'])
 
     # subtract emissions by SCC from specific facilities
     df_emissions = (df_fbp
@@ -216,9 +216,9 @@ def reassign_process_to_sectors(df, year, file_list, external_config_path):
 
     # add back in emissions under the correct target NAICS
     df_fbp = (
-        df_fbp.drop(columns=['Process', 'NAICS', 'source_naics', 'source_process',
+        df_fbp.drop(columns=['Process', 'NAICS', 'source_sectors', 'source_process',
                              'ProcessType', 'SRS_CAS', 'SRS_ID'])
-              .rename(columns={'target_naics': 'NAICS'})
+              .rename(columns={'target_sectors': 'NAICS'})
               )
     df = pd.concat([df, df_fbp], ignore_index=True)
     return df

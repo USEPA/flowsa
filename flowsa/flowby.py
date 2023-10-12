@@ -1324,7 +1324,7 @@ class _FlowBy(pd.DataFrame):
             fba = (
                 fba
                 .merge(naics_key, how='left', left_on=f'{rank}Sector',
-                       right_on='target_naics')
+                       right_on='target_sectors')
                 .assign(
                     **{f'_unique_naics_{n}_by_group': lambda x, i=n: (
                             x.groupby(groupby_cols if i == 2

@@ -210,8 +210,8 @@ def estimate_suppressed_sectors_equal_attribution(
     # if so, add them (true for usda_coa_cropland_naics df)
     cw_melt = map_source_sectors_to_less_aggregated_sectors()
     cw_melt = cw_melt.assign(count=(cw_melt
-                                    .groupby(['source_naics', 'SectorLength'])
-                                    ['source_naics']
+                                    .groupby(['source_sectors', 'SectorLength'])
+                                    ['source_sectors']
                                     .transform('count')))
     cw = (cw_melt
           .query("count==1")
@@ -219,9 +219,9 @@ def estimate_suppressed_sectors_equal_attribution(
           )
     # create new df with activity col values reassigned to their child sectors
     fba2 = (fba
-            .merge(cw, left_on=col, right_on='source_naics', how='left')
+            .merge(cw, left_on=col, right_on='source_sectors', how='left')
             .assign(**{f"{col}": lambda x: x.Sector})
-            .drop(columns=['source_naics', 'Sector'])
+            .drop(columns=['source_sectors', 'Sector'])
             .query(f"~{col}.isna()")
             .drop_duplicates()  # duplicates if multiple generations of 1:1
             )
@@ -285,7 +285,7 @@ def estimate_suppressed_sectors_equal_attribution(
     fba_m = (
         fba3
         .merge(naics_key, how='left', left_on=col,
-               right_on='source_naics')
+               right_on='source_sectors')
         .assign(location=fba3.Location,
                 category=fba3.FlowName)
         .replace({'FlowAmount': {0: np.nan}  #,
@@ -300,8 +300,8 @@ def estimate_suppressed_sectors_equal_attribution(
                   # 'n4': {'1125': '112X', '1129': '112X'},
                   # 'n5': {'11193': '1119X', '11194': '1119X', '11199': '1119X'}
                   })
-        .dropna(subset='source_naics')
-        .drop(columns='source_naics')
+        .dropna(subset='source_sectors')
+        .drop(columns='source_sectors')
     )
 
     indexed = fba_m.set_index(['n2', 'n3', 'n4', 'n5', 'n6', 'n7',

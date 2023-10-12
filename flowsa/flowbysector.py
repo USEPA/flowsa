@@ -227,11 +227,11 @@ class FlowBySector(_FlowBy):
         for direction in ['ProducedBy', 'ConsumedBy']:
             fbs = (
                 fbs
-                .rename(columns={f'Sector{direction}': 'source_naics'})
+                .rename(columns={f'Sector{direction}': 'source_sectors'})
                 .merge(naics_key,
                        how='left')
-                .rename(columns={'target_naics': f'Sector{direction}'})
-                .drop(columns='source_naics')
+                .rename(columns={'target_sectors': f'Sector{direction}'})
+                .drop(columns='source_sectors')
                 .aggregate_flowby(columns_to_group_by = (
                     fbs.groupby_cols + ['group_id'] if 'group_id' in fbs
                     else None)
@@ -282,7 +282,7 @@ class FlowBySector(_FlowBy):
             return None
 
         def convert_industry_spec(
-            fb_at_source_naics: 'FlowBySector',
+            fb_at_source_sectors: 'FlowBySector',
             industry_spec: dict = None
         ) -> 'FlowBySector':
             '''
@@ -291,22 +291,22 @@ class FlowBySector(_FlowBy):
             a new industry_spec
             '''
             if industry_spec is None:
-                return fb_at_source_naics
-            fb_at_target_naics = (
-                fb_at_source_naics
+                return fb_at_source_sectors
+            fb_at_target_sectors = (
+                fb_at_source_sectors
                 .merge(naics.industry_spec_key(industry_spec),
                        how='left',
-                       left_on='SectorProducedBy', right_on='source_naics')
+                       left_on='SectorProducedBy', right_on='source_sectors')
                 .assign(
                     SectorProducedBy=lambda x:
                         x.SectorProducedBy.mask(x.SectorProducedBy.str.len()
-                                                >= x.target_naics.str.len(),
-                                                x.target_naics)
+                                                >= x.target_sectors.str.len(),
+                                                x.target_sectors)
                 )
-                .drop(columns=['target_naics', 'source_naics'])
+                .drop(columns=['target_sectors', 'source_sectors'])
                 .aggregate_flowby()
             )
-            return fb_at_target_naics
+            return fb_at_target_sectors
 
         table_dict = {
             table_name: (
