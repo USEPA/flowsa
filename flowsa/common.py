@@ -77,7 +77,8 @@ def load_crosswalk(crosswalk_name):
                'sector_name': 'Sector_2012_Names',
                'household': 'Household_SectorCodes',
                'government': 'Government_SectorCodes',
-               'BEA': 'NAICS_to_BEA_Crosswalk'
+               'BEA': 'NAICS_to_BEA_Crosswalk',
+               'BEA_2017': 'NAICS_to_BEA_Crosswalk_2017',
                }
 
     fn = cw_dict.get(crosswalk_name)
