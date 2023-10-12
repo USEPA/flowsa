@@ -28,9 +28,9 @@ https://github.com/USEPA/useeior/blob/e02d979f099bbd60625e9c31099f89c111f2d654/d
 
 csv obtained by running the following code in Rstudio:
 use2017 <- get('Detail_Use_SUT_2017')
-write.csv(use2017, file='Detail_Use_SUT_2017.csv')
+write.csv(use2017, file='BEA_Detail_Use_SUT_2017.csv')
 CSV manually added to flowsa
-The metadata file 'Detail_Use_SUT_2017_metadata.json' was manually copied from useeior/extdata/metadata
+The metadata file 'BEA_Detail_Use_SUT_2017_metadata.json' was manually copied from useeior/extdata/metadata
 
 ---
 
@@ -55,9 +55,9 @@ https://github.com/USEPA/useeior/blob/e02d979f099bbd60625e9c31099f89c111f2d654/d
 
 csv obtained by running the following code in Rstudio:
 supply2017 <- get('Detail_Supply_2017')
-write.csv(supply2017, file='Detail_Supply_2017.csv')
+write.csv(supply2017, file='BEA_Detail_Supply_2017.csv')
 CSV manually added to flowsa
-The metadata file 'Detail_Supply_2017_metadata.json' was manually copied from useeior/extdata/metadata
+The metadata file 'BEA_Detail_Supply_2017_metadata.json' was manually copied from useeior/extdata/metadata
 ---
 
 ---
