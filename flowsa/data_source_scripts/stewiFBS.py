@@ -324,7 +324,7 @@ def prepare_stewi_fbs(df_load, config) -> 'FlowBySector':
             .assign(Class='Chemicals')
             .assign(ActivityConsumedBy=np.nan)
             .pipe(convert_naics_year,
-                  f"NAICS_{config['target_naics_year']}_Code",
+                  f"NAICS_{config['target_sector_year']}_Code",
                   activity_schema)
             .assign(FlowType=lambda x: np.where(
                 x['SourceName']=='RCRAInfo',

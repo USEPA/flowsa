@@ -424,8 +424,8 @@ class FlowByActivity(_FlowBy):
                          'activity columns directly to sector columns')
 
                 # load master crosswalk
-                cw = common.load_crosswalk('sector_timeseries')
-                sectors = (cw[[f"NAICS_{self.config['target_naics_year']}_Code"]]
+                cw = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')
+                sectors = (cw[[f"NAICS_{self.config['target_sector_year']}_Code"]]
                            .drop_duplicates()
                            .dropna()
                            )
