@@ -61,6 +61,29 @@ The metadata file 'BEA_Detail_Supply_2017_metadata.json' was manually copied fro
 ---
 
 ---
+The BEA_Summary_Supply and BEA_Summary_Supply  csvs was pulled from
+useeior @a89af7c5adff70ea743e4aab783cfa924a53c0bd using this code
+
+load_all()
+for (y in 2017:2022) {
+
+  name <- paste0('Summary_Supply_',y)
+  S <- get(name)
+  write.csv(S,paste0("BEA_",name,".csv"))
+
+ # name <- paste0('Summary_Use_SUT_',y)
+#  S <- get(name)
+ # write.csv(S,paste0("BEA_",name,".csv"))
+
+}
+
+The original files are found here:
+https://github.com/USEPA/useeior/blob/a89af7c5adff70ea743e4aab783cfa924a53c0bd/data/
+
+The metadata were manually copied from useeior/extdata/metadata
+---
+
+---
 The BEA_Detail_GrossOutput was pulled from
 USEEIOR's Detail_GrossOutput_IO.rda on 09/06/2023.
 
