@@ -19,9 +19,28 @@ sources_to_cache:
 
 source_names:
   EPA_NEI_Nonpoint:
-    !include:CAP_HAP_national_2017_m1.yaml:source_names:EPA_NEI_Nonpoint
+    !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonpoint
     apply_urban_rural: True
     year: *year
+    activity_sets:
+      !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonpoint:activity_sets
+      output_allocation: # Gross Output
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv output_allocation
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_GrossOutput_IO:
+            year: 2017
+            geoscale: national
+            activity_to_sector_mapping: BEA_2012_Detail
+            selection_fields:
+              Class: Money
+              FlowName: Gross Output
+            attribution_method: proportional
+            attribution_source:
+              Employment_national_2017:
+                data_format: FBS
+                year: 2017
 
   EPA_NEI_Nonroad:
     !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonroad
