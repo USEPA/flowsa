@@ -5,7 +5,7 @@
 """
 Supporting functions for BEA data.
 
-Generation of BEA Gross Output data and industry transcation data as FBA,
+Generation of BEA Gross Output data and industry transaction data as FBA,
 Source csv files for BEA data are documented
 in scripts/write_BEA_data_from_useeior.py
 """
