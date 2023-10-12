@@ -9,7 +9,7 @@ import numpy as np
 from functools import partial, reduce
 from copy import deepcopy
 from flowsa import (settings, literature_values, flowsa_yaml, geo, schema,
-                    sectors)
+                    sectormapping)
 from flowsa.common import get_catalog_info
 from flowsa.flowsa_log import log, vlog
 import esupy.processed_data_mgmt

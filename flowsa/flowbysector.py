@@ -11,7 +11,7 @@ from __future__ import annotations
 import esupy.processed_data_mgmt
 import pandas as pd
 from pandas import ExcelWriter
-from flowsa import settings, metadata, common, exceptions, log, geo, sectors
+from flowsa import settings, metadata, common, exceptions, log, geo, sectormapping
 from flowsa.common import get_catalog_info
 from flowsa.flowby import _FlowBy, flowby_config, get_flowby_from_config
 from flowsa.flowsa_log import reset_log_file

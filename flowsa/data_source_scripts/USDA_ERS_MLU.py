@@ -23,7 +23,7 @@ from flowsa.literature_values import \
     get_urban_land_use_for_railroads, get_open_space_fraction_of_urban_area
 from flowsa.validation import compare_df_units
 from flowsa.flowbyactivity import FlowByActivity
-from flowsa.sectors import industry_spec_key
+from flowsa.sectormapping import industry_spec_key
 
 
 def mlu_call(*, resp, **_):

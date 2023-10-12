@@ -498,7 +498,7 @@ def calculate_industry_coefficients(fbs_load, year,region,
     :param impacts: bool or str, True to apply and aggregate on impacts using TRACI,
         False to compare flow/contexts, str to pass alternate method
     """
-    from flowsa.sectormapping import map_to_BEA_sectors,\
+    from flowsa.flowmapping import map_to_BEA_sectors,\
         get_BEA_industry_output
 
     fbs = collapse_fbs_sectors(fbs_load)
