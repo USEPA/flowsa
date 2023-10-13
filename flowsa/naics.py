@@ -80,7 +80,7 @@ def industry_spec_key(
 
 def map_target_sectors_to_less_aggregated_sectors(
     industry_spec: dict,
-    year: Literal[2002, 2007, 2012, 2017] = 2012
+    year: Literal[2002, 2007, 2012, 2017]
 ) -> pd.DataFrame:
     """
     Map target NAICS to all possible other sector lengths
@@ -125,7 +125,7 @@ def map_target_sectors_to_less_aggregated_sectors(
 
 
 def map_source_sectors_to_more_aggregated_sectors(
-    year: Literal[2002, 2007, 2012, 2017] = 2012
+    year: Literal[2002, 2007, 2012, 2017]
 ) -> pd.DataFrame:
     """
     Map source NAICS to all possible other sector lengths
@@ -161,7 +161,7 @@ def map_source_sectors_to_more_aggregated_sectors(
 
 
 def map_source_sectors_to_less_aggregated_sectors(
-    year: Literal[2002, 2007, 2012, 2017] = 2012
+    year: Literal[2002, 2007, 2012, 2017]
 ) -> pd.DataFrame:
     """
     Map source NAICS to all possible other sector lengths

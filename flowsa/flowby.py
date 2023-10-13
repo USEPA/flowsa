@@ -664,7 +664,9 @@ class _FlowBy(pd.DataFrame):
             elif self.config['data_format'] in ['FBA', 'FBS_outside_flowsa']:
                 fb: 'FlowByActivity' = (
                     grouped
-                    .map_to_sectors(external_config_path=external_config_path)
+                    .map_to_sectors(
+                        target_year=self.config['target_naics_year'],
+                        external_config_path=external_config_path)
                     .function_socket('clean_fba_w_sec',
                                      attr=self.config,
                                      method=self.config)
@@ -1288,7 +1290,7 @@ class _FlowBy(pd.DataFrame):
         )
 
     def equally_attribute(self: 'FB') -> 'FB':
-        '''
+        """
         This function takes a FlowByActivity dataset with SectorProducedBy and
         SectorConsumedBy columns already added and attributes flows from any
         activity which is mapped to multiple industries/sectors equally across
@@ -1313,9 +1315,9 @@ class _FlowBy(pd.DataFrame):
         primary sector is the (only) non-null value out of SectorProducedBy or
         SectorConsumedBy). If necessary, flow amounts are further (equally)
         subdivided based on the secondary sector.
-        '''
+        """
         naics_key = naics.map_target_sectors_to_less_aggregated_sectors(
-            self.config['industry_spec'])
+            self.config['industry_spec'], self.config['target_naics_year'])
 
         fba = self.add_primary_secondary_columns('Sector')
 

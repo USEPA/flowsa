@@ -360,7 +360,7 @@ class FlowByActivity(_FlowBy):
 
     def map_to_sectors(
             self: 'FlowByActivity',
-            target_year: Literal[2002, 2007, 2012, 2017] = 2012,
+            target_year: Literal[2002, 2007, 2012, 2017],
             external_config_path: str = None
     ) -> 'FlowByActivity':
         """
@@ -389,7 +389,9 @@ class FlowByActivity(_FlowBy):
             define_parentincompletechild_descendants, \
             drop_parentincompletechild_descendants
 
-        naics_key = naics.industry_spec_key(self.config['industry_spec'])
+        naics_key = naics.industry_spec_key(self.config['industry_spec'],
+                                            self.config['target_naics_year']
+                                            )
 
         activity_schema = self.config['activity_schema'] if isinstance(
             self.config['activity_schema'], str) else self.config.get(

@@ -127,7 +127,8 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
     # set new group_id column
     df_fha = df_fha.assign(group_id=range(4, len(df_fha) + 4))
     # map to target sectors
-    naics_key = industry_spec_key(fba.config['industry_spec'])
+    naics_key = industry_spec_key(fba.config['industry_spec'],
+                                  fba.config['target_naics_year'])
     df_fha = (df_fha
               .merge(naics_key, how='left', left_on='NAICS_2012_Code',
                      right_on='source_naics')
@@ -258,7 +259,8 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(
     # set new group_id column
     df_fha = df_fha.assign(group_id=range(2, len(df_fha) + 2))
     # map to target sectors
-    naics_key = industry_spec_key(fba.config['industry_spec'])
+    naics_key = industry_spec_key(fba.config['industry_spec'],
+                                  fba.config['tareg_naics_year'])
     df_fha = (df_fha
               .merge(naics_key, how='left', left_on='NAICS_2012_Code',
                      right_on='source_naics')

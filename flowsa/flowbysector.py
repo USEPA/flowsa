@@ -221,7 +221,8 @@ class FlowBySector(_FlowBy):
         """
         if industry_spec is None:
             industry_spec = self.config['industry_spec']
-        naics_key = naics.industry_spec_key(industry_spec)
+        naics_key = naics.industry_spec_key(industry_spec, self.config[
+            'target_naics_year'])
 
         fbs = self
         for direction in ['ProducedBy', 'ConsumedBy']:
@@ -294,7 +295,9 @@ class FlowBySector(_FlowBy):
                 return fb_at_source_naics
             fb_at_target_naics = (
                 fb_at_source_naics
-                .merge(naics.industry_spec_key(industry_spec),
+                .merge(naics.industry_spec_key(
+                    industry_spec, fb_at_source_naics.config[
+                        'target_naics_year']),
                        how='left',
                        left_on='SectorProducedBy', right_on='source_naics')
                 .assign(
