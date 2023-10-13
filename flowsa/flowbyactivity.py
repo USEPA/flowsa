@@ -506,7 +506,7 @@ class FlowByActivity(_FlowBy):
                             fba_w_naics, sector_col=f'Sector{direction}')
         else:
             log.info('Getting crosswalk between activities in %s and '
-                     'NAICS codes.', self.full_name)
+                     'sector codes.', self.full_name)
             activity_to_source_sectors_crosswalk = (
                 sectormapping.get_activitytosector_mapping(
                     # ^^^ TODO: Replace or streamline get_...() function

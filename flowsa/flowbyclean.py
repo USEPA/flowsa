@@ -209,7 +209,7 @@ def estimate_suppressed_sectors_equal_attribution(
 
     # determine if there are any 1:1 parent:child sectors that are missing,
     # if so, add them (true for usda_coa_cropland_naics df)
-    cw_melt = map_source_sectors_to_less_aggregated_sectors()
+    cw_melt = map_source_sectors_to_less_aggregated_sectors(fba.config['industry_spec'])
     cw_melt = cw_melt.assign(count=(cw_melt
                                     .groupby(['source_sectors', 'SectorLength'])
                                     ['source_sectors']

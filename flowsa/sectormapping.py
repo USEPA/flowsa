@@ -18,13 +18,16 @@ def return_sector_crosswalk(
 ) -> pd.DataFrame:
     if 'NAICS' in industry_spec['default']:
         crosswalk = f'NAICS_{year}_Crosswalk'
+        sn = f'NAICS_{year}_Code'
     elif 'BEA' in industry_spec['default']:
         crosswalk = f'NAICS_to_BEA_Crosswalk_{year}'
+        sn = industry_spec['default']
     else:
         log.error('Crosswalk csv not defined, update '
                   'return_sector_crosswalk()')
 
     sector_crosswalk = load_crosswalk(crosswalk)
+    sector_crosswalk['SectorSourceName'] = sn
 
     return sector_crosswalk
 
@@ -77,7 +80,7 @@ def industry_spec_key(
                 sectors[level]
             )
     # melt the dataframe to include source naics
-    sector_key = sectors.melt(id_vars="target_sectors",
+    sector_key = sectors.melt(id_vars=["SectorSourceName", "target_sectors"],
                               value_name="source_sectors")
     # add user-specified non-naics
     if 'additional_sectors' in industry_spec:
@@ -89,7 +92,8 @@ def industry_spec_key(
                                        'target_sectors': additional_sectors})])
 
     # drop nans
-    sector_key = (sector_key[['source_sectors', 'target_sectors']]
+    sector_key = (sector_key[['SectorSourceName', 'source_sectors',
+                              'target_sectors']]
                   .dropna()
                   .drop_duplicates()
                   .sort_values(by=['source_sectors', 'target_sectors'])
@@ -196,30 +200,34 @@ def map_source_sectors_to_more_aggregated_sectors(
 
 
 def map_source_sectors_to_less_aggregated_sectors(
-    year: Literal[2002, 2007, 2012, 2017] = 2012
+        industry_spec,
+        year: Literal[2002, 2007, 2012, 2017] = 2012
 ) -> pd.DataFrame:
     """
     Map source NAICS to all possible other sector lengths
     parent-childhierarchy
     """
-    naics = []
-    for n in naics_crosswalk.columns.values.tolist():
-        naics_sub = naics_crosswalk.assign(source_sectors=naics_crosswalk[n])
-        naics.append(naics_sub)
+
+    sector_crosswalk = return_sector_crosswalk(industry_spec, year)
+    sectors = []
+    for n in sector_crosswalk.columns.values.tolist():
+        sectors_sub = sector_crosswalk.assign(
+            source_sectors=sector_crosswalk[n])
+        sectors.append(sectors_sub)
 
     # concat data into single dataframe
-    naics_key = pd.concat(naics, sort=False)
-    naics_key = naics_key.dropna(subset=['source_sectors'])
+    sector_key = pd.concat(sectors, sort=False)
+    sector_key = sector_key.dropna(subset=['source_sectors'])
 
     # drop source_sectors that are more aggregated than target_sectors, reorder
     for n in range(2, 8):
-        naics_key[f'NAICS_{n}'] = np.where(
-            naics_key[f'NAICS_{n}'].str.len() < naics_key[
+        sector_key[f'NAICS_{n}'] = np.where(
+            sector_key[f'NAICS_{n}'].str.len() < sector_key[
                 'source_sectors'].str.len(),
             np.nan,
-            naics_key[f'NAICS_{n}'])
+            sector_key[f'NAICS_{n}'])
 
-    cw_melt = naics_key.melt(id_vars="source_sectors",
+    cw_melt = sector_key.melt(id_vars="source_sectors",
                              var_name="SectorLength",
                              value_name='Sector'
                              ).drop_duplicates().reset_index(drop=True)
