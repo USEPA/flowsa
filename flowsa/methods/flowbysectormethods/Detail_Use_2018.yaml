@@ -11,9 +11,20 @@ source_names:
     geoscale: national
     year: 2018
     activity_to_sector_mapping: BEA_2017_Summary
+    # selection_fields:
+    #   ActivityProducedBy: ['111CA', '113FF']
+    #   ActivityConsumedBy: ['111CA', '113FF']
     attribution_method: proportional
+    attribute_on: ['SectorProducedBy', 'SectorConsumedBy']
     attribution_source: 
       BEA_Detail_Use_SUT:
         year: 2017
+        # selection_fields:
+        #   ActivityProducedBy: ['1111A0', '1111B0', '111200', '111300', '111400',
+        #                        '111900', '112120', '1121A0', '112300', '112A00',
+        #                        '113000', '114000', '115000']
+        #   ActivityConsumedBy: ['1111A0', '1111B0', '111200', '111300', '111400',
+        #                        '111900', '112120', '1121A0', '112300', '112A00',
+        #                        '113000', '114000', '115000']
         activity_to_sector_mapping: BEA_2017_Detail
         attribution_method: equal
