@@ -5,14 +5,28 @@ from flowsa.flowbyfunctions import aggregator
 from flowsa.flowsa_log import vlog, log
 from . import (common, settings)
 
-naics_crosswalk = pd.read_csv(
-    settings.datapath / 'NAICS_2012_Crosswalk.csv', dtype='object'
-)
+
+def return_naics_crosswalk(
+        year: Literal[2012, 2017]
+) -> pd.DataFrame:
+    """
+    Load a naics crosswalk for 2012 or 2017 codes
+
+    :param industry_spec:
+    :param year:
+    :return:
+    """
+
+    crosswalk = f'NAICS_{year}_Crosswalk'
+
+    naics_crosswalk = common.load_crosswalk(crosswalk)
+
+    return naics_crosswalk
 
 
 def industry_spec_key(
     industry_spec: dict,
-    year: Literal[2002, 2007, 2012, 2017] = 2012
+    year: Literal[2002, 2007, 2012, 2017]  # Year of NAICS code
 ) -> pd.DataFrame:
     """
     Provides a key for mapping any set of NAICS codes to a given industry
@@ -48,8 +62,9 @@ def industry_spec_key(
         key (with the root dictionary being applied to all codes).
     """
 
-    naics = naics_crosswalk.assign(
-        target_naics=naics_crosswalk[industry_spec['default']])
+    naics = return_naics_crosswalk(year)
+    naics = naics.assign(
+        target_naics=naics[industry_spec['default']])
     for level, industries in industry_spec.items():
         if level not in ['default', 'non_naics']:
             naics['target_naics'] = naics['target_naics'].mask(
@@ -86,9 +101,9 @@ def map_target_sectors_to_less_aggregated_sectors(
     Map target NAICS to all possible other sector lengths
     flat hierarchy
     """
-
-    naics = naics_crosswalk.assign(
-        target_naics=naics_crosswalk[industry_spec['default']])
+    naics = return_naics_crosswalk(year)
+    naics = naics.assign(
+        target_naics=naics[industry_spec['default']])
     for level, industries in industry_spec.items():
         if level not in ['default', 'non_naics']:
             naics['target_naics'] = naics['target_naics'].mask(
@@ -131,6 +146,8 @@ def map_source_sectors_to_more_aggregated_sectors(
     Map source NAICS to all possible other sector lengths
     parent-childhierarchy
     """
+    naics_crosswalk = return_naics_crosswalk(year)
+
     naics = []
     for n in naics_crosswalk.columns.values.tolist():
         naics_sub = naics_crosswalk.assign(source_naics=naics_crosswalk[n])
@@ -167,6 +184,8 @@ def map_source_sectors_to_less_aggregated_sectors(
     Map source NAICS to all possible other sector lengths
     parent-childhierarchy
     """
+    naics_crosswalk = return_naics_crosswalk(year)
+
     naics = []
     for n in naics_crosswalk.columns.values.tolist():
         naics_sub = naics_crosswalk.assign(source_naics=naics_crosswalk[n])
