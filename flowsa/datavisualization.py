@@ -50,7 +50,7 @@ def addSectorNames(df, BEA=False, mappingfile=None):
             cw = pd.read_csv(mappingfile)
             cw = cw.rename(columns={'Abrv_Name': 'SectorName'})
         else:
-            cw = load_crosswalk('sector_name')
+            cw = load_crosswalk('Sector_2012_Names')
             cw['SectorName'] = cw['NAICS_2012_Code'].map(str) + ' (' + cw[
                 'NAICS_2012_Name'] + ')'
             cw = cw.rename(columns={'NAICS_2012_Code': 'Sector'})

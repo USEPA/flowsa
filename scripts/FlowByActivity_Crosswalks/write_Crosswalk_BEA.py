@@ -11,7 +11,8 @@ from flowsa.settings import datapath
 
 
 def write_BEA_crosswalk(level='Detail', year=2012):
-    cw_load = load_crosswalk('BEA') if year == 2012 else load_crosswalk(f'BEA_{year}')
+    cw_load = load_crosswalk('NAICS_to_BEA_Crosswalk') if year == 2012 else \
+        load_crosswalk(f'Naics_to_BEA_Crosswalk_{year}')
     cw = cw_load[[f'BEA_{year}_{level}_Code',
                   f'NAICS_{year}_Code']].drop_duplicates().reset_index(drop=True)
     # drop all rows with naics >6

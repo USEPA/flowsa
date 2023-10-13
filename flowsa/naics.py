@@ -287,7 +287,7 @@ def melt_naics_crosswalk():
     """
     # load the mastercroswalk and subset by sectorsourcename,
     # save values to list
-    cw_load = common.load_crosswalk('sector_timeseries')
+    cw_load = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')
 
     # create melt table of possible 2007 and 2017 naics that can
     # be mapped to 2012
@@ -330,10 +330,10 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename):
     # load the mastercrosswalk and subset by sectorsourcename,
     # save values to list
     if targetsectorsourcename == sectorsourcename:
-        cw_load = common.load_crosswalk('sector_timeseries')[[
+        cw_load = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')[[
         targetsectorsourcename]]
     else:
-        cw_load = common.load_crosswalk('sector_timeseries')[[
+        cw_load = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')[[
             targetsectorsourcename, sectorsourcename]]
     cw = cw_load[targetsectorsourcename].drop_duplicates().tolist()
 

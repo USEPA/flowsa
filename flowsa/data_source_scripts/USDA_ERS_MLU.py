@@ -343,7 +343,7 @@ def allocate_usda_ers_mlu_other_land(
     rural_res = get_area_of_rural_land_occupied_by_houses_2013()
 
     # household codes
-    household = load_crosswalk('household')
+    household = load_crosswalk('Household_SectorCodes')
     household = household['Code'].drop_duplicates().tolist()
 
     # if it is state data, take weighted avg using land area

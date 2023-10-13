@@ -180,7 +180,7 @@ def map_to_BEA_sectors(fbs_load, region, io_level, year):
         mapping_col = 'BEA_2012_Detail_Code'
 
     # Prepare NAICS:BEA mapping file
-    mapping = (load_crosswalk('BEA')
+    mapping = (load_crosswalk('NAICS_to_BEA_Crosswalk')
                .rename(columns={mapping_col: 'BEA',
                                 'NAICS_2012_Code': 'Sector'}))
     mapping = (mapping.drop(
@@ -243,7 +243,7 @@ def get_BEA_industry_output(region, io_level, year):
 
     # If needed, aggregate from detial to summary
     if region == 'national' and io_level == 'summary':
-        bea_mapping = (load_crosswalk('BEA')
+        bea_mapping = (load_crosswalk('NAICS_to_BEA_Crosswalk')
                        [['BEA_2012_Detail_Code','BEA_2012_Summary_Code']]
                        .drop_duplicates()
                        .rename(columns={'BEA_2012_Detail_Code': 'BEA'}))
