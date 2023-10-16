@@ -1092,16 +1092,24 @@ class _FlowBy(pd.DataFrame):
             unattributable = merged_with_denominator.query(f'denominator == 0 ')
 
             if not unattributable.empty:
-                log.warning(
-                    'Could not attribute activities %s in %s due to lack of '
-                    'flows in attribution source %s for mapped sectors',
-                    set(zip(unattributable.SectorProducedBy,
-                            unattributable.SectorConsumedBy,
-                            unattributable.Location)),
+                vlog.warning(
+                    'Could not attribute activities in %s due to lack of '
+                    'flows in attribution source %s for %s. '
+                    'See validation_log for details.',
                     unattributable.full_name,
-                    other.full_name
+                    other.full_name,
+                    sorted(set(zip(unattributable.SectorProducedBy,
+                                   unattributable.SectorConsumedBy)))
                 )
-
+                vlog.debug(
+                    'Unattributed activities: \n {}'.format(
+                        unattributable
+                        .drop(columns=schema.dq_fields +
+                              ['LocationSystem', 'SectorSourceName', 'FlowType',
+                               'ProducedBySectorType', 'ConsumedBySectorType',
+                               'denominator', 'Suppressed'],
+                              errors='ignore')
+                        .to_string()))
             fb = (
                 non_zero_denominator
                 .assign(FlowAmount=lambda x: (x.FlowAmount
