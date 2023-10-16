@@ -135,10 +135,8 @@ def return_fbs_method_data(source_name, config):
                     source = list(attr_dict.keys())[0]
                     # Check first for cached source
                     if source in config.get('sources_to_cache', ()):
-                        year = (config.get('sources_to_cache')
-                                      .get(source)
-                                      .get('year', v.get('year'))
-                                      )
+                        source_dict = config.get('sources_to_cache')[source]
+                        year = source_dict.get('year', v.get('year'))
                     else:
                         year = attr_dict[source].get('year', v.get('year'))
                 except AttributeError:
@@ -146,7 +144,7 @@ def return_fbs_method_data(source_name, config):
                     year = None
                 if source in attr_source_meta.keys():
                     continue
-                cat = (get_catalog_info(source)['data_format']
+                cat = (get_catalog_info(source).get('data_format', 'FBS')
                        .replace('FBS', 'FlowBySector')
                        .replace('FBA', 'FlowByActivity'))
 
