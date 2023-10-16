@@ -10,6 +10,7 @@ import re
 import yaml
 import pandas as pd
 import numpy as np
+from copy import deepcopy
 from dotenv import load_dotenv
 import flowsa.flowsa_yaml as flowsa_yaml
 import flowsa.exceptions
@@ -113,7 +114,7 @@ def return_bea_codes_used_as_naics():
     return code_list
 
 
-def load_yaml_dict(filename, flowbytype=None, filepath=None):
+def load_yaml_dict(filename, flowbytype=None, filepath=None, **kwargs):
     """
     Load the information in a yaml file, from source_catalog, or FBA,
     or FBS files
@@ -156,8 +157,11 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
         with open(yaml_path, 'r', encoding='utf-8') as f:
             config = flowsa_yaml.load(f, filepath)
     except FileNotFoundError:
-        raise flowsa.exceptions.FlowsaMethodNotFoundError(
-            method_type=flowbytype, method=filename)
+        if 'config' in kwargs:
+            return deepcopy(kwargs['config'])
+        else:
+            raise flowsa.exceptions.FlowsaMethodNotFoundError(
+                method_type=flowbytype, method=filename)
     return config
 
 
