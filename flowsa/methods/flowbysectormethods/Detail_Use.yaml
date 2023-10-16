@@ -2,10 +2,23 @@
 # 2017 Detail Use table. The resulting tables do not reflect valid balanced
 # Use tables
 
+# The full FBS for any year can be cached using:
+# sources_to_cache:
+#   Detail_Use_2019:
+#     !include:Detail_Use.yaml
+#     year: *year
+#     source_names:
+#       BEA_Summary_Use_SUT:
+#         !include:Detail_Use.yaml:source_names:BEA_Summary_Use_SUT
+#         year: *year
+
 !include:BEA_detail_target.yaml
 year: &summary_year 2018
 target_naics_year: 2017
 geoscale: national
+
+data_format: FBS
+activity_schema: NAICS_2017_Code # <- necessary? (long term just look at the FBS)
 
 source_names:
   BEA_Summary_Use_SUT:
@@ -25,7 +38,7 @@ source_names:
                            'T001', 'T019']
     attribution_method: proportional
     attribute_on: ['PrimarySector', 'SecondarySector']
-    attribution_source: 
+    attribution_source:
       BEA_Detail_Use_SUT:
         year: 2017
         activity_to_sector_mapping: BEA_2017_Detail
@@ -40,6 +53,6 @@ source_names:
                                'T019']
           ActivityProducedBy: ['T005', 'V00100', 'T00OTOP', 'V00300', 'VABAS',
                                'T018', 'T00TOP', 'T00SUB', 'VAPRO',
-                               'S00300', 'S00401', 'S00402'] # Noncomparable imports, Scrap, Used, 
+                               'S00300', 'S00401', 'S00402'] # Noncomparable imports, Scrap, Used
 
         attribution_method: equal
