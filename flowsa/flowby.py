@@ -673,7 +673,13 @@ class _FlowBy(pd.DataFrame):
                     .rename(columns={'SourceName': 'MetaSources'})
                 )
             elif self.config['data_format'] in ['FBS']:
-                fb = grouped.sector_aggregation()  # convert to proper industry spec.
+                # ensure sector year of loaded FBS matches target sector year
+                fb = naics.convert_naics_year(
+                    grouped,
+                    f"NAICS_{self.config['target_naics_year']}_Code",
+                    grouped['SectorSourceName'][0])
+                # convert to proper industry spec.
+                fb = fb.sector_aggregation()
 
             # subset the fb configuration so it only includes the
             # attribution_method currently being assessed - rather than all

@@ -271,10 +271,11 @@ def check_if_sectors_are_naics(df_load, crosswalk_list, column_headers):
         ns_list = pd.concat(non_sectors_list, sort=False, ignore_index=True)
         # print the NonSectors
         non_sectors = ns_list['NonSectors'].drop_duplicates().tolist()
-        vlog.debug('There are sectors that are not NAICS 2012 Codes')
+        vlog.debug('There are sectors that are not target NAICS Codes')
         vlog.debug(non_sectors)
     else:
-        log.info('Sectors do not require conversion')
+        log.info('Sectors are all in the target NAICS year and do not require '
+                 'conversion')
 
     return non_sectors
 
@@ -336,6 +337,7 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename):
         cw_load = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')[[
         targetsectorsourcename]]
     else:
+        log.info(f"Converting {sectorsourcename} to {targetsectorsourcename}")
         cw_load = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')[[
             targetsectorsourcename, sectorsourcename]]
     cw = cw_load[targetsectorsourcename].drop_duplicates().tolist()
