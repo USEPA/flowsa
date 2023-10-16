@@ -1,10 +1,9 @@
-# This is the 2020 target year method for National detail models
-# It aggregates the state detail models
+# This is the 2020 target year method for Summary state models
+# It aggregates the detail models to the summary level
 
-!include:BEA_detail_target.yaml
+!include:USEEIO_summary_target.yaml
 target_naics_year: 2012
-geoscale: national
-
+geoscale: state
 _emission_year: &year 2020
 
 source_names:

@@ -1,8 +1,7 @@
 # This is the 2017 target year method for National detail models
 # It aggregates the state detail models
 
-industry_spec:
-  default: NAICS_6
+!include:BEA_detail_target.yaml
 target_naics_year: 2012
 geoscale: national
 
