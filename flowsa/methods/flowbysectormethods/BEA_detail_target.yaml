@@ -30,6 +30,6 @@ industry_spec:
             '72251',
             '23', '92', 'F010']
 
-target_sector_year: 2017
+target_naics_year: 2017
 # This schema was created for 2017 NAICS but should also work for the schema
 # for the 2012 tables using 2012 NAICS
