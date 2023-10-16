@@ -279,39 +279,42 @@ def check_if_sectors_are_naics(df_load, crosswalk_list, column_headers):
     return non_sectors
 
 
-def melt_naics_crosswalk():
+def melt_naics_crosswalk(targetsectorsourcename):
     """
     Create a melt version of the naics 07 to 17 crosswalk to map
     naics to naics 2012
+    :param targetsectorsourcename: str, the target sector year, such as
+    "NAICS_2012_Code"
     :return: df, naics crosswalk melted
     """
+
     # load the mastercroswalk and subset by sectorsourcename,
     # save values to list
     cw_load = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')
 
-    # create melt table of possible 2007 and 2017 naics that can
-    # be mapped to 2012
+    # create melt table of possible naics from other years that can
+    # be mapped to target naics year
     cw_melt = cw_load.melt(
-        id_vars='NAICS_2012_Code', var_name='NAICS_year', value_name='NAICS')
+        id_vars=targetsectorsourcename, var_name='NAICS_year', value_name='NAICS')
     # drop the naics year because not relevant for replacement purposes
     cw_replacement = cw_melt.dropna(how='any')
     cw_replacement = cw_replacement[
-        ['NAICS_2012_Code', 'NAICS']].drop_duplicates()
+        [targetsectorsourcename, 'NAICS']].drop_duplicates()
     # drop rows where contents are equal
     cw_replacement = cw_replacement[
-        cw_replacement['NAICS_2012_Code'] != cw_replacement['NAICS']]
+        cw_replacement[targetsectorsourcename] != cw_replacement['NAICS']]
     # drop rows where length > 6
-    cw_replacement = cw_replacement[cw_replacement['NAICS_2012_Code'].apply(
+    cw_replacement = cw_replacement[cw_replacement[targetsectorsourcename].apply(
         lambda x: len(x) < 7)].reset_index(drop=True)
-    # order by naics 2012
+    # order by naics target tear
     cw_replacement = cw_replacement.sort_values(
-        ['NAICS', 'NAICS_2012_Code']).reset_index(drop=True)
+        ['NAICS', targetsectorsourcename]).reset_index(drop=True)
 
     # create allocation ratios by determining number of
-    # NAICS 2012 to other naics when not a 1:1 ratio
+    # NAICS year to other naics when not a 1:1 ratio
     cw_replacement_2 = cw_replacement.assign(
         naics_count=cw_replacement.groupby(
-            ['NAICS'])['NAICS_2012_Code'].transform('count'))
+            ['NAICS'])[targetsectorsourcename].transform('count'))
     cw_replacement_2 = cw_replacement_2.assign(
         allocation_ratio=1/cw_replacement_2['naics_count'])
 
@@ -338,7 +341,7 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename):
     cw = cw_load[targetsectorsourcename].drop_duplicates().tolist()
 
     # load melted crosswalk
-    cw_melt = melt_naics_crosswalk()
+    cw_melt = melt_naics_crosswalk(targetsectorsourcename)
     # drop the count column
     cw_melt = cw_melt.drop(columns='naics_count')
 
