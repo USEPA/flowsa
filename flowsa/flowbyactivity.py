@@ -360,7 +360,7 @@ class FlowByActivity(_FlowBy):
 
     def map_to_sectors(
             self: 'FlowByActivity',
-            target_year: Literal[2002, 2007, 2012, 2017] = 2012,
+            target_year: Literal[2002, 2007, 2012, 2017],
             external_config_path: str = None
     ) -> 'FlowByActivity':
         """
@@ -389,7 +389,9 @@ class FlowByActivity(_FlowBy):
             define_parentincompletechild_descendants, \
             drop_parentincompletechild_descendants
 
-        naics_key = naics.industry_spec_key(self.config['industry_spec'])
+        naics_key = naics.industry_spec_key(self.config['industry_spec'],
+                                            self.config['target_naics_year']
+                                            )
 
         activity_schema = self.config['activity_schema'] if isinstance(
             self.config['activity_schema'], str) else self.config.get(
@@ -412,19 +414,18 @@ class FlowByActivity(_FlowBy):
             # if activity schema does not match target naics year,
             # convert sectors to target sectors
             if activity_schema != f"NAICS_{self.config['target_naics_year']}_Code":
-                log.info(f"Converting {activity_schema} to NAICS"
-                         f"_{self.config['target_naics_year']}_Code")
                 self = naics.convert_naics_year(
                     self,
                     f"NAICS_{self.config['target_naics_year']}_Code",
-                    activity_schema)
+                    activity_schema,
+                    self.full_name)
 
             if self.config.get('sector_hierarchy') == 'parent-completeChild':
                 log.info('NAICS are a mix of parent-completeChild, assigning '
                          'activity columns directly to sector columns')
 
                 # load master crosswalk
-                cw = common.load_crosswalk('sector_timeseries')
+                cw = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')
                 sectors = (cw[[f"NAICS_{self.config['target_naics_year']}_Code"]]
                            .drop_duplicates()
                            .dropna()
@@ -615,8 +616,8 @@ class FlowByActivity(_FlowBy):
                     .drop_duplicates()
                 )
 
-                log.info('Mapping activities in %s to NAICS codes using '
-                         'crosswalk', self.full_name)
+                log.info(f"Mapping activities in {self.full_name} to NAICS"
+                         f"_{self.config['target_naics_year']}_Code using crosswalk")
                 fba_w_naics = self
                 for direction in ['ProducedBy', 'ConsumedBy']:
                     fba_w_naics = (

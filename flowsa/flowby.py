@@ -664,14 +664,25 @@ class _FlowBy(pd.DataFrame):
             elif self.config['data_format'] in ['FBA', 'FBS_outside_flowsa']:
                 fb: 'FlowByActivity' = (
                     grouped
-                    .map_to_sectors(external_config_path=external_config_path)
+                    .map_to_sectors(
+                        target_year=self.config['target_naics_year'],
+                        external_config_path=external_config_path)
                     .function_socket('clean_fba_w_sec',
                                      attr=self.config,
                                      method=self.config)
                     .rename(columns={'SourceName': 'MetaSources'})
                 )
             elif self.config['data_format'] in ['FBS']:
-                fb = grouped.sector_aggregation()  # convert to proper industry spec.
+                # ensure sector year of loaded FBS matches target sector year
+                if f"NAICS_{self.config['target_naics_year']}_Code" != \
+                        grouped['SectorSourceName'][0]:
+                    grouped = naics.convert_naics_year(
+                        grouped,
+                        f"NAICS_{self.config['target_naics_year']}_Code",
+                        grouped['SectorSourceName'][0],
+                        dfname=self.full_name)
+                # convert to proper industry spec.
+                fb = grouped.sector_aggregation()
 
             # subset the fb configuration so it only includes the
             # attribution_method currently being assessed - rather than all
@@ -899,6 +910,18 @@ class _FlowBy(pd.DataFrame):
                 download_sources_ok=download_sources_ok
             ).prepare_fbs(download_sources_ok=download_sources_ok)
 
+        # if the attribution sectorsourcename does not match the FBS method
+        # target year, convert. This can be the case for a cached data
+        # source that is loaded from a secondary yaml (see CAP_HAP cached
+        # source "Detail_Use_Year"
+        if attribution_fbs['SectorSourceName'][0] != \
+                f"NAICS_{self.config['target_naics_year']}_Code":
+            attribution_fbs = naics.convert_naics_year(
+                attribution_fbs,
+                f"NAICS_{self.config['target_naics_year']}_Code",
+                attribution_fbs['SectorSourceName'][0],
+                attribution_fbs.full_name)
+
         return attribution_fbs
 
     def harmonize_geoscale(
@@ -1090,16 +1113,24 @@ class _FlowBy(pd.DataFrame):
             unattributable = merged_with_denominator.query(f'denominator == 0 ')
 
             if not unattributable.empty:
-                log.warning(
-                    'Could not attribute activities %s in %s due to lack of '
-                    'flows in attribution source %s for mapped sectors',
-                    set(zip(unattributable.SectorProducedBy,
-                            unattributable.SectorConsumedBy,
-                            unattributable.Location)),
+                vlog.warning(
+                    'Could not attribute activities in %s due to lack of '
+                    'flows in attribution source %s for %s. '
+                    'See validation_log for details.',
                     unattributable.full_name,
-                    other.full_name
+                    other.full_name,
+                    sorted(set(zip(unattributable.SectorProducedBy,
+                                   unattributable.SectorConsumedBy)))
                 )
-
+                vlog.debug(
+                    'Unattributed activities: \n {}'.format(
+                        unattributable
+                        .drop(columns=schema.dq_fields +
+                              ['LocationSystem', 'SectorSourceName', 'FlowType',
+                               'ProducedBySectorType', 'ConsumedBySectorType',
+                               'denominator', 'Suppressed'],
+                              errors='ignore')
+                        .to_string()))
             fb = (
                 non_zero_denominator
                 .assign(FlowAmount=lambda x: (x.FlowAmount
@@ -1288,7 +1319,7 @@ class _FlowBy(pd.DataFrame):
         )
 
     def equally_attribute(self: 'FB') -> 'FB':
-        '''
+        """
         This function takes a FlowByActivity dataset with SectorProducedBy and
         SectorConsumedBy columns already added and attributes flows from any
         activity which is mapped to multiple industries/sectors equally across
@@ -1313,9 +1344,9 @@ class _FlowBy(pd.DataFrame):
         primary sector is the (only) non-null value out of SectorProducedBy or
         SectorConsumedBy). If necessary, flow amounts are further (equally)
         subdivided based on the secondary sector.
-        '''
+        """
         naics_key = naics.map_target_sectors_to_less_aggregated_sectors(
-            self.config['industry_spec'])
+            self.config['industry_spec'], self.config['target_naics_year'])
 
         fba = self.add_primary_secondary_columns('Sector')
 

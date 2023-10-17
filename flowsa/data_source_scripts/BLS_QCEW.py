@@ -167,8 +167,10 @@ def clean_qcew(fba: FlowByActivity, **kwargs):
         .reset_index(drop=True)
     )
 
-    target_naics = set(industry_spec_key(fba.config['industry_spec'])
-                       .target_naics)
+    target_naics = set(
+        industry_spec_key(fba.config['industry_spec'],
+                          fba.config['target_naics_year'])
+        .target_naics)
     filtered = (
         fixed
         .assign(ActivityProducedBy=fixed.ActivityProducedBy.mask(

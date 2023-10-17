@@ -5,14 +5,28 @@ from flowsa.flowbyfunctions import aggregator
 from flowsa.flowsa_log import vlog, log
 from . import (common, settings)
 
-naics_crosswalk = pd.read_csv(
-    settings.datapath / 'NAICS_2012_Crosswalk.csv', dtype='object'
-)
+
+def return_naics_crosswalk(
+        year: Literal[2012, 2017]
+) -> pd.DataFrame:
+    """
+    Load a naics crosswalk for 2012 or 2017 codes
+
+    :param industry_spec:
+    :param year:
+    :return:
+    """
+
+    crosswalk = f'NAICS_{year}_Crosswalk'
+
+    naics_crosswalk = common.load_crosswalk(crosswalk)
+
+    return naics_crosswalk
 
 
 def industry_spec_key(
     industry_spec: dict,
-    year: Literal[2002, 2007, 2012, 2017] = 2012
+    year: Literal[2002, 2007, 2012, 2017]  # Year of NAICS code
 ) -> pd.DataFrame:
     """
     Provides a key for mapping any set of NAICS codes to a given industry
@@ -48,8 +62,9 @@ def industry_spec_key(
         key (with the root dictionary being applied to all codes).
     """
 
-    naics = naics_crosswalk.assign(
-        target_naics=naics_crosswalk[industry_spec['default']])
+    naics = return_naics_crosswalk(year)
+    naics = naics.assign(
+        target_naics=naics[industry_spec['default']])
     for level, industries in industry_spec.items():
         if level not in ['default', 'non_naics']:
             naics['target_naics'] = naics['target_naics'].mask(
@@ -80,15 +95,15 @@ def industry_spec_key(
 
 def map_target_sectors_to_less_aggregated_sectors(
     industry_spec: dict,
-    year: Literal[2002, 2007, 2012, 2017] = 2012
+    year: Literal[2002, 2007, 2012, 2017]
 ) -> pd.DataFrame:
     """
     Map target NAICS to all possible other sector lengths
     flat hierarchy
     """
-
-    naics = naics_crosswalk.assign(
-        target_naics=naics_crosswalk[industry_spec['default']])
+    naics = return_naics_crosswalk(year)
+    naics = naics.assign(
+        target_naics=naics[industry_spec['default']])
     for level, industries in industry_spec.items():
         if level not in ['default', 'non_naics']:
             naics['target_naics'] = naics['target_naics'].mask(
@@ -125,12 +140,14 @@ def map_target_sectors_to_less_aggregated_sectors(
 
 
 def map_source_sectors_to_more_aggregated_sectors(
-    year: Literal[2002, 2007, 2012, 2017] = 2012
+    year: Literal[2002, 2007, 2012, 2017]
 ) -> pd.DataFrame:
     """
     Map source NAICS to all possible other sector lengths
     parent-childhierarchy
     """
+    naics_crosswalk = return_naics_crosswalk(year)
+
     naics = []
     for n in naics_crosswalk.columns.values.tolist():
         naics_sub = naics_crosswalk.assign(source_naics=naics_crosswalk[n])
@@ -161,12 +178,14 @@ def map_source_sectors_to_more_aggregated_sectors(
 
 
 def map_source_sectors_to_less_aggregated_sectors(
-    year: Literal[2002, 2007, 2012, 2017] = 2012
+    year: Literal[2002, 2007, 2012, 2017]
 ) -> pd.DataFrame:
     """
     Map source NAICS to all possible other sector lengths
     parent-childhierarchy
     """
+    naics_crosswalk = return_naics_crosswalk(year)
+
     naics = []
     for n in naics_crosswalk.columns.values.tolist():
         naics_sub = naics_crosswalk.assign(source_naics=naics_crosswalk[n])
@@ -252,58 +271,64 @@ def check_if_sectors_are_naics(df_load, crosswalk_list, column_headers):
         ns_list = pd.concat(non_sectors_list, sort=False, ignore_index=True)
         # print the NonSectors
         non_sectors = ns_list['NonSectors'].drop_duplicates().tolist()
-        vlog.debug('There are sectors that are not NAICS 2012 Codes')
+        vlog.debug('There are sectors that are not target NAICS Codes')
         vlog.debug(non_sectors)
     else:
-        log.info('Sectors do not require conversion')
+        log.info('Sectors are all in the target NAICS year and do not require '
+                 'conversion')
 
     return non_sectors
 
 
-def melt_naics_crosswalk():
+def melt_naics_crosswalk(targetsectorsourcename):
     """
     Create a melt version of the naics 07 to 17 crosswalk to map
     naics to naics 2012
+    :param targetsectorsourcename: str, the target sector year, such as
+    "NAICS_2012_Code"
     :return: df, naics crosswalk melted
     """
+
     # load the mastercroswalk and subset by sectorsourcename,
     # save values to list
-    cw_load = common.load_crosswalk('sector_timeseries')
+    cw_load = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')
 
-    # create melt table of possible 2007 and 2017 naics that can
-    # be mapped to 2012
+    # create melt table of possible naics from other years that can
+    # be mapped to target naics year
     cw_melt = cw_load.melt(
-        id_vars='NAICS_2012_Code', var_name='NAICS_year', value_name='NAICS')
+        id_vars=targetsectorsourcename, var_name='NAICS_year', value_name='NAICS')
     # drop the naics year because not relevant for replacement purposes
     cw_replacement = cw_melt.dropna(how='any')
     cw_replacement = cw_replacement[
-        ['NAICS_2012_Code', 'NAICS']].drop_duplicates()
+        [targetsectorsourcename, 'NAICS']].drop_duplicates()
     # drop rows where contents are equal
     cw_replacement = cw_replacement[
-        cw_replacement['NAICS_2012_Code'] != cw_replacement['NAICS']]
+        cw_replacement[targetsectorsourcename] != cw_replacement['NAICS']]
     # drop rows where length > 6
-    cw_replacement = cw_replacement[cw_replacement['NAICS_2012_Code'].apply(
+    cw_replacement = cw_replacement[cw_replacement[targetsectorsourcename].apply(
         lambda x: len(x) < 7)].reset_index(drop=True)
-    # order by naics 2012
+    # order by naics target tear
     cw_replacement = cw_replacement.sort_values(
-        ['NAICS', 'NAICS_2012_Code']).reset_index(drop=True)
+        ['NAICS', targetsectorsourcename]).reset_index(drop=True)
 
     # create allocation ratios by determining number of
-    # NAICS 2012 to other naics when not a 1:1 ratio
+    # NAICS year to other naics when not a 1:1 ratio
     cw_replacement_2 = cw_replacement.assign(
         naics_count=cw_replacement.groupby(
-            ['NAICS'])['NAICS_2012_Code'].transform('count'))
+            ['NAICS'])[targetsectorsourcename].transform('count'))
     cw_replacement_2 = cw_replacement_2.assign(
         allocation_ratio=1/cw_replacement_2['naics_count'])
 
     return cw_replacement_2
 
 
-def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename):
+def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
+                       dfname):
     """
     Replace any non sectors with sectors.
     :param df_load: df with sector columns or sector-like activities
     :param sectorsourcename: str, sector source name (ex. NAICS_2012_Code)
+    :param dfname: str, name of data source
     :return: df, with non-sectors replaced with sectors
     """
     # todo: update this function to work better with recursive method
@@ -311,15 +336,17 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename):
     # load the mastercrosswalk and subset by sectorsourcename,
     # save values to list
     if targetsectorsourcename == sectorsourcename:
-        cw_load = common.load_crosswalk('sector_timeseries')[[
+        cw_load = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')[[
         targetsectorsourcename]]
     else:
-        cw_load = common.load_crosswalk('sector_timeseries')[[
+        log.info(f"Converting {sectorsourcename} to "
+                 f"{targetsectorsourcename} in {dfname}")
+        cw_load = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')[[
             targetsectorsourcename, sectorsourcename]]
     cw = cw_load[targetsectorsourcename].drop_duplicates().tolist()
 
     # load melted crosswalk
-    cw_melt = melt_naics_crosswalk()
+    cw_melt = melt_naics_crosswalk(targetsectorsourcename)
     # drop the count column
     cw_melt = cw_melt.drop(columns='naics_count')
 

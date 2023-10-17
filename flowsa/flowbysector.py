@@ -99,7 +99,7 @@ class FlowBySector(_FlowBy):
 
         flowby_generator = (
             lambda x=method, y=external_config_path, z=download_sources_ok:
-                cls.generateFlowBySector(x, y, z)
+                cls.generateFlowBySector(x, y, z, config=config)
             )
         return super()._getFlowBy(
             file_metadata=file_metadata,
@@ -117,6 +117,7 @@ class FlowBySector(_FlowBy):
         method: str,
         external_config_path: str = None,
         download_sources_ok: bool = settings.DEFAULT_DOWNLOAD_IF_MISSING,
+        **kwargs
     ) -> 'FlowBySector':
         '''
         Generates a FlowBySector dataset.
@@ -126,10 +127,13 @@ class FlowBySector(_FlowBy):
         :param download_fba_ok: bool, optional. Whether to attempt to download
             source data FlowByActivity files from EPA server rather than
             generating them.
+        :kwargs: keyword arguments to pass to load_yaml_dict(). Possible kwargs
+            include config.
         '''
         log.info('Beginning FlowBySector generation for %s', method)
         method_config = common.load_yaml_dict(method, 'FBS',
-                                              external_config_path)
+                                              external_config_path,
+                                              **kwargs)
 
         # Cache one or more sources by attaching to method_config
         to_cache = method_config.pop('sources_to_cache', {})
@@ -144,7 +148,7 @@ class FlowBySector(_FlowBy):
                     name=source_name,
                     config={
                         **method_config,
-                        'method_config_keys': method_config.keys(),
+                        'method_config_keys': set(method_config.keys()),
                         **get_catalog_info(source_name),
                         **config
                     },
@@ -165,7 +169,7 @@ class FlowBySector(_FlowBy):
                 name=source_name,
                 config={
                     **method_config,
-                    'method_config_keys': method_config.keys(),
+                    'method_config_keys': set(method_config.keys()),
                     **get_catalog_info(source_name),
                     **config
                 },
@@ -206,7 +210,7 @@ class FlowBySector(_FlowBy):
         reset_log_file(method, meta)
         metadata.write_metadata(source_name=method,
                                 config=common.load_yaml_dict(
-                                    method, 'FBS', external_config_path),
+                                    method, 'FBS', external_config_path, **kwargs),
                                 fb_meta=meta,
                                 category='FlowBySector')
 
@@ -221,7 +225,8 @@ class FlowBySector(_FlowBy):
         """
         if industry_spec is None:
             industry_spec = self.config['industry_spec']
-        naics_key = naics.industry_spec_key(industry_spec)
+        naics_key = naics.industry_spec_key(industry_spec, self.config[
+            'target_naics_year'])
 
         fbs = self
         for direction in ['ProducedBy', 'ConsumedBy']:
@@ -294,7 +299,9 @@ class FlowBySector(_FlowBy):
                 return fb_at_source_naics
             fb_at_target_naics = (
                 fb_at_source_naics
-                .merge(naics.industry_spec_key(industry_spec),
+                .merge(naics.industry_spec_key(
+                    industry_spec, fb_at_source_naics.config[
+                        'target_naics_year']),
                        how='left',
                        left_on='SectorProducedBy', right_on='source_naics')
                 .assign(
