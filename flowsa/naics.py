@@ -322,11 +322,13 @@ def melt_naics_crosswalk(targetsectorsourcename):
     return cw_replacement_2
 
 
-def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename):
+def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
+                       dfname):
     """
     Replace any non sectors with sectors.
     :param df_load: df with sector columns or sector-like activities
     :param sectorsourcename: str, sector source name (ex. NAICS_2012_Code)
+    :param dfname: str, name of data source
     :return: df, with non-sectors replaced with sectors
     """
     # todo: update this function to work better with recursive method
@@ -337,7 +339,8 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename):
         cw_load = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')[[
         targetsectorsourcename]]
     else:
-        log.info(f"Converting {sectorsourcename} to {targetsectorsourcename}")
+        log.info(f"Converting {sectorsourcename} to "
+                 f"{targetsectorsourcename} in {dfname}")
         cw_load = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')[[
             targetsectorsourcename, sectorsourcename]]
     cw = cw_load[targetsectorsourcename].drop_duplicates().tolist()

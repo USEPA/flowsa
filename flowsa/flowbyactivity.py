@@ -414,12 +414,11 @@ class FlowByActivity(_FlowBy):
             # if activity schema does not match target naics year,
             # convert sectors to target sectors
             if activity_schema != f"NAICS_{self.config['target_naics_year']}_Code":
-                log.info(f"Converting {activity_schema} to NAICS"
-                         f"_{self.config['target_naics_year']}_Code")
                 self = naics.convert_naics_year(
                     self,
                     f"NAICS_{self.config['target_naics_year']}_Code",
-                    activity_schema)
+                    activity_schema,
+                    self.full_name)
 
             if self.config.get('sector_hierarchy') == 'parent-completeChild':
                 log.info('NAICS are a mix of parent-completeChild, assigning '
