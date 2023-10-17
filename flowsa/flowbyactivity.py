@@ -616,8 +616,8 @@ class FlowByActivity(_FlowBy):
                     .drop_duplicates()
                 )
 
-                log.info('Mapping activities in %s to NAICS codes using '
-                         'crosswalk', self.full_name)
+                log.info(f"Mapping activities in {self.full_name} to NAICS"
+                         f"_{self.config['target_naics_year']}_Code using crosswalk")
                 fba_w_naics = self
                 for direction in ['ProducedBy', 'ConsumedBy']:
                     fba_w_naics = (
