@@ -170,8 +170,6 @@ def map_to_BEA_sectors(fbs_load, region, io_level, year):
     :param io_level: str, 'summary' or 'detail'
     :param year: year for industry output
     """
-    from flowsa.sectormapping import get_activitytosector_mapping
-
     bea = get_BEA_industry_output(region, io_level, year)
 
     if io_level == 'summary':
