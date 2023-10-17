@@ -123,7 +123,11 @@ def return_fbs_method_data(source_name, config):
         # create dictionary of allocation datasets for different activities
         activities = v.get('activity_sets')
         if activities is None:
-            continue
+            if 'attribution_source' in v:
+                # for single attribution with no activity sets
+                activities = {'activity': v.copy()}
+            else:
+                continue
         # initiate nested dictionary
         attr_source_meta = {}
         # subset activity data and allocate to sector
