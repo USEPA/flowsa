@@ -325,7 +325,8 @@ def prepare_stewi_fbs(df_load, config) -> 'FlowBySector':
             .assign(ActivityConsumedBy=np.nan)
             .pipe(convert_naics_year,
                   f"NAICS_{config['target_naics_year']}_Code",
-                  activity_schema)
+                  activity_schema,
+                  config.get('full_name'))
             .assign(FlowType=lambda x: np.where(
                 x['SourceName']=='RCRAInfo',
                     'WASTE_FLOW', 'ELEMENTARY_FLOW'))
