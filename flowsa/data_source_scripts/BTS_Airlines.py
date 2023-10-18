@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
-from flowsa import flowsa_yaml, settings, FlowByActivity
+from flowsa import flowsa_yaml, settings
+from flowsa.flowbyactivity import FlowByActivity
 
 
 def generate_fba():

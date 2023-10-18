@@ -17,7 +17,7 @@ import glob
 import numpy as np
 import pandas as pd
 
-from flowsa import log
+from flowsa.flowsa_log import log
 from flowsa.common import load_crosswalk
 from flowsa.settings import datapath, crosswalkpath
 

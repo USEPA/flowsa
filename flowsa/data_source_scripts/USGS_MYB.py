@@ -82,8 +82,8 @@ def usgs_myb_year(years, current_year_str):
         column_val = current_year - lower_year + 1
         return "year_" + str(column_val)
     else:
-        log.info("Your year is out of scope. Pick a year between %s and %s",
-                 lower_year, upper_year)
+        log.info(f"Your year is out of scope. Pick a year between "
+                 f"{lower_year} and {upper_year}")
 
 
 def usgs_myb_name(USGS_Source):

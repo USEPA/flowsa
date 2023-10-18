@@ -5,6 +5,7 @@
 """Common variables and functions used across flowsa"""
 
 import os
+import pprint
 from os import path
 import re
 import yaml
@@ -323,3 +324,48 @@ def get_catalog_info(source_name: str) -> dict:
     source_catalog = load_yaml_dict('source_catalog')
     source_name = return_true_source_catalog_name(source_name)
     return source_catalog.get(source_name, {})
+
+
+def seeAvailableFlowByModels(flowbytype, print_method=True):
+    """
+    Console print and return available Flow-By-Activity or Flow-By-Sector models
+    :param flowbytype: 'FBA' or 'FBS'
+    :param print_method: False to skip printing to console
+    :return: dict or list of available models
+    """
+
+    # fb directory contents dependent on FBA or FBS
+    if flowbytype == 'FBA':
+        fb_dir = os.listdir(sourceconfigpath)
+    elif flowbytype == 'FBS':
+        fb_dir = os.listdir(flowbysectormethodpath)
+    else:
+        raise ValueError("flowbytype must be 'FBA' or 'FBS'")
+
+    # list of file names (drop extension) for yaml files in flow directory
+    fb_names = [os.path.splitext(f)[0] for f in fb_dir if f.endswith('.yaml')]
+
+    # further reduce list of file names by excluding common and summary_target
+    exclude = ["_common", "_summary_target"]
+    fb_names = [f for f in fb_names if all(s not in f for s in exclude)]
+
+    if flowbytype == 'FBA':
+        # create empty dictionary, this will be the data format to print FBA
+        data_print = {}
+        # iterate over names to build dict for FBA and handling years
+        for f in fb_names:
+            s = load_yaml_dict(f, 'FBA')
+            try:
+                years = s['years']
+            except KeyError:
+                years = 'YAML missing information on years'
+            data_print.update({f: years})
+    else:
+        # data format to print FBS
+        data_print = fb_names
+
+    if print_method:
+        # print data in human-readable format
+        pprint.pprint(data_print, width=79, compact=True)
+
+    return data_print

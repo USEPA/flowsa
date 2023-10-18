@@ -88,7 +88,7 @@ def FBSscatterplot(method_dict, plottype, sector_length_display=None,
 
     df_list = []
     for label, method in method_dict.items():
-        dfm = flowsa.collapse_FlowBySector(method)
+        dfm = flowsa.flowbysector.collapse_FlowBySector(method)
         if plottype == 'facet_graph':
             dfm['methodname'] = dfm['Unit'].apply(lambda x: f"{label} ({x})")
         elif plottype == 'method_comparison':
@@ -176,7 +176,7 @@ def stackedBarChart(df,
     # if the df provided is a string, load the fbs method, otherwise use the
     # df provided
     if (type(df)) == str:
-        df = flowsa.FlowBySector.getFlowBySector(df)
+        df = flowsa.FlowBySector.return_FBS(df)
 
     if generalize_AttributionSources:
         df['AttributionSources'] = np.where(
@@ -446,7 +446,7 @@ def convert_units_for_graphics(df):
 #     :return: csv file for use in generating sankey diagram
 #     """
 #
-#     df = flowsa.FlowBySector.getFlowBySector(
+#     df = flowsa.FlowBySector.return_FBS(
 #         methodname, external_config_path=fbsconfigpath, download_sources_ok=True)
 #
 #     df = convert_units_for_graphics(df)
@@ -685,3 +685,23 @@ def convert_units_for_graphics(df):
 #     log.info(f'Saving file to {plotoutputpath / filename}.svg')
 #     fig.write_image(plotoutputpath / f"{filename}.svg",
 #                     width=width, height=height)
+
+# todo: revise data vis fxns for recursive method
+# def generateFBSplot(method_dict, plottype, sector_length_display=None,
+#                     sectors_to_include=None, plot_title=None):
+#     """
+#     Plot the results of FBS models. Graphic can either be a faceted
+#     scatterplot or a method comparison
+#     :param method_dict: dictionary, key is the label, value is the FBS
+#         methodname
+#     :param plottype: str, 'facet_graph' or 'method_comparison'
+#     :param sector_length_display: numeric, sector length by which to
+#     aggregate, default is 'None' which returns the max sector length in a
+#     dataframe
+#     :param sectors_to_include: list, sectors to include in output. Sectors
+#     are subset by all sectors that "start with" the values in this list
+#     :return: graphic displaying results of FBS models
+#     """
+#
+#     FBSscatterplot(method_dict, plottype, sector_length_display,
+#                    sectors_to_include, plot_title)

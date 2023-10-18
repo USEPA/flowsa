@@ -49,14 +49,14 @@ def get_flowby_from_config(
     external_data_path = config.get('external_data_path')
 
     if config['data_format'] == 'FBA':
-        return FlowByActivity.getFlowByActivity(
+        return FlowByActivity.return_FBA(
             full_name=name,
             config=config,
             download_ok=download_sources_ok,
             external_data_path=external_data_path
         )
     elif config['data_format'] == 'FBS':
-        return FlowBySector.getFlowBySector(
+        return FlowBySector.return_FBS(
             method=name,
             config=config,
             external_config_path=external_config_path,
@@ -75,8 +75,8 @@ def get_flowby_from_config(
             config=config
         )
     else:
-        log.critical('Unrecognized data format %s for source %s',
-                     config['data_format'], name)
+        log.critical(f'Unrecognized data format {config["data_format"]} for '
+                     f'source {name}')
         raise ValueError('Unrecognized data format')
 
 
@@ -234,10 +234,8 @@ class _FlowBy(pd.DataFrame):
                         if download_ok else ['import local', 'generate'])
 
         for attempt in attempt_list:
-            log.info(
-                'Attempting to %s %s %s',
-                attempt, file_metadata.name_data, file_metadata.category
-            )
+            log.info(f'Attempting to {attempt} {file_metadata.name_data} '
+                     f'{file_metadata.category}')
             if attempt == 'download':
                 esupy.processed_data_mgmt.download_from_remote(
                     file_metadata,
@@ -250,34 +248,24 @@ class _FlowBy(pd.DataFrame):
                 paths
             )
             if df is None:
-                log.info(
-                    '%s %s not found in %s',
-                    file_metadata.name_data,
-                    file_metadata.category,
-                    paths.local_path
-                )
+                log.info(f'{file_metadata.name_data} {file_metadata.category} '
+                         f'not found in {paths.local_path}')
             else:
-                log.info(
-                    'Successfully loaded %s %s from %s',
-                    file_metadata.name_data,
-                    file_metadata.category,
-                    output_path
-                )
+                log.info(f'Successfully loaded {file_metadata.name_data} '
+                         f'{file_metadata.category} from {output_path}')
                 break
         else:
-            log.error(
-                '%s %s could not be found locally, downloaded, or generated',
-                file_metadata.name_data, file_metadata.category
-            )
+            log.error(f'{file_metadata.name_data} {file_metadata.category} '
+                      f'could not be found locally, downloaded, or generated')
         fb = cls(df, full_name=full_name or '', config=config or {})
         return fb
 
     def convert_daily_to_annual(self: FB) -> FB:
         daily_list = ['/d', '/day']
         if any(self.Unit.str.endswith(tuple(daily_list))):
-            log.info('Converting daily flows %s to annual',
-                     [unit for unit in self.Unit.unique() if any(
-                         x in unit for x in daily_list)])
+            log.info(f'Converting daily flows '
+                     f'{[unit for unit in self.Unit.unique() if any(x in unit for x in daily_list)]} '
+                     f'to annual')
         return (
             self
             .assign(FlowAmount=self.FlowAmount.mask(
@@ -508,7 +496,7 @@ class _FlowBy(pd.DataFrame):
             filtered_fb = filtered_fb.query(f'{field} in @check_values')
 
         if filtered_fb.empty:
-            log.warning('%s FBA is empty', filtered_fb.full_name)
+            log.warning(f'{filtered_fb.full_name} FBA is empty')
 
         for k in ['Activity', 'Sector']:
             if isinstance(other_fields.get(f'Primary{k}'), dict):
@@ -743,21 +731,21 @@ class _FlowBy(pd.DataFrame):
                 attributed_fb = fb.equally_attribute()
 
             elif attribution_method != 'direct':
-                log.error('Attribution method for %s not recognized: %s',
-                          fb.full_name, attribution_method)
+                log.error(f'Attribution method for {fb.full_name} not '
+                          f'recognized: {attribution_method}')
                 raise ValueError('Attribution method not recognized')
 
             else:
                 if all(fb.groupby('group_id')['group_id'].agg('count') == 1):
-                    log.info('No attribution needed for %s at the given industry '
-                             'aggregation level', fb.full_name)
+                    log.info(f'No attribution needed for {fb.full_name} at '
+                             f'the given industry aggregation level')
                     attributed_fb = fb.copy()
                     validate = False
                 else:
                     if step_config.get('attribution_method') is None:
-                        log.warning('No attribution method specified for %s. '
-                                    'Using equal attribution as default.',
-                                    fb.full_name)
+                        log.warning(f'No attribution method specified for '
+                                    f'{fb.full_name}. Using equal attribution '
+                                    f'as default.')
                     log.info(f"Equally attributing {self.full_name} to "
                              f"target sectors.")
                     attributed_fb = fb.equally_attribute()
@@ -780,8 +768,8 @@ class _FlowBy(pd.DataFrame):
                                 'ActivityProducedBy', 'ActivityConsumedBy',
                                 'SectorProducedBy', 'SectorConsumedBy', 'Location',
                                 'FlowAmount', 'group_total', 'validation_total']])
-                    log.error('Errors in attributing flows from %s:\n%s',
-                              self.full_name, errors)
+                    log.error(f'Errors in attributing flows from '
+                              f'{self.full_name}:\n{errors}')
                 # calculate the percent change in df caused by attribution
                 fbsum = (fb[['group_id', 'group_total']]
                          .drop_duplicates())['group_total'].sum()
@@ -825,7 +813,7 @@ class _FlowBy(pd.DataFrame):
         if 'activity_sets' not in self.config:
             return [self]
 
-        log.info('Splitting %s into activity sets', self.full_name)
+        log.info(f'Splitting {self.full_name} into activity sets')
         activities = self.config['activity_sets']
         parent_config = {k: v for k, v in self.config.items()
                          if k not in ['activity_sets',
@@ -836,7 +824,7 @@ class _FlowBy(pd.DataFrame):
         child_df_list = []
         assigned_rows = set()
         for activity_set, activity_config in activities.items():
-            log.info('Creating subset for %s', activity_set)
+            log.info(f'Creating subset for {activity_set}')
 
             child_df = (
                 parent_df
@@ -851,14 +839,10 @@ class _FlowBy(pd.DataFrame):
             child_df = child_df.assign(SourceName=child_df.full_name)
 
             if set(child_df.row) & assigned_rows:
-                log.critical(
-                    'Some rows from %s assigned to multiple activity '
-                    'sets. This will lead to double-counting:\n%s',
-                    parent_df.full_name,
-                    child_df.query(
-                        f'row in {list(set(child_df.row) & assigned_rows)}'
-                    )
-                )
+                log.critical(f"Some rows from {parent_df.full_name} assigned "
+                             f"to multiple activity sets. This will lead to "
+                             f"double-counting:"
+                             f"\n{child_df.query(f'row in {list(set(child_df.row) & assigned_rows)}')}")
                 # raise ValueError('Some rows in multiple activity sets')
 
             assigned_rows.update(child_df.row)
@@ -869,8 +853,8 @@ class _FlowBy(pd.DataFrame):
                           'Check activity set definition!')
 
         if set(parent_df.row) - assigned_rows:
-            log.warning('Some rows from %s not assigned to an activity '
-                        'set. Is this intentional?', parent_df.full_name)
+            log.warning(f'Some rows from {parent_df.full_name} not assigned '
+                        f'to an activity set. Is this intentional?')
             unassigned = parent_df.query('row not in @assigned_rows')
 
         return child_df_list
@@ -937,17 +921,17 @@ class _FlowBy(pd.DataFrame):
             # Don't harmonize geoscales when updating Location
             pass
         elif other_geoscale < fb_geoscale:
-            log.info('Aggregating %s from %s to %s', other.full_name,
-                     other_geoscale, fb_geoscale)
+            log.info(f'Aggregating {other.full_name} from {other_geoscale} to '
+                     f'{fb_geoscale}')
             other = (
                 other
                 .convert_fips_to_geoscale(fb_geoscale)
                 .aggregate_flowby()
             )
         elif other_geoscale > fb_geoscale:
-            log.info('%s is %s, while %s is %s, so attributing %s to '
-                     '%s', other.full_name, other_geoscale, self.full_name,
-                     fb_geoscale, other_geoscale, fb_geoscale)
+            log.info(f'{other.full_name} is {other_geoscale}, while '
+                     f'{self.full_name} is {fb_geoscale}, so attributing '
+                     f'{other_geoscale} to {fb_geoscale}')
             self = (
                 self
                 .assign(temp_location=self.Location)
@@ -991,8 +975,8 @@ class _FlowBy(pd.DataFrame):
         flows from other (an FBS).
         """
 
-        log.info('Attributing flows in %s using %s.',
-                 self.full_name, other.full_name)
+        log.info(f'Attributing flows in {self.full_name} using '
+                 f'{other.full_name}.')
 
         fb_geoscale, other_geoscale, fb, other = self.harmonize_geoscale(other)
 
@@ -1047,15 +1031,12 @@ class _FlowBy(pd.DataFrame):
                 unattributable = with_denominator.query(f'denominator == 0 ')
 
                 if not unattributable.empty:
-                    vlog.warning(
-                        'Could not attribute activities in %s due to lack of '
-                        'flows in attribution source %s for mapped %s sectors %s. '
-                        'See validation_log for details.',
-                        unattributable.full_name,
-                        other.full_name,
-                        rank,
-                        sorted(set(unattributable[f'{rank}Sector']))
-                    )
+                    vlog.warning(f'Could not attribute activities in '
+                                 f'{unattributable.full_name} due to lack of '
+                                 f'flows in attribution source '
+                                 f'{other.full_name} for mapped {rank} sectors'
+                                 f' {sorted(set(unattributable[f"{rank}Sector"]))}. '
+                                 f'See validation_log for details.')
                     if other_geoscale.aggregation_level < 5:
                     # if other_geoscale < 5:
                         vlog.warning('This can occur when combining datasets '

@@ -45,7 +45,7 @@ jobs:
       run: |
         echo "Source: ${{ github.event.inputs.source }}"
         echo "Year: ${{ github.event.inputs.year }}"
-        python flowsa/test_single_FBA.py --source $SOURCE --year $YEAR
+        python tests/test_single_FBA.py --source $SOURCE --year $YEAR
 
     - name: Upload files
       if: always()

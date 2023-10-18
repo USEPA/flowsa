@@ -8,6 +8,7 @@ Helper functions for flowbyactivity and flowbysector data
 import numpy as np
 from esupy.dqi import get_weighted_average
 import flowsa
+import flowsa.flowbyactivity
 from flowsa.common import fbs_collapsed_default_grouping_fields
 from flowsa.dataclean import clean_df, standardize_units
 from flowsa.flowsa_log import log
@@ -312,7 +313,7 @@ def load_fba_w_standardized_units(datasource, year, **kwargs):
     if 'download_FBA_if_missing' in kwargs:
         fba_dict['download_FBA_if_missing'] = kwargs['download_FBA_if_missing']
     # load the allocation FBA
-    fba = flowsa.getFlowByActivity(
+    fba = flowsa.flowbyactivity.getFlowByActivity(
         datasource, year, **fba_dict).reset_index(drop=True)
     # convert to standardized units either by mapping to federal
     # flow list/material flow list or by using function. Mapping will add

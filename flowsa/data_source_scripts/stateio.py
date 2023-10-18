@@ -11,6 +11,8 @@ import pandas as pd
 
 from esupy.processed_data_mgmt import download_from_remote, Paths,\
     load_preprocessed_output
+
+import flowsa.flowbyactivity
 from flowsa.metadata import set_fb_meta
 from flowsa.location import us_state_abbrev, apply_county_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
@@ -81,4 +83,4 @@ if __name__ == "__main__":
     # source = 'stateio_Make_Summary'
     source = 'stateio_Use_Summary'
     flowsa.generateflowbyactivity.main(year=2017, source=source)
-    fba = flowsa.getFlowByActivity(source, 2017)
+    fba = flowsa.flowbyactivity.getFlowByActivity(source, 2017)
