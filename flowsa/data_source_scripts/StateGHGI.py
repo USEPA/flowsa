@@ -7,6 +7,8 @@ Loads state specific GHGI data to supplement EPA State Inventory Tool (SIT).
 
 import pandas as pd
 import os
+
+import flowsa.flowbyactivity
 from flowsa.settings import externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system, \
     load_fba_w_standardized_units
@@ -250,4 +252,4 @@ def VT_remove_dupicate_activities(df_subset):
 if __name__ == '__main__':
     import flowsa
     flowsa.generateflowbyactivity.main(source='StateGHGI_ME', year='2019')
-    fba = flowsa.getFlowByActivity('StateGHGI_ME', '2019')
+    fba = flowsa.flowbyactivity.getFlowByActivity('StateGHGI_ME', '2019')

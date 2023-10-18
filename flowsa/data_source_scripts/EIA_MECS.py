@@ -11,7 +11,6 @@ import io
 
 import pandas as pd
 import numpy as np
-from flowsa import FlowByActivity
 from flowsa.location import US_FIPS, get_region_and_division_codes
 from flowsa.common import WITHDRAWN_KEYWORD
 from flowsa.flowsa_log import log

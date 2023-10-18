@@ -13,6 +13,8 @@ import pandas as pd
 from tabula.io import read_pdf
 import re
 import os
+
+import flowsa.flowbyactivity
 from flowsa.location import US_FIPS
 from flowsa.flowsa_log import log
 from flowsa.settings import externaldatapath
@@ -228,6 +230,6 @@ def cdd_processing(fba, source_dict):
 if __name__ == "__main__":
     import flowsa
     flowsa.generateflowbyactivity.main(source='EPA_CDDPath', year=2018)
-    fba = flowsa.getFlowByActivity(datasource='EPA_CDDPath', year=2018)
+    fba = flowsa.flowbyactivity.getFlowByActivity(datasource='EPA_CDDPath', year=2018)
 
-    # fbs = flowsa.getFlowBySector(methodname='CDD_concrete_national_2014')
+    # fbs = flowsa.return_FBS(methodname='CDD_concrete_national_2014')

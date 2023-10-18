@@ -17,12 +17,17 @@ from functools import partial, reduce
 from typing import Literal, List
 import fedelemflowlist
 import pandas as pd
-from flowsa import settings, metadata, log, geo, validation, naics, common, \
+
+import flowsa.exceptions
+from flowsa import settings, metadata, geo, validation, naics, common, \
     sectormapping, generateflowbyactivity
+from flowsa.flowsa_log import log
+from flowsa.settings import DEFAULT_DOWNLOAD_IF_MISSING
+from flowsa.flowbyfunctions import filter_by_geoscale
 from flowsa.flowby import _FlowBy, flowby_config, NAME_SEP_CHAR
 
 if TYPE_CHECKING:
-    from flowsa import FlowBySector
+    from flowsa.flowbysector import FlowBySector
 
 class FlowByActivity(_FlowBy):
     _metadata = [*_FlowBy()._metadata]
@@ -71,7 +76,7 @@ class FlowByActivity(_FlowBy):
         return _FBASeries
 
     @classmethod
-    def getFlowByActivity(
+    def return_FBA(
         cls,
         full_name: str,
         year: int = None,
@@ -166,8 +171,8 @@ class FlowByActivity(_FlowBy):
             .assign(ConversionFactor=lambda x: x.ConversionFactor.fillna(1))
         )
         if mapping.empty:
-            log.error('Elementary flow list entries for %s not found',
-                      mapping_subset)
+            log.error(f'Elementary flow list entries for {mapping_subset} not '
+                      f'found')
             return FlowByActivity(self, mapped=True)
 
         mapped_fba = fba.merge(mapping,
@@ -195,13 +200,13 @@ class FlowByActivity(_FlowBy):
         )
 
         if any(mapped_fba.mapped == 'both'):
-            log.info('Units standardized to %s by mapping to federal '
-                     'elementary flow list', list(mapping.TargetUnit.unique()))
+            log.info(f'Units standardized to '
+                     f'{list(mapping.TargetUnit.unique())} by mapping to '
+                     f'federal elementary flow list')
         if any(mapped_fba.mapped == 'left_only'):
-            log.warning('Some units not standardized by mapping to federal '
-                        'elementary flows list: %s',
-                        list(mapped_fba
-                             .query('mapped == "left_only"').Unit.unique()))
+            log.warning(f"Some units not standardized by mapping to federal "
+                        f"elementary flows list: "
+                        f"{list(mapped_fba.query('mapped == left_only').Unit.unique())}")
 
         return mapped_fba.drop(columns='mapped')
 
@@ -264,10 +269,9 @@ class FlowByActivity(_FlowBy):
         geoscale_name_columns = [s.name.title() for s in geo.scale
                                  if s.has_fips_level]
 
-        log.info('Determining appropriate source geoscale for %s; '
-                 'target geoscale is %s',
-                 self.full_name,
-                 target_geoscale.name.lower())
+        log.info(f'Determining appropriate source geoscale for '
+                 f'{self.full_name}; target geoscale is '
+                 f'{target_geoscale.name.lower()}')
 
         highest_reporting_level_by_geoscale = [
             (self
@@ -318,11 +322,9 @@ class FlowByActivity(_FlowBy):
         )
 
         if len(fba_at_source_geoscale.source_geoscale.unique()) > 1:
-            log.warning('%s has multiple source geoscales: %s',
-                        fba_at_source_geoscale.full_name,
-                        ', '.join([s.name.lower() for s in
-                                   fba_at_source_geoscale
-                                   .source_geoscale.unique()]))
+            log.warning(f"{fba_at_source_geoscale.full_name} has multiple "
+                        f"source geoscales: "
+                        f"{', '.join([s.name.lower() for s in fba_at_source_geoscale.source_geoscale.unique()])}")
         else:
             log.info('%s source geoscale is %s',
                      fba_at_source_geoscale.full_name,
@@ -677,7 +679,7 @@ class FlowByActivity(_FlowBy):
             download_sources_ok: bool = True
             ) -> 'FlowBySector':
 
-        from flowsa import FlowBySector
+        from flowsa.flowbysector import FlowBySector
 
         if 'activity_sets' in self.config:
             try:
@@ -854,3 +856,40 @@ class _FBASeries(pd.Series):
     @property
     def _constructor_expanddim(self) -> 'FlowByActivity':
         return FlowByActivity
+
+
+def getFlowByActivity(
+        datasource,
+        year,
+        flowclass=None,
+        geographic_level=None,
+        download_FBA_if_missing=DEFAULT_DOWNLOAD_IF_MISSING
+        ) -> pd.DataFrame:
+    """
+    Retrieves stored data in the FlowByActivity format
+    :param datasource: str, the code of the datasource.
+    :param year: int, a year, e.g. 2012
+    :param flowclass: str or list, a 'Class' of the flow. Optional. E.g.
+    'Water' or ['Employment', 'Chemicals']
+    :param geographic_level: str, a geographic level of the data.
+                             Optional. E.g. 'national', 'state', 'county'.
+    :param download_FBA_if_missing: bool, if True will attempt to load from
+        remote server prior to generating if file not found locally
+    :return: a pandas DataFrame in FlowByActivity format
+    """
+    fba = FlowByActivity.return_FBA(
+        full_name=datasource,
+        config={},
+        year=int(year),
+        download_ok=download_FBA_if_missing
+    )
+
+    if len(fba) == 0:
+        raise flowsa.exceptions.FBANotAvailableError(
+            message=f"Error generating {datasource} for {str(year)}")
+    if flowclass is not None:
+        fba = fba.query('Class == @flowclass')
+    # if geographic level specified, only load rows in geo level
+    if geographic_level is not None:
+        fba = filter_by_geoscale(fba, geographic_level)
+    return pd.DataFrame(fba.reset_index(drop=True))

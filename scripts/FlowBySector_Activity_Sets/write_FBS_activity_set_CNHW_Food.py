@@ -12,12 +12,14 @@ management pathways using national level allocation ratios.
 import pandas as pd
 import numpy as np
 import flowsa
+import flowsa.flowbyactivity
+import flowsa.flowbysector
 from flowsa.settings import flowbysectoractivitysetspath, crosswalkpath
 
 methodname = 'CNHW_national_2014'
 
 if __name__ == '__main__':
-    df_import = flowsa.getFlowBySector(methodname)
+    df_import = flowsa.flowbysector.getFlowBySector(methodname)
 
     df = (df_import
           .query('Flowable=="Food"')
@@ -30,7 +32,7 @@ if __name__ == '__main__':
 
     # load the wasted food report activity to sector crosswalk to identify
     # data to include in activity set 1
-    wfr_fba = flowsa.getFlowByActivity('EPA_WFR', '2018')
+    wfr_fba = flowsa.flowbyactivity.getFlowByActivity('EPA_WFR', '2018')
     wfr_fba = wfr_fba[['ActivityProducedBy']].drop_duplicates()
     wfr_cw = pd.read_csv(f'{crosswalkpath}/NAICS_Crosswalk_EPA_WFR.csv')
     wfr = wfr_fba.merge(wfr_cw[['Activity', 'Sector']],

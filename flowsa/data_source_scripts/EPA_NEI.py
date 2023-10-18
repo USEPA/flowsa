@@ -10,6 +10,8 @@ from zipfile import ZipFile
 from os import path
 import pandas as pd
 import numpy as np
+
+import flowsa.flowbyactivity
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.dataclean import standardize_units
 from flowsa.flowbyactivity import FlowByActivity
@@ -238,4 +240,4 @@ def remove_flow_overlap(df, aggregate_flow, contributing_flows):
 if __name__ == '__main__':
     import flowsa
     flowsa.generateflowbyactivity.main(source='EPA_NEI_Onroad', year='2020')
-    fba = flowsa.getFlowByActivity('EPA_NEI_Onroad', '2020')
+    fba = flowsa.flowbyactivity.getFlowByActivity('EPA_NEI_Onroad', '2020')
