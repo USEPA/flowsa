@@ -161,26 +161,34 @@ def map_fbs_flows(fbs, from_fba_source, v, **kwargs):
     return fbs_mapped, mapping_files
 
 
-def map_to_BEA_sectors(fbs_load, region, io_level, year):
+def map_to_BEA_sectors(fbs_load, region, io_level, output_year,
+                       bea_year=2012):
     """
     Map FBS sectors from NAICS to BEA, allocating by gross industry output.
 
     :param fbs_load: df completed FlowBySector collapsed to single 'Sector'
     :param region: str, 'state' or 'national'
     :param io_level: str, 'summary' or 'detail'
-    :param year: year for industry output
+    :param output_year: year for industry output
+    :param bea_year: 2012 or 2017
+
     """
-    bea = get_BEA_industry_output(region, io_level, year)
+
+    bea = get_BEA_industry_output(region, io_level, output_year, bea_year)
 
     if io_level == 'summary':
-        mapping_col = 'BEA_2012_Summary_Code'
+        mapping_col = f'BEA_{bea_year}_Summary_Code'
     elif io_level == 'detail':
-        mapping_col = 'BEA_2012_Detail_Code'
+        mapping_col = f'BEA_{bea_year}_Detail_Code'
+
+    # determine naics year in df
+    naics_year = fbs_load['SectorSourceName'][0].split(
+        "_", 1)[1].split("_", 1)[0]
 
     # Prepare NAICS:BEA mapping file
-    mapping = (load_crosswalk('NAICS_to_BEA_Crosswalk')
+    mapping = (load_crosswalk(f'NAICS_to_BEA_Crosswalk_{bea_year}')
                .rename(columns={mapping_col: 'BEA',
-                                'NAICS_2012_Code': 'Sector'}))
+                                f'NAICS_{naics_year}_Code': 'Sector'}))
     mapping = (mapping.drop(
         columns=mapping.columns.difference(['Sector','BEA']))
         .drop_duplicates(ignore_index=True)
@@ -228,10 +236,10 @@ def map_to_BEA_sectors(fbs_load, region, io_level, year):
         fbs['Allocation'] = fbs['Allocation'].fillna(1)
         fbs['BEA'] = fbs['BEA'].fillna(fbs['BEA_y'])
         fbs['FlowAmount'] = fbs['FlowAmount'] * fbs['Allocation']
-        fbs = fbs.rename(columns={'BEA':'Sector'})
+        fbs = fbs.assign(Sector=fbs['BEA'])
 
     fbs = (fbs.drop(columns=dq_fields +
-                    ['SectorSourceName',
+                    ['SectorSourceName', 'BEA',
                      'BEA_y', 'Allocation'], errors='ignore'))
 
     if (abs(1-(sum(fbs['FlowAmount']) /
@@ -241,12 +249,13 @@ def map_to_BEA_sectors(fbs_load, region, io_level, year):
     return fbs
 
 
-def get_BEA_industry_output(region, io_level, year):
+def get_BEA_industry_output(region, io_level, output_year, bea_year=2012):
     """
     Get FlowByActivity for industry output from state or national datasets
     :param region: str, 'state' or 'national'
     :param io_level: str, 'summary' or 'detail'
-    :param year: year for industry output
+    :param output_year: year for industry output
+    :param bea_year: 2012 or 2017
     """
     if region == 'state':
         fba = 'stateio_Industry_GO'
@@ -256,22 +265,23 @@ def get_BEA_industry_output(region, io_level, year):
         fba = 'BEA_Detail_GrossOutput_IO'
 
     # Get output by BEA sector
-    bea = flowsa.flowbyactivity.getFlowByActivity(fba, year)
+    bea = flowsa.flowbyactivity.getFlowByActivity(fba, output_year)
     bea = (
         bea.drop(columns=bea.columns.difference(
             ['FlowAmount','ActivityProducedBy','Location']))
         .rename(columns={'FlowAmount':'Output',
                          'ActivityProducedBy': 'BEA'}))
 
-    # If needed, aggregate from detial to summary
+    # If needed, aggregate from detail to summary
     if region == 'national' and io_level == 'summary':
-        bea_mapping = (load_crosswalk('NAICS_to_BEA_Crosswalk')
-                       [['BEA_2012_Detail_Code','BEA_2012_Summary_Code']]
+        bea_mapping = (load_crosswalk(f'NAICS_to_BEA_Crosswalk_{bea_year}')
+                       [[f'BEA_{bea_year}_Detail_Code',
+                         f'BEA_{bea_year}_Summary_Code']]
                        .drop_duplicates()
-                       .rename(columns={'BEA_2012_Detail_Code': 'BEA'}))
+                       .rename(columns={f'BEA_{bea_year}_Detail_Code': 'BEA'}))
         bea = (bea.merge(bea_mapping, how='left', on='BEA')
                .drop(columns=['BEA'])
-               .rename(columns={'BEA_2012_Summary_Code': 'BEA'}))
+               .rename(columns={f'BEA_{bea_year}_Summary_Code': 'BEA'}))
         bea = (bea.groupby(['BEA','Location']).agg({'Output': 'sum'})
                .reset_index())
 
@@ -342,4 +352,4 @@ if __name__ == "__main__":
     df = flowsa.sectormapping.map_to_BEA_sectors(
         flowsa.getFlowBySector('GHG_national_2019_m1')
               .rename(columns={'SectorProducedBy':'Sector'}),
-        region='national', io_level='summary', year='2019')
+        region='national', io_level='summary', output_year='2019')
