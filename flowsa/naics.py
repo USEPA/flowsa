@@ -382,6 +382,8 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
             df = df.drop(
                 columns=[targetsectorsourcename, 'NAICS', 'allocation_ratio'])
         log.info(f'Replaced NAICS with {targetsectorsourcename}')
+        # replace the sector year in the sectorsourcename column
+        df['SectorSourceName'] = targetsectorsourcename
 
         # check if there are any sectors that are not in
         # the target sector crosswalk and if so, drop those sectors
