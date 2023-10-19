@@ -41,6 +41,14 @@ sources_to_cache:
         !include:Detail_Use.yaml:source_names:BEA_Summary_Use_SUT
         # year: *ghgi_year
 
+  Detail_Supply_2020:
+    !include:Detail_Supply.yaml
+    # year: *ghgi_year
+    source_names:
+      BEA_Summary_Supply:
+        !include:Detail_Supply.yaml:source_names:BEA_Summary_Supply
+        # year: *ghgi_year
+
 source_names:
   EPA_GHGI_T_2_1: #U.S. GHG emissions
     # year: # override this
@@ -88,7 +96,7 @@ source_names:
             Electric Power Sector: Electric Power #CO2
         attribution_method: proportional
         attribution_source:
-          Detail_Use_YEAR: ## Update year UPDATE TO USE MAKE TABLE
+          Detail_Supply_YEAR: ## Update year
             selection_fields:
               SectorConsumedBy: {'2211': ''}  # Electricity (221100)
 
@@ -489,7 +497,7 @@ source_names:
             Wood Electric Power: Wood Electric Power
         attribution_method: proportional
         attribution_source:
-          Detail_Use_YEAR: ## Update year UPDATE TO USE SUPPLY TABLE
+          Detail_Supply_YEAR: ## Update year
             selection_fields:
               SectorConsumedBy: {'2211': ''}  # Electricity (221100)
 

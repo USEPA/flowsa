@@ -22,6 +22,14 @@ sources_to_cache:
         !include:Detail_Use.yaml:source_names:BEA_Summary_Use_SUT
         year: *ghgi_year
 
+  Detail_Supply_2020:
+    !include:Detail_Supply.yaml
+    year: *ghgi_year
+    source_names:
+      BEA_Summary_Supply:
+        !include:Detail_Supply.yaml:source_names:BEA_Summary_Supply
+        year: *ghgi_year
+
 source_names:
   "EPA_GHGI_T_2_1": #U.S. GHG emissions
     !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1
@@ -31,8 +39,8 @@ source_names:
       electric_power:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:electric_power
         attribution_source:
-          Detail_Use_2020:
-            !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:electric_power:attribution_source:Detail_Use_YEAR
+          Detail_Supply_2020:
+            !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:electric_power:attribution_source:Detail_Supply_YEAR
       liming:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:liming
         attribution_source:
@@ -260,8 +268,8 @@ source_names:
       electric_power:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:electric_power
         attribution_source:
-          Detail_Use_2020:
-            !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:electric_power:attribution_source:Detail_Use_YEAR
+          Detail_Supply_2020:
+            !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:electric_power:attribution_source:Detail_Supply_YEAR
       
       fuel_oil:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:fuel_oil
