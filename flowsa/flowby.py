@@ -521,6 +521,11 @@ class _FlowBy(pd.DataFrame):
                   errors='ignore')
             .reset_index(drop=True)
         )
+        # Reset blank values to nan
+        for k in replace_dict.keys():
+            if all(replaced_fb[k] == ''):
+                replaced_fb[k] = np.nan
+
         return replaced_fb
 
     def aggregate_flowby(
@@ -564,7 +569,9 @@ class _FlowBy(pd.DataFrame):
                                 if c not in ['FlowAmount',
                                              *columns_to_average,
                                              *columns_to_group_by]])
-
+        if len(self) == 0:
+            log.warning('Error, dataframe is empty')
+            return self
         aggregated = (
             fb
             .assign(**{f'_{c}_weighted': fb[c] * fb.FlowAmount
@@ -860,7 +867,7 @@ class _FlowBy(pd.DataFrame):
         return child_df_list
 
     def load_prepare_attribution_source(
-        self: 'FlowByActivity',
+        self: FB,
         attribution_config=None,
         download_sources_ok: bool = True
     ) -> 'FlowBySector':
@@ -880,9 +887,14 @@ class _FlowBy(pd.DataFrame):
             attribution_fbs.config = {
                 **{k: attribution_fbs.config[k]
                    for k in attribution_fbs.config['method_config_keys']},
+                **{k: v for k, v in self.config.items()
+                           if k in self.config['method_config_keys']},
                 **get_catalog_info(name),
-                **config
+                **config,
+                'data_format': 'FBS'
             }
+            attribution_fbs = attribution_fbs.prepare_fbs(
+                download_sources_ok=download_sources_ok)
         else:
             attribution_fbs = get_flowby_from_config(
                 name=name,
