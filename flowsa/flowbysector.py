@@ -232,6 +232,8 @@ class FlowBySector(_FlowBy):
 
         fbs = self
         for direction in ['ProducedBy', 'ConsumedBy']:
+            if fbs[f'Sector{direction}'].isna().all():
+                continue
             fbs = (
                 fbs
                 .rename(columns={f'Sector{direction}': 'source_naics'})
