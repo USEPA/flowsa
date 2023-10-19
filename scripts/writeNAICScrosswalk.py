@@ -57,7 +57,7 @@ def update_naics_crosswalk():
     """
 
     # read useeior master crosswalk, subset NAICS columns
-    naics_load = load_crosswalk('NAICS_to_BEA_Crosswalk')
+    naics_load = load_crosswalk('NAICS_to_BEA_Crosswalk_2012')
     naics = naics_load[['NAICS_2007_Code', 'NAICS_2012_Code', 'NAICS_2017_Code'
                         ]].drop_duplicates().reset_index(drop=True)
     # convert all rows to string
