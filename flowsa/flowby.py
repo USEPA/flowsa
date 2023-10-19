@@ -906,18 +906,6 @@ class _FlowBy(pd.DataFrame):
                 download_sources_ok=download_sources_ok
             ).prepare_fbs(download_sources_ok=download_sources_ok)
 
-        # if the attribution sectorsourcename does not match the FBS method
-        # target year, convert. This can be the case for a cached data
-        # source that is loaded from a secondary yaml (see CAP_HAP cached
-        # source "Detail_Use_Year"
-        if attribution_fbs['SectorSourceName'][0] != \
-                f"NAICS_{self.config['target_naics_year']}_Code":
-            attribution_fbs = naics.convert_naics_year(
-                attribution_fbs,
-                f"NAICS_{self.config['target_naics_year']}_Code",
-                attribution_fbs['SectorSourceName'][0],
-                attribution_fbs.full_name)
-
         return attribution_fbs
 
     def harmonize_geoscale(
