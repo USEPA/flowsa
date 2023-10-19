@@ -111,7 +111,7 @@ source_names:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_13:activity_sets:petroleum_fuels
         attribution_source:
           Detail_Use_2020:
-            !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_13:activity_sets:petroleum_fuels:attribution_source:Detail_Use_2020
+            !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_13:activity_sets:petroleum_fuels:attribution_source:Detail_Use_YEAR
 
   "EPA_GHGI_T_3_14": &T_3_14 #CH4 from mobile combustion
     !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14
