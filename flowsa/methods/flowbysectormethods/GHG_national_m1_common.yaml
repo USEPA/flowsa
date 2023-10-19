@@ -12,23 +12,6 @@ geoscale: national
 mecs_year: &mecs_year 2018
 
 _attribution_sources:
-  BEA_Summary_Use_SUT: &bea_summary
-    # year: *ghgi_year
-    activity_to_sector_mapping: BEA_2017_Summary
-    # selection_fields:
-    #   ActivityProducedBy: {'324': ''}  # Petroleum 324110
-    exclusion_fields: # Avoid unnecessary warnings about not being mapped to sectors
-      ActivityConsumedBy: ['F010', 'F02E', 'F02N', 'F02R', 'F02S',
-                           'F030', 'F040', 'F06C', 'F06E', 'F06N', 'F06S', 'F07C', 'F07E',
-                           'F07N', 'F07S', 'F10C', 'F10E', 'F10N', 'F10S',
-                           'T001', 'T019']
-      ActivityProducedBy: ['T00OSUB', 'T00OTOP', 'T00SUB', 'T00TOP', 'T018',
-                           'V001', 'V003', 'VABAS', 'VAPRO', 'T005',
-                           'Other', 'Used']
-    attribution_method: equal
-    ## No attribution supplied (will use equal) because target level for
-    ## modeling is BEA summary level.
-
   EIA_MECS_Energy: &mecs_energy
     year: *mecs_year
     selection_fields: &mecs_energy_default_selection
@@ -307,11 +290,9 @@ source_names:
             Light-Duty Trucks Gasoline: Light-Duty Trucks
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_SUT:
-            <<: *bea_summary
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'324': ''} # purchases of refinery products (324110)
-
+              SectorProducedBy: {'32411': ''} # purchases of refinery products (324110)
 
   EPA_GHGI_T_3_14: &mobile #CH4 from mobile combustion
     fedefl_mapping: GHGI
@@ -340,10 +321,9 @@ source_names:
             Medium- and Heavy-Duty Trucks Diesel On-Road: Medium- and Heavy-Duty Trucks - Distillate Fuel Oil
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_SUT:
-            <<: *bea_summary
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'324': ''} # purchases of refinery products (324110)
+              SectorProducedBy: {'32411': ''} # purchases of refinery products (324110)
 
       petroleum_fuels_gasoline:
         selection_fields:
@@ -352,10 +332,9 @@ source_names:
             Light-Duty Trucks Gasoline On-Road: Light-Duty Trucks
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_SUT:
-            <<: *bea_summary
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'324': ''} # purchases of refinery products (324110)
+              SectorProducedBy: {'32411': ''} # purchases of refinery products (324110)
 
       construction_and_mining: #this set is allocated by purchases of construction equipment
         selection_fields:
@@ -380,10 +359,9 @@ source_names:
           PrimaryActivity: Other Non-Road
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_SUT:
-            <<: *bea_summary
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'324': ''} # purchases of refinery products (324110)
+              SectorProducedBy: {'32411': ''} # purchases of refinery products (324110)
 
       alt_fuel_on_road: #this set is allocated by purchases of natural gas
         selection_fields:
@@ -478,10 +456,9 @@ source_names:
             - Total Petroleum Industrial
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_SUT:
-            <<: *bea_summary
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'324': ''} # purchases of refinery products (324110)
+              SectorProducedBy: {'32411': ''} # purchases of refinery products (324110)
 
 
   EPA_GHGI_T_3_8:  &stationary_combustion # CH4 emissions from stationary combustion
@@ -512,7 +489,7 @@ source_names:
             Wood Electric Power: Wood Electric Power
         attribution_method: proportional
         attribution_source:
-          Detail_Use_YEAR: ## Update year UPDATE TO USE MAKE TABLE
+          Detail_Use_YEAR: ## Update year UPDATE TO USE SUPPLY TABLE
             selection_fields:
               SectorConsumedBy: {'2211': ''}  # Electricity (221100)
 
@@ -523,10 +500,9 @@ source_names:
             - Fuel Oil Industrial
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_SUT:
-            <<: *bea_summary
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'324': ''}  # purchases of refinery products (324110)
+              SectorProducedBy: {'32411': ''} # purchases of refinery products (324110)
 
       natural_gas_nonmanufacturing:  # Commercial Natural gas
         selection_fields:
@@ -669,10 +645,9 @@ source_names:
           PrimaryActivity: Transportation Lubricants
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_SUT:
-            <<: *bea_summary
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'324': ''} # use of petroleum products (324110)
+              SectorProducedBy: {'32411': ''} # purchases of refinery products (324110)
 
 ## Other Emissions
   EPA_GHGI_T_4_50: # HFCs from HCFC-22 production

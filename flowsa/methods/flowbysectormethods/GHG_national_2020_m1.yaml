@@ -102,9 +102,8 @@ source_names:
       petroleum_fuels:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_13:activity_sets:petroleum_fuels
         attribution_source:
-          BEA_Summary_Use_SUT:
-            !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_13:activity_sets:petroleum_fuels:attribution_source:BEA_Summary_Use_SUT
-              year: *ghgi_year
+          Detail_Use_2020:
+            !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_13:activity_sets:petroleum_fuels:attribution_source:Detail_Use_2020
 
   "EPA_GHGI_T_3_14": &T_3_14 #CH4 from mobile combustion
     !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14
@@ -114,16 +113,14 @@ source_names:
       petroleum_fuels_diesel:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:petroleum_fuels_diesel
         attribution_source:
-          BEA_Summary_Use_SUT:
-            !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:petroleum_fuels_diesel:attribution_source:BEA_Summary_Use_SUT
-              year: *ghgi_year
+          Detail_Use_2020:
+            !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:petroleum_fuels_diesel:attribution_source:Detail_Use_YEAR
 
       petroleum_fuels_gasoline:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:petroleum_fuels_gasoline
         attribution_source:
-          BEA_Summary_Use_SUT:
-            !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:petroleum_fuels_gasoline:attribution_source:BEA_Summary_Use_SUT
-              year: *ghgi_year
+          Detail_Use_2020:
+            !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:petroleum_fuels_gasoline:attribution_source:Detail_Use_YEAR
 
       construction_and_mining:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:construction_and_mining
@@ -140,9 +137,8 @@ source_names:
       other_non_road:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:other_non_road
         attribution_source:
-          BEA_Summary_Use_SUT:
-            !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:other_non_road:attribution_source:BEA_Summary_Use_SUT
-              year: *ghgi_year
+          Detail_Use_2020:
+            !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:other_non_road:attribution_source:Detail_Use_YEAR
 
       alt_fuel_on_road:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:alt_fuel_on_road
@@ -212,9 +208,8 @@ source_names:
       transportation_lubricants:
         !include:GHG_national_m1_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:transportation_lubricants
         attribution_source:
-          BEA_Summary_Use_SUT:
-            !include:GHG_national_m1_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:transportation_lubricants:attribution_source:BEA_Summary_Use_SUT
-              year: *ghgi_year
+          Detail_Use_2020:
+            !include:GHG_national_m1_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:transportation_lubricants:attribution_source:Detail_Use_YEAR
 
 
 ### Major CO2 Sources
@@ -252,9 +247,8 @@ source_names:
       petroleum:
         !include:GHG_national_m1_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:petroleum
         attribution_source:
-          BEA_Summary_Use_SUT:
-            !include:GHG_national_m1_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:petroleum:attribution_source:BEA_Summary_Use_SUT
-              year: *ghgi_year
+          Detail_Use_2020:
+            !include:GHG_national_m1_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:petroleum:attribution_source:Detail_Use_YEAR
 
   "EPA_GHGI_T_3_8": &T_3_8 # CH4 emissions from stationary combustion
     !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8
@@ -272,9 +266,8 @@ source_names:
       fuel_oil:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:fuel_oil
         attribution_source:
-          BEA_Summary_Use_SUT:
-            !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:fuel_oil:attribution_source:BEA_Summary_Use_SUT
-              year: *ghgi_year
+          Detail_Use_2020:
+            !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:fuel_oil:attribution_source:Detail_Use_YEAR
 
       natural_gas_nonmanufacturing:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:natural_gas_nonmanufacturing
