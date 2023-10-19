@@ -204,9 +204,10 @@ class FlowByActivity(_FlowBy):
                      f'{list(mapping.TargetUnit.unique())} by mapping to '
                      f'federal elementary flow list')
         if any(mapped_fba.mapped == 'left_only'):
-            log.warning(f"Some units not standardized by mapping to federal "
-                        f"elementary flows list: "
-                        f"{list(mapped_fba.query('mapped == left_only').Unit.unique())}")
+            log.warning('Some units not standardized by mapping to federal '
+                        'elementary flows list: %s',
+                        list(mapped_fba
+                             .query('mapped == "left_only"').Unit.unique()))
 
         return mapped_fba.drop(columns='mapped')
 
