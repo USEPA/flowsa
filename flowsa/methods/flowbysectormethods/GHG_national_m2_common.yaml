@@ -66,6 +66,14 @@ sources_to_cache:
         !include:Detail_Use.yaml:source_names:BEA_Summary_Use_SUT
         # year: *ghgi_year
 
+  Detail_Supply_2020:
+    !include:Detail_Supply.yaml
+    # year: *ghgi_year
+    source_names:
+      BEA_Summary_Supply:
+        !include:Detail_Supply.yaml:source_names:BEA_Summary_Supply
+        # year: *ghgi_year
+
 source_names:
   GHG_national_m1: # National Summary model
     data_format: FBS
@@ -338,7 +346,7 @@ source_names:
             - 'EPA_GHGI_T_3_9.electric_power'
         attribution_method: proportional
         attribution_source:
-          Detail_Use_YEAR: ## Update year UPDATE TO USE MAKE TABLE
+          Detail_Supply_YEAR: ## Update year
             selection_fields:
               SectorConsumedBy: {'2211': ''}  # Electricity (221100)
       fuel_oil:
@@ -494,10 +502,12 @@ source_names:
           MetaSources: 'EPA_GHGI_T_4_86'
         attribution_method: proportional
         attribution_source:
-          Detail_Use_YEAR: ## Update year UPDATE TO USE GROSS OUTPUT
+          Detail_Supply_YEAR: ## Update year
             selection_fields:
-              SectorConsumedBy: {'T008': ''}  # Total Output
-
+              SectorProducedBy: # Mapped magnesium sectors
+                '33141': ''
+                '33149': ''
+                '33152': ''
 
 ## For tables requiring direct attribution, reattribute the original GHGI
   EPA_GHGI_T_2_1: #U.S. GHG emissions
