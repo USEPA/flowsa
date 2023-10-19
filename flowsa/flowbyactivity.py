@@ -708,7 +708,7 @@ class FlowByActivity(_FlowBy):
             .select_by_fields()
             .function_socket('estimate_suppressed')
             .select_by_fields(selection_fields=self.config.get(
-                'selection_fields_after_data_suppression_estimation'))
+                'selection_fields_after_data_suppression_estimation', 'null'))
             .convert_units_and_flows()  # and also map to flow lists
             .function_socket('clean_fba')
             .convert_to_geoscale()

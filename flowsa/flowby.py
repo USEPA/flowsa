@@ -458,7 +458,7 @@ class _FlowBy(pd.DataFrame):
         selection_fields = (selection_fields
                             or self.config.get('selection_fields'))
 
-        if selection_fields is None:
+        if selection_fields is None or selection_fields == 'null':
             return self
 
         selection_fields = {k: [v] if not isinstance(v, (list, dict)) else v
