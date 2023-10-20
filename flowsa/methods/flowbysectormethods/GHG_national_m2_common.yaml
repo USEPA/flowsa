@@ -371,7 +371,7 @@ source_names:
             selection_fields:
               SectorProducedBy:  {'2212': ''}  # purchases of natural gas (221200)
 
-      coal_nonmanufacturing:
+      coal_nonmanufacturing: # empty in some years (i.e., all coal consumption for manufacturing)
         selection_fields:
           MetaSources:
             - 'EPA_GHGI_T_3_8.coal_nonmanufacturing'
@@ -569,7 +569,7 @@ source_names:
   EPA_GHGI_T_3_14: &mobile #CH4 from mobile combustion
     fedefl_mapping: GHGI
     activity_sets:
-      direct_gasoline:
+      direct_gasoline: # empty in some years (<0.05 MMT CO2eq)
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:direct_gasoline
       direct_non_road:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:direct_non_road

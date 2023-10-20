@@ -305,7 +305,7 @@ source_names:
   EPA_GHGI_T_3_14: &mobile #CH4 from mobile combustion
     fedefl_mapping: GHGI
     activity_sets:
-      direct_gasoline:
+      direct_gasoline: # empty in some years (<0.05 MMT CO2eq)
         selection_fields:
           PrimaryActivity:
             Motorcycles Gasoline On-Road: Motorcycles
@@ -372,7 +372,7 @@ source_names:
               SectorProducedBy: {'32411': ''} # purchases of refinery products (324110)
 
       alt_fuel_on_road: #this set is allocated by purchases of natural gas
-        selection_fields:
+        selection_fields: # empty in some years (<0.05 MMT CO2eq)
           PrimaryActivity:
             All activities Alternative Fuel On-Road: Alternative Fuel On-Road
         attribution_method: proportional
@@ -525,7 +525,7 @@ source_names:
             selection_fields:
               SectorProducedBy:  {'2212': ''}  # purchases of natural gas (221200)
 
-      coal_nonmanufacturing:
+      coal_nonmanufacturing: # empty in some years (i.e., all coal consumption for manufacturing)
         selection_fields:
           PrimaryActivity: Coal Industrial
         attribution_method: proportional
