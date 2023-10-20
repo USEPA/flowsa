@@ -35,7 +35,7 @@ source_names:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct
         attribution_method: direct
       direct_ods:
-      # replicates direct attribution from EPA_GHGI_T_4_102.households
+      # heat transfer fluids
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct_ods
         exclusion_fields:
@@ -547,6 +547,7 @@ source_names:
       ods_substitutes:
         selection_fields:
           MetaSources:
+            - 'EPA_GHGI_T_4_102.households'
             - 'EPA_GHGI_T_4_102.refrigerants'
             - 'EPA_GHGI_T_4_102.air_conditioning'
             - 'EPA_GHGI_T_4_102.foams'

@@ -266,7 +266,7 @@ EPA_State_GHGI,Industry - Substitution of Ozone Depleting Substances - Product u
 EPA_State_GHGI,Industry - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Industry,NAICS_2012_Code,31,,ods_substitutes
 EPA_State_GHGI,Industry - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Industry,NAICS_2012_Code,32,,ods_substitutes
 EPA_State_GHGI,Industry - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Industry,NAICS_2012_Code,33,,ods_substitutes
-EPA_State_GHGI,Residential - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Residential,NAICS_2012_Code,F010,,direct_ods
+EPA_State_GHGI,Residential - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Residential,NAICS_2012_Code,F010,,ods_substitutes
 EPA_State_GHGI,Transportation - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Transportation,NAICS_2012_Code,48,,ods_transportation
 EPA_State_GHGI,Transportation - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Transportation,NAICS_2012_Code,F010,,ods_transportation
 EPA_State_GHGI,Industry - Adipic Acid Production - Chemical Industry,NAICS_2012_Code,32519,,direct

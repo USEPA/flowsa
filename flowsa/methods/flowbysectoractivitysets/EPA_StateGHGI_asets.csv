@@ -99,7 +99,7 @@ transport_nonroad,Transportation - Mobile Combustion - Fossil Fuel Combustion - 
 transport_nonroad,Transportation - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,negative emissions; align with 'Transportation - Mobile Combustion - Fossil Fuel Combustion - Petroleum - Non-Highway' to avoid double counting
 ods_substitutes,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,EPA_GHGI_T_4_102
 ods_substitutes,Industry - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Industry,EPA_GHGI_T_4_102
-direct_ods,Residential - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Residential,EPA_GHGI_T_4_102
+ods_substitutes,Residential - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Residential,EPA_GHGI_T_4_102
 ods_transportation,Transportation - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Transportation,EPA_GHGI_T_4_102
 direct,Industry - Adipic Acid Production - Chemical Industry,EPA_GHGI_T_2_1
 direct,Industry - Ammonia Production - Chemical Industry,EPA_GHGI_T_2_1
