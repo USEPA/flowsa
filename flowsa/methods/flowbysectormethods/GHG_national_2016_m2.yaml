@@ -305,6 +305,15 @@ source_names:
   EPA_GHGI_T_2_1: #U.S. GHG emissions
     !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_2_1
     year: *ghgi_year
+    activity_sets:
+      !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets
+      lead:
+        !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:lead
+        attribution_source:
+          USGS_MYB_Lead:
+            !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:lead:attribution_source:USGS_MYB_Lead
+            year: *ghgi_year
+
   EPA_GHGI_T_3_68: #CH4 from Natural Gas Systems
     !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_68
     year: *ghgi_year
