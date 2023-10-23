@@ -92,12 +92,12 @@ class FlowBySector(_FlowBy):
         '''
         file_metadata = metadata.set_fb_meta(method, 'FlowBySector')
 
-        if config is None:
-            try:
-                config = common.load_yaml_dict(method, 'FBS',
-                                               external_config_path)
-            except exceptions.FlowsaMethodNotFoundError:
-                config = {}
+        # if config is None:
+        #     try:
+        #         config = common.load_yaml_dict(method, 'FBS',
+        #                                        external_config_path)
+        #     except exceptions.FlowsaMethodNotFoundError:
+        #         config = {}
 
         flowby_generator = (
             lambda x=method, y=external_config_path, z=download_sources_ok:
