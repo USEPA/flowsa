@@ -5,11 +5,11 @@
 # The full FBS for any year can be cached using:
 # sources_to_cache:
 #   Detail_Use_2019:
-#     !include:Detail_Use.yaml
+#     !include:Detail_Use_SUT.yaml
 #     year: *year
 #     source_names:
 #       BEA_Summary_Use_SUT:
-#         !include:Detail_Use.yaml:source_names:BEA_Summary_Use_SUT
+#         !include:Detail_Use_SUT.yaml:source_names:BEA_Summary_Use_SUT
 #         year: *year
 
 !include:BEA_detail_target.yaml

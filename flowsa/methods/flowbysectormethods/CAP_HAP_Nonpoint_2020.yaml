@@ -10,11 +10,11 @@ _emission_year: &year 2020
 
 sources_to_cache:
   Detail_Use_2020:
-    !include:Detail_Use.yaml
+    !include:Detail_Use_SUT.yaml
     year: *year
     source_names:
       BEA_Summary_Use_SUT:
-        !include:Detail_Use.yaml:source_names:BEA_Summary_Use_SUT
+        !include:Detail_Use_SUT.yaml:source_names:BEA_Summary_Use_SUT
         year: *year
 
   EIA_MECS_Energy:

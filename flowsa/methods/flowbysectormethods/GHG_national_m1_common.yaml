@@ -34,11 +34,11 @@ _attribution_sources:
 
 _sources_to_cache:
   Detail_Use_YEAR:  ## Update year
-    !include:Detail_Use.yaml
+    !include:Detail_Use_SUT.yaml
     # year: *ghgi_year
     source_names:
       BEA_Summary_Use_SUT:
-        !include:Detail_Use.yaml:source_names:BEA_Summary_Use_SUT
+        !include:Detail_Use_SUT.yaml:source_names:BEA_Summary_Use_SUT
         # year: *ghgi_year
 
   Detail_Supply_YEAR:

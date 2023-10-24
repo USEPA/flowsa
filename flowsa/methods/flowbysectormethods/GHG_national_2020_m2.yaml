@@ -11,11 +11,11 @@ usgs_year: &usgs_year 2019 # 2020 FBA not yet available
 
 sources_to_cache:
   Detail_Use_2020:
-    !include:Detail_Use.yaml
+    !include:Detail_Use_SUT.yaml
     year: *ghgi_year
     source_names:
       BEA_Summary_Use_SUT:
-        !include:Detail_Use.yaml:source_names:BEA_Summary_Use_SUT
+        !include:Detail_Use_SUT.yaml:source_names:BEA_Summary_Use_SUT
         year: *ghgi_year
 
   Detail_Supply_2020:
