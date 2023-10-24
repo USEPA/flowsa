@@ -502,12 +502,11 @@ source_names:
           MetaSources: 'EPA_GHGI_T_4_86'
         attribution_method: proportional
         attribution_source:
-          Detail_Supply_YEAR: ## Update year
-            selection_fields:
-              SectorProducedBy: # Mapped magnesium sectors
-                '33141': ''
-                '33149': ''
-                '33152': ''
+          BEA_Detail_GrossOutput_IO:
+            # year: *ghgi_year
+            geoscale: national
+            activity_to_sector_mapping: BEA_2012_Detail
+            attribution_method: equal
 
 ## For tables requiring direct attribution, reattribute the original GHGI
   EPA_GHGI_T_2_1: #U.S. GHG emissions

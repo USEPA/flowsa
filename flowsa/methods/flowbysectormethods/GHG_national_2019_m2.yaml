@@ -240,8 +240,11 @@ source_names:
       magnesium:
         !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:magnesium
         attribution_source:
-          Detail_Supply_2019:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:magnesium:attribution_source:Detail_Supply_YEAR
+          BEA_Detail_GrossOutput_IO:
+            year: *ghgi_year
+            geoscale: national
+            activity_to_sector_mapping: BEA_2012_Detail
+            attribution_method: equal
 
   EPA_GHGI_T_2_1: #U.S. GHG emissions
     !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_2_1

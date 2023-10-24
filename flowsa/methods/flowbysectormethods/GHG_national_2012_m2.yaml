@@ -297,10 +297,11 @@ source_names:
       magnesium:
         !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:magnesium
         attribution_source:
-          BEA_Detail_Make_BeforeRedef:
-            <<: *bea
-            selection_fields:
-              ActivityConsumedBy: {T008: ''}  # Total Output
+          BEA_Detail_GrossOutput_IO:
+            year: *ghgi_year
+            geoscale: national
+            activity_to_sector_mapping: BEA_2012_Detail
+            attribution_method: equal
 
       cropland: # allocated based on USDA land area harvested
         !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:cropland
