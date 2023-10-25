@@ -12,7 +12,7 @@ import flowsa.flowbysector
 from flowsa.flowbysector import FlowBySector
 from flowsa.flowbyfunctions import aggregator, collapse_fbs_sectors
 from flowsa.flowsa_log import log, vlog
-from flowsa.common import fba_activity_fields
+from flowsa.common import fba_activity_fields, load_yaml_dict
 from flowsa.location import US_FIPS
 from flowsa.schema import dq_fields
 
@@ -318,6 +318,10 @@ def compare_national_state_fbs(dataname=None, year=None, method=None,
 
     # load state level target sectors - assumption state will always be
     # equal or more aggregated than national
+    if state.config == {}:
+        state.config = load_yaml_dict(s, 'FBS')
+    if national.config == {}:
+        national.config = load_yaml_dict(n, 'FBS')
     state_target = state.config['industry_spec']
 
     groupby_fields = ['Flowable','Context','SectorProducedBy', 'SectorConsumedBy',
