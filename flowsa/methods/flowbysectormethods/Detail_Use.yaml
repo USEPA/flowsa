@@ -29,7 +29,7 @@ source_names:
     # Drop unneeded codes
     exclusion_fields:
     exclusion_fields:
-      ActivityConsumedBy: ['F010', 'F02E', 'F02N', 'F02R', 'F02S', 'F030',
+      ActivityConsumedBy: ['F02E', 'F02N', 'F02R', 'F02S', 'F030',
                            'F040', 'F050', 'F051', 'F06C', 'F06E', 'F06N', 'F06S',
                            'F07C', 'F07E', 'F07N', 'F07S', 'F10C', 'F10E',
                            'F10N', 'F10S',
@@ -47,7 +47,7 @@ source_names:
         primary_action_type: Consumed # speeds processing
         # Drop unneeded codes
         exclusion_fields:
-          ActivityConsumedBy: ['F01000', 'F02E00', 'F02N00', 'F02R00', 'F02S00',
+          ActivityConsumedBy: ['F02E00', 'F02N00', 'F02R00', 'F02S00',
                                'F03000', 'F04000', 'F05000', 'F06C00', 'F06E00',
                                'F06N00', 'F06S00', 'F07C00', 'F07E00', 'F07N00',
                                'F07S00', 'F10C00', 'F10E00', 'F10N00', 'F10S00',
