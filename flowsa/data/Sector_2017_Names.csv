@@ -1,4 +1,4 @@
-NAICS_2012_Code,NAICS_2012_Name
+NAICS_2017_Code,NAICS_2017_Name
 11,"Agriculture, Forestry, Fishing and Hunting"
 111,Crop Production
 1111,Oilseed and Grain Farming
@@ -133,9 +133,10 @@ NAICS_2012_Code,NAICS_2012_Name
 21,"Mining, Quarrying, and Oil and Gas Extraction"
 211,Oil and Gas Extraction
 2111,Oil and Gas Extraction
-21111,Oil and Gas Extraction
-211111,Crude Petroleum and Natural Gas Extraction
-211112,Natural Gas Liquid Extraction
+21112,Crude Petroleum Extraction
+211120,Crude Petroleum Extraction
+21113,Natural Gas Extraction
+211130,Natural Gas Extraction
 212,Mining (except Oil and Gas)
 2121,Coal Mining
 21211,Coal Mining
@@ -149,8 +150,7 @@ NAICS_2012_Code,NAICS_2012_Name
 212221,Gold Ore Mining
 212222,Silver Ore Mining
 21223,"Copper, Nickel, Lead, and Zinc Mining"
-212231,Lead Ore and Zinc Ore Mining
-212234,Copper Ore and Nickel Ore Mining
+212230,"Copper, Nickel, Lead, and Zinc Mining"
 21229,Other Metal Ore Mining
 212291,Uranium-Radium-Vanadium Ore Mining
 212299,All Other Metal Ore Mining
@@ -280,292 +280,652 @@ NAICS_2012_Code,NAICS_2012_Name
 311,Food Manufacturing
 3111,Animal Food Manufacturing
 31111,Animal Food Manufacturing
+311111,Dog and Cat Food Manufacturing
+311119,Other Animal Food Manufacturing
 3112,Grain and Oilseed Milling
 31121,Flour Milling and Malt Manufacturing
+311211,Flour Milling
+311212,Rice Milling
+311213,Malt Manufacturing
 31122,Starch and Vegetable Fats and Oils Manufacturing
+311221,Wet Corn Milling
+311224,Soybean and Other Oilseed Processing
+311225,Fats and Oils Refining and Blending
 31123,Breakfast Cereal Manufacturing
+311230,Breakfast Cereal Manufacturing
 3113,Sugar and Confectionery Product Manufacturing
 31131,Sugar Manufacturing
+311313,Beet Sugar Manufacturing
+311314,Cane Sugar Manufacturing
 31134,Nonchocolate Confectionery Manufacturing
+311340,Nonchocolate Confectionery Manufacturing
 31135,Chocolate and Confectionery Manufacturing
+311351,Chocolate and Confectionery Manufacturing from Cacao Beans
+311352,Confectionery Manufacturing from Purchased Chocolate
 3114,Fruit and Vegetable Preserving and Specialty Food Manufacturing
 31141,Frozen Food Manufacturing
+311411,"Frozen Fruit, Juice, and Vegetable Manufacturing"
+311412,Frozen Specialty Food Manufacturing
 31142,"Fruit and Vegetable Canning, Pickling, and Drying"
+311421,Fruit and Vegetable Canning
+311422,Specialty Canning
+311423,Dried and Dehydrated Food Manufacturing
 3115,Dairy Product Manufacturing
 31151,Dairy Product (except Frozen) Manufacturing
+311511,Fluid Milk Manufacturing
+311512,Creamery Butter Manufacturing
+311513,Cheese Manufacturing
+311514,"Dry, Condensed, and Evaporated Dairy Product Manufacturing"
 31152,Ice Cream and Frozen Dessert Manufacturing
+311520,Ice Cream and Frozen Dessert Manufacturing
 3116,Animal Slaughtering and Processing
 31161,Animal Slaughtering and Processing
+311611,Animal (except Poultry) Slaughtering
+311612,Meat Processed from Carcasses
+311613,Rendering and Meat Byproduct Processing
+311615,Poultry Processing
 3117,Seafood Product Preparation and Packaging
 31171,Seafood Product Preparation and Packaging
+311710,Seafood Product Preparation and Packaging
 3118,Bakeries and Tortilla Manufacturing
 31181,Bread and Bakery Product Manufacturing
+311811,Retail Bakeries
+311812,Commercial Bakeries
+311813,"Frozen Cakes, Pies, and Other Pastries Manufacturing"
 31182,"Cookie, Cracker, and Pasta Manufacturing"
+311821,Cookie and Cracker Manufacturing
+311824,"Dry Pasta, Dough, and Flour Mixes Manufacturing from Purchased Flour"
 31183,Tortilla Manufacturing
+311830,Tortilla Manufacturing
 3119,Other Food Manufacturing
 31191,Snack Food Manufacturing
+311911,Roasted Nuts and Peanut Butter Manufacturing
+311919,Other Snack Food Manufacturing
 31192,Coffee and Tea Manufacturing
+311920,Coffee and Tea Manufacturing
 31193,Flavoring Syrup and Concentrate Manufacturing
+311930,Flavoring Syrup and Concentrate Manufacturing
 31194,Seasoning and Dressing Manufacturing
+311941,"Mayonnaise, Dressing, and Other Prepared Sauce Manufacturing"
+311942,Spice and Extract Manufacturing
 31199,All Other Food Manufacturing
+311991,Perishable Prepared Food Manufacturing
+311999,All Other Miscellaneous Food Manufacturing
 312,Beverage and Tobacco Product Manufacturing
 3121,Beverage Manufacturing
 31211,Soft Drink and Ice Manufacturing
+312111,Soft Drink Manufacturing
+312112,Bottled Water Manufacturing
+312113,Ice Manufacturing
 31212,Breweries
+312120,Breweries
 31213,Wineries
+312130,Wineries
 31214,Distilleries
+312140,Distilleries
 3122,Tobacco Manufacturing
 31223,Tobacco Manufacturing
+312230,Tobacco Manufacturing
 313,Textile Mills
 3131,"Fiber, Yarn, and Thread Mills"
 31311,"Fiber, Yarn, and Thread Mills"
+313110,"Fiber, Yarn, and Thread Mills"
 3132,Fabric Mills
 31321,Broadwoven Fabric Mills
+313210,Broadwoven Fabric Mills
 31322,Narrow Fabric Mills and Schiffli Machine Embroidery
+313220,Narrow Fabric Mills and Schiffli Machine Embroidery
 31323,Nonwoven Fabric Mills
+313230,Nonwoven Fabric Mills
 31324,Knit Fabric Mills
+313240,Knit Fabric Mills
 3133,Textile and Fabric Finishing and Fabric Coating Mills
 31331,Textile and Fabric Finishing Mills
+313310,Textile and Fabric Finishing Mills
 31332,Fabric Coating Mills
+313320,Fabric Coating Mills
 314,Textile Product Mills
 3141,Textile Furnishings Mills
 31411,Carpet and Rug Mills
+314110,Carpet and Rug Mills
 31412,Curtain and Linen Mills
+314120,Curtain and Linen Mills
 3149,Other Textile Product Mills
 31491,Textile Bag and Canvas Mills
+314910,Textile Bag and Canvas Mills
 31499,All Other Textile Product Mills
+314994,"Rope, Cordage, Twine, Tire Cord, and Tire Fabric Mills"
+314999,All Other Miscellaneous Textile Product Mills
 315,Apparel Manufacturing
 3151,Apparel Knitting Mills
 31511,Hosiery and Sock Mills
+315110,Hosiery and Sock Mills
 31519,Other Apparel Knitting Mills
+315190,Other Apparel Knitting Mills
 3152,Cut and Sew Apparel Manufacturing
 31521,Cut and Sew Apparel Contractors
+315210,Cut and Sew Apparel Contractors
 31522,Men’s and Boys’ Cut and Sew Apparel Manufacturing
+315220,Men’s and Boys’ Cut and Sew Apparel Manufacturing
 31524,"Women’s, Girls’, and Infants’ Cut and Sew Apparel Manufacturing"
+315240,"Women’s, Girls’, and Infants’ Cut and Sew Apparel Manufacturing"
 31528,Other Cut and Sew Apparel Manufacturing
+315280,Other Cut and Sew Apparel Manufacturing
 3159,Apparel Accessories and Other Apparel Manufacturing
 31599,Apparel Accessories and Other Apparel Manufacturing
+315990,Apparel Accessories and Other Apparel Manufacturing
 316,Leather and Allied Product Manufacturing
 3161,Leather and Hide Tanning and Finishing
 31611,Leather and Hide Tanning and Finishing
+316110,Leather and Hide Tanning and Finishing
 3162,Footwear Manufacturing
 31621,Footwear Manufacturing
+316210,Footwear Manufacturing
 3169,Other Leather and Allied Product Manufacturing
 31699,Other Leather and Allied Product Manufacturing
+316992,Women's Handbag and Purse Manufacturing
+316998,All Other Leather Good and Allied Product Manufacturing
 32,Manufacturing
 321,Wood Product Manufacturing
 3211,Sawmills and Wood Preservation
 32111,Sawmills and Wood Preservation
+321113,Sawmills
+321114,Wood Preservation
 3212,"Veneer, Plywood, and Engineered Wood Product Manufacturing"
 32121,"Veneer, Plywood, and Engineered Wood Product Manufacturing"
+321211,Hardwood Veneer and Plywood Manufacturing
+321212,Softwood Veneer and Plywood Manufacturing
+321213,Engineered Wood Member (except Truss) Manufacturing
+321214,Truss Manufacturing
+321219,Reconstituted Wood Product Manufacturing
 3219,Other Wood Product Manufacturing
 32191,Millwork
+321911,Wood Window and Door Manufacturing
+321912,"Cut Stock, Resawing Lumber, and Planing"
+321918,Other Millwork (including Flooring)
 32192,Wood Container and Pallet Manufacturing
+321920,Wood Container and Pallet Manufacturing
 32199,All Other Wood Product Manufacturing
+321991,Manufactured Home (Mobile Home) Manufacturing
+321992,Prefabricated Wood Building Manufacturing
+321999,All Other Miscellaneous Wood Product Manufacturing
 322,Paper Manufacturing
 3221,"Pulp, Paper, and Paperboard Mills"
 32211,Pulp Mills
+322110,Pulp Mills
 32212,Paper Mills
+322121,Paper (except Newsprint) Mills
+322122,Newsprint Mills
 32213,Paperboard Mills
+322130,Paperboard Mills
 3222,Converted Paper Product Manufacturing
 32221,Paperboard Container Manufacturing
+322211,Corrugated and Solid Fiber Box Manufacturing
+322212,Folding Paperboard Box Manufacturing
+322219,Other Paperboard Container Manufacturing
 32222,Paper Bag and Coated and Treated Paper Manufacturing
+322220,Paper Bag and Coated and Treated Paper Manufacturing
 32223,Stationery Product Manufacturing
+322230,Stationery Product Manufacturing
 32229,Other Converted Paper Product Manufacturing
+322291,Sanitary Paper Product Manufacturing
+322299,All Other Converted Paper Product Manufacturing
 323,Printing and Related Support Activities
 3231,Printing and Related Support Activities
 32311,Printing
+323111,Commercial Printing (except Screen and Books)
+323113,Commercial Screen Printing
+323117,Books Printing
 32312,Support Activities for Printing
+323120,Support Activities for Printing
 324,Petroleum and Coal Products Manufacturing
 3241,Petroleum and Coal Products Manufacturing
 32411,Petroleum Refineries
+324110,Petroleum Refineries
 32412,"Asphalt Paving, Roofing, and Saturated Materials Manufacturing"
+324121,Asphalt Paving Mixture and Block Manufacturing
+324122,Asphalt Shingle and Coating Materials Manufacturing
 32419,Other Petroleum and Coal Products Manufacturing
+324191,Petroleum Lubricating Oil and Grease Manufacturing
+324199,All Other Petroleum and Coal Products Manufacturing
 325,Chemical Manufacturing
 3251,Basic Chemical Manufacturing
 32511,Petrochemical Manufacturing
+325110,Petrochemical Manufacturing
 32512,Industrial Gas Manufacturing
+325120,Industrial Gas Manufacturing
 32513,Synthetic Dye and Pigment Manufacturing
+325130,Synthetic Dye and Pigment Manufacturing
 32518,Other Basic Inorganic Chemical Manufacturing
+325180,Other Basic Inorganic Chemical Manufacturing
 32519,Other Basic Organic Chemical Manufacturing
-3252,"Resin, Synthetic Rubber, and Artificial Synthetic Fibers and Filaments Manufacturing"
+325193,Ethyl Alcohol Manufacturing
+325194,"Cyclic Crude, Intermediate, and Gum and Wood Chemical Manufacturing"
+325199,All Other Basic Organic Chemical Manufacturing
+3252,"Resin, Synthetic Rubber, and Artificial and Synthetic Fibers and Filaments Manufacturing"
 32521,Resin and Synthetic Rubber Manufacturing
+325211,Plastics Material and Resin Manufacturing
+325212,Synthetic Rubber Manufacturing
 32522,Artificial and Synthetic Fibers and Filaments Manufacturing
+325220,Artificial and Synthetic Fibers and Filaments Manufacturing
 3253,"Pesticide, Fertilizer, and Other Agricultural Chemical Manufacturing"
 32531,Fertilizer Manufacturing
+325311,Nitrogenous Fertilizer Manufacturing
+325312,Phosphatic Fertilizer Manufacturing
+325314,Fertilizer (Mixing Only) Manufacturing
 32532,Pesticide and Other Agricultural Chemical Manufacturing
+325320,Pesticide and Other Agricultural Chemical Manufacturing
 3254,Pharmaceutical and Medicine Manufacturing
 32541,Pharmaceutical and Medicine Manufacturing
+325411,Medicinal and Botanical Manufacturing
+325412,Pharmaceutical Preparation Manufacturing
+325413,In-Vitro Diagnostic Substance Manufacturing
+325414,Biological Product (except Diagnostic) Manufacturing
 3255,"Paint, Coating, and Adhesive Manufacturing"
 32551,Paint and Coating Manufacturing
+325510,Paint and Coating Manufacturing
 32552,Adhesive Manufacturing
+325520,Adhesive Manufacturing
 3256,"Soap, Cleaning Compound, and Toilet Preparation Manufacturing"
 32561,Soap and Cleaning Compound Manufacturing
+325611,Soap and Other Detergent Manufacturing
+325612,Polish and Other Sanitation Good Manufacturing
+325613,Surface Active Agent Manufacturing
 32562,Toilet Preparation Manufacturing
+325620,Toilet Preparation Manufacturing
 3259,Other Chemical Product and Preparation Manufacturing
 32591,Printing Ink Manufacturing
+325910,Printing Ink Manufacturing
 32592,Explosives Manufacturing
+325920,Explosives Manufacturing
 32599,All Other Chemical Product and Preparation Manufacturing
+325991,Custom Compounding of Purchased Resins
+325992,"Photographic Film, Paper, Plate, and Chemical Manufacturing"
+325998,All Other Miscellaneous Chemical Product and Preparation Manufacturing
 326,Plastics and Rubber Products Manufacturing
 3261,Plastics Product Manufacturing
 32611,Plastics Packaging Materials and Unlaminated Film and Sheet Manufacturing
+326111,Plastics Bag and Pouch Manufacturing
+326112,Plastics Packaging Film and Sheet (including Laminated) Manufacturing
+326113,Unlaminated Plastics Film and Sheet (except Packaging) Manufacturing
 32612,"Plastics Pipe, Pipe Fitting, and Unlaminated Profile Shape Manufacturing"
+326121,Unlaminated Plastics Profile Shape Manufacturing
+326122,Plastics Pipe and Pipe Fitting Manufacturing
 32613,"Laminated Plastics Plate, Sheet (except Packaging), and Shape Manufacturing"
+326130,"Laminated Plastics Plate, Sheet (except Packaging), and Shape Manufacturing"
 32614,Polystyrene Foam Product Manufacturing
+326140,Polystyrene Foam Product Manufacturing
 32615,Urethane and Other Foam Product (except Polystyrene) Manufacturing
+326150,Urethane and Other Foam Product (except Polystyrene) Manufacturing
 32616,Plastics Bottle Manufacturing
+326160,Plastics Bottle Manufacturing
 32619,Other Plastics Product Manufacturing
+326191,Plastics Plumbing Fixture Manufacturing
+326199,All Other Plastics Product Manufacturing
 3262,Rubber Product Manufacturing
 32621,Tire Manufacturing
+326211,Tire Manufacturing (except Retreading)
+326212,Tire Retreading
 32622,Rubber and Plastics Hoses and Belting Manufacturing
+326220,Rubber and Plastics Hoses and Belting Manufacturing
 32629,Other Rubber Product Manufacturing
+326291,Rubber Product Manufacturing for Mechanical Use
+326299,All Other Rubber Product Manufacturing
 327,Nonmetallic Mineral Product Manufacturing
 3271,Clay Product and Refractory Manufacturing
 32711,"Pottery, Ceramics, and Plumbing Fixture Manufacturing"
+327110,"Pottery, Ceramics, and Plumbing Fixture Manufacturing"
 32712,Clay Building Material and Refractories Manufacturing
+327120,Clay Building Material and Refractories Manufacturing
 3272,Glass and Glass Product Manufacturing
 32721,Glass and Glass Product Manufacturing
+327211,Flat Glass Manufacturing
+327212,Other Pressed and Blown Glass and Glassware Manufacturing
+327213,Glass Container Manufacturing
+327215,Glass Product Manufacturing Made of Purchased Glass
 3273,Cement and Concrete Product Manufacturing
 32731,Cement Manufacturing
+327310,Cement Manufacturing
 32732,Ready-Mix Concrete Manufacturing
+327320,Ready-Mix Concrete Manufacturing
 32733,"Concrete Pipe, Brick, and Block Manufacturing"
+327331,Concrete Block and Brick Manufacturing
+327332,Concrete Pipe Manufacturing
 32739,Other Concrete Product Manufacturing
+327390,Other Concrete Product Manufacturing
 3274,Lime and Gypsum Product Manufacturing
 32741,Lime Manufacturing
+327410,Lime Manufacturing
 32742,Gypsum Product Manufacturing
+327420,Gypsum Product Manufacturing
 3279,Other Nonmetallic Mineral Product Manufacturing
 32791,Abrasive Product Manufacturing
+327910,Abrasive Product Manufacturing
 32799,All Other Nonmetallic Mineral Product Manufacturing
+327991,Cut Stone and Stone Product Manufacturing
+327992,Ground or Treated Mineral and Earth Manufacturing
+327993,Mineral Wool Manufacturing
+327999,All Other Miscellaneous Nonmetallic Mineral Product Manufacturing
 33,Manufacturing
 331,Primary Metal Manufacturing
 3311,Iron and Steel Mills and Ferroalloy Manufacturing
 33111,Iron and Steel Mills and Ferroalloy Manufacturing
+331110,Iron and Steel Mills and Ferroalloy Manufacturing
 3312,Steel Product Manufacturing from Purchased Steel
 33121,Iron and Steel Pipe and Tube Manufacturing from Purchased Steel
+331210,Iron and Steel Pipe and Tube Manufacturing from Purchased Steel
 33122,Rolling and Drawing of Purchased Steel
+331221,Rolled Steel Shape Manufacturing
+331222,Steel Wire Drawing
 3313,Alumina and Aluminum Production and Processing
 33131,Alumina and Aluminum Production and Processing
+331313,Alumina Refining and Primary Aluminum Production
+331314,Secondary Smelting and Alloying of Aluminum
+331315,"Aluminum Sheet, Plate, and Foil Manufacturing"
+331318,"Other Aluminum Rolling, Drawing, and Extruding"
 3314,Nonferrous Metal (except Aluminum) Production and Processing
 33141,Nonferrous Metal (except Aluminum) Smelting and Refining
+331410,Nonferrous Metal (except Aluminum) Smelting and Refining
 33142,"Copper Rolling, Drawing, Extruding, and Alloying"
+331420,"Copper Rolling, Drawing, Extruding, and Alloying"
 33149,"Nonferrous Metal (except Copper and Aluminum) Rolling, Drawing, Extruding, and Alloying"
+331491,"Nonferrous Metal (except Copper and Aluminum) Rolling, Drawing, and Extruding"
+331492,"Secondary Smelting, Refining, and Alloying of Nonferrous Metal (except Copper and Aluminum)"
 3315,Foundries
 33151,Ferrous Metal Foundries
+331511,Iron Foundries
+331512,Steel Investment Foundries
+331513,Steel Foundries (except Investment)
 33152,Nonferrous Metal Foundries
+331523,Nonferrous Metal Die-Casting Foundries
+331524,Aluminum Foundries (except Die-Casting)
+331529,Other Nonferrous Metal Foundries (except Die-Casting)
 332,Fabricated Metal Product Manufacturing
 3321,Forging and Stamping
 33211,Forging and Stamping
+332111,Iron and Steel Forging
+332112,Nonferrous Forging
+332114,Custom Roll Forming
+332117,Powder Metallurgy Part Manufacturing
+332119,"Metal Crown, Closure, and Other Metal Stamping (except Automotive)"
 3322,Cutlery and Handtool Manufacturing
 33221,Cutlery and Handtool Manufacturing
+332215,"Metal Kitchen Cookware, Utensil, Cutlery, and Flatware (except Precious) Manufacturing"
+332216,Saw Blade and Handtool Manufacturing
 3323,Architectural and Structural Metals Manufacturing
 33231,Plate Work and Fabricated Structural Product Manufacturing
+332311,Prefabricated Metal Building and Component Manufacturing
+332312,Fabricated Structural Metal Manufacturing
+332313,Plate Work Manufacturing
 33232,Ornamental and Architectural Metal Products Manufacturing
+332321,Metal Window and Door Manufacturing
+332322,Sheet Metal Work Manufacturing
+332323,Ornamental and Architectural Metal Work Manufacturing
 3324,"Boiler, Tank, and Shipping Container Manufacturing"
 33241,Power Boiler and Heat Exchanger Manufacturing
+332410,Power Boiler and Heat Exchanger Manufacturing
 33242,Metal Tank (Heavy Gauge) Manufacturing
+332420,Metal Tank (Heavy Gauge) Manufacturing
 33243,"Metal Can, Box, and Other Metal Container (Light Gauge) Manufacturing"
+332431,Metal Can Manufacturing
+332439,Other Metal Container Manufacturing
 3325,Hardware Manufacturing
 33251,Hardware Manufacturing
+332510,Hardware Manufacturing
 3326,Spring and Wire Product Manufacturing
 33261,Spring and Wire Product Manufacturing
+332613,Spring Manufacturing
+332618,Other Fabricated Wire Product Manufacturing
 3327,"Machine Shops; Turned Product; and Screw, Nut, and Bolt Manufacturing"
 33271,Machine Shops
+332710,Machine Shops
 33272,"Turned Product and Screw, Nut, and Bolt Manufacturing"
+332721,Precision Turned Product Manufacturing
+332722,"Bolt, Nut, Screw, Rivet, and Washer Manufacturing"
 3328,"Coating, Engraving, Heat Treating, and Allied Activities"
 33281,"Coating, Engraving, Heat Treating, and Allied Activities"
+332811,Metal Heat Treating
+332812,"Metal Coating, Engraving (except Jewelry and Silverware), and Allied Services to Manufacturers"
+332813,"Electroplating, Plating, Polishing, Anodizing, and Coloring"
 3329,Other Fabricated Metal Product Manufacturing
 33291,Metal Valve Manufacturing
+332911,Industrial Valve Manufacturing
+332912,Fluid Power Valve and Hose Fitting Manufacturing
+332913,Plumbing Fixture Fitting and Trim Manufacturing
+332919,Other Metal Valve and Pipe Fitting Manufacturing
 33299,All Other Fabricated Metal Product Manufacturing
+332991,Ball and Roller Bearing Manufacturing
+332992,Small Arms Ammunition Manufacturing
+332993,Ammunition (except Small Arms) Manufacturing
+332994,"Small Arms, Ordnance, and Ordnance Accessories Manufacturing"
+332996,Fabricated Pipe and Pipe Fitting Manufacturing
+332999,All Other Miscellaneous Fabricated Metal Product Manufacturing
 333,Machinery Manufacturing
 3331,"Agriculture, Construction, and Mining Machinery Manufacturing"
 33311,Agricultural Implement Manufacturing
+333111,Farm Machinery and Equipment Manufacturing
+333112,Lawn and Garden Tractor and Home Lawn and Garden Equipment Manufacturing
 33312,Construction Machinery Manufacturing
+333120,Construction Machinery Manufacturing
 33313,Mining and Oil and Gas Field Machinery Manufacturing
+333131,Mining Machinery and Equipment Manufacturing
+333132,Oil and Gas Field Machinery and Equipment Manufacturing
 3332,Industrial Machinery Manufacturing
 33324,Industrial Machinery Manufacturing
+333241,Food Product Machinery Manufacturing
+333242,Semiconductor Machinery Manufacturing
+333243,"Sawmill, Woodworking, and Paper Machinery Manufacturing"
+333244,Printing Machinery and Equipment Manufacturing
+333249,Other Industrial Machinery Manufacturing
 3333,Commercial and Service Industry Machinery Manufacturing
 33331,Commercial and Service Industry Machinery Manufacturing
+333314,Optical Instrument and Lens Manufacturing
+333316,Photographic and Photocopying Equipment Manufacturing
+333318,Other Commercial and Service Industry Machinery Manufacturing
 3334,"Ventilation, Heating, Air-Conditioning, and Commercial Refrigeration Equipment Manufacturing"
 33341,"Ventilation, Heating, Air-Conditioning, and Commercial Refrigeration Equipment Manufacturing"
+333413,Industrial and Commercial Fan and Blower and Air Purification Equipment Manufacturing
+333414,Heating Equipment (except Warm Air Furnaces) Manufacturing
+333415,Air-Conditioning and Warm Air Heating Equipment and Commercial and Industrial Refrigeration Equipment Manufacturing
 3335,Metalworking Machinery Manufacturing
 33351,Metalworking Machinery Manufacturing
+333511,Industrial Mold Manufacturing
+333514,"Special Die and Tool, Die Set, Jig, and Fixture Manufacturing"
+333515,Cutting Tool and Machine Tool Accessory Manufacturing
+333517,Machine Tool Manufacturing
+333519,Rolling Mill and Other Metalworking Machinery Manufacturing
 3336,"Engine, Turbine, and Power Transmission Equipment Manufacturing"
 33361,"Engine, Turbine, and Power Transmission Equipment Manufacturing"
+333611,Turbine and Turbine Generator Set Units Manufacturing
+333612,"Speed Changer, Industrial High-Speed Drive, and Gear Manufacturing"
+333613,Mechanical Power Transmission Equipment Manufacturing
+333618,Other Engine Equipment Manufacturing
 3339,Other General Purpose Machinery Manufacturing
 33391,Pump and Compressor Manufacturing
+333912,Air and Gas Compressor Manufacturing
+333914,"Measuring, Dispensing, and Other Pumping Equipment Manufacturing"
 33392,Material Handling Equipment Manufacturing
+333921,Elevator and Moving Stairway Manufacturing
+333922,Conveyor and Conveying Equipment Manufacturing
+333923,"Overhead Traveling Crane, Hoist, and Monorail System Manufacturing"
+333924,"Industrial Truck, Tractor, Trailer, and Stacker Machinery Manufacturing"
 33399,All Other General Purpose Machinery Manufacturing
+333991,Power-Driven Handtool Manufacturing
+333992,Welding and Soldering Equipment Manufacturing
+333993,Packaging Machinery Manufacturing
+333994,Industrial Process Furnace and Oven Manufacturing
+333995,Fluid Power Cylinder and Actuator Manufacturing
+333996,Fluid Power Pump and Motor Manufacturing
+333997,Scale and Balance Manufacturing
+333999,All Other Miscellaneous General Purpose Machinery Manufacturing
 334,Computer and Electronic Product Manufacturing
 3341,Computer and Peripheral Equipment Manufacturing
 33411,Computer and Peripheral Equipment Manufacturing
+334111,Electronic Computer Manufacturing
+334112,Computer Storage Device Manufacturing
+334118,Computer Terminal and Other Computer Peripheral Equipment Manufacturing
 3342,Communications Equipment Manufacturing
 33421,Telephone Apparatus Manufacturing
+334210,Telephone Apparatus Manufacturing
 33422,Radio and Television Broadcasting and Wireless Communications Equipment Manufacturing
+334220,Radio and Television Broadcasting and Wireless Communications Equipment Manufacturing
 33429,Other Communications Equipment Manufacturing
+334290,Other Communications Equipment Manufacturing
 3343,Audio and Video Equipment Manufacturing
 33431,Audio and Video Equipment Manufacturing
+334310,Audio and Video Equipment Manufacturing
 3344,Semiconductor and Other Electronic Component Manufacturing
 33441,Semiconductor and Other Electronic Component Manufacturing
+334412,Bare Printed Circuit Board Manufacturing
+334413,Semiconductor and Related Device Manufacturing
+334416,"Capacitor, Resistor, Coil, Transformer, and Other Inductor Manufacturing"
+334417,Electronic Connector Manufacturing
+334418,Printed Circuit Assembly (Electronic Assembly) Manufacturing
+334419,Other Electronic Component Manufacturing
 3345,"Navigational, Measuring, Electromedical, and Control Instruments Manufacturing"
 33451,"Navigational, Measuring, Electromedical, and Control Instruments Manufacturing"
+334510,Electromedical and Electrotherapeutic Apparatus Manufacturing
+334511,"Search, Detection, Navigation, Guidance, Aeronautical, and Nautical System and Instrument Manufacturing"
+334512,"Automatic Environmental Control Manufacturing for Residential, Commercial, and Appliance Use"
+334513,"Instruments and Related Products Manufacturing for Measuring, Displaying, and Controlling Industrial Process Variables"
+334514,Totalizing Fluid Meter and Counting Device Manufacturing
+334515,Instrument Manufacturing for Measuring and Testing Electricity and Electrical Signals
+334516,Analytical Laboratory Instrument Manufacturing
+334517,Irradiation Apparatus Manufacturing
+334519,Other Measuring and Controlling Device Manufacturing
 3346,Manufacturing and Reproducing Magnetic and Optical Media
 33461,Manufacturing and Reproducing Magnetic and Optical Media
+334613,Blank Magnetic and Optical Recording Media Manufacturing
+334614,"Software and Other Prerecorded Compact Disc, Tape, and Record Reproducing"
 335,"Electrical Equipment, Appliance, and Component Manufacturing"
 3351,Electric Lighting Equipment Manufacturing
 33511,Electric Lamp Bulb and Part Manufacturing
+335110,Electric Lamp Bulb and Part Manufacturing
 33512,Lighting Fixture Manufacturing
+335121,Residential Electric Lighting Fixture Manufacturing
+335122,"Commercial, Industrial, and Institutional Electric Lighting Fixture Manufacturing"
+335129,Other Lighting Equipment Manufacturing
 3352,Household Appliance Manufacturing
 33521,Small Electrical Appliance Manufacturing
-33522,Major Appliance Manufacturing
+335210,Small Electrical Appliance Manufacturing
+33522,Major Household Appliance Manufacturing
+335220,Major Household Appliance Manufacturing
 3353,Electrical Equipment Manufacturing
 33531,Electrical Equipment Manufacturing
+335311,"Power, Distribution, and Specialty Transformer Manufacturing"
+335312,Motor and Generator Manufacturing
+335313,Switchgear and Switchboard Apparatus Manufacturing
+335314,Relay and Industrial Control Manufacturing
 3359,Other Electrical Equipment and Component Manufacturing
 33591,Battery Manufacturing
+335911,Storage Battery Manufacturing
+335912,Primary Battery Manufacturing
 33592,Communication and Energy Wire and Cable Manufacturing
+335921,Fiber Optic Cable Manufacturing
+335929,Other Communication and Energy Wire Manufacturing
 33593,Wiring Device Manufacturing
+335931,Current-Carrying Wiring Device Manufacturing
+335932,Noncurrent-Carrying Wiring Device Manufacturing
 33599,All Other Electrical Equipment and Component Manufacturing
+335991,Carbon and Graphite Product Manufacturing
+335999,All Other Miscellaneous Electrical Equipment and Component Manufacturing
 336,Transportation Equipment Manufacturing
 3361,Motor Vehicle Manufacturing
 33611,Automobile and Light Duty Motor Vehicle Manufacturing
+336111,Automobile Manufacturing
+336112,Light Truck and Utility Vehicle Manufacturing
 33612,Heavy Duty Truck Manufacturing
+336120,Heavy Duty Truck Manufacturing
 3362,Motor Vehicle Body and Trailer Manufacturing
 33621,Motor Vehicle Body and Trailer Manufacturing
+336211,Motor Vehicle Body Manufacturing
+336212,Truck Trailer Manufacturing
+336213,Motor Home Manufacturing
+336214,Travel Trailer and Camper Manufacturing
 3363,Motor Vehicle Parts Manufacturing
 33631,Motor Vehicle Gasoline Engine and Engine Parts Manufacturing
+336310,Motor Vehicle Gasoline Engine and Engine Parts Manufacturing
 33632,Motor Vehicle Electrical and Electronic Equipment Manufacturing
+336320,Motor Vehicle Electrical and Electronic Equipment Manufacturing
 33633,Motor Vehicle Steering and Suspension Components (except Spring) Manufacturing
+336330,Motor Vehicle Steering and Suspension Components (except Spring) Manufacturing
 33634,Motor Vehicle Brake System Manufacturing
+336340,Motor Vehicle Brake System Manufacturing
 33635,Motor Vehicle Transmission and Power Train Parts Manufacturing
+336350,Motor Vehicle Transmission and Power Train Parts Manufacturing
 33636,Motor Vehicle Seating and Interior Trim Manufacturing
+336360,Motor Vehicle Seating and Interior Trim Manufacturing
 33637,Motor Vehicle Metal Stamping
+336370,Motor Vehicle Metal Stamping
 33639,Other Motor Vehicle Parts Manufacturing
+336390,Other Motor Vehicle Parts Manufacturing
 3364,Aerospace Product and Parts Manufacturing
 33641,Aerospace Product and Parts Manufacturing
+336411,Aircraft Manufacturing
+336412,Aircraft Engine and Engine Parts Manufacturing
+336413,Other Aircraft Parts and Auxiliary Equipment Manufacturing
+336414,Guided Missile and Space Vehicle Manufacturing
+336415,Guided Missile and Space Vehicle Propulsion Unit and Propulsion Unit Parts Manufacturing
+336419,Other Guided Missile and Space Vehicle Parts and Auxiliary Equipment Manufacturing
 3365,Railroad Rolling Stock Manufacturing
 33651,Railroad Rolling Stock Manufacturing
+336510,Railroad Rolling Stock Manufacturing
 3366,Ship and Boat Building
 33661,Ship and Boat Building
+336611,Ship Building and Repairing
+336612,Boat Building
 3369,Other Transportation Equipment Manufacturing
 33699,Other Transportation Equipment Manufacturing
+336991,"Motorcycle, Bicycle, and Parts Manufacturing"
+336992,"Military Armored Vehicle, Tank, and Tank Component Manufacturing"
+336999,All Other Transportation Equipment Manufacturing
 337,Furniture and Related Product Manufacturing
 3371,Household and Institutional Furniture and Kitchen Cabinet Manufacturing
 33711,Wood Kitchen Cabinet and Countertop Manufacturing
+337110,Wood Kitchen Cabinet and Countertop Manufacturing
 33712,Household and Institutional Furniture Manufacturing
+337121,Upholstered Household Furniture Manufacturing
+337122,Nonupholstered Wood Household Furniture Manufacturing
+337124,Metal Household Furniture Manufacturing
+337125,Household Furniture (except Wood and Metal) Manufacturing
+337127,Institutional Furniture Manufacturing
 3372,Office Furniture (including Fixtures) Manufacturing
 33721,Office Furniture (including Fixtures) Manufacturing
+337211,Wood Office Furniture Manufacturing
+337212,Custom Architectural Woodwork and Millwork Manufacturing
+337214,Office Furniture (except Wood) Manufacturing
+337215,"Showcase, Partition, Shelving, and Locker Manufacturing"
 3379,Other Furniture Related Product Manufacturing
 33791,Mattress Manufacturing
+337910,Mattress Manufacturing
 33792,Blind and Shade Manufacturing
+337920,Blind and Shade Manufacturing
 339,Miscellaneous Manufacturing
 3391,Medical Equipment and Supplies Manufacturing
 33911,Medical Equipment and Supplies Manufacturing
+339112,Surgical and Medical Instrument Manufacturing
+339113,Surgical Appliance and Supplies Manufacturing
+339114,Dental Equipment and Supplies Manufacturing
+339115,Ophthalmic Goods Manufacturing
+339116,Dental Laboratories
 3399,Other Miscellaneous Manufacturing
 33991,Jewelry and Silverware Manufacturing
+339910,Jewelry and Silverware Manufacturing
 33992,Sporting and Athletic Goods Manufacturing
+339920,Sporting and Athletic Goods Manufacturing
 33993,"Doll, Toy, and Game Manufacturing"
+339930,"Doll, Toy, and Game Manufacturing"
 33994,Office Supplies (except Paper) Manufacturing
+339940,Office Supplies (except Paper) Manufacturing
 33995,Sign Manufacturing
+339950,Sign Manufacturing
 33999,All Other Miscellaneous Manufacturing
+339991,"Gasket, Packing, and Sealing Device Manufacturing"
+339992,Musical Instrument Manufacturing
+339993,"Fastener, Button, Needle, and Pin Manufacturing"
+339994,"Broom, Brush, and Mop Manufacturing"
+339995,Burial Casket Manufacturing
+339999,All Other Miscellaneous Manufacturing
 42,Wholesale Trade
 423,"Merchant Wholesalers, Durable Goods"
 4231,Motor Vehicle and Motor Vehicle Parts and Supplies Merchant Wholesalers
@@ -854,15 +1214,13 @@ NAICS_2012_Code,NAICS_2012_Name
 451211,Book Stores
 451212,News Dealers and Newsstands
 452,General Merchandise Stores
-4521,Department Stores
-45211,Department Stores
-452111,Department Stores (except Discount Department Stores)
-452112,Discount Department Stores
-4529,Other General Merchandise Stores
-45291,Warehouse Clubs and Supercenters
-452910,Warehouse Clubs and Supercenters
-45299,All Other General Merchandise Stores
-452990,All Other General Merchandise Stores
+4522,Department Stores
+45221,Department Stores
+452210,Department Stores
+4523,"General Merchandise Stores, including Warehouse Clubs and Supercenters"
+45231,"General Merchandise Stores, including Warehouse Clubs and Supercenters"
+452311,Warehouse Clubs and Supercenters
+452319,All Other General Merchandise Stores
 453,Miscellaneous Store Retailers
 4531,Florists
 45311,Florists
@@ -888,9 +1246,7 @@ NAICS_2012_Code,NAICS_2012_Name
 454,Nonstore Retailers
 4541,Electronic Shopping and Mail-Order Houses
 45411,Electronic Shopping and Mail-Order Houses
-454111,Electronic Shopping
-454112,Electronic Auctions
-454113,Mail-Order Houses
+454110,Electronic Shopping and Mail-Order Houses
 4542,Vending Machine Operators
 45421,Vending Machine Operators
 454210,Vending Machine Operators
@@ -1070,14 +1426,12 @@ NAICS_2012_Code,NAICS_2012_Name
 512191,Teleproduction and Other Postproduction Services
 512199,Other Motion Picture and Video Industries
 5122,Sound Recording Industries
-51221,Record Production
-512210,Record Production
-51222,Integrated Record Production/Distribution
-512220,Integrated Record Production/Distribution
 51223,Music Publishers
 512230,Music Publishers
 51224,Sound Recording Studios
 512240,Sound Recording Studios
+51225,Record Production and Distribution
+512250,Record Production and Distribution
 51229,Other Sound Recording Industries
 512290,Other Sound Recording Industries
 515,Broadcasting (except Internet)
@@ -1091,12 +1445,10 @@ NAICS_2012_Code,NAICS_2012_Name
 51521,Cable and Other Subscription Programming
 515210,Cable and Other Subscription Programming
 517,Telecommunications
-5171,Wired Telecommunications Carriers
-51711,Wired Telecommunications Carriers
-517110,Wired Telecommunications Carriers
-5172,Wireless Telecommunications Carriers (except Satellite)
-51721,Wireless Telecommunications Carriers (except Satellite)
-517210,Wireless Telecommunications Carriers (except Satellite)
+5173,Wired and Wireless Telecommunications Carriers
+51731,Wired and Wireless Telecommunications Carriers
+517311,Wired Telecommunications Carriers
+517312,Wireless Telecommunications Carriers (except Satellite)
 5174,Satellite Telecommunications
 51741,Satellite Telecommunications
 517410,Satellite Telecommunications
@@ -1239,14 +1591,12 @@ NAICS_2012_Code,NAICS_2012_Name
 5322,Consumer Goods Rental
 53221,Consumer Electronics and Appliances Rental
 532210,Consumer Electronics and Appliances Rental
-53222,Formal Wear and Costume Rental
-532220,Formal Wear and Costume Rental
-53223,Video Tape and Disc Rental
-532230,Video Tape and Disc Rental
-53229,Other Consumer Goods Rental
-532291,Home Health Equipment Rental
-532292,Recreational Goods Rental
-532299,All Other Consumer Goods Rental
+53228,Other Consumer Goods Rental
+532281,Formal Wear and Costume Rental
+532282,Video Tape and Disc Rental
+532283,Home Health Equipment Rental
+532284,Recreational Goods Rental
+532289,All Other Consumer Goods Rental
 5323,General Rental Centers
 53231,General Rental Centers
 532310,General Rental Centers
@@ -1323,8 +1673,9 @@ NAICS_2012_Code,NAICS_2012_Name
 541690,Other Scientific and Technical Consulting Services
 5417,Scientific Research and Development Services
 54171,"Research and Development in the Physical, Engineering, and Life Sciences"
-541711,Research and Development in Biotechnology
-541712,"Research and Development in the Physical, Engineering, and Life Sciences (except Biotechnology)"
+541713,Research and Development in Nanotechnology
+541714,Research and Development in Biotechnology (except Nanobiotechnology)
+541715,"Research and Development in the Physical, Engineering, and Life Sciences (except Nanotechnology and Biotechnology)"
 54172,Research and Development in the Social Sciences and Humanities
 541720,Research and Development in the Social Sciences and Humanities
 5418,"Advertising, Public Relations, and Related Services"
@@ -1440,13 +1791,17 @@ NAICS_2012_Code,NAICS_2012_Name
 56221,Waste Treatment and Disposal
 562211,Hazardous Waste Treatment and Disposal
 562212,Solid Waste Landfill
+5622121,MSW Landfill
 562213,Solid Waste Combustors and Incinerators
 562219,Other Nonhazardous Waste Treatment and Disposal
+5622191,Codigestion/Anaerobic Digestion
+5622192,Composting/Aerobic Processes
 5629,Remediation and Other Waste Management Services
 56291,Remediation Services
 562910,Remediation Services
 56292,Materials Recovery Facilities
 562920,Materials Recovery Facilities
+5629201,MSW Recycling
 56299,All Other Waste Management Services
 562991,Septic Tank and Related Services
 562998,All Other Miscellaneous Waste Management Services
@@ -1655,9 +2010,9 @@ NAICS_2012_Code,NAICS_2012_Name
 72121,RV (Recreational Vehicle) Parks and Recreational Camps
 721211,RV (Recreational Vehicle) Parks and Campgrounds
 721214,Recreational and Vacation Camps (except Campgrounds)
-7213,Rooming and Boarding Houses
-72131,Rooming and Boarding Houses
-721310,Rooming and Boarding Houses
+7213,"Rooming and Boarding Houses, Dormitories, and Workers' Camps"
+72131,"Rooming and Boarding Houses, Dormitories, and Workers' Camps"
+721310,"Rooming and Boarding Houses, Dormitories, and Workers' Camps"
 722,Food Services and Drinking Places
 7223,Special Food Services
 72231,Food Service Contractors
@@ -1848,3 +2203,13 @@ NAICS_2012_Code,NAICS_2012_Name
 928110,National Security
 92812,International Affairs
 928120,International Affairs
+F010,Personal Consumption Expeditures
+F01000,Personal Consumption Expeditures
+F040,Exports of goods and services
+F04000,Exports of goods and services
+F050,Imports of goods and services
+F05000,Imports of goods and services
+S00101,Federal electric utilities
+S00201,State and local government passenger transit
+S00202,State and local government electric utilities
+S00203,Other state and local government enterprises

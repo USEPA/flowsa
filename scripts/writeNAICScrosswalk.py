@@ -13,7 +13,7 @@ to NAICS crosswalk.
 
 
 import glob
-
+import re
 import numpy as np
 import pandas as pd
 
@@ -242,30 +242,77 @@ def write_annual_naics_crosswalk():
         naics_cw.to_csv(f"{datapath}/NAICS_{year}_Crosswalk.csv", index=False)
 
 
-def update_sector_name_df():
-    """Update list of naics names with added sectors"""
-    sectors = pd.read_csv(f'{datapath}/NAICS_2012_Names.csv', dtype=str)
+def write_sector_name_crosswalk():
+    """
+    Generate csv for NAICS 2012 and NAICS 2017 codes for the names of
+    sectors, include additional non-official sector codes/names
+    :return:
+    """
+    # import census defined NAICS
+    cols_2012 = ['index', 'NAICS_2012_Code', 'NAICS_2012_Name']
+    naics_2012 = pd.read_excel(
+        "https://www.census.gov/naics/2012NAICS/2-digit_2012_Codes.xls",
+        names=cols_2012, skiprows=[0], dtype=str)[['NAICS_2012_Code',
+                                                   'NAICS_2012_Name']]
 
-    # dictionary of new sector names
-    new_sectors = pd.DataFrame(
-        {"NAICS_2012_Code": ['5622191',
-                             '5622192',
-                             '5622121',
-                             '5629201',
-                             '311119'
-                             ],
-         "NAICS_2012_Name": ['Codigestion/Anaerobic Digestion',
-                             'Composting/Aerobic Processes',
-                             'MSW Landfill',
-                             'MSW Recycling',
-                             'Other Animal Food Manufacturing'
-                             ]})
-    df = pd.concat([sectors, new_sectors])
-    df = df.sort_values("NAICS_2012_Code")
-    df.to_csv(f'{datapath}/Sector_2012_Names.csv', index=False)
+    cols_2017 = ['NAICS_2017_Code', 'NAICS_2017_Name',
+                 'NAICS_2017_Description']
+    naics_2017 = pd.read_excel(
+        "https://www.census.gov/naics/2017NAICS/2017_NAICS_Descriptions.xlsx",
+        names=cols_2017, dtype=str)[['NAICS_2017_Code', 'NAICS_2017_Name']]
+
+    # for loop through years to add unoffical NAICS and split hyphenated
+    # sectors
+    for y in ['2012', '2017']:
+        # dictionary of new sector names
+        new_sectors = pd.DataFrame(
+            {f"NAICS_{y}_Code": ['5622191',
+                                 '5622192',
+                                 '5622121',
+                                 '5629201',
+                                 '311119'
+                                 ],
+             f"NAICS_{y}_Name": ['Codigestion/Anaerobic Digestion',
+                                 'Composting/Aerobic Processes',
+                                 'MSW Landfill',
+                                 'MSW Recycling',
+                                 'Other Animal Food Manufacturing'
+                                 ]})
+
+        # add new sector names to offical sector names
+        df = pd.concat([vars()[f'naics_{y}'], new_sectors])
+        # # strip whitespaces
+        df[f"NAICS_{y}_Name"] = df[f"NAICS_{y}_Name"].str.rstrip()
+        # strip superscripts
+        df[f"NAICS_{y}_Name"] = (
+            df[f"NAICS_{y}_Name"]
+            .apply(lambda x: re.sub(r"(?<=[a-z])[A-Z]+$", "", x))
+            .apply(lambda x: re.sub(r"(?<=[)])[A-Z]+$", "", x))
+        )
+        # split and add names for hyphenated sectors
+        df[f"NAICS_{y}_Code"] = df[f"NAICS_{y}_Code"].str.split(
+            '\s*-\s*').apply(lambda x: list(range(int(x[0]), int(x[-1]) + 1)))
+        df = df.explode(f"NAICS_{y}_Code")
+        df[f"NAICS_{y}_Code"] = df[f"NAICS_{y}_Code"].astype(str)
+        # load household and gov sectors - do this after explode because
+        # household and gov sectors contain letters
+        for s in ["Government", "Household"]:
+            cw = (load_crosswalk(f"{s}_SectorCodes")[['Code', 'Name']]
+                  .rename(columns={"Code": f"NAICS_{y}_Code",
+                                   "Name": f"NAICS_{y}_Name"})
+                  .drop_duplicates()
+                  )
+            df = pd.concat([df, cw])
+        # sort and save csv
+        df = (df
+              .sort_values(f"NAICS_{y}_Code")
+              .drop_duplicates()
+              .reset_index(drop=True)
+              )
+        df.to_csv(f'{datapath}/Sector_{y}_Names.csv', index=False)
 
 
 if __name__ == '__main__':
     update_naics_crosswalk()
     write_annual_naics_crosswalk()
-    update_sector_name_df()
+    write_sector_name_crosswalk()
