@@ -13,7 +13,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import flowsa
 import flowsa.flowbysector
-from flowsa.common import load_crosswalk
+from flowsa.common import load_crosswalk, load_yaml_dict
 # todo: need to update fxn to use new sector_aggregation - datavis not
 #  currently working
 # from flowsa.flowbyfunctions import sector_aggregation
@@ -70,8 +70,17 @@ def addSectorNames(df, BEA=False, mappingfile=None):
     return df
 
 
-def FBSscatterplot(method_dict, plottype, sector_length_display=None,
-                   sectors_to_include=None, plot_title=None):
+def FBSscatterplot(method_dict,
+                   plottype,
+                   sector_length_display=None,
+                   sectors_to_include=None,
+                   impact_cat=None,
+                   industry_spec=None,
+                   sector_names=True,
+                   legend_by_state=False,
+                   legend_title='Flow-By-Sector Method',
+                   axis_title=None,
+                   plot_title=None):
     """
     Plot the results of FBS models. Graphic can either be a faceted
     scatterplot or a method comparison
@@ -83,6 +92,14 @@ def FBSscatterplot(method_dict, plottype, sector_length_display=None,
     dataframe
     :param sectors_to_include: list, sectors to include in output. Sectors
     are subset by all sectors that "start with" the values in this list
+    :param impact_cat: str, name of impact category to apply and aggregate on
+        impacts (e.g.: 'Global warming'). Use 'None' to aggregate by flow
+    :param industry_spec, dict e.g. {'default': 'NAICS_3',
+                                     'NAICS_4': ['112', '113'],
+                                     'NAICS_6': ['1129']}
+    :param sector_names: bool, True to include sector names in axis
+    :param legend_by_state: bool, True to show results by state
+    :param axis_title: str
     :return: graphic displaying results of FBS models
     """
 
@@ -96,17 +113,80 @@ def FBSscatterplot(method_dict, plottype, sector_length_display=None,
         df_list.append(dfm)
     df = pd.concat(df_list, ignore_index=True)
 
+    if industry_spec is not None:
+        # In order to reassign the industry spec, need to create and attach
+        # the method config for subsequent functions to work
+        df = flowsa.flowbysector.FlowBySector(df.reset_index(drop=True),
+                                              config=load_yaml_dict(method, 'FBS'))
+        # agg sectors for data visualization
+        df.config['industry_spec'] = industry_spec
+        # determine naics year in df
+        df.config['target_naics_year'] = df['SectorSourceName'][0].split(
+            "_", 1)[1].split("_", 1)[0]
+
+        # Temporarily revert back to having both SPB and SCB, needed for
+        # sector_aggregation()
+        df = (df.rename(columns={'Sector':'SectorProducedBy'})
+                .assign(SectorConsumedBy= np.nan))
+        df = (df.sector_aggregation()
+                .rename(columns={'SectorProducedBy':'Sector'})
+                .drop(columns='SectorConsumedBy'))
+
+    if legend_by_state:
+        df = (df.merge(flowsa.location.get_state_FIPS(abbrev=True),
+                       how='left',
+                       left_on='Location',
+                       right_on='FIPS')
+                .drop(columns='methodname')
+                .rename(columns={'State':'methodname'}))
+
+    if impact_cat:
+        if type(impact_cat)==str:
+            imp_method = 'TRACI2.1'
+            indicator = impact_cat
+        else:
+            imp_method = list(impact_cat.keys())[0]
+            indicator = list(impact_cat.values())[0]
+        try:
+            import lciafmt
+            df_impacts = (
+                lciafmt.apply_lcia_method(df, imp_method)
+                .rename(columns={'FlowAmount': 'InvAmount',
+                                 'Impact': 'FlowAmount'}))
+            # Handle special case of kg CO2e units not being converted but
+            # should stay in the df
+            fl = df.query('FlowUUID not in @df_impacts.FlowUUID')
+            df_impacts = df_impacts.query('Indicator == @indicator')
+            ind_units = set(df_impacts['Indicator unit'])
+            # fl = fl.query('Unit in @ind_units')
+            fl = fl.query('Unit == "kg CO2e"').assign(Unit = 'kg')
+            df = pd.concat([df_impacts, fl], ignore_index=True)
+            if len(df) == 0:
+                log.exception(f'Impact category: {indicator} not found')
+                return
+        except ImportError:
+            log.exception('lciafmt not installed')
+            return
+        except AttributeError:
+            log.exception('check lciafmt branch')
+            return
+    df = convert_units_for_graphics(df)
+
     # subset df
     if sectors_to_include is not None:
         df = df[df['Sector'].str.startswith(tuple(sectors_to_include))]
     if sector_length_display is None:
-        sector_length_display = df['Sector'].apply(lambda x: x.str.len()).max()
+        sector_length_display = df['Sector'].apply(lambda x: len(x)).max()
     df['Sector'] = df['Sector'].apply(lambda x: x[0:sector_length_display])
     df2 = df.groupby(['methodname', 'Sector', 'Unit'],
                      as_index=False).agg({"FlowAmount": sum})
 
-    # load crosswalk and add names
-    df3 = addSectorNames(df2)
+    if sector_names:
+        # load crosswalk and add names
+        df2 = addSectorNames(df2)
+        y_axis = "SectorName"
+    else:
+        y_axis = "Sector"
 
     sns.set_style("whitegrid")
 
@@ -117,10 +197,12 @@ def FBSscatterplot(method_dict, plottype, sector_length_display=None,
         title = ""
 
     if plottype == 'facet_graph':
-        g = sns.FacetGrid(df3, col="methodname",
+        if not axis_title:
+            axis_title = 'Flow Amount'
+        g = sns.FacetGrid(df2, col="methodname",
                           sharex=False, aspect=1.5, margin_titles=False)
-        g.map_dataframe(sns.scatterplot, x="FlowAmount", y="SectorName")
-        g.set_axis_labels("Flow Amount", "")
+        g.map_dataframe(sns.scatterplot, x="FlowAmount", y=y_axis)
+        g.set_axis_labels(axis_title, "")
         g.set_titles(col_template="{col_name}")
         # adjust overall graphic title
         if plot_title is not None:
@@ -129,15 +211,18 @@ def FBSscatterplot(method_dict, plottype, sector_length_display=None,
         g.tight_layout()
 
     elif plottype == 'method_comparison':
-        g = sns.relplot(data=df3, x="FlowAmount", y="SectorName",
+        if not axis_title:
+            axis_title = f"Flow Amount ({df2['Unit'][0]})"
+        g = sns.relplot(data=df2, x="FlowAmount", y=y_axis,
                         hue="methodname", alpha=0.7, style="methodname",
                         palette="colorblind",
                         aspect=1.5
                         ).set(title=title)
-        g._legend.set_title('Flow-By-Sector Method')
-        g.set_axis_labels(f"Flow Amount ({df3['Unit'][0]})", "")
+        g._legend.set_title(legend_title)
+        g.set_axis_labels(axis_title, "")
         g.tight_layout()
 
+    return g
 
 def customwrap(s, width=30):
     return "<br>".join(textwrap.wrap(s, width=width))
