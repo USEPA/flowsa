@@ -716,6 +716,7 @@ class FlowByActivity(_FlowBy):
                                         download_sources_ok=download_sources_ok)  # recursive call to prepare_fbs
             .drop(columns=['ActivityProducedBy', 'ActivityConsumedBy'])
             .aggregate_flowby()
+            .function_socket('clean_fbs_after_aggregation')
         )
 
     def activity_sets(self) -> List['FlowByActivity']:

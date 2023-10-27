@@ -147,7 +147,7 @@ direct,Industry - Wastewater Treatment - Wastewater Treatment and Discharge - In
 direct,Commercial - Wastewater Treatment - Wastewater Treatment and Discharge - Domestic,EPA_GHGI_T_2_1
 transport_nonroad_ag,Agriculture - Mobile Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,EPA_GHGI_T_3_14
 use_table_pet,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment,negative emissions; align with 'Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum' to avoid double counting
-tbd,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,EPA_GHGI_T_3_13
+use_table_pet,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,"EPA_GHGI_T_A_14 (CO2 is included in Industrial/Commerical, not Mobile transport)"
 transport_nonroad_construction,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Construction,EPA_GHGI_T_3_14
 temp_drop,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry,
 transport_nonroad_other,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,

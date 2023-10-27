@@ -482,6 +482,7 @@ source_names:
             fedefl_mapping: GHGI
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_pet
+            clean_fbs_after_aggregation: !script_function:EPA_StateGHGI drop_negative_values
 
       stationary_ch4_n2o:
         selection_fields:

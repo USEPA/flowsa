@@ -10,6 +10,7 @@ from zipfile import ZipFile
 
 import flowsa.flowbyactivity
 from flowsa.flowbyactivity import FlowByActivity
+from flowsa.flowbysector import FlowBySector
 from flowsa.flowsa_log import log
 from flowsa.location import apply_county_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
@@ -214,6 +215,16 @@ def allocate_industrial_combustion(fba: FlowByActivity, **_) -> FlowByActivity:
         fba = pd.concat([fba, df_subset], ignore_index=True)
 
     return fba
+
+
+def drop_negative_values(fbs: FlowBySector, **_) -> FlowBySector:
+    ## In some cases, after handling adjustments for reassigning emissions in
+    ## the StateGHGI, sectors can have negative emissions after aggregating by
+    ## sector. Remove these negative values so that that state does not get
+    ## any emissions from that sector. clean_fbs_after_aggregation fxn
+    fbs = fbs.query('FlowAmount >= 0').reset_index(drop=True)
+
+    return fbs
 
 
 if __name__ == '__main__':
