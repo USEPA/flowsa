@@ -13,6 +13,12 @@ _attribution_sources:
     year: *year
     geoscale: national
     activity_to_sector_mapping: BEA_2017_Detail
+    exclusion_fields:
+      # Drop irrelevant final demand and total sectors
+      ActivityConsumedBy: ['F03000', 'F04000', 'F05000', 'F02E00',
+                           'F06E00', 'F07E00', 'F10E00',
+                           'T001', 'T004', 'T007']
+      ActivityProducedBy: ['T007']
     attribution_method: proportional
     attribution_source:
       Employment_national_2017:
