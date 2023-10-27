@@ -88,7 +88,9 @@ def get_state_FIPS(year='2015', abbrev=False):
     fips = fips.drop_duplicates(subset='State')
     fips = fips[fips['State'].notnull()]
     if abbrev:
-        fips['State'] = fips['State'].str.title().replace(us_state_abbrev)
+        fips['State'] = (fips['State'].str.title()
+                         .replace(us_state_abbrev)
+                         .replace({'District Of Columbia': 'DC'}))
     return fips
 
 
