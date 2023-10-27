@@ -27,5 +27,6 @@ source_names:
         !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Onroad:activity_sets:onroad_vehicles_gas_stations
         attribution_source:
           Detail_Use_2020:
+            geoscale: national
             selection_fields:
               SectorProducedBy: {'32411': ''}  # Petroleum

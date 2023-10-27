@@ -38,6 +38,7 @@ source_names:
         !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonpoint:activity_sets:mobile_and_fuel_storage
         attribution_source:
           Detail_Use_2020:
+            geoscale: national
             selection_fields:
               SectorProducedBy: {'32411': ''}  # Petroleum
 
@@ -45,6 +46,7 @@ source_names:
         !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonpoint:activity_sets:fertilizers
         attribution_source:
           Detail_Use_2020:
+            geoscale: national
             selection_fields:
               SectorProducedBy: {'32531': ''}  # Fertilizers
 
@@ -52,6 +54,7 @@ source_names:
         !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonpoint:activity_sets:pesticides
         attribution_source:
           Detail_Use_2020:
+            geoscale: national
             selection_fields:
               SectorProducedBy: {'32532': ''}  # Pesticides
 

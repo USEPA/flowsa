@@ -27,6 +27,7 @@ source_names:
         !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonroad:activity_sets:offroad_vehicles_equipment
         attribution_source:
           Detail_Use_2020:
+            geoscale: national
             selection_fields:
               SectorProducedBy: {'32411': ''}  # Petroleum
 

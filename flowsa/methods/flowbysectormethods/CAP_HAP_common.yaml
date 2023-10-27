@@ -12,6 +12,8 @@ sources_to_cache:
       Description:
           - Table 2.2
           - Table 3.2
+    exclusion_fields:
+      ActivityConsumedBy: '31-33'
     estimate_suppressed: !script_function:EIA_MECS estimate_suppressed_mecs_energy
     attribution_method: proportional
     # attribution_source:
@@ -30,6 +32,7 @@ sources_to_cache:
           - Table 3.2
     exclusion_fields:
       Location: '00000'
+      ActivityConsumedBy: '31-33'
     estimate_suppressed: !script_function:EIA_MECS estimate_suppressed_mecs_energy
     attribution_method: proportional
     attribution_source: # Required to attribute a few sectors to full target sector level
