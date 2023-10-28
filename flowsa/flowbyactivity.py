@@ -558,6 +558,21 @@ class FlowByActivity(_FlowBy):
                     activity_to_source_naics_crosswalk['Activity'].isin(
                         activities_in_fba)]
 
+            if source_year != target_year:
+                log.info('Using NAICS time series/crosswalk to map NAICS '
+                         'codes from NAICS year %s to NAICS year %s.',
+                         source_year, target_year)
+                activity_to_source_naics_crosswalk = (
+                    activity_to_source_naics_crosswalk
+                    .merge(naics.year_crosswalk(source_year, target_year),
+                           how='left',
+                           left_on='Sector',
+                           right_on='source_naics')
+                    .assign(**{'Sector': lambda x: x.target_naics})
+                    .drop(columns=['source_naics', 'target_naics'])
+                    .assign(SectorSourceName=f'NAICS_{target_year}_Code')
+                )
+
             log.info('Converting NAICS codes in crosswalk to desired '
                      'industry/sector aggregation structure.')
             if self.config.get('sector_hierarchy') == 'parent-completeChild':
@@ -635,21 +650,6 @@ class FlowByActivity(_FlowBy):
                                        'SectorSourceName',
                                        'Activity'],
                               errors='ignore')
-                    )
-
-            if source_year != target_year:
-                log.info('Using NAICS time series/crosswalk to map NAICS '
-                         'codes from NAICS year %s to NAICS year %s.',
-                         source_year, target_year)
-                for direction in ['ProducedBy', 'ConsumedBy']:
-                    fba_w_naics = (
-                        fba_w_naics
-                        .merge(naics.year_crosswalk(source_year, target_year),
-                               how='left',
-                               left_on=f'Sector{direction}',
-                               right_on='source_naics')
-                        .assign(**{f'Sector{direction}': lambda x: x.target_naics})
-                        .drop(columns=['source_naics', 'target_naics'])
                     )
 
         # warn if any activities are not mapped to sectors
