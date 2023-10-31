@@ -1038,10 +1038,11 @@ class _FlowBy(pd.DataFrame):
                                  f' {sorted(set(unattributable[f"{rank}Sector"]))}. '
                                  f'See validation_log for details.')
                     if other_geoscale.aggregation_level < 5:
-                    # if other_geoscale < 5:
                         vlog.warning('This can occur when combining datasets '
                                     'at a sub-national level when activities '
                                     'do not align for some locations.')
+                        vlog.warning(f'{other.full_name} is at geoscale '
+                                     f'{other_geoscale}. Is that correct?')
                     vlog.debug(
                         'Unattributed activities: \n {}'.format(
                             unattributable
@@ -1100,8 +1101,8 @@ class _FlowBy(pd.DataFrame):
                     'See validation_log for details.',
                     unattributable.full_name,
                     other.full_name,
-                    sorted(set(zip(unattributable.SectorProducedBy,
-                                   unattributable.SectorConsumedBy)))
+                    sorted(set(zip(unattributable.SectorProducedBy.fillna('N/A'),
+                                   unattributable.SectorConsumedBy.fillna('N/A'))))
                 )
                 vlog.debug(
                     'Unattributed activities: \n {}'.format(
