@@ -7,6 +7,7 @@ Functions to check data is loaded and transformed correctly
 
 import pandas as pd
 import numpy as np
+from esupy.processed_data_mgmt import download_from_remote
 import flowsa
 import flowsa.flowbysector
 from flowsa.flowbysector import FlowBySector
@@ -14,7 +15,9 @@ from flowsa.flowbyfunctions import aggregator, collapse_fbs_sectors
 from flowsa.flowsa_log import log, vlog
 from flowsa.common import fba_activity_fields, load_yaml_dict
 from flowsa.location import US_FIPS
+from flowsa.metadata import set_fb_meta
 from flowsa.schema import dq_fields
+from flowsa.settings import paths, diffpath
 
 
 def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
@@ -278,6 +281,34 @@ def compare_FBS(df1, df2, ignore_metasources=False):
                                  'SectorConsumedBy', 'Flowable',
                                  'Context', ]).reset_index(drop=True)
     return df_m
+
+
+def compare_single_FBS_against_remote(m, outdir=diffpath,
+                                      run_single=False):
+    """Action function to compare a generated FBS with that in remote"""
+    downloaded = download_from_remote(set_fb_meta(m, "FlowBySector"),
+                                      paths)
+    if not downloaded:
+        if run_single:
+            # Run a single file even if no comparison available
+            FlowBySector.generateFlowBySector(
+                method=m, download_sources_ok=True)
+        else:
+            print(f"{m} not found in remote server. Skipping...")
+        return
+    print("--------------------------------\n"
+          f"Method: {m}\n"
+          "--------------------------------")
+    df = compare_FBS_results(m, m, ignore_metasources=True,
+                             compare_to_remote=True)
+    df.rename(columns = {'FlowAmount_fbs1': 'FlowAmount_remote',
+                         'FlowAmount_fbs2': 'FlowAmount_HEAD'},
+              inplace=True)
+    if len(df) > 0:
+        print(f"Saving differences in {m} to csv")
+        df.to_csv(f"{outdir}/{m}_diff.csv", index=False)
+    else:
+        print(f"***No differences found in {m}***")
 
 
 def compare_national_state_fbs(dataname=None, year=None, method=None,

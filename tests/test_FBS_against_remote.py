@@ -10,7 +10,7 @@ import numpy as np
 from flowsa.flowbysector import FlowBySector
 from flowsa.common import check_method_status, seeAvailableFlowByModels
 from flowsa.settings import diffpath
-from tests.test_single_FBS import compare_single_FBS_against_remote
+from flowsa.validation import compare_single_FBS_against_remote
 
 
 @pytest.mark.skip(reason="Perform targeted test for compare_FBS on PR")
