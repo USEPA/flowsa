@@ -346,7 +346,7 @@ def seeAvailableFlowByModels(flowbytype, print_method=True):
     fb_names = [os.path.splitext(f)[0] for f in fb_dir if f.endswith('.yaml')]
 
     # further reduce list of file names by excluding common and summary_target
-    exclude = ["_common", "_summary_target"]
+    exclude = ["_common", "_target"]
     fb_names = [f for f in fb_names if all(s not in f for s in exclude)]
 
     if flowbytype == 'FBA':
