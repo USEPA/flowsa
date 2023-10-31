@@ -7,6 +7,7 @@ Contains mapping functions
 import os.path
 import pandas as pd
 import numpy as np
+from pathlib import Path
 from esupy.mapping import apply_flow_mapping
 import flowsa
 import flowsa.flowbyactivity
@@ -29,13 +30,12 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
     # if FBS method file loaded from outside the flowsa directory, check if
     # there is also a crosswalk
     if fbsconfigpath is not None:
-        external_mappingpath = (f"{os.path.dirname(fbsconfigpath)}"
-                                "/activitytosectormapping/")
-        if os.path.exists(external_mappingpath):
+        external_mappingpath = Path(fbsconfigpath).parent / "activitytosectormapping"
+        if external_mappingpath.exists():
             activity_mapping_source_name = get_flowsa_base_name(
                 external_mappingpath, mapfn, 'csv')
-            if os.path.isfile(f"{external_mappingpath}"
-                              f"{activity_mapping_source_name}.csv"):
+            if (external_mappingpath /
+                f"{activity_mapping_source_name}.csv").is_file():
                 log.info(f"Loading {activity_mapping_source_name}.csv "
                          f"from {external_mappingpath}")
                 crosswalkpath = external_mappingpath
