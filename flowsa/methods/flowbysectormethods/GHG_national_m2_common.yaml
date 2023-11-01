@@ -81,11 +81,6 @@ source_names:
     activity_sets:
       ## Table 2.1
       # electricity_transmission handled directly from EPA_GHGI_T_2_1
-      
-      electric_power_co2:
-        selection_fields:
-          MetaSources: 'EPA_GHGI_T_2_1.electric_power'
-        attribution_method: equal
 
       liming:
         selection_fields:
@@ -342,6 +337,7 @@ source_names:
       electric_power:
         selection_fields:
           MetaSources:
+            - 'EPA_GHGI_T_2_1.electric_power'
             - 'EPA_GHGI_T_3_8.electric_power'
             - 'EPA_GHGI_T_3_9.electric_power'
         attribution_method: proportional
