@@ -20,7 +20,7 @@ _attribution_sources:
     exclusion_fields:
       # Drop irrelevant final demand and total sectors
       ActivityConsumedBy: ['F03000', 'F04000', 'F05000', 'F02E00',
-                           'F06E00', 'F07E00', 'F10E00',
+                           'F06E00', 'F07E00', 'F10E00', 'F02R00',
                            'T001', 'T004', 'T007']
       ActivityProducedBy: ['T007']
     attribution_method: equal
