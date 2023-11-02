@@ -8,10 +8,10 @@ from flowsa.validation import compare_single_FBS_against_remote
 
 
 @pytest.mark.skip(reason="Perform targeted test on manual trigger")
-def test_against_remote(m, run_single=False):
+def test_against_remote(m):
     compare_single_FBS_against_remote(m,
                                       outdir=diffpath,
-                                      run_single=False)
+                                      run_single=True)
 
 
 if __name__ == "__main__":
@@ -24,4 +24,4 @@ if __name__ == "__main__":
     if not os.path.exists(outdir):
         os.mkdir(outdir)
 
-    test_against_remote(m=args['method'], run_single=True)
+    test_against_remote(m=args['method'])
