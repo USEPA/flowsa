@@ -260,6 +260,7 @@ def compare_FBS(df1, df2, ignore_metasources=False):
     for c in ['SectorSourceName']:
         df1 = df1.drop(columns=c, errors='ignore')
         df2 = df2.drop(columns=c, errors='ignore')
+        merge_cols = [x for x in merge_cols if x != c]
     # check units
     # compare_df_units(df1, df2)
     df_m = pd.DataFrame(
