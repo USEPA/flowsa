@@ -394,7 +394,8 @@ class _FlowBy(pd.DataFrame):
     def select_by_fields(
         self: FB,
         selection_fields: dict = None,
-        exclusion_fields: dict = None
+        exclusion_fields: dict = None,
+        skip_select_by: bool = False,
     ) -> FB:
         '''
         Filter the calling FlowBy dataset according to the 'selection_fields'
@@ -436,6 +437,8 @@ class _FlowBy(pd.DataFrame):
         Similarly, can use 'exclusion_fields' to remove particular data in the
         same manner.
         '''
+        if skip_select_by:
+            return self
         exclusion_fields = (exclusion_fields or
                             self.config.get('exclusion_fields', {}))
         exclusion_fields = {k: [v] if not isinstance(v, (list, dict)) else v
