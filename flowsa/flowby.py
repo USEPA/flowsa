@@ -532,7 +532,8 @@ class _FlowBy(pd.DataFrame):
             self: FB,
             columns_to_group_by: List[str] = None,
             columns_to_average: List[str] = None,
-            retain_zeros: bool = False
+            retain_zeros: bool = False,
+            aggregate_ratios: bool =False
     ) -> FB:
         """
         Aggregates (sums) FlowBy 'FlowAmount' column based on group_by_columns
@@ -547,7 +548,8 @@ class _FlowBy(pd.DataFrame):
         :return: FlowBy, with aggregated columns
         """
         # if units are rates or ratios, do not aggregate
-        if self['Unit'].str.contains('/').any():
+        if (self['Unit'].str.contains('/').any()) and (aggregate_ratios
+                                                       is False):
             log.info(f"At least one row is a rate or ratio with units "
                      f"{self['Unit'].unique().tolist()}, returning df "
                      f"without aggregating")
