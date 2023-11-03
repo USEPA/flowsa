@@ -88,6 +88,14 @@ EPA_NEI_Nonpoint:
     Type: SSLError
 
 # Flow By Sectors
-CAP_HAP_national_m2:
+CAP_HAP_national_2017_m2:
     Active: True
     Status: During action causes memory error; too long
+
+CAP_HAP_Nonroad_2014:
+    Active: True
+    Status: During action causes memory error; too long
+
+CAP_HAP_national_2014_m1:
+    Active: True
+    Status: Issue with CAP_HAP_Nonroad_2014 prevents method completion
