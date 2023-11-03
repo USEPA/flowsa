@@ -436,6 +436,11 @@ class _FlowBy(pd.DataFrame):
         Similarly, can use 'exclusion_fields' to remove particular data in the
         same manner.
         '''
+        if 'activity_sets' in self.config:
+            # When activity_sets are present, select_by_fields has already
+            # been called
+            return self
+
         exclusion_fields = (exclusion_fields or
                             self.config.get('exclusion_fields', {}))
         exclusion_fields = {k: [v] if not isinstance(v, (list, dict)) else v
