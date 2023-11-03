@@ -688,8 +688,7 @@ class FlowByActivity(_FlowBy):
                 return (
                     pd.concat([
                         fba.prepare_fbs(
-                            external_config_path=external_config_path,
-                            download_sources_ok=download_sources_ok)
+                            external_config_path=external_config_path, download_sources_ok=download_sources_ok)
                         for fba in (
                             self
                             .select_by_fields()
@@ -751,16 +750,6 @@ class FlowByActivity(_FlowBy):
                 parent_fba
                 .add_full_name(
                     f'{parent_fba.full_name}{NAME_SEP_CHAR}{activity_set}')
-            )
-
-            # create additional df where activity set is subset by selection
-            # fields to validate that the df is broken into activity sets
-            # correctly and account for any situations where an activity is
-            # assigned to multiple activity sets. Do not want to subset the
-            # activity sets yet, as the process of subsetting and
-            # attributing the data is achieved in prepare_fbs
-            child_fba_validation = (
-                child_fba
                 .select_by_fields(
                     selection_fields=activity_config.get('selection_fields'),
                     exclusion_fields=activity_config.get('exclusion_fields'))
@@ -769,23 +758,24 @@ class FlowByActivity(_FlowBy):
             child_fba.config = {**parent_config, **activity_config}
             child_fba = child_fba.assign(SourceName=child_fba.full_name)
 
-            if set(child_fba_validation.row) & assigned_rows:
+            if set(child_fba.row) & assigned_rows:
                 log.critical(
                     'Some rows from %s assigned to multiple activity '
-                    'sets. This might lead to double-counting:\n%s',
+                    'sets. This will lead to double-counting:\n%s',
                     parent_fba.full_name,
-                    child_fba_validation.query(
-                        f'row in {list(set(child_fba_validation.row) & assigned_rows)}'
+                    child_fba.query(
+                        f'row in {list(set(child_fba.row) & assigned_rows)}'
                     )
                 )
+                # raise ValueError('Some rows in multiple activity sets')
 
-            assigned_rows.update(child_fba_validation.row)
-            if ((not child_fba_validation.empty) and
-                    len(child_fba_validation.query('FlowAmount != 0')) > 0):
+            assigned_rows.update(child_fba.row)
+            if ((not child_fba.empty) and
+                len(child_fba.query('FlowAmount != 0')) > 0):
                 child_fba_list.append(child_fba.drop(columns='row'))
             else:
                 log.error(f'Activity set {child_fba.full_name} is empty. '
-                          f'Check activity set definition!')
+                          'Check activity set definition!')
 
         if set(parent_fba.row) - assigned_rows:
             log.warning('Some rows from %s not assigned to an activity '
