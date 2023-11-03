@@ -678,7 +678,8 @@ class FlowByActivity(_FlowBy):
     def prepare_fbs(
             self: 'FlowByActivity',
             external_config_path: str = None,
-            download_sources_ok: bool = True
+            download_sources_ok: bool = True,
+            skip_select_by: bool = False,
             ) -> 'FlowBySector':
 
         from flowsa.flowbysector import FlowBySector
@@ -688,7 +689,9 @@ class FlowByActivity(_FlowBy):
                 return (
                     pd.concat([
                         fba.prepare_fbs(
-                            external_config_path=external_config_path, download_sources_ok=download_sources_ok)
+                            external_config_path=external_config_path,
+                            download_sources_ok=download_sources_ok,
+                            skip_select_by=True)
                         for fba in (
                             self
                             .select_by_fields()
@@ -705,9 +708,10 @@ class FlowByActivity(_FlowBy):
         return FlowBySector(
             self
             .function_socket('clean_fba_before_mapping')
-            .select_by_fields()
+            .select_by_fields(skip_select_by=skip_select_by)
             .function_socket('estimate_suppressed')
-            .select_by_fields(selection_fields=self.config.get(
+            .select_by_fields(skip_select_by=skip_select_by,
+                              selection_fields=self.config.get(
                 'selection_fields_after_data_suppression_estimation', 'null'))
             .convert_units_and_flows()  # and also map to flow lists
             .function_socket('clean_fba')
