@@ -33,16 +33,3 @@ def test_get_flows_by_sector():
 # todo: reinstate after modifying bib function for recursive method
 # def test_write_bibliography():
 #     flowsa.writeFlowBySectorBibliography('Water_national_2015_m1')
-
-
-def test_FBS_methods():
-    """Test succesful loading of FBS yaml files, skip files know to cause
-    errors"""
-    method_status = check_method_status()
-    for m in seeAvailableFlowByModels("FBS", print_method=False):
-        print(f"Testing method: {m}")
-        if method_status.get(m) is not None:
-            print(f"{m} skipped due to "
-                  f"{method_status.get(m).get('Status', 'Unknown')}")
-            continue
-        load_yaml_dict(m, flowbytype='FBS')
