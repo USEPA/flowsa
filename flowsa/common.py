@@ -86,8 +86,8 @@ def load_crosswalk(crosswalk_name):
     return cw
 
 
-def load_sector_length_cw_melt():
-    cw_load = load_crosswalk('NAICS_2012_Crosswalk')
+def load_sector_length_cw_melt(year='2012'):
+    cw_load = load_crosswalk(f'NAICS_{year}_Crosswalk')
     cw_melt = cw_load.melt(var_name="SectorLength", value_name='Sector'
                            ).drop_duplicates().reset_index(drop=True)
     cw_melt = cw_melt.dropna().reset_index(drop=True)

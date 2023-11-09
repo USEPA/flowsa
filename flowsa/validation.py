@@ -127,7 +127,7 @@ def compare_summation_at_sector_lengths_between_two_dfs(df1, df2):
     if 'ActivityProducedBy' in df1.columns:
         col = 'Activity'
 
-    cw = load_sector_length_cw_melt()
+    cw = load_sector_length_cw_melt(year=df1.config['target_naics_year'])
 
     agg_cols = list(df2.select_dtypes(include=['object', 'int']).columns) + \
                ['SectorProducedByLength', 'SectorConsumedByLength']
