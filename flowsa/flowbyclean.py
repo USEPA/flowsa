@@ -229,7 +229,8 @@ def estimate_suppressed_sectors_equal_attribution(
             .query(f"~{col}.isna()")
             .drop_duplicates()  # duplicates if multiple generations of 1:1
             )
-
+    # merge the two dfs - add the child sectors to original df when there is
+    # only single parent:child
     fba3 = fba.merge(fba2, how='outer')
 
     fba3 = (fba3
