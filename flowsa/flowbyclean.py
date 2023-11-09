@@ -230,11 +230,7 @@ def estimate_suppressed_sectors_equal_attribution(
             .drop_duplicates()  # duplicates if multiple generations of 1:1
             )
 
-    fba3 = (fba
-            .merge(fba2, indicator=True, how='outer')
-            .query('_merge!="both"')
-            .drop('_merge', axis=1)
-            )
+    fba3 = fba.merge(fba2, how='outer')
 
     fba3 = (fba3
             .assign(Unattributed=fba3.FlowAmount.copy(),
