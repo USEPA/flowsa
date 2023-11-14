@@ -201,6 +201,11 @@ def clean_NEI_fba(fba: FlowByActivity, **_) -> FlowByActivity:
     new_fba = FlowByActivity(fba)
     for attr in attributes_to_save:
         setattr(new_fba, attr, attributes_to_save[attr])
+    # to reduce the file size of the FBA and avoid memory errors, consolidate
+    # to geoscale (i.e., state) early on   
+    print(f'length: {len(new_fba)}')
+    new_fba = new_fba.convert_to_geoscale()
+    print(f'new length: {len(new_fba)}')
 
     return new_fba
 
