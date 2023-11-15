@@ -49,7 +49,7 @@ def assign_naics(df):
     dfb = df[~df['ActivityCode'].str.startswith('RS')].reset_index(drop=True)
 
     # load bea crosswalk
-    cw_load = load_crosswalk('BEA')
+    cw_load = load_crosswalk('NAICS_to_BEA_Crosswalk_2012')
     cw = (cw_load[['BEA_2012_Detail_Code', 'NAICS_2012_Code']]
           .drop_duplicates()
           .dropna()

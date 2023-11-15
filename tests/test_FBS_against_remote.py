@@ -10,7 +10,7 @@ import numpy as np
 from flowsa.flowbysector import FlowBySector
 from flowsa.common import check_method_status, seeAvailableFlowByModels
 from flowsa.settings import diffpath
-from tests.test_single_FBS import compare_single_FBS_against_remote
+from flowsa.validation import compare_single_FBS_against_remote
 
 
 @pytest.mark.skip(reason="Perform targeted test for compare_FBS on PR")
@@ -24,6 +24,7 @@ def test_FBS_against_remote(only_run_m=None):
         os.mkdir(outdir)
     models = pd.DataFrame(seeAvailableFlowByModels("FBS", print_method=False))
     models['year'] = models[0].str.extract('.*(\d{4})', expand = False)
+    models = models.dropna()
     models['model'] = models.apply(lambda x: x[0].split(x['year']),
                                    axis=1).str[0]
     m_last_two = models[0].str.slice(start=-2)

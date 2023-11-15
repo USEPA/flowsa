@@ -204,9 +204,10 @@ class FlowByActivity(_FlowBy):
                      f'{list(mapping.TargetUnit.unique())} by mapping to '
                      f'federal elementary flow list')
         if any(mapped_fba.mapped == 'left_only'):
-            log.warning(f"Some units not standardized by mapping to federal "
-                        f"elementary flows list: "
-                        f"{list(mapped_fba.query('mapped == left_only').Unit.unique())}")
+            log.warning('Some units not standardized by mapping to federal '
+                        'elementary flows list: %s',
+                        list(mapped_fba
+                             .query('mapped == "left_only"').Unit.unique()))
 
         return mapped_fba.drop(columns='mapped')
 
@@ -362,7 +363,7 @@ class FlowByActivity(_FlowBy):
 
     def map_to_sectors(
             self: 'FlowByActivity',
-            target_year: Literal[2002, 2007, 2012, 2017] = 2012,
+            target_year: Literal[2002, 2007, 2012, 2017],
             external_config_path: str = None
     ) -> 'FlowByActivity':
         """
@@ -391,7 +392,9 @@ class FlowByActivity(_FlowBy):
             define_parentincompletechild_descendants, \
             drop_parentincompletechild_descendants
 
-        naics_key = naics.industry_spec_key(self.config['industry_spec'])
+        naics_key = naics.industry_spec_key(self.config['industry_spec'],
+                                            self.config['target_naics_year']
+                                            )
 
         activity_schema = self.config['activity_schema'] if isinstance(
             self.config['activity_schema'], str) else self.config.get(
@@ -414,19 +417,18 @@ class FlowByActivity(_FlowBy):
             # if activity schema does not match target naics year,
             # convert sectors to target sectors
             if activity_schema != f"NAICS_{self.config['target_naics_year']}_Code":
-                log.info(f"Converting {activity_schema} to NAICS"
-                         f"_{self.config['target_naics_year']}_Code")
                 self = naics.convert_naics_year(
                     self,
                     f"NAICS_{self.config['target_naics_year']}_Code",
-                    activity_schema)
+                    activity_schema,
+                    self.full_name)
 
             if self.config.get('sector_hierarchy') == 'parent-completeChild':
                 log.info('NAICS are a mix of parent-completeChild, assigning '
                          'activity columns directly to sector columns')
 
                 # load master crosswalk
-                cw = common.load_crosswalk('sector_timeseries')
+                cw = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')
                 sectors = (cw[[f"NAICS_{self.config['target_naics_year']}_Code"]]
                            .drop_duplicates()
                            .dropna()
@@ -556,6 +558,21 @@ class FlowByActivity(_FlowBy):
                     activity_to_source_naics_crosswalk['Activity'].isin(
                         activities_in_fba)]
 
+            if source_year != target_year:
+                log.info('Using NAICS time series/crosswalk to map NAICS '
+                         'codes from NAICS year %s to NAICS year %s.',
+                         source_year, target_year)
+                activity_to_source_naics_crosswalk = (
+                    activity_to_source_naics_crosswalk
+                    .merge(naics.year_crosswalk(source_year, target_year),
+                           how='left',
+                           left_on='Sector',
+                           right_on='source_naics')
+                    .assign(**{'Sector': lambda x: x.target_naics})
+                    .drop(columns=['source_naics', 'target_naics'])
+                    .assign(SectorSourceName=f'NAICS_{target_year}_Code')
+                )
+
             log.info('Converting NAICS codes in crosswalk to desired '
                      'industry/sector aggregation structure.')
             if self.config.get('sector_hierarchy') == 'parent-completeChild':
@@ -617,8 +634,8 @@ class FlowByActivity(_FlowBy):
                     .drop_duplicates()
                 )
 
-                log.info('Mapping activities in %s to NAICS codes using '
-                         'crosswalk', self.full_name)
+                log.info(f"Mapping activities in {self.full_name} to NAICS"
+                         f"_{self.config['target_naics_year']}_Code using crosswalk")
                 fba_w_naics = self
                 for direction in ['ProducedBy', 'ConsumedBy']:
                     fba_w_naics = (
@@ -633,21 +650,6 @@ class FlowByActivity(_FlowBy):
                                        'SectorSourceName',
                                        'Activity'],
                               errors='ignore')
-                    )
-
-            if source_year != target_year:
-                log.info('Using NAICS time series/crosswalk to map NAICS '
-                         'codes from NAICS year %s to NAICS year %s.',
-                         source_year, target_year)
-                for direction in ['ProducedBy', 'ConsumedBy']:
-                    fba_w_naics = (
-                        fba_w_naics
-                        .merge(naics.year_crosswalk(source_year, target_year),
-                               how='left',
-                               left_on=f'Sector{direction}',
-                               right_on='source_naics')
-                        .assign(**{f'Sector{direction}': lambda x: x.target_naics})
-                        .drop(columns=['source_naics', 'target_naics'])
                     )
 
         # warn if any activities are not mapped to sectors
@@ -676,7 +678,8 @@ class FlowByActivity(_FlowBy):
     def prepare_fbs(
             self: 'FlowByActivity',
             external_config_path: str = None,
-            download_sources_ok: bool = True
+            download_sources_ok: bool = True,
+            skip_select_by: bool = False,
             ) -> 'FlowBySector':
 
         from flowsa.flowbysector import FlowBySector
@@ -686,7 +689,9 @@ class FlowByActivity(_FlowBy):
                 return (
                     pd.concat([
                         fba.prepare_fbs(
-                            external_config_path=external_config_path, download_sources_ok=download_sources_ok)
+                            external_config_path=external_config_path,
+                            download_sources_ok=download_sources_ok,
+                            skip_select_by=True)
                         for fba in (
                             self
                             .select_by_fields()
@@ -703,10 +708,11 @@ class FlowByActivity(_FlowBy):
         return FlowBySector(
             self
             .function_socket('clean_fba_before_mapping')
-            .select_by_fields()
+            .select_by_fields(skip_select_by=skip_select_by)
             .function_socket('estimate_suppressed')
-            .select_by_fields(selection_fields=self.config.get(
-                'selection_fields_after_data_suppression_estimation'))
+            .select_by_fields(skip_select_by=skip_select_by,
+                              selection_fields=self.config.get(
+                'selection_fields_after_data_suppression_estimation', 'null'))
             .convert_units_and_flows()  # and also map to flow lists
             .function_socket('clean_fba')
             .convert_to_geoscale()
@@ -714,6 +720,7 @@ class FlowByActivity(_FlowBy):
                                         download_sources_ok=download_sources_ok)  # recursive call to prepare_fbs
             .drop(columns=['ActivityProducedBy', 'ActivityConsumedBy'])
             .aggregate_flowby()
+            .function_socket('clean_fbs_after_aggregation')
         )
 
     def activity_sets(self) -> List['FlowByActivity']:

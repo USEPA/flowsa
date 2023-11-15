@@ -11,6 +11,7 @@ import re
 import yaml
 import pandas as pd
 import numpy as np
+from copy import deepcopy
 from dotenv import load_dotenv
 import flowsa.flowsa_yaml as flowsa_yaml
 import flowsa.exceptions
@@ -69,26 +70,24 @@ def load_env_file_key(env_file, key):
 
 def load_crosswalk(crosswalk_name):
     """
-    Load NAICS crosswalk between the years 2007, 2012, 2017
+    Used to load the crosswalks:
+
+    'NAICS_Crosswalk_TimeSeries', 'NAICS_2012_Crosswalk',
+    'Sector_2012_Names', 'Household_SectorCodes', 'Government_SectorCodes',
+    'NAICS_to_BEA_Crosswalk_2012', 'NAICS_to_BEA_Crosswalk_2017'
+
+    as a dataframe
+
     :return: df, NAICS crosswalk over the years
     """
 
-    cw_dict = {'sector_timeseries': 'NAICS_Crosswalk_TimeSeries',
-               'sector_length': 'NAICS_2012_Crosswalk',
-               'sector_name': 'Sector_2012_Names',
-               'household': 'Household_SectorCodes',
-               'government': 'Government_SectorCodes',
-               'BEA': 'NAICS_to_BEA_Crosswalk'
-               }
+    cw = pd.read_csv(datapath / f'{crosswalk_name}.csv', dtype="str")
 
-    fn = cw_dict.get(crosswalk_name)
-
-    cw = pd.read_csv(datapath / f'{fn}.csv', dtype="str")
     return cw
 
 
-def load_sector_length_cw_melt():
-    cw_load = load_crosswalk('sector_length')
+def load_sector_length_cw_melt(year='2012'):
+    cw_load = load_crosswalk(f'NAICS_{year}_Crosswalk')
     cw_melt = cw_load.melt(var_name="SectorLength", value_name='Sector'
                            ).drop_duplicates().reset_index(drop=True)
     cw_melt = cw_melt.dropna().reset_index(drop=True)
@@ -107,7 +106,7 @@ def return_bea_codes_used_as_naics():
     :return: list of BEA codes used as NAICS
     """
     cw_list = []
-    for cw in ['household', 'government']:
+    for cw in ['Household_SectorCodes', 'Government_SectorCodes']:
         df = load_crosswalk(cw)
         cw_list.append(df)
     # concat data into single dataframe
@@ -116,7 +115,7 @@ def return_bea_codes_used_as_naics():
     return code_list
 
 
-def load_yaml_dict(filename, flowbytype=None, filepath=None):
+def load_yaml_dict(filename, flowbytype=None, filepath=None, **kwargs):
     """
     Load the information in a yaml file, from source_catalog, or FBA,
     or FBS files
@@ -159,8 +158,11 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None):
         with open(yaml_path, 'r', encoding='utf-8') as f:
             config = flowsa_yaml.load(f, filepath)
     except FileNotFoundError:
-        raise flowsa.exceptions.FlowsaMethodNotFoundError(
-            method_type=flowbytype, method=filename)
+        if 'config' in kwargs:
+            return deepcopy(kwargs['config'])
+        else:
+            raise flowsa.exceptions.FlowsaMethodNotFoundError(
+                method_type=flowbytype, method=filename)
     return config
 
 
@@ -344,7 +346,7 @@ def seeAvailableFlowByModels(flowbytype, print_method=True):
     fb_names = [os.path.splitext(f)[0] for f in fb_dir if f.endswith('.yaml')]
 
     # further reduce list of file names by excluding common and summary_target
-    exclude = ["_common", "_summary_target"]
+    exclude = ["_common", "_target"]
     fb_names = [f for f in fb_names if all(s not in f for s in exclude)]
 
     if flowbytype == 'FBA':
