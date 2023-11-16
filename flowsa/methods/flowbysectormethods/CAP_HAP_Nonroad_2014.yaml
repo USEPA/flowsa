@@ -26,6 +26,8 @@ source_names:
         selection_fields:
           PrimaryActivity: !from_index:NEI_Nonroad_asets.csv direct_allocation
         attribution_method: direct
+      # These activity sets are broken out into multiple sections to avoid
+      # MemoryErrors
       offroad_vehicles_equipment_a:
         selection_fields:
           PrimaryActivity: !from_index:NEI_Nonroad_asets.csv offroad_vehicles_equipment_a

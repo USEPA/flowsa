@@ -14,6 +14,15 @@ source_names:
   CAP_HAP_Nonroad_2014: # detail state model
     year: *year
     data_format: FBS
+    # Rename MetaSources
+    selection_fields:
+      MetaSources:
+        'EPA_NEI_Nonroad.direct_allocation': 'EPA_NEI_Nonroad.direct_allocation'
+        'EPA_NEI_Nonroad.offroad_vehicles_equipment_a': 'EPA_NEI_Nonroad.offroad_vehicles_equipment'
+        'EPA_NEI_Nonroad.offroad_vehicles_equipment_b': 'EPA_NEI_Nonroad.offroad_vehicles_equipment'
+        'EPA_NEI_Nonroad.offroad_vehicles_equipment_c': 'EPA_NEI_Nonroad.offroad_vehicles_equipment'
+        'EPA_NEI_Nonroad.offroad_vehicles_equipment_d': 'EPA_NEI_Nonroad.offroad_vehicles_equipment'
+        'EPA_NEI_Nonroad.offroad_vehicles_equipment_e': 'EPA_NEI_Nonroad.offroad_vehicles_equipment'
 
   CAP_HAP_Onroad_2014: # detail state model
     year: *year
