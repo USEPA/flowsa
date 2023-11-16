@@ -1,37 +1,116 @@
 # This method replicates m1 but incorporates more detailed secondary contexts
 # e.g. urban/rural and stack height for flows
 
-industry_spec:
-  default: NAICS_6
+
+!include:BEA_detail_target.yaml
 target_naics_year: 2012
 geoscale: national
 
 _emission_year: &year 2017
 
+_attribution_sources:
+  BEA_Detail_Use_SUT: &bea
+    year: *year
+    geoscale: national
+    activity_to_sector_mapping: BEA_2017_Detail
+    exclusion_fields:
+      # Drop irrelevant final demand and total sectors
+      ActivityConsumedBy: ['F03000', 'F04000', 'F05000', 'F02E00',
+                           'F06E00', 'F07E00', 'F10E00',
+                           'T001', 'T004', 'T007']
+      ActivityProducedBy: ['T007']
+    attribution_method: proportional
+    attribution_source:
+      Employment_national_2017:
+        data_format: FBS
+        year: *year
+
 sources_to_cache:
   EIA_MECS_Energy:
-    !include:CAP_HAP_common.yaml:sources_to_cache:EIA_MECS_Energy
+    !include:CAP_HAP_common.yaml:sources_to_cache:EIA_MECS_Energy_state
     year: 2018
     attribution_source:
-      Employment_national_2018:
-        data_format: FBS
+      Employment_state_2018:
+        geoscale: national # Uses national at this stage prior to attributing to states
         year: 2018
+    clean_source: Employment_state_2018
 
 source_names:
   EPA_NEI_Nonpoint:
-    !include:CAP_HAP_national_2017_m1.yaml:source_names:EPA_NEI_Nonpoint
+    !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonpoint
     apply_urban_rural: True
     year: *year
+    activity_sets:
+      !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonpoint:activity_sets
+
+      # Update some activities with correct BEA year
+      mobile_and_fuel_storage:
+        !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonpoint:activity_sets:mobile_and_fuel_storage
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'324110': ''}  # Petroleum
+
+      fertilizers:
+        !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonpoint:activity_sets:fertilizers
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'325310': ''}  # Fertilizers
+
+      pesticides:
+        !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonpoint:activity_sets:pesticides
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'325320': ''}  # Pesticides
+
+      output_allocation: # Gross Output
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv output_allocation
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_GrossOutput_IO:
+            year: *year
+            geoscale: national
+            activity_to_sector_mapping: BEA_2012_Detail
+            attribution_method: proportional
+            attribution_source:
+              Employment_national_2017:
+                data_format: FBS
+                year: *year
 
   EPA_NEI_Nonroad:
     !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonroad
     apply_urban_rural: True
     year: *year
+    activity_sets:
+      !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonroad:activity_sets
+      offroad_vehicles_equipment:
+        !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonroad:activity_sets:offroad_vehicles_equipment
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'324110': ''}  # Petroleum
 
   EPA_NEI_Onroad:
     !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Onroad
     apply_urban_rural: True
     year: *year
+    activity_sets:
+      !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Onroad:activity_sets
+      onroad_vehicles_gas_stations:
+        !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Onroad:activity_sets:onroad_vehicles_gas_stations
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'324110': ''}  # Petroleum
+
 
   stewiFBS:
     !include:CAP_HAP_common.yaml:source_names:stewiFBS

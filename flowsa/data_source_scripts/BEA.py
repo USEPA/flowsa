@@ -5,11 +5,12 @@
 """
 Supporting functions for BEA data.
 
-Generation of BEA Gross Output data and industry transcation data as FBA,
+Generation of BEA Gross Output data and industry transaction data as FBA,
 Source csv files for BEA data are documented
-in scripts/write_BEA_Use_from_useeior.py
+in scripts/write_BEA_data_from_useeior.py
 """
 
+import numpy as np
 import pandas as pd
 from flowsa.location import US_FIPS
 from flowsa.settings import externaldatapath
@@ -25,14 +26,18 @@ def bea_parse(*, source, year, **_):
 
     if 'Make' in source:
         filename = source.replace('_Make_', f'_Make_{year}_')
+    elif 'Use_SUT' in source:
+        filename = f'{source}_{year}'
     elif 'Use' in source:
         filename = source.replace('_Use_', f'_Use_{year}_')
+    elif 'Supply' in source:
+        filename = f'{source}_{year}'
     else:
         filename = source
 
     df = pd.read_csv(externaldatapath / f"{filename}.csv")
 
-    if 'BeforeRedef' in source:
+    if any(substring in source for substring in ['BeforeRedef', 'SUT']):
         df = df.rename(columns={'Unnamed: 0': 'ActivityProducedBy'})
         # use "melt" fxn to convert colummns into rows
         df = df.melt(id_vars=["ActivityProducedBy"],
@@ -57,7 +62,15 @@ def bea_parse(*, source, year, **_):
                      var_name="Year",
                      value_name="FlowAmount")
         df = df[df['Year'] == year]
-
+    elif 'Supply' in source:
+        df = np.transpose(df)
+        df.columns = df.iloc[0]
+        df = df.reset_index().rename(columns={'index' :'ActivityProducedBy'})
+        df = df.drop(df.index[0])
+        # use "melt" fxn to convert colummns into rows
+        df = df.melt(id_vars=["ActivityProducedBy"],
+                     var_name="ActivityConsumedBy",
+                     value_name="FlowAmount")
     df = df.reset_index(drop=True)
 
     # columns relevant to all BEA data

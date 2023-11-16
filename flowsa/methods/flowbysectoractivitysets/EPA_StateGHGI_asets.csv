@@ -46,7 +46,7 @@ ag_livestock,Agriculture - Manure Management - Poultry,EPA_GHGI_T_5_7
 ag_livestock,Agriculture - Manure Management - Sheep,EPA_GHGI_T_5_7
 ag_livestock,Agriculture - Manure Management - Swine,EPA_GHGI_T_5_7
 direct,Agriculture - Rice Cultivation,EPA_GHGI_T_2_1
-urea,"Agriculture - Urea Fertilization - CO2 emissions from liming, urea application and other carbon-containing fertilizers",EPA_GHGI_T_2_1
+urea_fertilizer,"Agriculture - Urea Fertilization - CO2 emissions from liming, urea application and other carbon-containing fertilizers",EPA_GHGI_T_2_1
 direct,Industry - Abandoned Oil and Gas Wells - Fugitive - Abandoned Wells,
 direct,Industry - Abandoned Underground Coal Mines - Fugitive - Coal Mining - Abandoned Coal Mines - Liberated,EPA_GHGI_T_2_1
 direct,Industry - Abandoned Underground Coal Mines - Fugitive - Coal Mining - Abandoned Coal Mines - Recovered &Used,EPA_GHGI_T_2_1
@@ -99,7 +99,7 @@ transport_nonroad,Transportation - Mobile Combustion - Fossil Fuel Combustion - 
 transport_nonroad,Transportation - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,negative emissions; align with 'Transportation - Mobile Combustion - Fossil Fuel Combustion - Petroleum - Non-Highway' to avoid double counting
 ods_substitutes,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Commercial,EPA_GHGI_T_4_102
 ods_substitutes,Industry - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Industry,EPA_GHGI_T_4_102
-direct_ods,Residential - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Residential,EPA_GHGI_T_4_102
+ods_substitutes,Residential - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Residential,EPA_GHGI_T_4_102
 ods_transportation,Transportation - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS - ODS Subst Transportation,EPA_GHGI_T_4_102
 direct,Industry - Adipic Acid Production - Chemical Industry,EPA_GHGI_T_2_1
 direct,Industry - Ammonia Production - Chemical Industry,EPA_GHGI_T_2_1
@@ -119,7 +119,7 @@ urea,Industry - Urea Consumption for Non-Agricultural Purposes - Chemical Indust
 direct,Industry - Electronics Industry - Micro-Electro-Mechanical Devices,
 direct,Industry - Electronics Industry - Photovoltaics,
 direct,Industry - Electronics Industry - Semiconductor Manufacture,
-direct,Industry - Electronics Industry - Semiconductor Manufacture - Heat Transfer Fluids,
+direct_ods,Industry - Electronics Industry - Semiconductor Manufacture - Heat Transfer Fluids,
 direct,Industry - Aluminum Production - Metal Industry,EPA_GHGI_T_2_1
 direct,Industry - Ferroalloy Production - Metal Industry,EPA_GHGI_T_2_1
 direct,Industry - Iron and Steel Production - Metal Industry - Iron Production,EPA_GHGI_T_2_1
@@ -147,9 +147,9 @@ direct,Industry - Wastewater Treatment - Wastewater Treatment and Discharge - In
 direct,Commercial - Wastewater Treatment - Wastewater Treatment and Discharge - Domestic,EPA_GHGI_T_2_1
 transport_nonroad_ag,Agriculture - Mobile Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,EPA_GHGI_T_3_14
 use_table_pet,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Agriculture - Mobile Agricultural Equipment,negative emissions; align with 'Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum' to avoid double counting
-tbd,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,EPA_GHGI_T_3_13
+use_table_pet,Agriculture - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Agricultural Equipment,"EPA_GHGI_T_A_14 (CO2 is included in Industrial/Commerical, not Mobile transport)"
 transport_nonroad_construction,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Construction,EPA_GHGI_T_3_14
-direct,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry,
+temp_drop,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry,
 transport_nonroad_other,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,
 ind_com_ch4_n2o,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary,negative emissions; align with 'Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial' to avoid double counting
 nitrous_oxide_use,Industry - N2O from Product Uses - Other product manufacture and use,EPA_GHGI_T_2_1

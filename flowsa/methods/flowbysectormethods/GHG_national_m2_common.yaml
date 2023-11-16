@@ -1,457 +1,283 @@
-# This is the general method reference file for method 2 (Summary)
+# This is the general method reference file for method 2 (Detail)
 # Year-specific GHG_national_m2 files import this file to define attribution rules
 # that are further customized
-# m2 for the GHG national utilizes a summary level sector attribution
+# m2 for the GHG national utilizes a full 6-digit NAICS attribution based on
+# the exisiting summary level national FBS (method 1), except where Direct attribution
+# is available at the detail level and uses the GHGI as the primary source
 
-
-!include:USEEIO_summary_target.yaml
-year: &ghg_year 2016
+!include:BEA_detail_target.yaml
+# year: &ghgi_year 2019
 target_naics_year: 2012
 geoscale: national
 
-_mecs_year: &mecs_year 2018
+attribution_sources:
+  _mecs_energy:
+    EIA_MECS_Energy: &mecs_energy
+      # year: *mecs_year # override this with mecs year
+      selection_fields: &mecs_energy_default_selection
+        Class: Energy # or Other (for non-energy use)
+        Unit: Trillion Btu
+        # FlowName: Coal # override this
+        Location: '00000'
+        Description:
+          - Table 2.2 # applies to Class Other
+          - Table 3.2 # applies to Class Energy
+      exclusion_fields:
+        ActivityConsumedBy: '31-33'
+      estimate_suppressed: !script_function:EIA_MECS estimate_suppressed_mecs_energy
+      attribution_method: proportional
+      # attribution_source: # Include in main method
+      #   Detail_Use_YEAR: ## Update year
+      #     selection_fields:
+      #       SectorProducedBy:  {'XXXXX': ''}
 
-_attribution_sources:
-  BEA: &bea_summary
-    year: *ghg_year
-    activity_to_sector_mapping: BEA_2012_Summary
-    # selection_fields:
-    #   ActivityProducedBy: {'324': ''}  # Petroleum 324110
-    exclusion_fields: # Avoid unnecessary warnings about not being mapped to sectors
-      ActivityConsumedBy: ['F030', 'F040', 'F050', 'F051', 
-                           'F02E', 'F06E', 'F07E', 'F10E',
-                           'Total Commodity Output',
-                           'Total Final Uses (GDP)',
-                           'Total Intermediate']
-      ActivityProducedBy: ['Total Commodity Output']
-    attribution_method: equal
-    ## No attribution supplied (will use equal) because target level for
-    ## modeling is BEA summary level.
+  _cropland_allocation: &cropland_allocation
+    USDA_CoA_Cropland:
+      year: 2017
+      selection_fields:
+        Class: Land
+        FlowName:
+          - AREA HARVESTED
+          - AREA BEARING & NON-BEARING # Orchards
+          - AREA GROWN # Berry totals
+      attribution_method: proportional
+      attribution_source:
+        USDA_CoA_Cropland_NAICS:
+          year: 2017
+          selection_fields:
+            Class: Land
+            FlowName: AG LAND, CROPLAND, HARVESTED
+          estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
 
-  BEA_detail: &bea_detail
-    year: 2012
-    activity_to_sector_mapping: BEA_2012_Detail
-    # selection_fields:
-    #   ActivityProducedBy: {'324': ''}  # Petroleum 324110
-    exclusion_fields: # Avoid unnecessary warnings about not being mapped to sectors
-      ActivityConsumedBy: ['F03000', 'F04000', 'F05000', 'F02E00',
-                           'F06E00', 'F07E00', 'F10E00',
-                           'T001', 'T004', 'T007']
-      ActivityProducedBy: ['T007']
-    attribution_method: equal
+  _animal_land_allocation: &animal_land_allocation
+    USDA_CoA_Cropland_NAICS:
+      year: 2017
+      selection_fields:
+        Class: Land
+        FlowName: FARM OPERATIONS
+      estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
 
+_sources_to_cache:
+  Detail_Use_YEAR:  ## Update year
+    !include:Detail_Use_SUT.yaml
+    # year: *ghgi_year
+    source_names:
+      BEA_Summary_Use_SUT:
+        !include:Detail_Use_SUT.yaml:source_names:BEA_Summary_Use_SUT
+        # year: *ghgi_year
 
-  EIA_MECS_Energy: &mecs_energy
-    year: *mecs_year
-    selection_fields: &mecs_energy_default_selection
-      Class: Energy # or Other (for non-energy use)
-      Unit: Trillion Btu
-      # FlowName: Coal # override this
-      Location: '00000'
-      Description:
-        - Table 2.2 # applies to Class Other
-        - Table 3.2 # applies to Class Energy
-    exclusion_fields:
-      ActivityConsumedBy: '31-33'
-    estimate_suppressed: !script_function:EIA_MECS estimate_suppressed_mecs_energy
-    # attribution_method: proportional
-    # attribution_source: # Include in main method
-    #   BEA_Summary_Use_PRO_BeforeRedef:
-    #     <<: *bea_summary
-    #     selection_fields:
-    #       ActivityProducedBy: {'XXXXX': ''}
-
+  Detail_Supply_YEAR:
+    !include:Detail_Supply.yaml
+    # year: *ghgi_year
+    source_names:
+      BEA_Summary_Supply:
+        !include:Detail_Supply.yaml:source_names:BEA_Summary_Supply
+        # year: *ghgi_year
 
 source_names:
-  EPA_GHGI_T_2_1: #U.S. GHG emissions
-    # year: # override this
-    fedefl_mapping: GHGI
+  GHG_national_m1: # National Summary model
+    data_format: FBS
+    # year: *ghgi_year
     activity_sets:
-      direct:
-        selection_fields:
-          PrimaryActivity:
-            - Abandoned Oil and Gas Wells #CH4
-            - Abandoned Underground Coal Mines #CH4
-            - Adipic Acid Production #N2O
-            - Aluminum Production #CO2
-            - Ammonia Production #CO2
-            - Anaerobic Digestion at Biogas Facilities #CH4 new activity
-            - Caprolactam, Glyoxal, and Glyoxylic Acid Production #N2O
-            - Carbide Production and Consumption #CO2, CH4
-            - Cement Production #CO2
-            - Coal Mining #CO2, CH4
-            - Composting #CH4, N2O
-            - Ferroalloy Production #CO2, CH4
-            - Glass Production #CO2
-            - Landfills #CH4
-            - Lime Production #CO2
-            - Incineration of Waste #CO2, #N2O
-            - Iron and Steel Production & Metallurgical Coke Production #CO2, CH4
-            - Nitric Acid Production #N2O
-            - Phosphoric Acid Production #CO2
-            - Rice Cultivation #CH4
-            - Soda Ash Production #CO2
-            - Titanium Dioxide Production #CO2
-            - Wastewater Treatment #CH4, N2O
-            - Zinc Production #CO2
-          FlowName: ["CO2", "CH4", "N2O"] # HFCs and other flows are pulled elsewhere
-        attribution_method: direct
-
-      electricity_transmission:
-        selection_fields:
-          PrimaryActivity: Electrical Transmission and Distribution #SF6
-          FlowName: SF6
-        attribution_method: direct
-
-      electric_power:
-        selection_fields:
-          PrimaryActivity:
-            Electric Power Sector: Electric Power #CO2
-        attribution_method: proportional
-        attribution_source:
-          BEA_Detail_Make_BeforeRedef:
-            <<: *bea_detail
-            selection_fields:
-              ActivityConsumedBy: {'221100': ''} # Utilities (221100)
+      ## Table 2.1
+      # electricity_transmission handled directly from EPA_GHGI_T_2_1
 
       liming:
         selection_fields:
-          PrimaryActivity: Liming #CO2
-        attribution_method: equal
+          MetaSources: 'EPA_GHGI_T_2_1.liming'
+        attribution_method: proportional
+        attribution_source:
+          Detail_Use_YEAR: ## Update year
+            selection_fields:
+              SectorProducedBy: {'3274': ''} # Lime (327400)
 
       urea:
         selection_fields:
-          PrimaryActivity:
-            - Urea Consumption for Non-Agricultural Purposes #CO2
+          MetaSources: 'EPA_GHGI_T_2_1.urea'
         attribution_method: proportional
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
-            <<: *bea_detail
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'325310': ''} # Chemicals (325310)
+              SectorProducedBy: {'32531': ''} # Fertilizers (325310)
 
       urea_fertilizer:
         selection_fields:
-          PrimaryActivity: Urea Fertilization #CO2
-        attribution_method: equal
+          MetaSources: 'EPA_GHGI_T_2_1.urea_fertilizer'
+        attribution_method: proportional
+        attribution_source:
+          Detail_Use_YEAR: ## Update year
+            selection_fields:
+              SectorProducedBy: {'32531': ''} # Fertilizers (325310)
 
       carbonate_use:
         selection_fields:
-          PrimaryActivity: Other Process Uses of Carbonates #CO2
+          MetaSources: 'EPA_GHGI_T_2_1.carbonate_use'
         attribution_method: proportional
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
-            <<: *bea_detail
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'325180': ''} # Chemicals (325180)
+              SectorProducedBy: {'32518': ''} # Other Basic Inorganic Chemicals (325180)
 
-      lead:
-        selection_fields:
-          PrimaryActivity: Lead Production #CO2
-        attribution_method: direct
+      # lead handled directly from EPA_GHGI_T_2_1
 
       nitrous_oxide_use:
         selection_fields:
-          PrimaryActivity: N2O from Product Uses #N2O
+          MetaSources: 'EPA_GHGI_T_2_1.nitrous_oxide_use'
         attribution_method: proportional
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
-            <<: *bea_detail
-
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'325120': ''} # Chemicals (325120)
+              SectorProducedBy: {'32512': ''} # Industrial gases (325120)
 
 
-
-## Fossil Fuels
-  EPA_GHGI_T_3_68: &natgas #CH4 from Natural Gas Systems
-    # year: # override this
-    fedefl_mapping: GHGI
-    selection_fields:
-      PrimaryActivity:
-        - Distribution
-        - Distribution - Post-Meter
-        - Exploration
-        - Processing
-        - Production
-        - Transmission and Storage
-    attribution_method: direct
-  EPA_GHGI_T_3_70: *natgas #CO2 from Natural Gas Systems mimics CH4
-  EPA_GHGI_T_3_72: *natgas #N2O from Natural Gas Systems, not used in original method, mimics CH4
-
-  EPA_GHGI_T_3_42: &petroleum #CH4 from Petroleum Systems
-    # year: # override this
-    fedefl_mapping: GHGI
-    selection_fields:
-      PrimaryActivity:
-        - Crude Oil Transportation
-        - Transportation
-        - Exploration
-        - Production
-        - Refining
-        - Crude Refining
-    attribution_method: direct
-  EPA_GHGI_T_3_44: *petroleum #CO2 from Petroleum Systems mimics CH4
-  EPA_GHGI_T_3_46: *petroleum #N2O from Petroleum Systems, not in prior method, mimics CH4
-
-## Agriculture
-  EPA_GHGI_T_5_28: #CH4, N2O, CO and NOx from field burning of residues
-    # year: # override this
-    fedefl_mapping: GHGI
-    selection_fields:
-      PrimaryActivity:
-        - Chickpeas
-        - Cotton
-        - Maize
-        - Rice
-        - Soybeans
-        - Wheat
-    attribution_method: direct
-  EPA_GHGI_T_5_3:  &animals #CH4 from Enteric Fermentation
-    # year: # override this
-    fedefl_mapping: GHGI
-    selection_fields:
-      PrimaryActivity:
-        - American Bison
-        - Beef Cattle
-        - Dairy Cattle
-        - Goats
-        - Horses
-        - Mules and Asses
-        - Sheep
-        - Swine
-        - Poultry
-    attribution_method: direct
-  EPA_GHGI_T_5_6: *animals #CH4 and N2O from manure, mimics enteric fermentation
-
-  EPA_GHGI_T_5_17: #Direct N2O emissions from agricultural soils
-    # year: # override this
-    fedefl_mapping: GHGI
-    activity_sets:
-      fertilizer_use:
+      fertilizer_use: # allocated based on fertilizer use
         selection_fields:
-          PrimaryActivity:
-            - Organic Amendment Cropland
-            - Residue N Cropland
-            - Synthetic Fertilizer Cropland
-        attribution_method: direct
+          MetaSources:
+            - 'EPA_GHGI_T_5_17.fertilizer_use'
+            - 'EPA_GHGI_T_5_18.fertilizer_use'
+        attribution_method: proportional
+        attribution_source:
+          Detail_Use_YEAR: ## Update year
+            selection_fields:
+              SectorProducedBy: {'32531': ''} # Fertilizers (325310)
 
-      cropland:
+      cropland: # allocated based on USDA land area harvested
         selection_fields:
-          PrimaryActivity:
-            - Mineralization and Asymbiotic Fixation Cropland
-            - Drained Organic Soils Cropland
-        attribution_method: direct
+          MetaSources: 'EPA_GHGI_T_5_17.cropland'
+        attribution_method: proportional
+        attribution_source: *cropland_allocation
 
-      pasture: &pasture
+      pasture: # allocated based on USDA Animal operation land (acres)
         selection_fields:
-          PrimaryActivity:
-            - All activities Grassland
-        attribution_method: equal
-
-
-  EPA_GHGI_T_5_18: #Indirect N2O emissions from agricultural soils
-    # year: # override this
-    fedefl_mapping: GHGI
-    activity_sets:
-      fertilizer_use:
-        selection_fields:
-          PrimaryActivity:
-            - Volatilization & Atm. Deposition Cropland
-            - Surface Leaching & Run-Off Cropland
-        attribution_method: direct
-      pasture:
-        selection_fields:
-          PrimaryActivity:
-            - All activities Grassland
-        attribution_method: equal
-
-
-## Mobile Sources
-  EPA_GHGI_T_3_13: #CO2 from mobile combustion
-    fedefl_mapping: GHGI
-    activity_sets:
-      direct_petroleum:
-        selection_fields:
-          PrimaryActivity:
-            General Aviation Aircraft Aviation Gasoline: General Aviation Aircraft
-            General Aviation Aircraft Jet Fuel: General Aviation Aircraft
-            Commercial Aircraft Jet Fuel: Commercial Aircraft
-            Military Aircraft Jet Fuel: Military Aircraft
-            Buses Gasoline: Buses
-            Buses LPG: Buses
-            Motorcycles Gasoline: Motorcycles
-            Rail Distillate Fuel Oil: Rail
-            Recreational Boats Distillate Fuel Oil: Recreational Boats
-            Recreational Boats Gasoline: Recreational Boats
-            Ships and Non-Recreational Boats Distillate Fuel Oil: Ships and Non-Recreational Boats
-            Ships and Non-Recreational Boats Residual Fuel Oil: Ships and Non-Recreational Boats
-            Medium- and Heavy-Duty Trucks Gasoline: Medium- and Heavy-Duty Trucks
-            Medium- and Heavy-Duty Trucks LPG: Medium- and Heavy-Duty Trucks
-            Light-Duty Trucks LPG: Light-Duty Trucks - Households
-            Passenger Cars LPG: Passenger Cars - Households
-        attribution_method: direct
-      direct_ng:
-        selection_fields:
-          PrimaryActivity:
-            Buses Natural Gas: Buses
-            Pipeline Natural Gas: Pipeline Natural Gas
+          MetaSources:
+            - 'EPA_GHGI_T_5_17.pasture'
+            - 'EPA_GHGI_T_5_18.pasture'
+        attribution_method: proportional
+        attribution_source: *animal_land_allocation
 
       petroleum_fuels:
         selection_fields:
-          PrimaryActivity:
-            Medium- and Heavy-Duty Trucks Distillate Fuel Oil: Medium- and Heavy-Duty Trucks - Distillate Fuel Oil
-            Buses Distillate Fuel Oil: Buses - Distillate Fuel Oil
-            Passenger Cars Distillate Fuel Oil: Passenger Cars
-            Passenger Cars Gasoline: Passenger Cars
-            Light-Duty Trucks Distillate Fuel Oil: Light-Duty Trucks
-            Light-Duty Trucks Gasoline: Light-Duty Trucks
+          MetaSources: 'EPA_GHGI_T_3_13.petroleum_fuels'
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea_summary
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'324': ''} # purchases of refinery products (324110)
-
-
-  EPA_GHGI_T_3_14: &mobile #CH4 from mobile combustion
-    fedefl_mapping: GHGI
-    activity_sets:
-      direct_gasoline:
-        selection_fields:
-          PrimaryActivity:
-            Motorcycles Gasoline On-Road: Motorcycles
-            Medium- and Heavy-Duty Trucks and Buses Gasoline On-Road: Medium- and Heavy-Duty Trucks and Buses
-        attribution_method: direct
-
-      # This activity is only in older FBAs
-      # direct_diesel:
-      #   selection_fields:
-      #     PrimaryActivity:
-      #       Medium- and Heavy-Duty Trucks and Buses Diesel On-Road: Medium- and Heavy-Duty Trucks and Buses
-      #   attribution_method: direct
-
-      direct_non_road:
-        selection_fields:
-          PrimaryActivity:
-            Rail Non-Road: Rail
-            Ships and Boats Non-Road: Ships and Boats
-            Aircraft Non-Road: General Aviation Aircraft
-        attribution_method: direct
+              SectorProducedBy: {'32411': ''} # purchases of refinery products (324110)
 
       petroleum_fuels_diesel:
         selection_fields:
-          PrimaryActivity:
-            Passenger Cars Diesel On-Road: Passenger Cars
-            Light-Duty Trucks Diesel On-Road: Light-Duty Trucks
-            Medium- and Heavy-Duty Buses Diesel On-Road: Buses - Distillate Fuel Oil
-            Medium- and Heavy-Duty Trucks Diesel On-Road: Medium- and Heavy-Duty Trucks - Distillate Fuel Oil
+          MetaSources:
+            - 'EPA_GHGI_T_3_14.petroleum_fuels_diesel'
+            - 'EPA_GHGI_T_3_15.petroleum_fuels_diesel'
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea_summary
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'324': ''} # purchases of refinery products (324110)
+              SectorProducedBy: {'32411': ''} # purchases of refinery products (324110)
 
       petroleum_fuels_gasoline:
         selection_fields:
-          PrimaryActivity:
-            Passenger Cars Gasoline On-Road: Passenger Cars
-            Light-Duty Trucks Gasoline On-Road: Light-Duty Trucks
+          MetaSources:
+            - 'EPA_GHGI_T_3_14.petroleum_fuels_gasoline'
+            - 'EPA_GHGI_T_3_15.petroleum_fuels_gasoline'
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea_summary
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'324': ''} # purchases of refinery products (324110)
+              SectorProducedBy: {'32411': ''} # purchases of refinery products (324110)
 
       construction_and_mining: #this set is allocated by purchases of construction equipment
         selection_fields:
-          PrimaryActivity: Construction/Mining Equipment Non-Road
+          MetaSources:
+            - 'EPA_GHGI_T_3_14.construction_and_mining'
+            - 'EPA_GHGI_T_3_15.construction_and_mining'
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea_summary
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'333': ''} # purchases of construction/mining equipment (333120)
+              SectorProducedBy: {'33312': ''} # purchases of construction/mining equipment (333120)
 
       farm_non_road: #this set is allocated by purchases of farm machinery
         selection_fields:
-          PrimaryActivity: Agricultural Equipment Non-Road
+          MetaSources:
+            - 'EPA_GHGI_T_3_14.farm_non_road'
+            - 'EPA_GHGI_T_3_15.farm_non_road'
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea_summary
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'333': ''} # purchases of farm machinery (333111)
+              SectorProducedBy: {'333111': ''} # purchases of farm machinery (333111)
 
       other_non_road: #this set is allocated by purchases of petroleum refining
         selection_fields:
-          PrimaryActivity: Other Non-Road
+          MetaSources:
+            - 'EPA_GHGI_T_3_14.other_non_road'
+            - 'EPA_GHGI_T_3_15.other_non_road'
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea_summary
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'324': ''} # purchases of refinery products (324110)
+              SectorProducedBy: {'32411': ''} # purchases of refinery products (324110)
 
       alt_fuel_on_road: #this set is allocated by purchases of natural gas
         selection_fields:
-          PrimaryActivity:
-            All activities Alternative Fuel On-Road: Alternative Fuel On-Road
+          MetaSources:
+            - 'EPA_GHGI_T_3_14.alt_fuel_on_road'
+            - 'EPA_GHGI_T_3_15.alt_fuel_on_road'
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea_summary
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'22': ''} # purchases of natural gas (221200)
-
-  EPA_GHGI_T_3_15: *mobile #N2O from mobile combustion duplicates method for CH4
-
-
-## Stationary Combustion
-  GHGI_CO2_stationary_combustion: # CO2 emissions from stationary combustion
-    fedefl_mapping: GHGI
-    # year: # override this
-    clean_fba_before_activity_sets: !script_function:EPA_GHGI allocate_industrial_combustion
-    clean_parameter: # Override each year for use in allocate_industrial_combustion
-        energy_fba: 'EIA_MECS_Energy'
-        year: *mecs_year
-        ghg_fba: 'EPA_GHGI_T_A_7' # 2018 Table
-    activity_sets:
-      direct_attribution: #direct allocation
-        selection_fields:
-          PrimaryActivity: Total (All Fuels) Residential
-        attribution_method: direct
+              SectorProducedBy: {'2212': ''} # purchases of natural gas (221200)
 
       non_manufacturing_coal:
         selection_fields:
-          PrimaryActivity:
-            Commercial Coal Commercial: Coal Commercial
-            Industrial Other Coal Industrial: Coal Industrial
+          MetaSources:
+            - 'EPA_GHGI_T_A_5.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_6.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_7.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_8.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_9.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_10.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_11.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_12.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_13.non_manufacturing_coal'
         attribution_method: proportional
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
-            <<: *bea_detail
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'212100': ''} # purchases of coal (212100)
+              SectorProducedBy: {'2121': ''} # purchases of coal (212100)
 
       non_manufacturing_natural_gas: # Applies to non-manufacturing sectors like ag and mining
         selection_fields:
-          PrimaryActivity:
-            - Natural Gas Commercial
-            - Natural Gas Industrial
+          MetaSources:
+            - 'EPA_GHGI_T_A_5.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_6.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_7.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_8.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_9.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_10.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_11.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_12.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_13.non_manufacturing_natural_gas'
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea_summary
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'22': ''} # purchases of natural gas (221200)
+              SectorProducedBy:  {'2212': ''} # purchases of natural gas (221200)
 
-      coal_manufacturing: # Industrial Coal for Manufacturing
+      coal_manufacturing_co2: # Industrial Coal for Manufacturing
         selection_fields:
-          PrimaryActivity:
-            Industrial Other Coal Industrial - Manufacturing: Coal Industrial - Manufacturing
+          MetaSources:
+            - 'EPA_GHGI_T_A_5.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_6.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_7.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_8.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_9.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_10.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_11.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_12.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_13.coal_manufacturing_co2'
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -461,16 +287,23 @@ source_names:
               FlowName:
                 - Coal
                 - Coke and Breeze
-            # attribution_source: TODO do we need attribution of MECS data?
-            #   BEA_Summary_Use_PRO_BeforeRedef:
-            #     <<: *bea_summary
-            #     selection_fields:
-            #       ActivityProducedBy: {'212100': ''} # purchases of coal
+            attribution_source:
+              Detail_Use_YEAR: ## Update year
+                selection_fields:
+                  SectorProducedBy: {'2121': ''} # purchases of coal (212100)
 
       natural_gas_manufacturing: # Industrial Natural Gas for manufacturing
         selection_fields:
-          PrimaryActivity:
-            - Natural Gas Industrial - Manufacturing
+          MetaSources:
+            - 'EPA_GHGI_T_A_5.natural_gas_manufacturing'
+            - 'EPA_GHGI_T_A_6.natural_gas_manufacturing'
+            - 'EPA_GHGI_T_A_7.natural_gas_manufacturing'
+            - 'EPA_GHGI_T_A_8.natural_gas_manufacturing'
+            - 'EPA_GHGI_T_A_9.natural_gas_manufacturing'
+            - 'EPA_GHGI_T_A_10.natural_gas_manufacturing'
+            - 'EPA_GHGI_T_A_11.natural_gas_manufacturing'
+            - 'EPA_GHGI_T_A_12.natural_gas_manufacturing'
+            - 'EPA_GHGI_T_A_13.natural_gas_manufacturing'
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -478,96 +311,78 @@ source_names:
             selection_fields:
               <<: *mecs_energy_default_selection
               FlowName: Natural Gas
-            # attribution_source:
-            #   BEA_Summary_Use_PRO_BeforeRedef:
-            #     <<: *bea_summary
-            #     selection_fields:
-            #       ActivityProducedBy: {'221200': ''} # purchases of natural gas
+            attribution_source:
+              Detail_Use_YEAR: ## Update year
+                selection_fields:
+                  SectorProducedBy:  {'2212': ''} # purchases of natural gas (221200)
 
       petroleum: # Petroleum
         selection_fields:
-          PrimaryActivity:
-            - Total Petroleum Commercial
-            - Total Petroleum Industrial
+          MetaSources:
+            - 'EPA_GHGI_T_A_5.petroleum'
+            - 'EPA_GHGI_T_A_6.petroleum'
+            - 'EPA_GHGI_T_A_7.petroleum'
+            - 'EPA_GHGI_T_A_8.petroleum'
+            - 'EPA_GHGI_T_A_9.petroleum'
+            - 'EPA_GHGI_T_A_10.petroleum'
+            - 'EPA_GHGI_T_A_11.petroleum'
+            - 'EPA_GHGI_T_A_12.petroleum'
+            - 'EPA_GHGI_T_A_13.petroleum'
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea_summary
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'324': ''} # purchases of refinery products (324110)
-
-
-  EPA_GHGI_T_3_8:  &stationary_combustion # CH4 emissions from stationary combustion
-    # year: #override this with ghgi_year
-    clean_fba_before_activity_sets: !script_function:EPA_GHGI allocate_industrial_combustion
-    clean_parameter: # Override each year for use in allocate_industrial_combustion
-        energy_fba: 'EIA_MECS_Energy'
-        year: *mecs_year
-        ghg_fba: 'EPA_GHGI_T_A_7' # 2018 Table
-    fedefl_mapping: GHGI
-    activity_sets:
-      residential:
-        selection_fields:
-          PrimaryActivity:
-            - Fuel Oil Residential
-            - Coal Residential
-            - Natural Gas Residential
-            - Wood Residential
-        attribution_method: direct
+              SectorProducedBy: {'32411': ''} # purchases of refinery products (324110)
 
       electric_power:
         selection_fields:
-          PrimaryActivity:
-            Coal Electric Power: Coal Electric Power
-            Natural Gas Electric Power: Natural Gas Electric Power
-            Natural gas Electric Power: Natural Gas Electric Power # fix capitalization
-            Fuel Oil Electric Power: Fuel Oil Electric Power
-            Wood Electric Power: Wood Electric Power
+          MetaSources:
+            - 'EPA_GHGI_T_2_1.electric_power'
+            - 'EPA_GHGI_T_3_8.electric_power'
+            - 'EPA_GHGI_T_3_9.electric_power'
         attribution_method: proportional
         attribution_source:
-          BEA_Detail_Make_BeforeRedef:
-            <<: *bea_detail
+          Detail_Supply_YEAR: ## Update year
             selection_fields:
-              ActivityConsumedBy: {'221100': ''}  # Electricity (221100)
+              SectorConsumedBy: {'2211': ''}  # Electricity (221100)
       fuel_oil:
         selection_fields:
-          PrimaryActivity:
-            - Fuel Oil Commercial
-            - Fuel Oil Industrial
+          MetaSources:
+            - 'EPA_GHGI_T_3_8.fuel_oil'
+            - 'EPA_GHGI_T_3_9.fuel_oil'
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea_summary
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'324': ''}  # purchases of refinery products (324110)
+              SectorProducedBy: {'32411': ''} # purchases of refinery products (324110)
 
       natural_gas_nonmanufacturing:  # Commercial Natural gas
         selection_fields:
-          PrimaryActivity:
-            Natural gas Commercial: Natural Gas Commercial # fix capitalization
-            Natural gas Industrial: Natural Gas Industrial # fix capitalization
-            Natural Gas Commercial: Natural Gas Commercial
-            Natural Gas Industrial: Natural Gas Industrial
+          MetaSources:
+            - 'EPA_GHGI_T_3_8.natural_gas_nonmanufacturing'
+            - 'EPA_GHGI_T_3_9.natural_gas_nonmanufacturing'
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea_summary
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'22': ''}  # purchases of natural gas (221200)
+              SectorProducedBy:  {'2212': ''}  # purchases of natural gas (221200)
 
-      coal_nonmanufacturing:
+      coal_nonmanufacturing: # empty in some years (i.e., all coal consumption for manufacturing)
         selection_fields:
-          PrimaryActivity: Coal Industrial
+          MetaSources:
+            - 'EPA_GHGI_T_3_8.coal_nonmanufacturing'
+            - 'EPA_GHGI_T_3_9.coal_nonmanufacturing'
         attribution_method: proportional
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
-            <<: *bea_detail
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'212100': ''}  # purchases of coal (212100)
+              SectorProducedBy: {'2121': ''}  # purchases of coal (212100)
 
       coal_manufacturing:
         selection_fields:
-          PrimaryActivity: Coal Industrial - Manufacturing
+          MetaSources:
+            - 'EPA_GHGI_T_3_8.coal_manufacturing'
+            - 'EPA_GHGI_T_3_9.coal_manufacturing'
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -575,17 +390,16 @@ source_names:
             selection_fields:
               <<: *mecs_energy_default_selection
               FlowName: Coal
-            # attribution_source:
-            #   BEA_Summary_Use_PRO_BeforeRedef:
-            #     <<: *bea_summary
-            #     selection_fields:
-            #       ActivityProducedBy: {'212100': ''} # purchases of coal
+            attribution_source:
+              Detail_Use_YEAR: ## Update year
+                selection_fields:
+                  SectorProducedBy: {'2121': ''}  # purchases of coal (212100)
 
       ng_manufacturing:
         selection_fields:
-          PrimaryActivity:
-            - Natural gas Industrial - Manufacturing
-            - Natural Gas Industrial - Manufacturing
+          MetaSources:
+            - 'EPA_GHGI_T_3_8.ng_manufacturing'
+            - 'EPA_GHGI_T_3_9.ng_manufacturing'
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -593,59 +407,16 @@ source_names:
             selection_fields:
               <<: *mecs_energy_default_selection
               FlowName: Natural Gas
-            # attribution_source:
-            #   BEA_Summary_Use_PRO_BeforeRedef:
-            #     <<: *bea_summary
-            #     selection_fields:
-            #       ActivityProducedBy: {'221200': ''} # purchases of natural gas
-
-    #Intentionally left out 'Wood Commercial' and 'Wood Industrial'
-
-  EPA_GHGI_T_3_9:
-    <<: *stationary_combustion # N2O emissions from stationary combustion
-
-## Other sources
-  EPA_GHGI_T_4_46: #CO2 for selected petrochemicals
-    # year: # override with ghgi_year
-    fedefl_mapping: GHGI
-    selection_fields:
-      PrimaryActivity:
-        - Acrylonitrile
-        - Carbon Black
-        - Ethylene
-        - Ethylene Dichloride
-        - Ethylene Oxide
-        - Methanol
-    attribution_method: direct
-
-  GHGI_nonenergy_fossil_fuel_emissions: # Fossil fuel for non-energy uses
-    # year: #override with ghgi_year
-    fedefl_mapping: GHGI
-    activity_sets:
-      coal:
-        selection_fields:
-          PrimaryActivity:
-            - Industry Industrial Coking Coal
-            - Industry Industrial Other Coal
-        attribution_method: direct
+            attribution_source:
+              Detail_Use_YEAR: ## Update year
+                selection_fields:
+                  SectorProducedBy:  {'2212': ''}  # purchases of natural gas (221200)
 
       petroleum_neu: # consumed petroleum products
         selection_fields:
-          PrimaryActivity:
-            'Industry Asphalt & Road Oil': Industry Petroleum Products Non-energy
-            Industry Distillate Fuel Oil: Industry Petroleum Products Non-energy
-            Industry LPG: Industry Petroleum Products Non-energy
-            Industry Lubricants: Industry Petroleum Products Non-energy
-            Industry Miscellaneous Products: Industry Petroleum Products Non-energy
-            'Industry Naphtha (<401 F)': Industry Petroleum Products Non-energy
-            'Industry Other Oil (>401 F)': Industry Petroleum Products Non-energy
-            Industry Pentanes Plus: Industry Petroleum Products Non-energy
-            Industry Petroleum Coke: Industry Petroleum Products Non-energy
-            Industry Special Naphtha: Industry Petroleum Products Non-energy
-            Industry Still Gas: Industry Petroleum Products Non-energy
-            Industry Waxes: Industry Petroleum Products Non-energy
-            Industry Natural Gasoline: Industry Petroleum Products Non-energy #T_3_22. Also produced by nat gas plants
-            Industry HGL: Industry Petroleum Products Non-energy #T_3_22. Also produced by nat gas plants
+          MetaSources:
+            - 'EPA_GHGI_T_3_22.petroleum_neu'
+            - 'EPA_GHGI_T_3_22b.petroleum_neu'
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -657,15 +428,16 @@ source_names:
                 - Residual Fuel Oil
                 - Distillate Fuel Oil
                 - Hydrocarbon Gas Liquids, excluding natural gasoline
-            # attribution_source:
-            #   BEA_Summary_Use_PRO_BeforeRedef:
-            #     <<: *bea_summary
-            #     selection_fields:
-            #       ActivityProducedBy: {'324110': ''} # purchases of refineries
+            attribution_source:
+              Detail_Use_YEAR: ## Update year
+                selection_fields:
+                  SectorProducedBy: {'32411': ''} # purchases of refinery products (324110)
 
       natural_gas_neu: # consumed nat gas to chemical plants
         selection_fields:
-          PrimaryActivity: Industry Natural Gas to Chemical Plants
+          MetaSources:
+            - 'EPA_GHGI_T_3_22.natural_gas_neu'
+            - 'EPA_GHGI_T_3_22b.natural_gas_neu'
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -674,125 +446,172 @@ source_names:
               Class: Other
               FlowName: Natural Gas
               Unit: Trillion Btu
-            # attribution_source:
-            #   BEA_Summary_Use_PRO_BeforeRedef:
-            #     <<: *bea_summary
-            #     selection_fields:
-            #       ActivityProducedBy: {'221200': ''} # purchases of natural gas
+            attribution_source:
+              Detail_Use_YEAR: ## Update year
+                selection_fields:
+                  SectorProducedBy:  {'2212': ''}  # purchases of natural gas (221200)
 
       transportation_lubricants:
         selection_fields:
-          PrimaryActivity: Transportation Lubricants
+          MetaSources:
+            - 'EPA_GHGI_T_3_22.transportation_lubricants'
+            - 'EPA_GHGI_T_3_22b.transportation_lubricants'
         attribution_method: proportional
         attribution_source:
-          BEA_Summary_Use_PRO_BeforeRedef:
-            <<: *bea_summary
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'324': ''} # use of petroleum products (324110)
+              SectorProducedBy: {'32411': ''} # purchases of refinery products (324110)
 
-## Other Emissions
-  EPA_GHGI_T_4_50: # HFCs from HCFC-22 production
-    # year: # override with ghgi_year
-    fedefl_mapping: GHGI
-    selection_fields:
-      Unit: MMT CO2e # drop records in kt
-      PrimaryActivity: HCFC-22 Production
-    attribution_method: direct
-
-  EPA_GHGI_T_4_96: # HFCs and other emissions from electronics manufacture
-    # year: # override with ghgi_year
-    fedefl_mapping: GHGI
-    selection_fields:
-      PrimaryActivity: Electronics Production
-    attribution_method: direct
-
-  EPA_GHGI_T_4_102: # HFCs and PFCs from ODS Substitutes
-    clean_fba_before_activity_sets: !script_function:EPA_GHGI split_HFCs_by_type
-    clean_parameter:
-        # Proportions of specific HFCs are assigned based on national total
-        flow_fba: EPA_GHGI_T_4_100
-    # year: # override with ghgi_year
-    fedefl_mapping: GHGI
-    activity_sets:
-      households:
-        selection_fields:
-          PrimaryActivity:
-            - Domestic Refrigeration
-            - Residential Stationary Air Conditioning
-        attribution_method: direct
 
       refrigerants:
         selection_fields:
-          PrimaryActivity:
-            - Commercial Refrigeration
-            - Industrial Process Refrigeration
+          MetaSources: 'EPA_GHGI_T_4_102.refrigerants'
         attribution_method: proportional
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
-            <<: *bea_detail
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'333415': ''} # Air conditioning equipment (333415)
+              SectorProducedBy: {'333415': ''} # Air conditioning equipment
 
       air_conditioning:
         selection_fields:
-          PrimaryActivity:
-            - Commercial Stationary Air Conditioning
+          MetaSources: 'EPA_GHGI_T_4_102.air_conditioning'
         attribution_method: proportional
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
-            <<: *bea_detail
+          Detail_Use_YEAR: ## Update year
             selection_fields:
-              ActivityProducedBy: {'333415': ''} # Air conditioning equipment (333415)
+              SectorProducedBy: {'333415': ''} # Air conditioning equipment
 
       foams:
         selection_fields:
-          PrimaryActivity:
-            - Foams
+          MetaSources: 'EPA_GHGI_T_4_102.foams'
         attribution_method: proportional
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
-            <<: *bea_detail
+          Detail_Use_YEAR: ## Update year
+            selection_fields:
+              SectorProducedBy:
+                '32614': '' # Polystyrene foam (326140)
+                '32615': '' # Urethane and other foam (326150)
+
+
+      magnesium:
+        selection_fields:
+          MetaSources: 'EPA_GHGI_T_4_86'
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_GrossOutput_IO:
+            # year: *ghgi_year
+            geoscale: national
+            activity_to_sector_mapping: BEA_2012_Detail
+            attribution_method: equal
+
+## For tables requiring direct attribution, reattribute the original GHGI
+  EPA_GHGI_T_2_1: #U.S. GHG emissions
+    # year: # override this
+    fedefl_mapping: GHGI
+    activity_sets:
+      direct:
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:direct
+
+      electricity_transmission:
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:electricity_transmission
+
+      # replace equal attribution in summary model
+      lead:
+        selection_fields:
+          PrimaryActivity: Lead Production #CO2
+        attribution_method: proportional
+        attribution_source:
+          USGS_MYB_Lead:
+            # year: 2016 Override with appropriate year
             selection_fields:
               ActivityProducedBy:
-              ActivityProducedBy:
-                '326140': '' # Polystyrene foam
-                '326150': '' # Urethane and other foam
+                - Primary lead, refined content, domestic ores and base bullion
+                - Secondary lead, lead content
 
 
-      # 'Mobile Air Conditioning' and 'Transport Refrigeration' come from
-      # different table.
-      # Intentionally left out 'Solvents', 'Aerosols', 'Fire Protection'
+## Fossil Fuels
+  EPA_GHGI_T_3_68: #CH4 from Natural Gas Systems
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_68
+  EPA_GHGI_T_3_70: #CO2 from Natural Gas Systems mimics CH4
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_70
+  EPA_GHGI_T_3_72: #N2O from Natural Gas Systems, not used in original method, mimics CH4
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_72
+
+  EPA_GHGI_T_3_42: #CH4 from Petroleum Systems
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_42
+  EPA_GHGI_T_3_44: #CO2 from Petroleum Systems mimics CH4
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_44
+  EPA_GHGI_T_3_46: #N2O from Petroleum Systems, not in prior method, mimics CH4
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_46
+
+## Agriculture
+  EPA_GHGI_T_5_28: #CH4, N2O, CO and NOx from field burning of residues
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_5_28
+  EPA_GHGI_T_5_3:  #CH4 from Enteric Fermentation
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_5_3
+  EPA_GHGI_T_5_6: #CH4 and N2O from manure, mimics enteric fermentation
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_5_6
+
+## Mobile Sources
+  EPA_GHGI_T_3_13: #CO2 from mobile combustion
+    fedefl_mapping: GHGI
+    activity_sets:
+      direct_petroleum:
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_13:activity_sets:direct_petroleum
+      direct_ng:
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_13:activity_sets:direct_ng
+
+  EPA_GHGI_T_3_14: &mobile #CH4 from mobile combustion
+    fedefl_mapping: GHGI
+    activity_sets:
+      direct_gasoline: # empty in some years (<0.05 MMT CO2eq)
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:direct_gasoline
+      direct_non_road:
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:direct_non_road
+
+  EPA_GHGI_T_3_15: *mobile #N2O from mobile combustion duplicates method for CH4
+
+
+## Stationary Combustion
+  GHGI_CO2_stationary_combustion: # CO2 emissions from stationary combustion
+    fedefl_mapping: GHGI
+    activity_sets:
+      direct_attribution: #direct allocation
+        !include:GHG_national_m1_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:direct_attribution
+
+  EPA_GHGI_T_3_8:  &stationary_combustion # CH4 emissions from stationary combustion
+    fedefl_mapping: GHGI
+    activity_sets:
+      residential:
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:residential
+
+  EPA_GHGI_T_3_9: *stationary_combustion # N2O emissions from stationary combustion
+
+## Other sources
+  EPA_GHGI_T_4_46: #CO2 for selected petrochemicals
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_46
+
+  GHGI_nonenergy_fossil_fuel_emissions: # Fossil fuel for non-energy uses
+    fedefl_mapping: GHGI
+    activity_sets:
+      coal:
+        !include:GHG_national_m1_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:coal
+
+## Other Emissions
+  EPA_GHGI_T_4_50: # HFCs from HCFC-22 production
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_50
+
+  EPA_GHGI_T_4_96: # HFCs and other emissions from electronics manufacture
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_96
+
+  EPA_GHGI_T_4_102: # HFCs and PFCs from ODS Substitutes
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_102
+    activity_sets:
+      households:
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_102:activity_sets:households
 
   EPA_GHGI_T_A_97: # HFCs from Transportation
-    # year: # override with ghgi_year
-    clean_fba_before_mapping: !script_function:EPA_GHGI split_HFCs_by_type
-    clean_parameter:
-        # Proportions of specific HFCs are assigned based on national total
-        flow_fba: EPA_GHGI_T_4_100
-    fedefl_mapping: GHGI
-    selection_fields:
-      PrimaryActivity:
-        Mobile AC - Passenger Cars: Passenger Cars - Households
-        Mobile AC - Light-Duty Trucks: Light-Duty Trucks - Households
-        Mobile AC - Heavy-Duty Vehicles: Heavy-Duty Vehicles
-        Comfort Cooling for Trains and Buses - School and Tour Buses: School and Tour Buses
-        # Comfort Cooling for Trains and Buses - Transit Buses: Transit Buses #excluded
-        Comfort Cooling for Trains and Buses - Rail: Rail
-        Refrigerated Transport - Medium- and Heavy-Duty Trucks: Medium- and Heavy-Duty Trucks
-        Refrigerated Transport - Rail: Rail
-        Refrigerated Transport - Ships and Boats: Ships and Boats
-    attribution_method: direct
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_A_97
 
   EPA_GHGI_T_4_80: # PFCs from aluminum production
-    # year: # override with ghgi_year
-    fedefl_mapping: GHGI
-    selection_fields:
-      PrimaryActivity: Aluminum Production
-    attribution_method: direct
-
-  EPA_GHGI_T_4_86: # HFCs, SF6, CO2 from magnesium production
-    # year: # override with ghgi_year
-    fedefl_mapping: GHGI
-    selection_fields:
-      PrimaryActivity: Magnesium Production and Processing
-    attribution_method: direct
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_80

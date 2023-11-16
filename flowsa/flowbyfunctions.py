@@ -174,7 +174,7 @@ def remove_parent_sectors_from_crosswalk(cw_load, sector_list):
 #             df = df.reset_index(drop=True)
 #
 #     # load naics length crosswwalk
-#     cw_load = load_crosswalk('sector_length')
+#     cw_load = load_crosswalk('NAICS_2012_Crosswalk')
 #     # remove any parent sectors of sectors identified as those that should
 #     # not be aggregated
 #     if sectors_to_exclude_from_agg is not None:

@@ -1,12 +1,11 @@
-# EIA_MER.py (flowsa)
+# EIA_SEDS.py (flowsa)
 # !/usr/bin/env python3
 # coding=utf-8
 
 """
-EIA Energy Monthly Data, summed to yearly
-https://www.eia.gov/totalenergy/data/monthly/
+EIA State Energy Data System
+https://www.eia.gov/state/seds/
 2010 - 2020
-Last updated: September 8, 2020
 """
 
 import io
@@ -141,3 +140,8 @@ def eia_seds_parse(*, df_list, year, config, **_):
     df['DataCollection'] = 5  # tmp
 
     return df
+
+if __name__ == "__main__":
+    import flowsa
+    flowsa.generateflowbyactivity.main(source='EIA_SEDS', year=2020)
+    fba = flowsa.getFlowByActivity('EIA_SEDS', 2020)

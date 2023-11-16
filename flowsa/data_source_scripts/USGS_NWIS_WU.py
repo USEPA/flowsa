@@ -549,7 +549,8 @@ def check_golf_and_crop_irrigation_totals(df_load: FlowByActivity):
         group_cols = list(df.select_dtypes(include=['object', 'int']).columns)
 
         df_w_missing_crop2 = df_w_missing_crop.aggregate_flowby(
-            retain_zeros=True, columns_to_group_by=group_cols)
+            retain_zeros=True, columns_to_group_by=group_cols,
+            aggregate_ratios=True)
 
         # validate results - the differences should all be 0
         df_check = subset_and_merge_irrigation_types(df_w_missing_crop2)

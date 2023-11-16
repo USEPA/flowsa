@@ -202,7 +202,8 @@ def estimate_suppressed_sectors_equal_attribution(
 
     log.info('Estimating suppressed data by equally attributing parent to '
              'child sectors.')
-    naics_key = map_source_sectors_to_more_aggregated_sectors()
+    naics_key = map_source_sectors_to_more_aggregated_sectors(
+        year=fba.config['target_naics_year'])
     # forward fill
     naics_key = naics_key.T.ffill().T
 
@@ -210,7 +211,8 @@ def estimate_suppressed_sectors_equal_attribution(
 
     # determine if there are any 1:1 parent:child sectors that are missing,
     # if so, add them (true for usda_coa_cropland_naics df)
-    cw_melt = map_source_sectors_to_less_aggregated_sectors()
+    cw_melt = map_source_sectors_to_less_aggregated_sectors(
+        fba.config['target_naics_year'])
     cw_melt = cw_melt.assign(count=(cw_melt
                                     .groupby(['source_naics', 'SectorLength'])
                                     ['source_naics']
@@ -227,12 +229,9 @@ def estimate_suppressed_sectors_equal_attribution(
             .query(f"~{col}.isna()")
             .drop_duplicates()  # duplicates if multiple generations of 1:1
             )
-
-    fba3 = (fba
-            .merge(fba2, indicator=True, how='outer')
-            .query('_merge!="both"')
-            .drop('_merge', axis=1)
-            )
+    # merge the two dfs - add the child sectors to original df when there is
+    # only single parent:child
+    fba3 = fba.merge(fba2, how='outer')
 
     fba3 = (fba3
             .assign(Unattributed=fba3.FlowAmount.copy(),

@@ -88,6 +88,53 @@ def mlu_parse(*, df_list, source, year, **_):
     return dfm3
 
 
+def attribute_transportation_sector_fees_to_target_sectors(fba, sector_col):
+    """
+    Equally attribute highway fees to all the sectors the fees are mapped to
+    :param fba:
+    :param sector_col:
+    :return:
+    """
+    fha_dict = get_transportation_sectors_based_on_FHA_fees()
+    df_fha = pd.DataFrame.from_dict(fha_dict, orient='index')
+    # map to target sectors
+    naics_key = industry_spec_key(fba.config['industry_spec'],
+                                  fba.config['target_naics_year'])
+    df_fha = (df_fha
+              .merge(naics_key, how='left', left_on='NAICS_2012_Code',
+                     right_on='source_naics')
+              .drop(columns=['source_naics'])
+              .rename(columns={'target_naics': sector_col})
+              )
+    # equally attribute the shareoffees to all mapped sectors
+    df_fha2 = (df_fha
+               .assign(count=lambda x: x.groupby('NAICS_2012_Code')['NAICS_2012_Code'].transform('count'))
+               .assign(ShareOfFees=lambda x: x['ShareOfFees']/x['count'])
+               .drop(columns=['NAICS_2012_Code', 'count'])
+               )
+    return df_fha2
+
+
+def validate_land_attribution(fba, attributed_fba):
+    """
+    Function specific to validating the land attribution methods, as data
+    is dropped
+    :param fba:
+    :param attributed_fba:
+    :return:
+    """
+    fbsum = (fba[['group_id', 'group_total']]
+             .drop_duplicates())['group_total'].sum()
+    attsum = attributed_fba['FlowAmount'].sum()
+    percent_change = round(((attsum - fbsum)/fbsum)*100,3)
+    if percent_change == 0:
+        log.info(f"No change in {fba.full_name} FlowAmount after "
+                 "attribution.")
+    else:
+        log.warning(f"Percent change in {fba.full_name} after "
+                    f"attribution is {percent_change}%")
+
+
 def allocate_usda_ers_mlu_land_in_urban_areas(
         fba: FlowByActivity, **_) -> FlowByActivity:
     """
@@ -122,18 +169,8 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
     mecs = _['attr']['cache']['EIA_MECS_Land']
 
     # load the federal highway administration fees dictionary
-    fha_dict = get_transportation_sectors_based_on_FHA_fees()
-    df_fha = pd.DataFrame.from_dict(fha_dict, orient='index')
-    # set new group_id column
-    df_fha = df_fha.assign(group_id=range(4, len(df_fha) + 4))
-    # map to target sectors
-    naics_key = industry_spec_key(fba.config['industry_spec'])
-    df_fha = (df_fha
-              .merge(naics_key, how='left', left_on='NAICS_2012_Code',
-                     right_on='source_naics')
-              .drop(columns=['NAICS_2012_Code', 'source_naics'])
-              .rename(columns={'target_naics': sector_col})
-              )
+    df_fha = attribute_transportation_sector_fees_to_target_sectors(
+        fba, sector_col)
 
     # calculate total residential area from the American Housing Survey
     residential_land_area = get_area_of_urban_land_occupied_by_houses_2013()
@@ -149,15 +186,12 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
                           )
     else:
         df_residential = df_residential.assign(FlowAmount=residential_land_area)
-    df_residential['group_id'] = 0
 
     # make an assumption about the percent of urban area that is open space
     openspace_multiplier = get_open_space_fraction_of_urban_area()
     df_openspace = fba[fba[sector_col] == '712190']
     df_openspace = df_openspace.assign(
         FlowAmount=df_openspace['FlowAmount'] * openspace_multiplier)
-    # reset gorup_id
-    df_openspace['group_id'] = 1
 
     # sum all uses of urban area that are NOT transportation
     # first concat dfs for residential, openspace, commercial,
@@ -185,8 +219,6 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
     df_airport = df_transport[df_transport[sector_col] == '488119']
     df_airport = df_airport.assign(
         FlowAmount=df_airport['FlowAmount'] * airport_multiplier)
-    # reset gorup_id
-    df_airport['group_id'] = 2
 
     # make an assumption about the percent of urban transport
     # area used by railroads
@@ -194,8 +226,6 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
     df_railroad = df_transport[df_transport[sector_col] == '482112']
     df_railroad = df_railroad.assign(
         FlowAmount=df_railroad['FlowAmount'] * railroad_multiplier)
-    # reset gorup_id
-    df_railroad['group_id'] = 3
 
     # further allocate the remaining urban transportation area using
     # Federal Highway Administration fees
@@ -209,7 +239,7 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
     df_highway = df_transport.merge(air_rail_area_sum, how='left')
     df_highway = df_highway.assign(
         FlowAmount=df_highway['FlowAmount'] - df_highway['AirRail'])
-    df_highway.drop(columns=['AirRail', 'group_id'], inplace=True)
+    df_highway.drop(columns=['AirRail'], inplace=True)
 
     # add fed highway administration fees
     df_highway2 = df_highway.merge(df_fha, how='left')
@@ -223,8 +253,20 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
         [df_residential, df_openspace, df_airport, df_railroad, df_highway2],
         ignore_index=True, sort=False).reset_index(drop=True)
 
-    return allocated_urban_areas_df.drop(columns=['rurl_res', 'total_area'],
-                                         errors='ignore')
+    # reset the group id and the group_total
+    allocated_urban_areas_df = (
+        allocated_urban_areas_df
+        .drop(columns=['group_id', 'group_total', 'rurl_res', 'total_area'],
+              errors='ignore')
+        .reset_index(drop=True).reset_index()
+        .rename(columns={'index': 'group_id'})
+        .assign(group_total=allocated_urban_areas_df.FlowAmount)
+    )
+
+    # calculate the percent change in df caused by attribution
+    validate_land_attribution(fba, allocated_urban_areas_df)
+
+    return allocated_urban_areas_df
 
 
 def allocate_usda_ers_mlu_land_in_rural_transportation_areas(
@@ -253,18 +295,8 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(
     sector_col = 'SectorConsumedBy'
 
     # load the federal highway administration fees dictionary
-    fha_dict = get_transportation_sectors_based_on_FHA_fees()
-    df_fha = pd.DataFrame.from_dict(fha_dict, orient='index')
-    # set new group_id column
-    df_fha = df_fha.assign(group_id=range(2, len(df_fha) + 2))
-    # map to target sectors
-    naics_key = industry_spec_key(fba.config['industry_spec'])
-    df_fha = (df_fha
-              .merge(naics_key, how='left', left_on='NAICS_2012_Code',
-                     right_on='source_naics')
-              .drop(columns=['NAICS_2012_Code', 'source_naics'])
-              .rename(columns={'target_naics': sector_col})
-              )
+    df_fha = attribute_transportation_sector_fees_to_target_sectors(
+        fba, sector_col)
 
     # make an assumption about the percent of rural transport
     # area used by airports
@@ -279,8 +311,6 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(
     df_railroad = fba[fba[sector_col] == '482112']
     df_railroad = df_railroad.assign(
         FlowAmount=df_railroad['FlowAmount'] * railroad_multiplier)
-    # reset gorup_id
-    df_railroad['group_id'] = 1
 
     # further allocate the remaining urban transportation area
     # using Federal Highway Administration fees
@@ -296,7 +326,7 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(
     df_highway = fba.merge(air_rail_area_sum, how='left')
     df_highway = df_highway.assign(
         FlowAmount=df_highway['FlowAmount'] - df_highway['AirRail'])
-    df_highway.drop(columns=['AirRail', 'group_id'], inplace=True)
+    df_highway.drop(columns=['AirRail'], inplace=True)
 
     # add fed highway administration fees
     df_highway2 = df_highway.merge(df_fha, how='left')
@@ -308,6 +338,18 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(
     # concat airport, railroad, highway
     allocated_rural_trans = pd.concat(
         [df_airport, df_railroad, df_highway2], sort=False, ignore_index=True)
+
+    # reset the group id and the group_total
+    allocated_rural_trans = (
+        allocated_rural_trans
+        .drop(columns=['group_id', 'group_total'])
+        .reset_index(drop=True).reset_index()
+        .rename(columns={'index': 'group_id'})
+        .assign(group_total=allocated_rural_trans.FlowAmount)
+    )
+
+    # calculate the percent change in df caused by attribution
+    validate_land_attribution(fba, allocated_rural_trans)
 
     return allocated_rural_trans
 
@@ -341,22 +383,27 @@ def allocate_usda_ers_mlu_other_land(
     rural_res = get_area_of_rural_land_occupied_by_houses_2013()
 
     # household codes
-    household = load_crosswalk('household')
+    household = load_crosswalk('Household_SectorCodes')
     household = household['Code'].drop_duplicates().tolist()
 
     # if it is state data, take weighted avg using land area
     if fba.config['geoscale'] == 'state':
-        fba = (fba
-               .assign(rural_res=rural_res,
-                       total_area=fba['FlowAmount'].sum(),
-                       FlowAmount=lambda x: x['FlowAmount']/x[
+        fba2 = (fba
+                .assign(rural_res=rural_res,
+                        total_area=fba['FlowAmount'].sum(),
+                        FlowAmount=lambda x: x['FlowAmount']/x[
                            'total_area'] * x['rural_res']
-                       )
-               )
+                        )
+                )
     # in df, where sector is a personal expenditure value, and
     # location = 00000, replace with rural res value
     elif fba.config['geoscale'] == 'national':
-        fba['FlowAmount'] = np.where(fba['SectorConsumedBy'].isin(household),
-                                     rural_res, fba['FlowAmount'])
+        fba2 = fba.assign(FlowAmount=np.where(fba['SectorConsumedBy'].isin(
+            household), rural_res, fba['FlowAmount']))
+    else:
+        log.error('Geograpic level is not supported - function is written '
+                  'for state and national levels.')
 
-    return fba.drop(columns=['rural_res', 'total_area'], errors='ignore')
+    validate_land_attribution(fba, fba2)
+
+    return fba2.drop(columns=['rural_res', 'total_area'], errors='ignore')

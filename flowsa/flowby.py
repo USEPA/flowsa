@@ -394,7 +394,8 @@ class _FlowBy(pd.DataFrame):
     def select_by_fields(
         self: FB,
         selection_fields: dict = None,
-        exclusion_fields: dict = None
+        exclusion_fields: dict = None,
+        skip_select_by: bool = False,
     ) -> FB:
         '''
         Filter the calling FlowBy dataset according to the 'selection_fields'
@@ -436,6 +437,8 @@ class _FlowBy(pd.DataFrame):
         Similarly, can use 'exclusion_fields' to remove particular data in the
         same manner.
         '''
+        if skip_select_by:
+            return self
         exclusion_fields = (exclusion_fields or
                             self.config.get('exclusion_fields', {}))
         exclusion_fields = {k: [v] if not isinstance(v, (list, dict)) else v
@@ -458,7 +461,7 @@ class _FlowBy(pd.DataFrame):
         selection_fields = (selection_fields
                             or self.config.get('selection_fields'))
 
-        if selection_fields is None:
+        if selection_fields is None or selection_fields == 'null':
             return self
 
         selection_fields = {k: [v] if not isinstance(v, (list, dict)) else v
@@ -521,13 +524,19 @@ class _FlowBy(pd.DataFrame):
                   errors='ignore')
             .reset_index(drop=True)
         )
+        # Reset blank values to nan
+        for k in replace_dict.keys():
+            if all(replaced_fb[k] == ''):
+                replaced_fb[k] = np.nan
+
         return replaced_fb
 
     def aggregate_flowby(
             self: FB,
             columns_to_group_by: List[str] = None,
             columns_to_average: List[str] = None,
-            retain_zeros: bool = False
+            retain_zeros: bool = False,
+            aggregate_ratios: bool =False
     ) -> FB:
         """
         Aggregates (sums) FlowBy 'FlowAmount' column based on group_by_columns
@@ -542,7 +551,8 @@ class _FlowBy(pd.DataFrame):
         :return: FlowBy, with aggregated columns
         """
         # if units are rates or ratios, do not aggregate
-        if self['Unit'].str.contains('/').any():
+        if (self['Unit'].str.contains('/').any()) and (aggregate_ratios
+                                                       is False):
             log.info(f"At least one row is a rate or ratio with units "
                      f"{self['Unit'].unique().tolist()}, returning df "
                      f"without aggregating")
@@ -564,7 +574,9 @@ class _FlowBy(pd.DataFrame):
                                 if c not in ['FlowAmount',
                                              *columns_to_average,
                                              *columns_to_group_by]])
-
+        if len(self) == 0:
+            log.warning('Error, dataframe is empty')
+            return self
         aggregated = (
             fb
             .assign(**{f'_{c}_weighted': fb[c] * fb.FlowAmount
@@ -652,14 +664,25 @@ class _FlowBy(pd.DataFrame):
             elif self.config['data_format'] in ['FBA', 'FBS_outside_flowsa']:
                 fb: 'FlowByActivity' = (
                     grouped
-                    .map_to_sectors(external_config_path=external_config_path)
+                    .map_to_sectors(
+                        target_year=self.config['target_naics_year'],
+                        external_config_path=external_config_path)
                     .function_socket('clean_fba_w_sec',
                                      attr=self.config,
                                      method=self.config)
                     .rename(columns={'SourceName': 'MetaSources'})
                 )
             elif self.config['data_format'] in ['FBS']:
-                fb = grouped.sector_aggregation()  # convert to proper industry spec.
+                # ensure sector year of loaded FBS matches target sector year
+                if f"NAICS_{self.config['target_naics_year']}_Code" != \
+                        grouped['SectorSourceName'][0]:
+                    grouped = naics.convert_naics_year(
+                        grouped,
+                        f"NAICS_{self.config['target_naics_year']}_Code",
+                        grouped['SectorSourceName'][0],
+                        dfname=self.full_name)
+                # convert to proper industry spec.
+                fb = grouped.sector_aggregation()
 
             # subset the fb configuration so it only includes the
             # attribution_method currently being assessed - rather than all
@@ -849,7 +872,7 @@ class _FlowBy(pd.DataFrame):
         return child_df_list
 
     def load_prepare_attribution_source(
-        self: 'FlowByActivity',
+        self: FB,
         attribution_config=None,
         download_sources_ok: bool = True
     ) -> 'FlowBySector':
@@ -869,9 +892,14 @@ class _FlowBy(pd.DataFrame):
             attribution_fbs.config = {
                 **{k: attribution_fbs.config[k]
                    for k in attribution_fbs.config['method_config_keys']},
+                **{k: v for k, v in self.config.items()
+                           if k in self.config['method_config_keys']},
                 **get_catalog_info(name),
-                **config
+                **config,
+                'data_format': 'FBS'
             }
+            attribution_fbs = attribution_fbs.prepare_fbs(
+                download_sources_ok=download_sources_ok)
         else:
             attribution_fbs = get_flowby_from_config(
                 name=name,
@@ -1015,10 +1043,11 @@ class _FlowBy(pd.DataFrame):
                                  f' {sorted(set(unattributable[f"{rank}Sector"]))}. '
                                  f'See validation_log for details.')
                     if other_geoscale.aggregation_level < 5:
-                    # if other_geoscale < 5:
                         vlog.warning('This can occur when combining datasets '
                                     'at a sub-national level when activities '
                                     'do not align for some locations.')
+                        vlog.warning(f'{other.full_name} is at geoscale '
+                                     f'{other_geoscale}. Is that correct?')
                     vlog.debug(
                         'Unattributed activities: \n {}'.format(
                             unattributable
@@ -1071,16 +1100,24 @@ class _FlowBy(pd.DataFrame):
             unattributable = merged_with_denominator.query(f'denominator == 0 ')
 
             if not unattributable.empty:
-                log.warning(
-                    'Could not attribute activities %s in %s due to lack of '
-                    'flows in attribution source %s for mapped sectors',
-                    set(zip(unattributable.SectorProducedBy,
-                            unattributable.SectorConsumedBy,
-                            unattributable.Location)),
+                vlog.warning(
+                    'Could not attribute activities in %s due to lack of '
+                    'flows in attribution source %s for %s. '
+                    'See validation_log for details.',
                     unattributable.full_name,
-                    other.full_name
+                    other.full_name,
+                    sorted(set(zip(unattributable.SectorProducedBy.fillna('N/A'),
+                                   unattributable.SectorConsumedBy.fillna('N/A'))))
                 )
-
+                vlog.debug(
+                    'Unattributed activities: \n {}'.format(
+                        unattributable
+                        .drop(columns=schema.dq_fields +
+                              ['LocationSystem', 'SectorSourceName', 'FlowType',
+                               'ProducedBySectorType', 'ConsumedBySectorType',
+                               'denominator', 'Suppressed'],
+                              errors='ignore')
+                        .to_string()))
             fb = (
                 non_zero_denominator
                 .assign(FlowAmount=lambda x: (x.FlowAmount
@@ -1269,7 +1306,7 @@ class _FlowBy(pd.DataFrame):
         )
 
     def equally_attribute(self: 'FB') -> 'FB':
-        '''
+        """
         This function takes a FlowByActivity dataset with SectorProducedBy and
         SectorConsumedBy columns already added and attributes flows from any
         activity which is mapped to multiple industries/sectors equally across
@@ -1294,9 +1331,9 @@ class _FlowBy(pd.DataFrame):
         primary sector is the (only) non-null value out of SectorProducedBy or
         SectorConsumedBy). If necessary, flow amounts are further (equally)
         subdivided based on the secondary sector.
-        '''
+        """
         naics_key = naics.map_target_sectors_to_less_aggregated_sectors(
-            self.config['industry_spec'])
+            self.config['industry_spec'], self.config['target_naics_year'])
 
         fba = self.add_primary_secondary_columns('Sector')
 

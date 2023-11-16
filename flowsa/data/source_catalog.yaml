@@ -34,6 +34,30 @@ BEA_Summary_Use_PRO_BeforeRedef:
     - Money
   activity_schema: BEA_2012_Summary_Code
   sector_hierarchy: "flat"
+BEA_Detail_Use_SUT:
+  data_format: FBA
+  class:
+    - Money
+  activity_schema: BEA_2017_Detail_Code
+  sector_hierarchy: "flat"
+BEA_Detail_Supply:
+  data_format: FBA
+  class:
+    - Money
+  activity_schema: BEA_2017_Detail_Code
+  sector_hierarchy: "flat"
+BEA_Summary_Use_SUT:
+  data_format: FBA
+  class:
+    - Money
+  activity_schema: BEA_2017_Summary_Code
+  sector_hierarchy: "flat"
+BEA_Summary_Supply:
+  data_format: FBA
+  class:
+    - Money
+  activity_schema: BEA_2017_Summary_Code
+  sector_hierarchy: "flat"
 BEA_Marine_Bunker_Fuel:
   data_format: FBA
   class:
@@ -157,7 +181,7 @@ EIA_SEDS:
   data_format: FBA
   class:
     - Energy
-    - Money
+    - Other
   sector_hierarchy: "flat"
 Employment_national:
   data_format: FBS
