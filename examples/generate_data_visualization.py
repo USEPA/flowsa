@@ -8,12 +8,12 @@ Data visualization will be revised at a later date to work for flowsav2.0
 Generate plots to explore Flow-By-Sector model outputs
 """
 
-import flowsa.datavisualization as dv
+import flowsa
 from flowsa.settings import plotoutputpath
 import matplotlib.pyplot as plt
 
 
-########## Produce facet graph of resources associated with cropland sectors ##########
+### Produce facet graph of resources associated with livestock sectors ###
 sectors = ['112']
 sector_length_display = 6
 plottype = 'facet_graph'
@@ -22,7 +22,7 @@ method_dict = {'Water Withdrawal 2015': 'Water_national_2015_m1',
                'Employment 2017': 'Employment_national_2017'}
 
 
-dv.FBSscatterplot(method_dict, plottype,
+flowsa.FBSscatterplot(method_dict, plottype,
                   sector_length_display=sector_length_display,
                   sectors_to_include=sectors,
                   plot_title='Direct Resource Use for Livestock'
@@ -31,14 +31,14 @@ dv.FBSscatterplot(method_dict, plottype,
 plt.savefig(plotoutputpath / "livestock_resource_use.png", dpi=300)
 
 
-########## Compare the results between water method 1 and method 2 ##########
+### Compare the results between national employment for 2015 and 2018 ###
 sectors = ['21']
 sector_length_display = 6
 plottype = 'method_comparison'
 method_dict = {'National Employment 2015': 'Employment_national_2015',
                'National Employment 2018': 'Employment_national_2018'}
 
-dv.FBSscatterplot(method_dict, plottype,
+flowsa.FBSscatterplot(method_dict, plottype,
                   sector_length_display=sector_length_display,
                   sectors_to_include=sectors,
                   plot_title=('Comparison of 2015 and 2018 Employment '
@@ -48,17 +48,29 @@ dv.FBSscatterplot(method_dict, plottype,
 plt.savefig(plotoutputpath / "mining_employment_comp.png", dpi=300)
 
 
-####### GHG Bar Chart ############
+### GHG Bar Chart ###
 # Option 1 - GHG emissions by GHG
-dv.stackedBarChart('GHG_national_2018_m1',
-                   selection_fields={'SectorProducedBy': ['111110', '112120', '325312']},
-                   filename='GHGEmissions')
+flowsa.stackedBarChart('GHG_national_2018_m1',
+                       generalize_AttributionSources=True,
+                       selection_fields={'SectorProducedBy': ['111', '324'],
+                                         'Flowable': ['Carbon dioxide',
+                                                      'Methane']},
+                       industry_spec={'default': 'NAICS_3'},
+                       filename='GHG_national_2018_m1_emissions_barchart',
+                       axis_title='Emissions (MMT CO2e)'
+                       )
 
 # Option 2 - specify indicator, much have LCIAformatter installed
 # https://github.com/USEPA/LCIAformatter
-dv.stackedBarChart('GHG_national_2018_m1', impact_cat='Global warming',
-                   selection_fields={'SectorProducedBy': ['111110', '112120', '325312']},
-                   filename='GHGEmissionsGlobalWarming')
+flowsa.stackedBarChart('GHG_national_2018_m1',
+                       generalize_AttributionSources=True,
+                       impact_cat="Global warming",
+                       selection_fields={'SectorProducedBy': ['111', '324'],
+                                         'Flowable': ['Carbon dioxide']},
+                       industry_spec={'default': 'NAICS_3'},
+                       filename='GHG_national_2018_m1_CO2_barchart',
+                       axis_title='Global Warming Potential (MMT CO2e)'
+                       )
 
 
 # todo: will update the sankey code for recursive method post v2.0 release
@@ -83,7 +95,7 @@ dv.stackedBarChart('GHG_national_2018_m1', impact_cat='Global warming',
 #                1: {'x': [.51, 0.99], 'y': [.12, .88]}
 #                }
 #
-# dv.generateSankeyDiagram(
+# flowsa.generateSankeyDiagram(
 #     methodnames,
 #     target_sector_level=target_sector_level,
 #     target_subset_sector_level=target_subset_sector_level,

@@ -19,6 +19,7 @@ Flow-By-Sector files are loaded when running these functions
 from flowsa.common import seeAvailableFlowByModels
 from flowsa.flowbyactivity import getFlowByActivity
 from flowsa.flowbysector import getFlowBySector, collapse_FlowBySector
+from flowsa.datavisualization import (FBSscatterplot, stackedBarChart,
+                                      plot_state_coefficients)
 # from flowsa.bibliography import writeFlowBySectorBibliography
-# from flowsa.datavisualization import generateFBSplot
 
