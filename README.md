@@ -23,16 +23,16 @@ created in FLOWSA are the environmental inputs to
 ## Usage
 ### Flow-By-Activity (FBA) Datasets
 Flow-By-Activity datasets are formatted tables from a variety of sources. 
-They are largely unchanged from the original data source, with the 
-exception of formatting. A list of available FBA datasets can be found in 
+They are largely unchanged from the original data source, except for 
+formatting. A list of available FBA datasets can be found in 
 the [Wiki](https://github.com/USEPA/flowsa/wiki/Available-Data#flow-by-activity-datasets).
 
 `import flowsa` \
-Return list of all availble FBA datasets, including years 
+Return list of all available FBA datasets, including years 
 `flowsa.seeAvailableFlowByModels('FBA')` \
 Generate and return pandas dataframe for 2014 Energy Information 
 Administration (EIA) Manufacturing Energy Consumption Survey (MECS) land use \
-`fba = getFlowByActivity(datasource="EIA_MECS_Land", year=2014)`
+`fba = flowsa.getFlowByActivity(datasource="EIA_MECS_Land", year=2014)`
 
 ### Flow-By-Sector (FBS) Datasets
 Flow-By-Sector datasets are tables of environmental and other data 
@@ -41,13 +41,17 @@ FBS datasets can be found in the
 [Wiki](https://github.com/USEPA/flowsa/wiki/Available-Data#flow-by-sector-datasets).
 
 `import flowsa` \
-Return list of all available FBS datasets, including years 
+Return list of all available FBS datasets
 `flowsa.seeAvailableFlowByModels('FBS')` \
 Generate and return pandas dataframe for national water withdrawals 
 attributed to 6-digit sectors. Download all required FBA datasets from 
 Data Commons. \
-`fbs_water = getFlowBySector('Water_national_2015_m1', 
+`fbs = flowsa.getFlowBySector('Water_national_2015_m1', 
 download_FBAs_if_missing=True)`
+
+### Examples
+Additional example code can be found in the [examples](https://github.
+com/USEPA/flowsa/tree/master/examples) folder.
 
 ## Installation
 `pip install git+https://github.com/USEPA/flowsa.git@vX.X.X#egg=flowsa`
