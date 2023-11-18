@@ -2,7 +2,37 @@
 
 # FlowByActivity
 
-USGS_MYB_Potash:
+USGS_MYB_Barite:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+USGS_MYB_Gallium:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+USGS_MYB_Gypsum:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+USGS_MYB_IronOre:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+USGS_MYB_Kyanite:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+USGS_MYB_Mica:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+USGS_MYB_Niobium:
     Active: False
     Status: Error in source data links
     Type: HTTPError
@@ -12,13 +42,60 @@ USGS_MYB_Phosphate:
     Status: Error in source data links
     Type: HTTPError
 
-Blackhurst_IO:
-    Active: True
-    Status: Error in HTTP request during testing only
+USGS_MYB_Potash:
+    Active: False
+    Status: Error in source data links
     Type: HTTPError
 
+USGS_MYB_SandGravelIndustrial:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
 
-# Flow By Sector
-CNHW_state_2014:
+USGS_MYB_StoneCrushed:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+USGS_MYB_Vermiculite:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+USGS_MYB_Zeolites:
+    Active: False
+    Status: Error in source data links
+    Type: HTTPError
+
+BTS_Airlines:
     Active: True
-    Status: Memory Error # Skip during GH-action testing
+    Status: Private data
+    Type: FileNotFoundError
+
+EPA_NEI_Nonroad:
+    Active: True
+    Status: Max retries exceeded with url - Certificate verify failed
+    Type: SSLError
+
+EPA_NEI_Onroad:
+    Active: True
+    Status: Max retries exceeded with url - Certificate verify failed
+    Type: SSLError
+
+EPA_NEI_Nonpoint:
+    Active: True
+    Status: Max retries exceeded with url - Certificate verify failed
+    Type: SSLError
+
+# Flow By Sectors
+CAP_HAP_national_2017_m2:
+    Active: True
+    Status: During action causes memory error; too long
+
+CAP_HAP_Nonroad_2014:
+    Active: True
+    Status: During action causes memory error; too long
+
+CAP_HAP_national_2014_m1:
+    Active: True
+    Status: Issue with CAP_HAP_Nonroad_2014 prevents method completion

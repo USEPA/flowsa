@@ -1,0 +1,607 @@
+activity_set,name,note
+direct_allocation,2801500111,Agriculture - Field Burning
+direct_allocation,2801500112,Agriculture - Field Burning
+direct_allocation,2801500120,Agriculture - Field Burning
+direct_allocation,2801500130,Agriculture - Field Burning
+direct_allocation,2801500141,Agriculture - Field Burning
+direct_allocation,2801500142,Agriculture - Field Burning
+direct_allocation,2801500150,Agriculture - Field Burning
+direct_allocation,2801500160,Agriculture - Field Burning
+direct_allocation,2801500170,Agriculture - Field Burning
+direct_allocation,2801500171,Agriculture - Field Burning
+direct_allocation,2801500181,Agriculture - Field Burning
+direct_allocation,2801500182,Agriculture - Field Burning
+direct_allocation,2801500191,Agriculture - Field Burning
+direct_allocation,2801500192,Agriculture - Field Burning
+direct_allocation,2801500201,Agriculture - Field Burning
+direct_allocation,2801500202,Agriculture - Field Burning
+direct_allocation,2801500210,Agriculture - Field Burning
+direct_allocation,2801500220,Agriculture - Field Burning
+direct_allocation,2801500230,Agriculture - Field Burning
+direct_allocation,2801500240,Agriculture - Field Burning
+direct_allocation,2801500250,Agriculture - Field Burning
+direct_allocation,2801500261,Agriculture - Field Burning
+direct_allocation,2801500262,Agriculture - Field Burning
+direct_allocation,2801500310,Agriculture - Field Burning
+direct_allocation,2801500320,Agriculture - Field Burning
+direct_allocation,2801500330,Agriculture - Field Burning
+direct_allocation,2801500340,Agriculture - Field Burning
+direct_allocation,2801500350,Agriculture - Field Burning
+direct_allocation,2801500370,Agriculture - Field Burning
+direct_allocation,2801500380,Agriculture - Field Burning
+direct_allocation,2801500390,Agriculture - Field Burning
+direct_allocation,2801500400,Agriculture - Field Burning
+direct_allocation,2801500410,Agriculture - Field Burning
+direct_allocation,2801500420,Agriculture - Field Burning
+direct_allocation,2801500430,Agriculture - Field Burning
+direct_allocation,2801500440,Agriculture - Field Burning
+direct_allocation,2801500450,Agriculture - Field Burning
+cropland,2801000000,Agriculture - Crops
+cropland,2801000001,Agriculture - Crops
+cropland,2801000002,Agriculture - Crops
+cropland,2801000003,Agriculture - Crops
+cropland,2801000004,Agriculture - Crops
+cropland,2801000005,Agriculture - Crops
+cropland,2801000006,Agriculture - Crops
+cropland,2801000007,Agriculture - Crops
+cropland,2801000008,Agriculture - Crops
+cropland,2801500000,Agriculture - Field Burning
+cropland,2801500151,Agriculture - Field Burning
+cropland,2801500152,Agriculture - Field Burning
+cropland,2801500161,Agriculture - Field Burning
+cropland,2801500263,Agriculture - Field Burning
+cropland,2801500264,Agriculture - Field Burning
+cropland,2801500300,Agriculture - Field Burning
+cropland,2801500360,Agriculture - Field Burning
+industry_combustion_coal,2102001000,Fuel Combustion - Industry
+industry_combustion_coal,2102002000,Fuel Combustion - Industry
+industry_combustion_distillate,2102004000,Fuel Combustion - Industry
+industry_combustion_distillate,2102004001,Fuel Combustion - Industry
+industry_combustion_distillate,2102004002,Fuel Combustion - Industry
+industry_combustion_residual,2102005000,Fuel Combustion - Industry
+industry_combustion_nat_gas,2102006000,Fuel Combustion - Industry
+industry_combustion_hgl,2102007000,Fuel Combustion - Industry
+industry_combustion_other,2102008000,Fuel Combustion - Industry
+industry_combustion_coke,2102009000,Fuel Combustion - Industry
+industry_combustion_nat_gas,2102010000,Fuel Combustion - Industry
+industry_combustion_distillate,2102011000,Fuel Combustion - Industry
+industry_combustion_other,2102012000,Fuel Combustion - Industry
+direct_allocation,2104001000,Fuel Combustion - Residential
+direct_allocation,2104002000,Fuel Combustion - Residential
+direct_allocation,2104004000,Fuel Combustion - Residential
+direct_allocation,2104006000,Fuel Combustion - Residential
+direct_allocation,2104007000,Fuel Combustion - Residential
+direct_allocation,2104008100,Fuel Combustion - Residential
+direct_allocation,2104008110,Fuel Combustion - Residential
+direct_allocation,2104008120,Fuel Combustion - Residential
+direct_allocation,2104008130,Fuel Combustion - Residential
+direct_allocation,2104008200,Fuel Combustion - Residential
+direct_allocation,2104008210,Fuel Combustion - Residential
+direct_allocation,2104008220,Fuel Combustion - Residential
+direct_allocation,2104008230,Fuel Combustion - Residential
+direct_allocation,2104008300,Fuel Combustion - Residential
+direct_allocation,2104008310,Fuel Combustion - Residential
+direct_allocation,2104008320,Fuel Combustion - Residential
+direct_allocation,2104008330,Fuel Combustion - Residential
+direct_allocation,2104008340,Fuel Combustion - Residential
+direct_allocation,2104008400,Fuel Combustion - Residential
+direct_allocation,2104008410,Fuel Combustion - Residential
+direct_allocation,2104008420,Fuel Combustion - Residential
+direct_allocation,2104008500,Fuel Combustion - Residential
+direct_allocation,2104008510,Fuel Combustion - Residential
+direct_allocation,2104008520,Fuel Combustion - Residential
+direct_allocation,2104008530,Fuel Combustion - Residential
+direct_allocation,2104008540,Fuel Combustion - Residential
+direct_allocation,2104008550,Fuel Combustion - Residential
+direct_allocation,2104008600,Fuel Combustion - Residential
+direct_allocation,2104008610,Fuel Combustion - Residential
+direct_allocation,2104008620,Fuel Combustion - Residential
+direct_allocation,2104008630,Fuel Combustion - Residential
+direct_allocation,2104008640,Fuel Combustion - Residential
+direct_allocation,2104008700,Fuel Combustion - Residential
+direct_allocation,2104009000,Fuel Combustion - Residential
+direct_allocation,2104010000,Fuel Combustion - Residential
+direct_allocation,2104011000,Fuel Combustion - Residential
+direct_allocation,2501011011,Residential
+direct_allocation,2501011012,Residential
+direct_allocation,2501011013,Residential
+direct_allocation,2501011014,Residential
+direct_allocation,2501011015,Residential
+direct_allocation,2806010000,Residential
+direct_allocation,2806015000,Residential
+direct_allocation,2810003000,Residential
+direct_allocation,2810010000,Residential
+direct_allocation,2810025000,Residential
+direct_allocation,2862002000,Residential
+direct_allocation,2310000220,Oil and Gas
+direct_allocation,2310000230,Oil and Gas
+direct_allocation,2310000440,Oil and Gas
+direct_allocation,2310000551,Oil and Gas
+direct_allocation,2310000552,Oil and Gas
+direct_allocation,2310000553,Oil and Gas
+direct_allocation,2310000660,Oil and Gas
+direct_allocation,2310001000,Oil and Gas
+direct_allocation,2310002000,Oil and Gas
+direct_allocation,2310002301,Oil and Gas
+direct_allocation,2310002305,Oil and Gas
+direct_allocation,2310002401,Oil and Gas
+direct_allocation,2310002411,Oil and Gas
+direct_allocation,2310002421,Oil and Gas
+direct_allocation,2310010000,Oil and Gas
+direct_allocation,2310010100,Oil and Gas
+direct_allocation,2310010200,Oil and Gas
+direct_allocation,2310010300,Oil and Gas
+direct_allocation,2310010700,Oil and Gas
+direct_allocation,2310010800,Oil and Gas
+direct_allocation,2310011001,Oil and Gas
+direct_allocation,2310011020,Oil and Gas
+direct_allocation,2310011100,Oil and Gas
+direct_allocation,2310011201,Oil and Gas
+direct_allocation,2310011450,Oil and Gas
+direct_allocation,2310011500,Oil and Gas
+direct_allocation,2310011501,Oil and Gas
+direct_allocation,2310011502,Oil and Gas
+direct_allocation,2310011503,Oil and Gas
+direct_allocation,2310011504,Oil and Gas
+direct_allocation,2310011505,Oil and Gas
+direct_allocation,2310011506,Oil and Gas
+direct_allocation,2310011600,Oil and Gas
+direct_allocation,2310012000,Oil and Gas
+direct_allocation,2310012020,Oil and Gas
+direct_allocation,2310012201,Oil and Gas
+direct_allocation,2310012511,Oil and Gas
+direct_allocation,2310012512,Oil and Gas
+direct_allocation,2310012515,Oil and Gas
+direct_allocation,2310012516,Oil and Gas
+direct_allocation,2310012521,Oil and Gas
+direct_allocation,2310012522,Oil and Gas
+direct_allocation,2310012525,Oil and Gas
+direct_allocation,2310012526,Oil and Gas
+direct_allocation,2310020000,Oil and Gas
+direct_allocation,2310020600,Oil and Gas
+direct_allocation,2310020700,Oil and Gas
+direct_allocation,2310020800,Oil and Gas
+direct_allocation,2310021010,Oil and Gas
+direct_allocation,2310021011,Oil and Gas
+direct_allocation,2310021030,Oil and Gas
+direct_allocation,2310021100,Oil and Gas
+direct_allocation,2310021101,Oil and Gas
+direct_allocation,2310021102,Oil and Gas
+direct_allocation,2310021103,Oil and Gas
+direct_allocation,2310021109,Oil and Gas
+direct_allocation,2310021201,Oil and Gas
+direct_allocation,2310021202,Oil and Gas
+direct_allocation,2310021203,Oil and Gas
+direct_allocation,2310021209,Oil and Gas
+direct_allocation,2310021251,Oil and Gas
+direct_allocation,2310021300,Oil and Gas
+direct_allocation,2310021301,Oil and Gas
+direct_allocation,2310021302,Oil and Gas
+direct_allocation,2310021303,Oil and Gas
+direct_allocation,2310021309,Oil and Gas
+direct_allocation,2310021310,Oil and Gas
+direct_allocation,2310021351,Oil and Gas
+direct_allocation,2310021400,Oil and Gas
+direct_allocation,2310021401,Oil and Gas
+direct_allocation,2310021402,Oil and Gas
+direct_allocation,2310021403,Oil and Gas
+direct_allocation,2310021409,Oil and Gas
+direct_allocation,2310021410,Oil and Gas
+direct_allocation,2310021411,Oil and Gas
+direct_allocation,2310021412,Oil and Gas
+direct_allocation,2310021450,Oil and Gas
+direct_allocation,2310021500,Oil and Gas
+direct_allocation,2310021501,Oil and Gas
+direct_allocation,2310021502,Oil and Gas
+direct_allocation,2310021503,Oil and Gas
+direct_allocation,2310021504,Oil and Gas
+direct_allocation,2310021505,Oil and Gas
+direct_allocation,2310021506,Oil and Gas
+direct_allocation,2310021509,Oil and Gas
+direct_allocation,2310021600,Oil and Gas
+direct_allocation,2310021601,Oil and Gas
+direct_allocation,2310021602,Oil and Gas
+direct_allocation,2310021603,Oil and Gas
+direct_allocation,2310021604,Oil and Gas
+direct_allocation,2310021605,Oil and Gas
+direct_allocation,2310021700,Oil and Gas
+direct_allocation,2310021801,Oil and Gas
+direct_allocation,2310021802,Oil and Gas
+direct_allocation,2310021803,Oil and Gas
+direct_allocation,2310022000,Oil and Gas
+direct_allocation,2310022010,Oil and Gas
+direct_allocation,2310022051,Oil and Gas
+direct_allocation,2310022090,Oil and Gas
+direct_allocation,2310022101,Oil and Gas
+direct_allocation,2310022102,Oil and Gas
+direct_allocation,2310022103,Oil and Gas
+direct_allocation,2310022105,Oil and Gas
+direct_allocation,2310022109,Oil and Gas
+direct_allocation,2310022201,Oil and Gas
+direct_allocation,2310022202,Oil and Gas
+direct_allocation,2310022203,Oil and Gas
+direct_allocation,2310022300,Oil and Gas
+direct_allocation,2310022301,Oil and Gas
+direct_allocation,2310022302,Oil and Gas
+direct_allocation,2310022303,Oil and Gas
+direct_allocation,2310022401,Oil and Gas
+direct_allocation,2310022402,Oil and Gas
+direct_allocation,2310022403,Oil and Gas
+direct_allocation,2310022409,Oil and Gas
+direct_allocation,2310022410,Oil and Gas
+direct_allocation,2310022420,Oil and Gas
+direct_allocation,2310022501,Oil and Gas
+direct_allocation,2310022502,Oil and Gas
+direct_allocation,2310022505,Oil and Gas
+direct_allocation,2310022506,Oil and Gas
+direct_allocation,2310023000,Oil and Gas
+direct_allocation,2310023010,Oil and Gas
+direct_allocation,2310023030,Oil and Gas
+direct_allocation,2310023100,Oil and Gas
+direct_allocation,2310023102,Oil and Gas
+direct_allocation,2310023202,Oil and Gas
+direct_allocation,2310023251,Oil and Gas
+direct_allocation,2310023300,Oil and Gas
+direct_allocation,2310023302,Oil and Gas
+direct_allocation,2310023310,Oil and Gas
+direct_allocation,2310023351,Oil and Gas
+direct_allocation,2310023400,Oil and Gas
+direct_allocation,2310023401,Oil and Gas
+direct_allocation,2310023410,Oil and Gas
+direct_allocation,2310023509,Oil and Gas
+direct_allocation,2310023511,Oil and Gas
+direct_allocation,2310023512,Oil and Gas
+direct_allocation,2310023513,Oil and Gas
+direct_allocation,2310023515,Oil and Gas
+direct_allocation,2310023516,Oil and Gas
+direct_allocation,2310023600,Oil and Gas
+direct_allocation,2310023601,Oil and Gas
+direct_allocation,2310023602,Oil and Gas
+direct_allocation,2310023603,Oil and Gas
+direct_allocation,2310023604,Oil and Gas
+direct_allocation,2310023605,Oil and Gas
+direct_allocation,2310023606,Oil and Gas
+direct_allocation,2310030000,Oil and Gas
+direct_allocation,2310030210,Oil and Gas
+direct_allocation,2310030220,Oil and Gas
+direct_allocation,2310030230,Oil and Gas
+direct_allocation,2310030300,Oil and Gas
+direct_allocation,2310030400,Oil and Gas
+direct_allocation,2310030401,Oil and Gas
+direct_allocation,2310111100,Oil and Gas
+direct_allocation,2310111401,Oil and Gas
+direct_allocation,2310111700,Oil and Gas
+direct_allocation,2310111701,Oil and Gas
+direct_allocation,2310111702,Oil and Gas
+direct_allocation,2310112000,Oil and Gas
+direct_allocation,2310112100,Oil and Gas
+direct_allocation,2310112401,Oil and Gas
+direct_allocation,2310112700,Oil and Gas
+direct_allocation,2310112701,Oil and Gas
+direct_allocation,2310112702,Oil and Gas
+direct_allocation,2310121100,Oil and Gas
+direct_allocation,2310121401,Oil and Gas
+direct_allocation,2310121700,Oil and Gas
+direct_allocation,2310121701,Oil and Gas
+direct_allocation,2310121702,Oil and Gas
+direct_allocation,2310122000,Oil and Gas
+direct_allocation,2310122100,Oil and Gas
+direct_allocation,2310122401,Oil and Gas
+direct_allocation,2310122700,Oil and Gas
+direct_allocation,2310122701,Oil and Gas
+direct_allocation,2310122702,Oil and Gas
+direct_allocation,2310300220,Oil and Gas
+direct_allocation,2310321010,Oil and Gas
+direct_allocation,2310321100,Oil and Gas
+direct_allocation,2310321400,Oil and Gas
+direct_allocation,2310321603,Oil and Gas
+direct_allocation,2310400220,Oil and Gas
+direct_allocation,2310421010,Oil and Gas
+direct_allocation,2310421100,Oil and Gas
+direct_allocation,2310421400,Oil and Gas
+direct_allocation,2310421603,Oil and Gas
+direct_allocation,2310000330,Oil and Gas
+direct_allocation,2310000550,Oil and Gas
+direct_allocation,2310011000,Oil and Gas
+direct_allocation,2310000000,Oil and Gas
+direct_allocation,2805001010,Agriculture - Livestock
+direct_allocation,2805018000,Agriculture - Livestock
+direct_allocation,2805019000,Agriculture - Livestock
+direct_allocation,2805019100,Agriculture - Livestock
+direct_allocation,2805019200,Agriculture - Livestock
+direct_allocation,2805019300,Agriculture - Livestock
+direct_allocation,2805020001,Agriculture - Livestock
+direct_allocation,2805021100,Agriculture - Livestock
+direct_allocation,2805021200,Agriculture - Livestock
+direct_allocation,2805021300,Agriculture - Livestock
+direct_allocation,2805022100,Agriculture - Livestock
+direct_allocation,2805022200,Agriculture - Livestock
+direct_allocation,2805022300,Agriculture - Livestock
+direct_allocation,2805023100,Agriculture - Livestock
+direct_allocation,2805023200,Agriculture - Livestock
+direct_allocation,2805023300,Agriculture - Livestock
+direct_allocation,2805001040,Agriculture - Livestock
+direct_allocation,2805025000,Agriculture - Livestock
+direct_allocation,2805039000,Agriculture - Livestock
+direct_allocation,2805039100,Agriculture - Livestock
+direct_allocation,2805039200,Agriculture - Livestock
+direct_allocation,2805039300,Agriculture - Livestock
+direct_allocation,2805047100,Agriculture - Livestock
+direct_allocation,2805047300,Agriculture - Livestock
+direct_allocation,2805053100,Agriculture - Livestock
+direct_allocation,2805001020,Agriculture - Livestock
+direct_allocation,2805001030,Agriculture - Livestock
+direct_allocation,2805001050,Agriculture - Livestock
+direct_allocation,2805007000,Agriculture - Livestock
+direct_allocation,2805007100,Agriculture - Livestock
+direct_allocation,2805007300,Agriculture - Livestock
+direct_allocation,2805008100,Agriculture - Livestock
+direct_allocation,2805008200,Agriculture - Livestock
+direct_allocation,2805008300,Agriculture - Livestock
+direct_allocation,2805009000,Agriculture - Livestock
+direct_allocation,2805009100,Agriculture - Livestock
+direct_allocation,2805009200,Agriculture - Livestock
+direct_allocation,2805009300,Agriculture - Livestock
+direct_allocation,2805010000,Agriculture - Livestock
+direct_allocation,2805010100,Agriculture - Livestock
+direct_allocation,2805010200,Agriculture - Livestock
+direct_allocation,2805010300,Agriculture - Livestock
+direct_allocation,2805030007,Agriculture - Livestock
+direct_allocation,2805030008,Agriculture - Livestock
+direct_allocation,2805035000,Agriculture - Livestock
+direct_allocation,2805040000,Agriculture - Livestock
+direct_allocation,2805045000,Agriculture - Livestock
+direct_allocation,2501000000,Fuel Storage
+direct_allocation,2501000030,Fuel Storage
+direct_allocation,2501000060,Fuel Storage
+direct_allocation,2501000090,Fuel Storage
+direct_allocation,2501000120,Fuel Storage
+direct_allocation,2501000150,Fuel Storage
+direct_allocation,2501000180,Fuel Storage
+direct_allocation,2501000900,Fuel Storage
+direct_allocation,2501010000,Fuel Storage
+direct_allocation,2501010030,Fuel Storage
+direct_allocation,2501010060,Fuel Storage
+direct_allocation,2501010090,Fuel Storage
+direct_allocation,2501010120,Fuel Storage
+direct_allocation,2501010150,Fuel Storage
+direct_allocation,2501010180,Fuel Storage
+direct_allocation,2501010900,Fuel Storage
+direct_allocation,2501995000,Fuel Storage
+direct_allocation,2501995030,Fuel Storage
+direct_allocation,2501995060,Fuel Storage
+direct_allocation,2501995090,Fuel Storage
+direct_allocation,2501995120,Fuel Storage
+direct_allocation,2501995150,Fuel Storage
+direct_allocation,2501995180,Fuel Storage
+direct_allocation,2505000000,Fuel Storage
+direct_allocation,2505000030,Fuel Storage
+direct_allocation,2505000060,Fuel Storage
+direct_allocation,2505000090,Fuel Storage
+direct_allocation,2505000120,Fuel Storage
+direct_allocation,2505000150,Fuel Storage
+direct_allocation,2505000180,Fuel Storage
+direct_allocation,2505000900,Fuel Storage
+direct_allocation,2505040030,Fuel Storage
+direct_allocation,2505040060,Fuel Storage
+direct_allocation,2505040090,Fuel Storage
+direct_allocation,2505040120,Fuel Storage
+direct_allocation,2505040150,Fuel Storage
+direct_allocation,2505040180,Fuel Storage
+output_allocation,2301040000,Industrial processes
+direct_allocation,2301050001,Industrial processes
+direct_allocation,2301050002,Industrial processes
+direct_allocation,2302070001,Industrial processes
+direct_allocation,2302070005,Industrial processes
+direct_allocation,2302070010,Industrial processes
+direct_allocation,2306000000,Industrial processes
+direct_allocation,2306010000,Industrial processes
+direct_allocation,2306010100,Industrial processes
+direct_allocation,2307010000,Industrial processes
+direct_allocation,2307020000,Industrial processes
+direct_allocation,2311020000,Industrial processes
+direct_allocation,2311030000,Industrial processes
+direct_allocation,2325040000,Industrial processes
+direct_allocation,2325050000,Industrial processes
+direct_allocation,2325060000,Industrial processes
+direct_allocation,2805001000,Agriculture - Livestock
+direct_allocation,2805001100,Agriculture - Livestock
+direct_allocation,2805001200,Agriculture - Livestock
+direct_allocation,2805001300,Agriculture - Livestock
+direct_allocation,2805002000,Agriculture - Livestock
+direct_allocation,2805003000,Agriculture - Livestock
+direct_allocation,2805003100,Agriculture - Livestock
+direct_allocation,2805020002,Agriculture - Livestock
+direct_allocation,2805020003,Agriculture - Livestock
+direct_allocation,2805020004,Agriculture - Livestock
+livestock,2805030000,Agriculture - Livestock
+mobile_and_fuel_storage,2275085000,Mobile Sources
+mobile_and_fuel_storage,2275087000,Mobile Sources
+mobile_and_fuel_storage,2280002101,Mobile Sources
+mobile_and_fuel_storage,2280002102,Mobile Sources
+mobile_and_fuel_storage,2280002103,Mobile Sources
+mobile_and_fuel_storage,2280002104,Mobile Sources
+mobile_and_fuel_storage,2280002201,Mobile Sources
+mobile_and_fuel_storage,2280002202,Mobile Sources
+mobile_and_fuel_storage,2280002203,Mobile Sources
+mobile_and_fuel_storage,2280002204,Mobile Sources
+mobile_and_fuel_storage,2280003103,Mobile Sources
+mobile_and_fuel_storage,2280003104,Mobile Sources
+mobile_and_fuel_storage,2280003203,Mobile Sources
+mobile_and_fuel_storage,2280003204,Mobile Sources
+mobile_and_fuel_storage,2285002006,Mobile Sources
+mobile_and_fuel_storage,2285002007,Mobile Sources
+mobile_and_fuel_storage,2285002008,Mobile Sources
+mobile_and_fuel_storage,2285002009,Mobile Sources
+mobile_and_fuel_storage,2285002010,Mobile Sources
+mobile_and_fuel_storage,2280002100,Mobile Sources
+mobile_and_fuel_storage,2280002200,Mobile Sources
+mobile_and_fuel_storage,2280003200,Mobile Sources
+mobile_and_fuel_storage,2280003100,Mobile Sources
+mobile_and_fuel_storage,2501012011,Fuel Storage
+mobile_and_fuel_storage,2501012012,Fuel Storage
+mobile_and_fuel_storage,2501012013,Fuel Storage
+mobile_and_fuel_storage,2501012014,Fuel Storage
+mobile_and_fuel_storage,2501012015,Fuel Storage
+mobile_and_fuel_storage,2501013010,Fuel Storage
+mobile_and_fuel_storage,2501050000,Fuel Storage
+mobile_and_fuel_storage,2501050030,Fuel Storage
+mobile_and_fuel_storage,2501050060,Fuel Storage
+mobile_and_fuel_storage,2501050090,Fuel Storage
+mobile_and_fuel_storage,2501050120,Fuel Storage
+mobile_and_fuel_storage,2501050150,Fuel Storage
+mobile_and_fuel_storage,2501050180,Fuel Storage
+mobile_and_fuel_storage,2501050900,Fuel Storage
+mobile_and_fuel_storage,2501055120,Fuel Storage
+mobile_and_fuel_storage,2501060050,Fuel Storage
+mobile_and_fuel_storage,2501060051,Fuel Storage
+mobile_and_fuel_storage,2501060052,Fuel Storage
+mobile_and_fuel_storage,2501060053,Fuel Storage
+mobile_and_fuel_storage,2501060201,Fuel Storage
+mobile_and_fuel_storage,2501070050,Fuel Storage
+mobile_and_fuel_storage,2501070051,Fuel Storage
+mobile_and_fuel_storage,2501070052,Fuel Storage
+mobile_and_fuel_storage,2501070053,Fuel Storage
+mobile_and_fuel_storage,2501070201,Fuel Storage
+mobile_and_fuel_storage,2501080050,Fuel Storage
+mobile_and_fuel_storage,2501080100,Fuel Storage
+mobile_and_fuel_storage,2501080201,Fuel Storage
+mobile_and_fuel_storage,2505010000,Fuel Storage
+mobile_and_fuel_storage,2505010030,Fuel Storage
+mobile_and_fuel_storage,2505010060,Fuel Storage
+mobile_and_fuel_storage,2505010090,Fuel Storage
+mobile_and_fuel_storage,2505010120,Fuel Storage
+mobile_and_fuel_storage,2505010150,Fuel Storage
+mobile_and_fuel_storage,2505010180,Fuel Storage
+mobile_and_fuel_storage,2505010900,Fuel Storage
+mobile_and_fuel_storage,2505020000,Fuel Storage
+mobile_and_fuel_storage,2505020030,Fuel Storage
+mobile_and_fuel_storage,2505020041,Fuel Storage
+mobile_and_fuel_storage,2505020060,Fuel Storage
+mobile_and_fuel_storage,2505020090,Fuel Storage
+mobile_and_fuel_storage,2505020091,Fuel Storage
+mobile_and_fuel_storage,2505020092,Fuel Storage
+mobile_and_fuel_storage,2505020093,Fuel Storage
+mobile_and_fuel_storage,2505020120,Fuel Storage
+mobile_and_fuel_storage,2505020121,Fuel Storage
+mobile_and_fuel_storage,2505020150,Fuel Storage
+mobile_and_fuel_storage,2505020180,Fuel Storage
+mobile_and_fuel_storage,2505020182,Fuel Storage
+mobile_and_fuel_storage,2505020900,Fuel Storage
+mobile_and_fuel_storage,2505030000,Fuel Storage
+mobile_and_fuel_storage,2505030030,Fuel Storage
+mobile_and_fuel_storage,2505030060,Fuel Storage
+mobile_and_fuel_storage,2505030090,Fuel Storage
+mobile_and_fuel_storage,2505030120,Fuel Storage
+mobile_and_fuel_storage,2505030150,Fuel Storage
+mobile_and_fuel_storage,2505030180,Fuel Storage
+mobile_and_fuel_storage,2505030900,Fuel Storage
+mobile_and_fuel_storage,2505040000,Fuel Storage
+mobile_and_fuel_storage,2530000000,Fuel Storage
+mobile_and_fuel_storage,2530010000,Fuel Storage
+mobile_and_fuel_storage,2530050000,Fuel Storage
+fertilizers,2801700000,Agriculture - Fertilizer
+fertilizers,2801700001,Agriculture - Fertilizer
+fertilizers,2801700002,Agriculture - Fertilizer
+fertilizers,2801700003,Agriculture - Fertilizer
+fertilizers,2801700004,Agriculture - Fertilizer
+fertilizers,2801700005,Agriculture - Fertilizer
+fertilizers,2801700006,Agriculture - Fertilizer
+fertilizers,2801700007,Agriculture - Fertilizer
+fertilizers,2801700010,Agriculture - Fertilizer
+fertilizers,2801700011,Agriculture - Fertilizer
+fertilizers,2801700012,Agriculture - Fertilizer
+fertilizers,2801700013,Agriculture - Fertilizer
+fertilizers,2801700014,Agriculture - Fertilizer
+fertilizers,2801700015,Agriculture - Fertilizer
+fertilizers,2801700099,Agriculture - Fertilizer
+output_allocation,2301000000,Industrial processes
+output_allocation,2301010000,Industrial processes
+output_allocation,2301010010,Industrial processes
+output_allocation,2301020000,Industrial processes
+output_allocation,2301030000,Industrial processes
+output_allocation,2302000000,Industrial processes
+output_allocation,2302002000,Industrial processes
+output_allocation,2302002100,Industrial processes
+output_allocation,2302002200,Industrial processes
+output_allocation,2302003000,Industrial processes
+output_allocation,2302003100,Industrial processes
+output_allocation,2302003200,Industrial processes
+output_allocation,2302003299,Industrial processes
+output_allocation,2302010000,Industrial processes
+output_allocation,2302040000,Industrial processes
+output_allocation,2302050000,Industrial processes
+output_allocation,2302070000,Industrial processes
+output_allocation,2302080000,Industrial processes
+output_allocation,2302080002,Industrial processes
+output_allocation,2303000000,Industrial processes
+output_allocation,2303020000,Industrial processes
+output_allocation,2304000000,Industrial processes
+output_allocation,2304050000,Industrial processes
+output_allocation,2305000000,Industrial processes
+output_allocation,2307000000,Industrial processes
+output_allocation,2307030000,Industrial processes
+output_allocation,2307060000,Industrial processes
+output_allocation,2308000000,Industrial processes
+output_allocation,2309000000,Industrial processes
+output_allocation,2311010000,Industrial processes
+output_allocation,2311010070,Industrial processes
+output_allocation,2311000000,Industrial processes
+output_allocation,2312000000,Industrial processes
+output_allocation,2325000000,Industrial processes
+output_allocation,2325010000,Industrial processes
+output_allocation,2325020000,Industrial processes
+output_allocation,2325030000,Industrial processes
+output_allocation,2399000000,Industrial processes
+output_allocation,2399010000,Industrial processes
+output_allocation,2420000000,Industrial processes
+output_allocation,2420000055,Industrial processes
+output_allocation,2420000999,Industrial processes
+output_allocation,2305070000,Industrial processes
+output_allocation,2305080000,Industrial processes
+output_allocation,2309100200,Industrial processes
+output_allocation,2103001000,Fuel Combustion - Institutional/Commercial
+output_allocation,2103002000,Fuel Combustion - Institutional/Commercial
+output_allocation,2103004000,Fuel Combustion - Institutional/Commercial
+output_allocation,2103004001,Fuel Combustion - Institutional/Commercial
+output_allocation,2103004002,Fuel Combustion - Institutional/Commercial
+output_allocation,2103005000,Fuel Combustion - Institutional/Commercial
+output_allocation,2103006000,Fuel Combustion - Institutional/Commercial
+output_allocation,2103007000,Fuel Combustion - Institutional/Commercial
+output_allocation,2103008000,Fuel Combustion - Institutional/Commercial
+output_allocation,2103010000,Fuel Combustion - Institutional/Commercial
+output_allocation,2103011000,Fuel Combustion - Institutional/Commercial
+direct_allocation,2601000000,Waste Treatment
+direct_allocation,2601010000,Waste Treatment
+direct_allocation,2601020000,Waste Treatment
+direct_allocation,2610030000,Waste Treatment
+direct_allocation,2620000000,Waste Treatment
+direct_allocation,2620010000,Waste Treatment
+direct_allocation,2620020000,Waste Treatment
+direct_allocation,2620030000,Waste Treatment
+direct_allocation,2620030001,Waste Treatment
+direct_allocation,2630010000,Waste Treatment
+direct_allocation,2630020000,Waste Treatment
+direct_allocation,2630020001,Waste Treatment
+direct_allocation,2630020010,Waste Treatment
+direct_allocation,2630030000,Waste Treatment
+direct_allocation,2630050000,Waste Treatment
+direct_allocation,2635000000,Waste Treatment
+direct_allocation,2640000000,Waste Treatment
+direct_allocation,2650000000,Waste Treatment
+direct_allocation,2650000001,Waste Treatment
+direct_allocation,2650000002,Waste Treatment
+direct_allocation,2650000003,Waste Treatment
+direct_allocation,2650000004,Waste Treatment
+direct_allocation,2650000005,Waste Treatment
+direct_allocation,2660000000,Waste Treatment
+direct_allocation,2670001000,Waste Treatment
+direct_allocation,2670002000,Waste Treatment
+direct_allocation,2670003000,Waste Treatment
+direct_allocation,2680001000,Waste Treatment
+direct_allocation,2680002000,Waste Treatment
+direct_allocation,2680003000,Waste Treatment
+direct_allocation,2680003010,Waste Treatment
+pesticides,2461800001,Pesticide application
+pesticides,2461800002,Pesticide application
+pesticides,2461850000,Pesticide application

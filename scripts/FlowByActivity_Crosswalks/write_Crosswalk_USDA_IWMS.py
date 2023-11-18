@@ -40,23 +40,27 @@ def assign_naics(df):
     # tobacco farming
     df.loc[df['Activity'] == 'CROPS, OTHER', 'Sector'] = '11191'
     # sugarcane farming
-    df = df.append(
+    df = pd.concat([df,
         pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '11193']],
-                     columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
+                     columns=['ActivitySourceName', 'Activity',
+                              'SectorSourceName', 'Sector'])],
         ignore_index=True, sort=True)
     # oilseed (except soybean) farming
-    df = df.append(
+    df = pd.concat([df,
         pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '11112']],
-                     columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
+                     columns=['ActivitySourceName', 'Activity',
+                              'SectorSourceName', 'Sector'])],
         ignore_index=True, sort=True)
     # SUGARBEETS
-    df = df.append(
+    df = pd.concat([df,
         pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code',  '111991']],
-                     columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
+                     columns=['ActivitySourceName', 'Activity',
+                              'SectorSourceName', 'Sector'])],
         ignore_index=True, sort=True)
-    df = df.append(
+    df = pd.concat([df,
         pd.DataFrame([['USDA_IWMS', 'CROPS, OTHER', 'NAICS_2012_Code', '111998']],
-                     columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
+                     columns=['ActivitySourceName', 'Activity',
+                              'SectorSourceName', 'Sector'])],
         ignore_index=True, sort=True)
 
     df.loc[df['Activity'] == 'HAY & HAYLAGE, (EXCL ALFALFA)', 'Sector'] = '111940A'
@@ -72,35 +76,35 @@ def assign_naics(df):
         pd.DataFrame([['USDA_IWMS', 'ORCHARDS', 'NAICS_2012_Code', '111332']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
                      ), ignore_index=True, sort=True)
-    df = df.append(
+    df = pd.concat([df,
         pd.DataFrame([['USDA_IWMS', 'ORCHARDS', 'NAICS_2012_Code', '111333']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
-                     ), ignore_index=True, sort=True)
+                     )], ignore_index=True, sort=True)
 
     df.loc[df['Activity'] == 'BERRY TOTALS', 'Sector'] = '111334'
 
-    df = df.append(
+    df = pd.concat([df,
         pd.DataFrame([['USDA_IWMS', 'ORCHARDS', 'NAICS_2012_Code', '111335']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
-                     ), ignore_index=True, sort=True)
-    df = df.append(
+                     )], ignore_index=True, sort=True)
+    df = pd.concat([df,
         pd.DataFrame([['USDA_IWMS', 'ORCHARDS', 'NAICS_2012_Code', '111336']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
-                     ), ignore_index=True, sort=True)
-    df = df.append(
+                     )], ignore_index=True, sort=True)
+    df = pd.concat([df,
         pd.DataFrame([['USDA_IWMS', 'ORCHARDS', 'NAICS_2012_Code', '111339']],
                      columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']
-                     ), ignore_index=True, sort=True)
+                     )], ignore_index=True, sort=True)
     # orange groves
-    df = df.append(pd.DataFrame([['USDA_IWMS', 'ORCHARDS',
-                                  'NAICS_2012_Code', '11131']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                                         'Sector']), ignore_index=True, sort=True)
+    df = pd.concat([df, pd.DataFrame(
+        [['USDA_IWMS', 'ORCHARDS', 'NAICS_2012_Code', '11131']],
+        columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                 'Sector'])], ignore_index=True, sort=True)
     # citrus except orange groves
-    df = df.append(pd.DataFrame([['USDA_IWMS', 'ORCHARDS',
-                                  'NAICS_2012_Code', '11132']],
-                                columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
-                                         'Sector']), ignore_index=True, sort=True)
+    df = pd.concat([df, pd.DataFrame(
+        [['USDA_IWMS', 'ORCHARDS', 'NAICS_2012_Code', '11132']],
+        columns=['ActivitySourceName', 'Activity', 'SectorSourceName',
+                 'Sector'])], ignore_index=True, sort=True)
 
     df.loc[df['Activity'] == 'PEANUTS', 'Sector'] = '111992'
 
@@ -110,49 +114,57 @@ def assign_naics(df):
     # BARLEY
     df.loc[df['Activity'] == 'SMALL GRAINS, OTHER', 'Sector'] = '111199A'
     # BUCKWHEAT
-    df = df.append(
+    df = pd.concat([df,
         pd.DataFrame([['USDA_IWMS', 'SMALL GRAINS, OTHER', 'NAICS_2012_Code', '111199B']],
-                     columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-        ignore_index=True, sort=True)
+                     columns=['ActivitySourceName', 'Activity',
+                              'SectorSourceName', 'Sector'])],
+                   ignore_index=True, sort=True)
     # MILLET, PROSO
-    df = df.append(
+    df = pd.concat([df,
         pd.DataFrame([['USDA_IWMS', 'SMALL GRAINS, OTHER', 'NAICS_2012_Code', '111199C']],
-                     columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-        ignore_index=True, sort=True)
+                     columns=['ActivitySourceName', 'Activity',
+                              'SectorSourceName', 'Sector'])],
+                   ignore_index=True, sort=True)
     # OATS
-    df = df.append(
+    df = pd.concat([df,
         pd.DataFrame([['USDA_IWMS', 'SMALL GRAINS, OTHER', 'NAICS_2012_Code', '111199D']],
-                     columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-        ignore_index=True, sort=True)
+                     columns=['ActivitySourceName', 'Activity',
+                              'SectorSourceName', 'Sector'])],
+                   ignore_index=True, sort=True)
     # RYE
-    df = df.append(
+    df = pd.concat([df,
         pd.DataFrame([['USDA_IWMS', 'SMALL GRAINS, OTHER', 'NAICS_2012_Code', '111199E']],
-                     columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-        ignore_index=True, sort=True)
+                     columns=['ActivitySourceName', 'Activity',
+                              'SectorSourceName', 'Sector'])],
+                   ignore_index=True, sort=True)
     # TRITICALE
-    df = df.append(
+    df = pd.concat([df,
         pd.DataFrame([['USDA_IWMS', 'SMALL GRAINS, OTHER', 'NAICS_2012_Code', '111199I']],
-                     columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-        ignore_index=True, sort=True)
+                     columns=['ActivitySourceName', 'Activity',
+                              'SectorSourceName', 'Sector'])],
+                   ignore_index=True, sort=True)
     # WILD RICE
-    df = df.append(
+    df = pd.concat([df,
         pd.DataFrame([['USDA_IWMS', 'SMALL GRAINS, OTHER', 'NAICS_2012_Code', '111199J']],
-                     columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-        ignore_index=True, sort=True)
+                     columns=['ActivitySourceName', 'Activity',
+                              'SectorSourceName', 'Sector'])],
+                   ignore_index=True, sort=True)
 
     # three types of sorghum, so manually add two rows
     # grain
     df.loc[df['Activity'] == 'SORGHUM, GRAIN', 'Sector'] = '111199F'
     # syrup
-    df = df.append(
+    df = pd.concat([df,
         pd.DataFrame([['USDA_IWMS', 'SORGHUM, GRAIN', 'NAICS_2012_Code', '111199G']],
-                     columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-        ignore_index=True, sort=True)
+                     columns=['ActivitySourceName', 'Activity',
+                              'SectorSourceName', 'Sector'])],
+                   ignore_index=True, sort=True)
     # silage
-    df = df.append(
+    df = pd.concat([df,
         pd.DataFrame([['USDA_IWMS', 'SORGHUM, GRAIN', 'NAICS_2012_Code', '111199H']],
-                     columns=['ActivitySourceName', 'Activity', 'SectorSourceName', 'Sector']),
-        ignore_index=True, sort=True)
+                     columns=['ActivitySourceName', 'Activity',
+                              'SectorSourceName', 'Sector'])],
+                   ignore_index=True, sort=True)
 
     df.loc[df['Activity'] == 'SOYBEANS', 'Sector'] = '11111'
 
@@ -189,5 +201,5 @@ if __name__ == '__main__':
     # sort df
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" +
-              "NAICS_Crosswalk_" + datasource + ".csv", index=False)
+    df.to_csv(f"{datapath}/activitytosectormapping/NAICS_Crosswalk_"
+              f"{datasource}.csv", index=False)

@@ -1,0 +1,91 @@
+# data location: https://data.ny.gov/Energy-Environment/Statewide-Greenhouse-Gas-Emissions-Beginning-1990/5i6e-asw6
+# direct url: https://data.ny.gov/resource/5i6e-asw6.csv
+
+author: New York Department of Environmental Conservation
+source_name: Statewide Greenhouse Gas Emissions Beginning 1990
+bib_id: StateGHGI_NY
+format: csv  # comma-separated values
+url: None
+filename: 'NY_customized_inventory.csv'
+parse_response_fxn: !script_function:StateGHGI NY_customized_parse
+years:
+- 2019
+- 2018
+- 2017
+
+
+# Dictionary of activities for disaggregation of HFCs and PFCs
+# The table numbers listed below are based on
+# Inventory of U.S. Greenhouse Gas Emissions and Sinks: 1990–2019 (published 2021)
+disagg_activity_dict:
+  Buildings, IPPU, Product Use, ODS Substitues, Building HVAC, Not Applicable: &ODS_allocation
+    HFCs:
+      table: 'EPA_GHGI_T_4_99'
+      drop_rows:
+        - 'CF4'
+        - 'Others (a)'
+  Buildings, IPPU, Product Use, ODS Substitues, Building Refrigeration, Not Applicable:
+    <<: *ODS_allocation
+  Buildings, IPPU, Product Use, ODS Substitues, Industrial, Not Applicable:
+    <<: *ODS_allocation  
+  Buildings, IPPU, Product Use, ODS Substitues, Other Building Appliances, Not Applicable:
+    <<: *ODS_allocation  
+  Buildings, IPPU, Product Use, ODS Substitues, Other, Not Applicable:
+    <<: *ODS_allocation  
+  Transportation, IPPU, Product Use, ODS Substitues, Transportation HVAC, Not Applicable:
+    <<: *ODS_allocation  
+  Transportation, IPPU, Product Use, ODS Substitues, Transportation Refrigeration, Not Applicable:
+    <<: *ODS_allocation
+  Industry, IPPU, Electronics, Semiconductor Industry, Not Applicable, Not Applicable:
+    HFCs:
+      table: 'EPA_GHGI_T_4_94'
+      drop_rows:
+        - 'C2F6'
+        - 'C3F8'
+        - 'c-C4F8'
+        - 'CF4'
+        - 'HFC, PFC and SF6 F-HTFs'
+        - 'MEMS'
+        - 'N2O[2]'
+        - 'NF3'
+        - 'PV'
+        - 'SF6'
+        - 'Total F-GHGs'
+    PFCs:
+      table: 'EPA_GHGI_T_4_94'
+      drop_rows:
+        - 'HFC, PFC and SF6 F-HTFs'
+        - 'HFC-23'
+        - 'MEMS'
+        - 'N2O[2]'
+        - 'NF3'
+        - 'PV'
+        - 'SF6'
+        - 'Total F-GHGs' 
+  Industry, IPPU, Metals, Aluminum, Not Applicable, Not Applicable:
+    PFCs:
+      table: 'EPA_GHGI_T_4_80'
+      drop_rows:  
+
+
+# List of IPCC AR5 GWP-20 values needed to convert flow ammount from CO2e to mass emitted
+# Values were taken from Table 2 of Summary Report of the 2021 NYS Statewide GHG Emissions Report (p.5)
+# available at: https://www.dec.ny.gov/energy/99223.html
+AR5GWP20:
+  CO2: 1
+  CH4: 84
+  N2O: 264
+  HFC-23: 10800
+  HFC-32: 2430
+  HFC-125: 6090
+  HFC-134a: 3580
+  HFC-143a: 6940
+  HFC-236fa: 6940
+  C2F6: 8210 # PFC-116
+  C3F8: 6640 # PFC-218
+  CF4: 4880 # PFC-14
+  c-C4F8: 7110 # PFC-318
+  SF6: 17500
+  NF3: 12800
+
+

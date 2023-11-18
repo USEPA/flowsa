@@ -1,0 +1,75 @@
+# This is the 2014 target year method for CAP_HAP which builds off the generic
+# method in CAP_HAP_common. This state level method is at the detail level.
+# This FBS is for the Nonroad portion ONLY
+
+!include:BEA_detail_target.yaml
+target_naics_year: 2012
+geoscale: state
+
+_emission_year: &year 2014
+
+sources_to_cache:
+  Detail_Use_2014:
+    !include:Detail_Use.yaml
+    year: *year
+    source_names:
+      BEA_Summary_Use_PRO_BeforeRedef:
+        !include:Detail_Use.yaml:source_names:BEA_Summary_Use_PRO_BeforeRedef
+        year: *year
+
+source_names:
+  EPA_NEI_Nonroad:
+    !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonroad
+    year: *year
+    activity_sets:
+      direct_allocation:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonroad_asets.csv direct_allocation
+        attribution_method: direct
+      # These activity sets are broken out into multiple sections to avoid
+      # MemoryErrors
+      offroad_vehicles_equipment_a:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonroad_asets.csv offroad_vehicles_equipment_a
+        attribution_method: proportional
+        attribution_source:
+          Detail_Use_2014:
+            geoscale: national
+            selection_fields:
+              SectorProducedBy: {'32411': ''}  # Petroleum
+      offroad_vehicles_equipment_b:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonroad_asets.csv offroad_vehicles_equipment_b
+        attribution_method: proportional
+        attribution_source:
+          Detail_Use_2014:
+            geoscale: national
+            selection_fields:
+              SectorProducedBy: {'32411': ''}  # Petroleum
+      offroad_vehicles_equipment_c:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonroad_asets.csv offroad_vehicles_equipment_c
+        attribution_method: proportional
+        attribution_source:
+          Detail_Use_2014:
+            geoscale: national
+            selection_fields:
+              SectorProducedBy: {'32411': ''}  # Petroleum
+      offroad_vehicles_equipment_d:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonroad_asets.csv offroad_vehicles_equipment_d
+        attribution_method: proportional
+        attribution_source:
+          Detail_Use_2014:
+            geoscale: national
+            selection_fields:
+              SectorProducedBy: {'32411': ''}  # Petroleum
+      offroad_vehicles_equipment_e:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonroad_asets.csv offroad_vehicles_equipment_e
+        attribution_method: proportional
+        attribution_source:
+          Detail_Use_2014:
+            geoscale: national
+            selection_fields:
+              SectorProducedBy: {'32411': ''}  # Petroleum

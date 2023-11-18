@@ -1,5 +1,8 @@
 !include:EPA_NEI_Common.yaml
 bib_id: EPA_NEI_Nonpoint
 url: # no replacement needed in url because only single zip file
-  base_url: ftp://newftp.epa.gov/air/nei/__year__/data_summaries/__version___nonpoint.zip
+  base_url: https://gaftp.epa.gov/air/nei/__year__/data_summaries/__version___nonpoint.zip
 parse_response_fxn: !script_function:EPA_NEI epa_nei_nonpoint_parse
+version_dict:
+    !include:EPA_NEI_Common.yaml:version_dict
+    '2020': '2020neiMar' # 2020 NEI Nonpoint has unique URL

@@ -2,135 +2,211 @@
 Description of parameters in flowbysectormethods yamls. All values are
 strings unless noted.
 
+## Recursive vs Sequential Attribution
+The FBS methods are designed to handle recursive and sequential attribution 
+methods. 
+
+### Recursive Attribution Methods
+Recursive attribution methods allow application of unlimited attribution 
+methods on a primary data source. For example, a primary data source 
+(such as `USDA_ERS_MLU`) can be _proportionally_ attributed to sectors with 
+an attribution source (`USDA_CoA_Cropland`) _after_ `USDA_CoA_Cropland` is 
+_proportionally_ attributed to a higher resolution of sectors with another 
+attribution source `USDA_CoA_Cropland_NAICS`. To apply recursive 
+attribution in the FBS method yaml, all attribution sources are written by 
+being continually indented, as demonstrated bellow. The yaml is essentially 
+read bottom-up, where the last attribution method listed is applied to the 
+data source above until reaching the primary data source. 
+
+```
+  USDA_ERS_MLU:
+    fedefl_mapping: USDA_ERS_MLU
+    geoscale: state
+    selection_fields:
+      Class: Land
+    activity_sets:
+      cropland_crops:
+        selection_fields:
+         PrimaryActivity: 'Cropland used for crops'
+        attribution_method: proportional
+        attribution_source:
+          USDA_CoA_Cropland:
+            selection_fields:
+              Class: Land
+              FlowName: "AREA HARVESTED"
+            attribution_method: proportional
+            attribution_source:
+              USDA_CoA_Cropland_NAICS:
+                selection_fields:
+                  Class: Land
+                  FlowName: "AG LAND, CROPLAND, HARVESTED"
+                attribution_method: direct
+             
+```
+
+### Sequential Attribution Methods
+Sequential attribution is defined by listing each attribution method to be 
+applied to a data source. The first attribution method in the list is 
+applied first, then the next, until all methods in the list are applied. 
+For example, after loading `EIA_CBECS_Land` and subsetting into an activity 
+set, the data can first be _proportionally_ attributed using 
+`Employment_national_2012`. After attribution, a second 
+_proportional_attribution_ method can be applied using 
+`Employment_state_2012` data. 
+
+```
+  EIA_CBECS_Land: # commercial land use
+    fedefl_mapping: EIA_CBECS_Land
+    geoscale: national
+    selection_fields:
+      Class: Land
+      Location: !include:Location_common.yaml:_national_location
+    clean_fba: !script_function:EIA_CBECS_Land cbecs_land_fba_cleanup
+    activity_sets:
+      cbecs_land: # all activities in eia cbecs land crosswalk
+        selection_fields:
+          PrimaryActivity: !from_index:EIA_CBECS_Land_2012_asets.csv cbecs_land
+        attribute:
+          - attribution_method: proportional
+            attribution_source:
+              Employment_national_2012:
+                geoscale: national
+          - attribution_method: proportional
+            attribute_on: ['PrimarySector']
+            fill_columns: Location
+            attribution_source:
+              Employment_state_2012:
+                geoscale: state
+
+```
+
+## Special notation
+Flowsa FBA and FBS method files include custom yaml configurations as defined
+in `flowsa_yaml.py` using the custom `FlowsaLoader` class.
+
+1. Include nodes from other method files using `!include` using the following 
+syntax: `!include:{method.yaml}:{node1}:{node2}`
+```
+!include:CAP_HAP_common.yaml:source_names:EPA_NEI_Nonpoint
+```
+
+2. Incorporate a list of items (e.g., activities for an activity_set) from csv
+into a method file using the following syntax: `!from_index:{file_name}.csv`
+```
+activity_sets:
+  direct_allocation:
+    selection_fields:
+      PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv direct_allocation
+    attribution_method: direct
+```
+3. Call on specific functions as a parameter using the following syntax:
+`!script_function:{data_source_script file} {fxn name}`
+```
+clean_fba_before_activity_sets: !script_function:EPA_NEI clean_NEI_fba
+```
+
 ## Terms
 ### Target FBS output specifications
-- _target_sector_level_: specify desired sector aggregation (NAICS_2,
-  NAICS_3, NAICS_4, NAICS_5, NAICS_6)
-- _target_sector_source_: specify NAICS version 2007, 2012, 2017 (ex.
-  NAICS_2012_Code). At this time, only NAICS_2012_Code is supported.
-- _target_geoscale_: level of geographic aggregation in output parquet
-  (national, state, or county)
-- _download_if_missing_: (optional) Add and set to 'True' if you would like
-  to download all required FBAs from Data Commons rather than generating
-  FBAs locally.
+- _industry_spec_: specify the `default` desired sector aggregation:
+  (`NAICS_2`, `NAICS_3`, `NAICS_4`, `NAICS_5`, `NAICS_6`). Further 
+  disaggregation is possible, e.g.,:
 
-### Source specifications (in FBA format)
-- _source_names_: The name of the FBS dataset or the FBA dataset requiring
-  allocation to sectors
-- _data_format_: 'FBA', 'FBS', 'FBS_outside_flowsa', loads a FlowByActivity
-  or a FlowBySector parquet stored in flowsa, or calls on a specified
-  function to load data from outside flowsa in FBS format
-- _class_: a text string in 'Class' column of flowbyactivity (ex. Water),
-  see class types in
-  [source_catalog.yaml](https://github.com/USEPA/flowsa/blob/master/flowsa/data/source_catalog.yaml)
-- _geoscale_to_use_: the geoscale of the FBA set to use for sector allocation
-   (national, state, or county)
-- _year_: year of available dataset (ex. 2015)
-- _activity_to_sector_mapping_: (optional) name of activity to sector
-  mapping file, if not provided will use the source name
-- _apply_urban_rural_: Assign flow quantities as urban or rural based on
-  population density by FIPS.
-- _clean_fba_before_mapping_df_fxn_: (optional) calls on function in the
-  source.py file to clean up/modify the FBA data prior to mapping flows.
-  Function is called using the `!script_function:` tag.
-- _clean_fba_df_fxn_: (optional) calls on function in the source.py file to
-  clean up/modify the FBA data prior to allocating data to sectors.
-  Function is called using the `!script_function:` tag.
-- _clean_fba_w_sec_df_fxn_: (optional) calls on function in the source.py
-  file to clean up/modify the FBA dataframe, after sector columns are added
-  but prior to allocating data to sectors. Function is called using
-  the`!script_function:` tag.
-- _fedefl_mapping_: (optional) name of mapping file in FEDEFL. If not
-  supplied will use the source_names
-- _mfl_mapping_: (optional, should not be used if fedefl_mapping is used)
-  name of mapping file for Material Flow List.
-- _keep_unmapped_rows_: (optional) default is False, if True will maintain any
-  flows not found in mapping files.
+```
+industry_spec:
+  default: NAICS_3
+  NAICS_4: ['221', '336', '541']
+```
 
-### Activity set specifications
+- _year_: specify the target year of the FBS
+- _target_naics_year_: specify NAICS version `2007`, `2012`, `2017`.
+  At this time, only NAICS_2012_Code is supported.
+- _geoscale_: level of geographic aggregation in output parquet
+  (`national`, `state`, or `county`).
+
+
+### Source specifications
+All sources are treated recursively. That is, there can be an unlimited number
+of embedded sources. The source parameters below can be applied to sources at
+any level, and are inherited from higher-level sources.
+
+- _source_names_: The name of the dataset (FBA or FBS) to serve as primary data
+- _year_: year of dataset (`2015`)
+- _geoscale_: level of geographic aggregation in output parquet
+  (`national`, `state`, or `county`).
+- _data_format_: default is `FBA`, specify `FBS` or `FBS_outside_flowsa`.
+  `FBS_outside_flowsa` requires a second parameter, `FBS_datapull_fxn` which 
+  supplies the name of the function to generate the FBS using the`!
+  script_function:` tag.
 - _activity_sets_: A subset of the FBA dataset and the method and
-  allocation datasets used to create an FBS
-- _names_: (list) specify the subset of the FBA to allocate based on values in the
-   Activity Produced/Consumed By fields. To use an external activity set .
-  csv file, use the tag `!from_index:file_name.csv`, then give the name (e.g.,
-  `activity_set_1`) of the activity set as found in the csv file.
-- _source_flows_: (list, optional) specify the 'FlowName'(s) from the FBA
-   to use. If not provided, all flows are used.
-- _allocation_method_: currently written for 'direct',
-   'allocation_function', 'proportional', and 'proportional-flagged'. See
-  descriptions below.
-- _allocation_source_: The primary data source used to allocate main FBA for
-   specified activity to sectors
-- _literature_sources_: (optional) Specific functions that contain values
-  from literature used to modify FBA data.
-- _activity_to_sector_mapping_: (optional) name of activity to sector
+  allocation datasets used to create an FBS.
+- _selection_fields_: A dictionary that allows subsetting source data by column.
+  See description in `flowby.select_by_fields()`. To use a list of data 
+  points not supplied in the method, use the `!from_index:` tag, then give 
+  the name (e.g., `activity_set_1`) of the activity set as found in the csv file.
+- _exclusion_fields_: A dictionary that allows subsetting source data by column.
+  See description in `flowby.select_by_fields()`. 
+- _attribute_: (optional) include for sequential attribution. Follow with list of _attribution_method_ parameters. 
+- _attribution_method_: currently written for `direct`, `proportional`, 
+  `multiplication`, `equal`, `inheritance`. See "Method Descriptions" below.
+- _attribution_source_: The data source used to attribute the primary data 
+  source. By default attribution is performed on the primary activity column.
+
+#### Optional cleaning functions
+These parameters assign functions for additional processing of FlowBy objects.
+They are called using the `!script_function:` tag.
+Some functions allow for extra named parameters.
+
+- _clean_fba_before_activity_sets_: applied prior to splitting a data source
+  into activity sets.
+- _clean_fba_before_mapping_: applied prior to flow mapping.
+- _estimate_supressed_:
+- _clean_fba_: applied prior to sector columns are added.
+- _clean_fba_w_sec_: applied after sector columns are added but prior to 
+  attributing data to sectors.
+- _clean_fba_after_attribution_: applied after activities are attributed to 
+  sectors, but before applying any additional attribution methods
+- _clean_fbs_: applied prior to attributing data to sectors for a FBS.
+
+##### Defined cleaning functions
+- _attribute_national_to_states()_: Propogates national data to all states 
+  to enable for use in state methods. Allocates sectors across states based 
+  on employment.
+- _calculate_flow_per_person()_: Calculates FlowAmount per person per 
+  year based on dataset name passed in "clean_parameter"
+- _estimate_suppressed_sectors_equal_attribution()_: Equally attribute 
+  known parent values to child values based on sector-length.
+- _substitute_nonexistent_values()_: Fill missing values with data from 
+  another geoscale. See Water_national_2015_m1 for an example.
+- _weighted_average()_: Determine the weighted average of provided values. 
+  See Water_national_2015_m1 for an example. 
+
+#### Additional optional parameters
+- _activity_to_sector_mapping_: name of activity to sector
   mapping file, if not provided will use the source name
-- _allocation_source_class_: specific 'FlowClass' found in the allocation
-  source flowbyactivity parquet
-- _allocation_source_year_: specific to the allocation datasets, use the
-  year relevant to the main FBA dataframe
-- _allocation_flow_: (list) the relevant 'FlowName' values, as found in the
-  source flowbyactivity parquet. Use 'None' to capture all flows.
-- _allocation_compartment_: (list) the relevant 'Compartment' values, as
-  found in the source flowbyactivity parquet. Use 'None' to capture all
-  compartments.
-- _allocation_from_scale_: national, state, or county - dependent on
-  allocation source, as not every level exits for sources
-- _allocation_fba_load_scale_: (optional) Can indicate geographic level of
-  FBA to load, helpful when an FBA ia large
-- _clean_allocation_fba_: (optional) Function to clean up the allocation
-  FBA, as defined in the source.py file. Function is called using
-  the`!script_function:` tag.
-- _clean_allocation_fba_w_sec_: (optional) Function to clean up the
-  allocation FBA, after allocation activities are assigned SectorProducedBy
-  and SectorConsumedBy columns. Function is called using
-  the`!script_function:` tag.
-- _allocation_map_to_flow_list_: (optional) If the allocation df and source
-  df need to be matched on Context and/or Flowable, set to 'True'
-- _helper_source_: (optional) secondary df for sector allocation
-- _helper_method_: currently written for 'multiplication', 'proportional',
-  and 'proportional-flagged'
-- _helper_activity_to_sector_mapping_: (optional) name of activity to
-  sector mapping file, if not provided will use the source name
-- _helper_source_class_: specific 'FlowClass' found in the allocation
-  source flowbyactivity parquet
-- _helper_source_year_: specific to the allocation datasets, use the year
-  relevant to the main FBA dataframe
-- _helper_flow_: (list) the relevant 'FlowName' values, as found in the
-  source flowbyactivity parquet
-- _helper_from_scale_: national, state, or county - dependent on allocation
-  source, as not every level exits for sources
-- _clean_helper_fba_: (optional) Function to clean up the helper FBA.
-  Function is called using the`!script_function:` tag.
-- _clean_helper_fba_wsec_: (optional) Function to clean up the helper FBA,
-  after allocation activities are assigned SectorProducedBy and
-  SectorConsumedBy columns. Function is called using
-  the`!script_function:` tag.
+- _apply_urban_rural_: (bool) Assign flow quantities as urban or rural based on
+  population density by FIPS.
+- _fedefl_mapping_: name of mapping file in FEDEFL. If not
+  supplied will use the source name
+- _mfl_mapping_: name of mapping file for Material Flow List. Should not be
+  used if fedefl_mapping is used
+- _keep_unmapped_rows_: (bool) default is False, if True will maintain any
+  flows not found in mapping files.
+- _attribute_on_: (list) specify which columns in the primary dataset 
+  should be used for attribution. See REI_waste_national_2012.yaml for an 
+  example. 
+- _fill_columns_: (str) indicate if there is a column in the primary 
+  dataset that should be filled with the values in the attribution data 
+  source. See REI_waste_national_2012.yaml for an example. 
 
-### Source specifications (in FBS format)
-If source data format is specified as 'FBS':
-- _source_names_: The name of the FBS dataset
-- _data_format_: 'FBS', loads a FlowBySector
-- _year_: year of available dataset (ex. 2015)
-- _clean_fbs_df_fxn_: (optional) apply function to clean the FBS after it
-  is accessed. Function is called using the`!script_function:` tag.
-
-### FBS_outside_flows specifications
-If source data_format is specified as `FBS_outside_flowsa`:
-- _FBS_datapull_fxn_: name of the function to generate the FBS. Function is
-  called using the`!script_function:` tag.
-- _parameters_: (list) parameters to pass into the function
 
 ## Method Descriptions
-- allocation_function: Activities are assigned to sectors using a specified
-  function
 - direct: Activities are directly assigned to sectors using the source to
   NAICS crosswalk
-- multiplication: Multiply the values in the allocation data source with
-  values sharing the same sectors in the helper allocation data source
-- proportional: Activities are proportionally allocated to sectors using
-  specified allocation data source
-- proportional-flagged: Activities that are flagged (assigned a value of
-  '1') are proportionally allocated to sectors using a specified allocation
-  data source. Activities that are not flagged (assigned a value of '0')
-  are directly assigned to sectors.
+- multiplication: Multiply the values in the primary source with
+  values sharing the same sectors in the attribution source
+- proportional: Activities are proportionally attributed to sectors using
+  specified attribution data source
+- equal: Equally attribute parent values to child values until reach target 
+  sector length
+- inheritance: Assign parent values to all child values. Usefull in 
+  situations where value is a rate, such as kg/m2.

@@ -18,7 +18,7 @@ def assign_naics(df_load):
     :param df_load: df, a FlowByActivity subset that contains unique activity names
     :return: df with assigned Sector columns
     """
-    cw_load = load_crosswalk('BEA')
+    cw_load = load_crosswalk('NAICS_to_BEA_Crosswalk_2012')
     cw = cw_load[['BEA_2012_Detail_Code',
                   'NAICS_2012_Code']].drop_duplicates().reset_index(drop=True)
     # drop all rows with naics >6
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     # select years to pull unique activity names
     year = '2002'
     # datasource
-    datasource = 'BEA_Make_AR'
+    datasource = 'BEA_Detail_Make_AfterRedef'
     # df of unique ers activity names
     df = unique_activity_names(datasource, year)
     # add manual naics 2012 assignments
@@ -49,5 +49,5 @@ if __name__ == '__main__':
     # sort df
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" +
-              "NAICS_Crosswalk_" + datasource + ".csv", index=False)
+    df.to_csv(f"{datapath}/activitytosectormapping/NAICS_Crosswalk_"
+              f"{datasource}.csv", index=False)

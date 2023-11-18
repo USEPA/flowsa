@@ -13,15 +13,14 @@ _ActivitySetColumnSubset_ is the value in the "activity_set" column to call
 on. See the example below.
 
 ```
-"EPA_NEI_Onroad":
-    data_format: 'FBA'
-    class: Chemicals
-    geoscale_to_use: national
+  EPA_NEI_Onroad:
+    geoscale: state
     year: 2017
-    activity_to_sector_mapping: 'SCC'
-    clean_fba_df_fxn: !script_function:EPA_NEI clean_NEI_fba
-    fedefl_mapping: 'NEI'
+    fedefl_mapping: NEI
     activity_sets:
       direct_allocation:
-        names: !from_index:NEI_Onroad_2017_asets.csv direct_allocation
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Onroad_asets.csv direct_allocation
+        attribution_method: direct
+
 ```

@@ -108,6 +108,13 @@ Tables:
         "flow": "CO2"
         "desc": "Table 3-22b:  Adjusted Non-Energy Use Fossil Fuel Emissions"
 
+      "3-108":
+        "class": "Chemicals"
+        "unit": "MMT CO2e"
+        "compartment": "air"
+        "flow": "CO2"
+        "desc": "CO2 Emissions from Wood Consumption by End-Use Sector (MMT CO2 Eq.)"
+
 # Petroleum Systems
       "3-42":
         "class": "Chemicals"
@@ -147,6 +154,13 @@ Tables:
         "compartment": "air"
         "flow": "N2O"
         "desc": "Table 3-72: N2O Emissions from Natural Gas Systems (Metric Tons CO2 Eq.)"
+
+# International Bunker Fuels
+      "3-104":
+        "class": "Chemicals"
+        "unit": "MMT CO2e"
+        "compartment": "air"
+        "desc": "Table 3-104:  CO2, CH4, and N2O Emissions from International Bunker Fuels (MMT CO2 Eq.)"
 
   "Ch 4 - Industrial Processes":
       "4-14": # Emissions captured in 2-1

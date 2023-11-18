@@ -28,4 +28,5 @@ if __name__ == '__main__':
     # Read directly into a pandas df
     raw_df = pd.read_excel(io.BytesIO(response.content)).dropna().reset_index(drop=True)
     # save data to csv
-    raw_df.to_csv(externaldatapath + "Larson_UrbanPublicParks_SI.csv", index=False)
+    raw_df.to_csv(f"{externaldatapath}/Larson_UrbanPublicParks_SI.csv",
+                  index=False)

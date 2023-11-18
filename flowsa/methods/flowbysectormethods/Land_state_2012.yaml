@@ -1,0 +1,164 @@
+# Cache 'EIA_CBECS_Land' and 'EIA_MECS_Land' because the results of the
+# two allocated datasets are used within USDA_ERS_MLU sector attribution
+---
+
+!include:USEEIO_summary_target.yaml
+year: 2012
+geoscale: state
+
+sources_to_cache:
+  EIA_CBECS_Land: &_eia_cbecs_land # commercial land use
+    fedefl_mapping: EIA_CBECS_Land
+    geoscale: national
+    selection_fields:
+      Class: Land
+      Location: !include:Location_common.yaml:_national_location
+    clean_fba: !script_function:EIA_CBECS_Land cbecs_land_fba_cleanup
+    activity_sets:
+      cbecs_land: # all activities in eia cbecs land crosswalk
+        selection_fields:
+          PrimaryActivity: !from_index:EIA_CBECS_Land_2012_asets.csv cbecs_land
+        attribute:
+          - attribution_method: proportional
+            attribution_source:
+              Employment_national_2012:
+                geoscale: national
+          - attribution_method: proportional
+            attribute_on: ['PrimarySector']
+            fill_columns: Location
+            attribution_source:
+              Employment_state_2012:
+                geoscale: state
+  EIA_MECS_Land: &_eia_mecs_land  # manufacturing land use
+    fedefl_mapping: EIA_MECS_Land
+    year: 2014
+    geoscale: national
+    industry_spec:
+      default: NAICS_6
+    selection_fields:
+      Class: Land
+      Location: !include:Location_common.yaml:_national_location
+      FlowName: "Approximate Enclosed Floorspace of All Buildings Onsite"
+      Year: {2014: 2012} # replace year to align with method year
+    clean_fba: !script_function:EIA_MECS mecs_land_fba_cleanup
+    activity_sets:
+      mecs_land: # all activities in eia mecs land crosswalk
+        selection_fields:
+          PrimaryActivity: !from_index:EIA_MECS_Land_2014_asets.csv mecs_land
+        attribute:
+          - attribution_method: proportional
+            attribution_source:
+              Employment_national_2014:
+                geoscale: national
+          - attribution_method: proportional
+            attribute_on: ['PrimarySector']
+            fill_columns: Location
+            attribution_source:
+              Employment_state_2014:  # use 2014 bc MECS is 2014
+                geoscale: state
+
+source_names:
+  EIA_CBECS_Land:
+    <<: *_eia_cbecs_land
+
+  EIA_MECS_Land:
+    <<: *_eia_mecs_land
+
+  BLM_PLS:
+    fedefl_mapping: BLM_PLS
+    selection_fields:
+      Class: Land
+      Location: !include:Location_common.yaml:_state_location
+    activity_sets:
+      general_mining: # all blm pls activities other than hardrock
+        selection_fields:
+         PrimaryActivity: !from_index:BLM_PLS_2012_asets.csv general_mining
+        attribution_method: direct
+      hardrock_mining:
+        selection_fields:
+         PrimaryActivity: !from_index:BLM_PLS_2012_asets.csv hardrock_mining
+        attribution_method: proportional
+        attribution_source: Employment_state_2012
+
+  USDA_ERS_MLU:
+    fedefl_mapping: USDA_ERS_MLU
+    selection_fields:
+      Class: Land
+    activity_sets:
+      cropland_crops:
+        industry_spec:
+          default: NAICS_6
+          NAICS_7: ['111150', '111199']
+        selection_fields:
+         PrimaryActivity:
+          - 'Cropland used for crops'
+          - 'Cropland idled'
+        attribution_method: proportional
+        attribution_source:
+          USDA_CoA_Cropland:
+            selection_fields:
+              Class: Land
+              FlowName:
+                - "AREA HARVESTED"
+                - "AREA"
+                - "AREA IN PRODUCTION"
+                - 'AREA BEARING & NON-BEARING'
+                - 'AREA GROWN'
+            exclusion_fields:
+              conditional: {FlowName: 'AREA IN PRODUCTION',
+                            ActivityConsumedBy: 'VEGETABLE TOTALS'}
+              ActivityConsumedBy: ['AG LAND, CROPLAND, HARVESTED']
+            activity_sets:
+              cropland_attribution-cropland:
+                exclusion_fields:
+                  ActivityConsumedBy: 'ORCHARDS'
+                attribution_method: proportional
+                attribution_source:
+                  USDA_CoA_Cropland_NAICS:
+                    selection_fields:
+                      Class: Land
+                      FlowName:
+                        - "AG LAND, CROPLAND, HARVESTED"
+                    estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
+              cropland_attribution-orchards:
+                selection_fields:
+                  PrimaryActivity: ORCHARDS
+                attribution_method: direct
+      pastureland:
+        selection_fields:
+         PrimaryActivity:
+          - 'Cropland used for pasture'
+          - 'Forest-use land grazed'
+          - 'Grassland pasture and range'
+        attribution_method: direct
+      forest:
+        selection_fields:
+         PrimaryActivity:
+          - 'Forest-use land not grazed'
+          - 'Land in defense and industrial areas'
+          - 'Land in rural parks and wildlife areas'
+        attribution_method: direct
+      rural_transportation:
+        # first attribute to NAICS_6 because of clean_fba_w_sec multipliers
+        industry_spec:
+          default: NAICS_6
+        selection_fields:
+         PrimaryActivity:
+          - 'Land in rural transportation facilities'
+        clean_fba_w_sec: !script_function:USDA_ERS_MLU allocate_usda_ers_mlu_land_in_rural_transportation_areas
+        attribution_method: direct
+      urban:
+        # first attribute to NAICS_6 because of clean_fba_w_sec multipliers
+        industry_spec:
+          default: NAICS_6
+        selection_fields:
+         PrimaryActivity:
+          - 'Land in urban areas'
+        clean_fba_w_sec: !script_function:USDA_ERS_MLU allocate_usda_ers_mlu_land_in_urban_areas
+        attribution_method: direct
+      other:
+        selection_fields:
+         PrimaryActivity: 'Other land'
+         Location: !include:Location_common.yaml:_state_location
+        clean_fba_w_sec: !script_function:USDA_ERS_MLU allocate_usda_ers_mlu_other_land
+        attribution_method: direct

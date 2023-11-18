@@ -1,0 +1,32 @@
+# This is the 2014 target year method for CAP_HAP which builds off the generic
+# method in CAP_HAP_common. This state level method is at the detail level.
+# This FBS is for the Onroad portion ONLY
+
+!include:BEA_detail_target.yaml
+target_naics_year: 2012
+geoscale: state
+
+_emission_year: &year 2014
+
+sources_to_cache:
+  Detail_Use_2014:
+    !include:Detail_Use.yaml
+    year: *year
+    source_names:
+      BEA_Summary_Use_PRO_BeforeRedef:
+        !include:Detail_Use.yaml:source_names:BEA_Summary_Use_PRO_BeforeRedef
+        year: *year
+
+source_names:
+  EPA_NEI_Onroad:
+    !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Onroad
+    year: *year
+    activity_sets:
+      !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Onroad:activity_sets
+      onroad_vehicles_gas_stations:
+        !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Onroad:activity_sets:onroad_vehicles_gas_stations
+        attribution_source:
+          Detail_Use_2014:
+            geoscale: national
+            selection_fields:
+              SectorProducedBy: {'32411': ''}  # Petroleum

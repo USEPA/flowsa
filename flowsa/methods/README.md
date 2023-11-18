@@ -1,6 +1,6 @@
 ## Current Status
 
-Known issues with exisiting FBA and FBS methods are shown in [method_status.yaml](method_status.yaml)
+Known issues with existing FBA and FBS methods are shown in [method_status.yaml](method_status.yaml)
 
 ```
 <Method_Name>

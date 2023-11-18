@@ -86,12 +86,11 @@ def assign_naics(df):
     df.loc[df['Activity'] ==
            'Hardrock - Acquired Lands Leases, Hardrock Preference Right Leases', 'Sector'] = '2122'
     # Nonmetallic Mineral Mining and Quarrying
-    df = df.append(
-        pd.DataFrame([['BLM_PLS',
-                       'Hardrock - Acquired Lands Leases, Hardrock Preference Right Leases',
-                       '2123']],
-                     columns=['ActivitySourceName', 'Activity', 'Sector']
-                     ), ignore_index=True, sort=True)
+    df = pd.concat([df, pd.DataFrame(
+        [['BLM_PLS', 'Hardrock - Acquired Lands Leases, Hardrock Preference '
+                     'Right Leases', '2123']],
+        columns=['ActivitySourceName', 'Activity', 'Sector'])],
+                   ignore_index=True, sort=True)
 
     # Coal Mining
     df.loc[df['Activity'] == 'Logical Mining Units', 'Sector'] = '21211'
@@ -196,5 +195,5 @@ if __name__ == '__main__':
     # sort df
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" +
-              "NAICS_Crosswalk_" + datasource + ".csv", index=False)
+    df.to_csv(f"{datapath}/activitytosectormapping/NAICS_Crosswalk_"
+              f"{datasource}.csv", index=False)

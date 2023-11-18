@@ -1,0 +1,36 @@
+# This is the 2014 target year method for Summary state models
+# It aggregates the detail models to the summary level
+
+!include:USEEIO_summary_target.yaml
+target_naics_year: 2012
+geoscale: state
+_emission_year: &year 2014
+
+source_names:
+  CAP_HAP_Nonpoint_2014: # detail state model
+    year: *year
+    data_format: FBS
+
+  CAP_HAP_Nonroad_2014: # detail state model
+    year: *year
+    data_format: FBS
+    # Rename MetaSources
+    selection_fields:
+      MetaSources:
+        'EPA_NEI_Nonroad.direct_allocation': 'EPA_NEI_Nonroad.direct_allocation'
+        'EPA_NEI_Nonroad.offroad_vehicles_equipment_a': 'EPA_NEI_Nonroad.offroad_vehicles_equipment'
+        'EPA_NEI_Nonroad.offroad_vehicles_equipment_b': 'EPA_NEI_Nonroad.offroad_vehicles_equipment'
+        'EPA_NEI_Nonroad.offroad_vehicles_equipment_c': 'EPA_NEI_Nonroad.offroad_vehicles_equipment'
+        'EPA_NEI_Nonroad.offroad_vehicles_equipment_d': 'EPA_NEI_Nonroad.offroad_vehicles_equipment'
+        'EPA_NEI_Nonroad.offroad_vehicles_equipment_e': 'EPA_NEI_Nonroad.offroad_vehicles_equipment'
+
+  CAP_HAP_Onroad_2014: # detail state model
+    year: *year
+    data_format: FBS
+
+  stewiFBS:
+    !include:CAP_HAP_common.yaml:source_names:stewiFBS
+    inventory_dict:
+      NEI: *year
+      TRI: *year
+    local_inventory_name: NEI_TRI_air_2014

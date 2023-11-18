@@ -1,0 +1,48 @@
+# This method disaggregates a Summary Supply table for target use based on the
+# 2017 Detail Supply table. The resulting tables do not reflect valid balanced
+# Supply tables
+
+# The full FBS for any year can be cached using:
+# sources_to_cache:
+#   Detail_Supply_2019:
+#     !include:Detail_Supply.yaml
+#     year: *year
+#     source_names:
+#       BEA_Summary_Supply:
+#         !include:Detail_Supply.yaml:source_names:BEA_Summary_Supply
+#         year: *year
+
+!include:BEA_detail_target.yaml
+year: &summary_year 2018
+target_naics_year: 2017
+geoscale: national
+
+data_format: FBS
+activity_schema: NAICS_2017_Code # <- necessary? (long term just look at the FBS)
+
+source_names:
+  BEA_Summary_Supply:
+    geoscale: national
+    year: *summary_year
+    activity_to_sector_mapping: BEA_2017_Summary
+    primary_action_type: Consumed # speeds processing
+
+    # Drop unneeded codes
+    exclusion_fields:
+      ActivityProducedBy: ['MADJ', 'MCIF', 'MDTY', 'SUB', 'T007', 'T013',
+                           'T014', 'T015', 'T016', 'TOP', 'Trade', 'Trans']
+      ActivityConsumedBy: ['Other', 'Used', 'T017']
+    attribution_method: proportional
+    attribute_on: ['PrimarySector', 'SecondarySector']
+    attribution_source:
+      BEA_Detail_Supply:
+        year: 2017
+        activity_to_sector_mapping: BEA_2017_Detail
+        primary_action_type: Consumed # speeds processing
+
+        # Drop unneeded codes
+        exclusion_fields:
+          ActivityConsumedBy: ['T017', 'S00300', 'S00401', 'S00402', 'S00900']
+          ActivityProducedBy: ['MADJ', 'MCIF', 'MDTY', 'SUB', 'T007', 'T013',
+                               'T014', 'T015', 'T016', 'TOP', 'TRADE', 'TRANS']
+        attribution_method: equal

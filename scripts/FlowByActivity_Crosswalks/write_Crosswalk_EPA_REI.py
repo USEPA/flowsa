@@ -49,7 +49,7 @@ def assign_naics(df):
     dfb = df[~df['ActivityCode'].str.startswith('RS')].reset_index(drop=True)
 
     # load bea crosswalk
-    cw_load = load_crosswalk('BEA')
+    cw_load = load_crosswalk('NAICS_to_BEA_Crosswalk_2012')
     cw = (cw_load[['BEA_2012_Detail_Code', 'NAICS_2012_Code']]
           .drop_duplicates()
           .dropna()
@@ -93,5 +93,5 @@ if __name__ == '__main__':
     # sort df
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(f'{datapath}activitytosectormapping/NAICS_Crosswalk_'
+    df.to_csv(f'{datapath}/activitytosectormapping/NAICS_Crosswalk_'
               f'{datasource}.csv', index=False)

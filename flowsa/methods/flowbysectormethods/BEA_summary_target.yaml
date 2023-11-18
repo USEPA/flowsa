@@ -6,9 +6,10 @@
 # !include:BEA_summary_target.yaml
 # to the top of the method replacing the three parameters below
 
-target_sector_level: NAICS_3
-target_subset_sector_level: {NAICS_4: ['336', '541']}
+industry_spec:
+  default: NAICS_3
+  NAICS_4: ['336', '541']
 # Note 531, 532, 533, and 92* are not resolved at the 3 digit NAICS
 # but they do not resolve at higher resolution and so using 3-digit NAICS
 # is sufficient
-target_sector_source: NAICS_2012_Code
+target_naics_year: 2012

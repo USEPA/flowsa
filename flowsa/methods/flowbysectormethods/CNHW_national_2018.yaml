@@ -1,8 +1,41 @@
-target_sector_level: NAICS_6
-target_sector_source: NAICS_2012_Code
-target_geoscale: national
+# National Commercial Non-Haz Waste (CNHW) FBS for 2018
+# Extrapolates 2014 California data using employment data
+
+industry_spec:
+  default: NAICS_6
+year: 2018
+target_naics_year: 2012
+geoscale: national
+
 source_names:
-  "CNHW_CA_2014":
-    data_format: 'FBS'
-    clean_fbs_df_fxn: !script_function:CalRecycle_WasteCharacterization apply_tons_per_employee_per_year_to_states
-    year: 2018
+  CNHW_CA_2014:
+    data_format: FBS
+    activity_sets:
+      employment:
+        exclusion_fields:
+          SectorProducedBy:
+          - F01000
+        clean_fbs: !clean_function:flowbyclean calculate_flow_per_person
+        clean_source:
+          Employment_state_2014: # aligns with CA 2014 data
+            geoscale: state
+        attribution_method: multiplication
+        fill_columns: Year
+        attribution_source:
+          Employment_state_2018:
+            geoscale: state
+      population: # Requires an alternate dataset for Households (F01000)
+        selection_fields:
+          SectorProducedBy:
+          - F01000
+        clean_fbs: !clean_function:flowbyclean calculate_flow_per_person
+        clean_source:
+          Census_PEP_Population:
+            year: 2014 # aligns with CA 2014 data
+            geoscale: state
+        attribution_method: multiplication
+        fill_columns: Year
+        attribution_source:
+          Census_PEP_Population:
+            year: 2018
+            geoscale: state

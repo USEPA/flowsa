@@ -21,7 +21,7 @@ def assign_naics(df_load):
     :return: df with assigned Sector columns
     """
 
-    cw_load = load_crosswalk('BEA')
+    cw_load = load_crosswalk('NAICS_to_BEA_Crosswalk_2012')
     cw = cw_load[['BEA_2012_Detail_Code',
                   'NAICS_2012_Code']].drop_duplicates().reset_index(drop=True)
     # least aggregate level that applies is 5 digits
@@ -40,26 +40,32 @@ def assign_naics(df_load):
 
     # reset sector value for sand, gravel, clay
     df.loc[df['Activity'] == '212320', 'Sector'] = '212321'
-    df = df.append(pd.DataFrame([['Blackhurst_IO', '212320', '212322']],
-                     columns=['ActivitySourceName', 'Activity', 'Sector']
-                     ), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame([['Blackhurst_IO', '212320', '212324']],
-                     columns=['ActivitySourceName', 'Activity', 'Sector']
-                     ), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame([['Blackhurst_IO', '212320', '212325']],
-                     columns=['ActivitySourceName', 'Activity', 'Sector']
-                     ), ignore_index=True, sort=True)
+    df = pd.concat([df, pd.DataFrame(
+        [['Blackhurst_IO','212320', '212322']], columns=[
+            'ActivitySourceName', 'Activity', 'Sector'])],
+                   ignore_index=True, sort=True)
+    df = pd.concat([df, pd.DataFrame(
+        [['Blackhurst_IO', '212320', '212324']],
+        columns=['ActivitySourceName', 'Activity', 'Sector']
+    )], ignore_index=True, sort=True)
+    df = pd.concat([df, pd.DataFrame(
+        [['Blackhurst_IO', '212320', '212325']],
+        columns=['ActivitySourceName', 'Activity', 'Sector']
+    )], ignore_index=True, sort=True)
 
     df.loc[df['Activity'] == '212390', 'Sector'] = '212391'
-    df = df.append(pd.DataFrame([['Blackhurst_IO', '212390', '212392']],
-                     columns=['ActivitySourceName', 'Activity', 'Sector']
-                     ), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame([['Blackhurst_IO', '212390', '212393']],
-                     columns=['ActivitySourceName', 'Activity', 'Sector']
-                     ), ignore_index=True, sort=True)
-    df = df.append(pd.DataFrame([['Blackhurst_IO', '212390', '212399']],
-                     columns=['ActivitySourceName', 'Activity', 'Sector']
-                     ), ignore_index=True, sort=True)
+    df = pd.concat([df, pd.DataFrame(
+        [['Blackhurst_IO', '212390', '212392']],
+        columns=['ActivitySourceName', 'Activity', 'Sector'])],
+                   ignore_index=True, sort=True)
+    df = pd.concat([df, pd.DataFrame(
+        [['Blackhurst_IO', '212390', '212393']],
+        columns=['ActivitySourceName', 'Activity', 'Sector'])],
+                   ignore_index=True, sort=True)
+    df = pd.concat([df, pd.DataFrame(
+        [['Blackhurst_IO', '212390', '212399']],
+        columns=['ActivitySourceName', 'Activity', 'Sector'])],
+                   ignore_index=True, sort=True)
 
     # drop two rows where Blackhurst's IO vectors do not align with the
     # NAICS to BEA mapping because a NAICS code is it's own activity rather
@@ -101,5 +107,5 @@ if __name__ == '__main__':
     # sort df
     df2 = order_crosswalk(df2)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" +
-              "NAICS_Crosswalk_" + datasource + ".csv", index=False)
+    df.to_csv(f"{datapath}/activitytosectormapping/NAICS_Crosswalk_"
+              f"{datasource}.csv", index=False)

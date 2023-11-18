@@ -12,11 +12,13 @@ import random
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import flowsa
+import flowsa.flowbysector
 from flowsa.common import load_crosswalk, load_yaml_dict
-from flowsa.dataclean import replace_NoneType_with_empty_cells
-from flowsa.flowbyfunctions import sector_aggregation
-from flowsa.sectormapping import get_sector_list
-from flowsa.settings import log, datapath, plotoutputpath
+# todo: need to update fxn to use new sector_aggregation - datavis not
+#  currently working
+# from flowsa.flowbyfunctions import sector_aggregation
+from flowsa.flowsa_log import log
+from flowsa.settings import datapath, plotoutputpath
 import textwrap
 
 
@@ -48,7 +50,7 @@ def addSectorNames(df, BEA=False, mappingfile=None):
             cw = pd.read_csv(mappingfile)
             cw = cw.rename(columns={'Abrv_Name': 'SectorName'})
         else:
-            cw = load_crosswalk('sector_name')
+            cw = load_crosswalk('Sector_2012_Names')
             cw['SectorName'] = cw['NAICS_2012_Code'].map(str) + ' (' + cw[
                 'NAICS_2012_Name'] + ')'
             cw = cw.rename(columns={'NAICS_2012_Code': 'Sector'})
@@ -68,8 +70,17 @@ def addSectorNames(df, BEA=False, mappingfile=None):
     return df
 
 
-def FBSscatterplot(method_dict, plottype, sector_length_display=None,
-                   sectors_to_include=None, plot_title=None):
+def FBSscatterplot(method_dict,
+                   plottype,
+                   sector_length_display=None,
+                   sectors_to_include=None,
+                   impact_cat=None,
+                   industry_spec=None,
+                   sector_names=True,
+                   legend_by_state=False,
+                   legend_title='Flow-By-Sector Method',
+                   axis_title=None,
+                   plot_title=None):
     """
     Plot the results of FBS models. Graphic can either be a faceted
     scatterplot or a method comparison
@@ -81,12 +92,20 @@ def FBSscatterplot(method_dict, plottype, sector_length_display=None,
     dataframe
     :param sectors_to_include: list, sectors to include in output. Sectors
     are subset by all sectors that "start with" the values in this list
+    :param impact_cat: str, name of impact category to apply and aggregate on
+        impacts (e.g.: 'Global warming'). Use 'None' to aggregate by flow
+    :param industry_spec, dict e.g. {'default': 'NAICS_3',
+                                     'NAICS_4': ['112', '113'],
+                                     'NAICS_6': ['1129']}
+    :param sector_names: bool, True to include sector names in axis
+    :param legend_by_state: bool, True to show results by state
+    :param axis_title: str
     :return: graphic displaying results of FBS models
     """
 
     df_list = []
     for label, method in method_dict.items():
-        dfm = flowsa.collapse_FlowBySector(method)
+        dfm = flowsa.flowbysector.collapse_FlowBySector(method)
         if plottype == 'facet_graph':
             dfm['methodname'] = dfm['Unit'].apply(lambda x: f"{label} ({x})")
         elif plottype == 'method_comparison':
@@ -94,17 +113,80 @@ def FBSscatterplot(method_dict, plottype, sector_length_display=None,
         df_list.append(dfm)
     df = pd.concat(df_list, ignore_index=True)
 
+    if industry_spec is not None:
+        # In order to reassign the industry spec, need to create and attach
+        # the method config for subsequent functions to work
+        df = flowsa.flowbysector.FlowBySector(df.reset_index(drop=True),
+                                              config=load_yaml_dict(method, 'FBS'))
+        # agg sectors for data visualization
+        df.config['industry_spec'] = industry_spec
+        # determine naics year in df
+        df.config['target_naics_year'] = df['SectorSourceName'][0].split(
+            "_", 1)[1].split("_", 1)[0]
+
+        # Temporarily revert back to having both SPB and SCB, needed for
+        # sector_aggregation()
+        df = (df.rename(columns={'Sector':'SectorProducedBy'})
+                .assign(SectorConsumedBy= np.nan))
+        df = (df.sector_aggregation()
+                .rename(columns={'SectorProducedBy':'Sector'})
+                .drop(columns='SectorConsumedBy'))
+
+    if legend_by_state:
+        df = (df.merge(flowsa.location.get_state_FIPS(abbrev=True),
+                       how='left',
+                       left_on='Location',
+                       right_on='FIPS')
+                .drop(columns='methodname')
+                .rename(columns={'State':'methodname'}))
+
+    if impact_cat:
+        if type(impact_cat)==str:
+            imp_method = 'TRACI2.1'
+            indicator = impact_cat
+        else:
+            imp_method = list(impact_cat.keys())[0]
+            indicator = list(impact_cat.values())[0]
+        try:
+            import lciafmt
+            df_impacts = (
+                lciafmt.apply_lcia_method(df, imp_method)
+                .rename(columns={'FlowAmount': 'InvAmount',
+                                 'Impact': 'FlowAmount'}))
+            # Handle special case of kg CO2e units not being converted but
+            # should stay in the df
+            fl = df.query('FlowUUID not in @df_impacts.FlowUUID')
+            df_impacts = df_impacts.query('Indicator == @indicator')
+            ind_units = set(df_impacts['Indicator unit'])
+            # fl = fl.query('Unit in @ind_units')
+            fl = fl.query('Unit == "kg CO2e"').assign(Unit = 'kg')
+            df = pd.concat([df_impacts, fl], ignore_index=True)
+            if len(df) == 0:
+                log.exception(f'Impact category: {indicator} not found')
+                return
+        except ImportError:
+            log.exception('lciafmt not installed')
+            return
+        except AttributeError:
+            log.exception('check lciafmt branch')
+            return
+    df = convert_units_for_graphics(df)
+
     # subset df
     if sectors_to_include is not None:
         df = df[df['Sector'].str.startswith(tuple(sectors_to_include))]
     if sector_length_display is None:
-        sector_length_display = df['Sector'].apply(lambda x: x.str.len()).max()
+        sector_length_display = df['Sector'].apply(lambda x: len(x)).max()
     df['Sector'] = df['Sector'].apply(lambda x: x[0:sector_length_display])
     df2 = df.groupby(['methodname', 'Sector', 'Unit'],
                      as_index=False).agg({"FlowAmount": sum})
 
-    # load crosswalk and add names
-    df3 = addSectorNames(df2)
+    if sector_names:
+        # load crosswalk and add names
+        df2 = addSectorNames(df2)
+        y_axis = "SectorName"
+    else:
+        y_axis = "Sector"
 
     sns.set_style("whitegrid")
 
@@ -115,10 +197,12 @@ def FBSscatterplot(method_dict, plottype, sector_length_display=None,
         title = ""
 
     if plottype == 'facet_graph':
-        g = sns.FacetGrid(df3, col="methodname",
+        if not axis_title:
+            axis_title = 'Flow Amount'
+        g = sns.FacetGrid(df2, col="methodname",
                           sharex=False, aspect=1.5, margin_titles=False)
-        g.map_dataframe(sns.scatterplot, x="FlowAmount", y="SectorName")
-        g.set_axis_labels("Flow Amount", "")
+        g.map_dataframe(sns.scatterplot, x="FlowAmount", y=y_axis)
+        g.set_axis_labels(axis_title, "")
         g.set_titles(col_template="{col_name}")
         # adjust overall graphic title
         if plot_title is not None:
@@ -127,15 +211,18 @@ def FBSscatterplot(method_dict, plottype, sector_length_display=None,
         g.tight_layout()
 
     elif plottype == 'method_comparison':
-        g = sns.relplot(data=df3, x="FlowAmount", y="SectorName",
+        if not axis_title:
+            axis_title = f"Flow Amount ({df2['Unit'][0]})"
+        g = sns.relplot(data=df2, x="FlowAmount", y=y_axis,
                         hue="methodname", alpha=0.7, style="methodname",
                         palette="colorblind",
                         aspect=1.5
                         ).set(title=title)
-        g._legend.set_title('Flow-By-Sector Method')
-        g.set_axis_labels(f"Flow Amount ({df3['Unit'][0]})", "")
+        g._legend.set_title(legend_title)
+        g.set_axis_labels(axis_title, "")
         g.tight_layout()
 
+    return g
 
 def customwrap(s, width=30):
     return "<br>".join(textwrap.wrap(s, width=width))
@@ -144,8 +231,7 @@ def customwrap(s, width=30):
 def stackedBarChart(df,
                     impact_cat=None,
                     selection_fields=None,
-                    target_sector_level=None,
-                    target_subset_sector_level=None,
+                    industry_spec = None,
                     stacking_col='AttributionSources',
                     generalize_AttributionSources=False,
                     plot_title=None,
@@ -157,6 +243,7 @@ def stackedBarChart(df,
                     rows=1,
                     cols=1,
                     filename = 'flowsaBarChart',
+                    axis_title = None,
                     graphic_width = 1200,
                     graphic_height = 1200
                     ):
@@ -166,12 +253,15 @@ def stackedBarChart(df,
     :param df: str or df, either an FBS methodname (ex. "Water_national_m1_2015") or a df
     :param impact_cat: str, name of impact category to apply and aggregate on
         impacts (e.g.: 'Global warming'). Use 'None' to aggregate by flow
+    :param industry_spec, dict e.g. {'default': 'NAICS_3',
+                                     'NAICS_4': ['112', '113'],
+                                     'NAICS_6': ['1129']}
     :return: stacked, group bar plot
     """
     # if the df provided is a string, load the fbs method, otherwise use the
     # df provided
     if (type(df)) == str:
-        df = flowsa.collapse_FlowBySector(df)
+        df = flowsa.flowbysector.FlowBySector.return_FBS(df)
 
     if generalize_AttributionSources:
         df['AttributionSources'] = np.where(
@@ -183,17 +273,16 @@ def stackedBarChart(df,
         for k, v in selection_fields.items():
             df = df[df[k].str.startswith(tuple(v))]
 
+    df = flowsa.flowbysector.FlowBySector(df.reset_index(drop=True))
     # agg sectors for data visualization
-    if any(item is not None for item in [target_sector_level,
-                                         target_subset_sector_level]):
-        sector_list = get_sector_list(
-            target_sector_level,
-            secondary_sector_level_dict=target_subset_sector_level)
+    if industry_spec is not None:
+        df.config['industry_spec'] = industry_spec
+    # determine naics year in df
+    df.config['target_naics_year'] = df['SectorSourceName'][0].split(
+        "_", 1)[1].split("_", 1)[0]
 
-        # aggregate to all sector levels
-        df = sector_aggregation(df, sectors_to_exclude_from_agg=sector_list)
-        df = df[df['Sector'].isin(sector_list)]
-        df = df.reset_index(drop=True)
+    df = df.sector_aggregation()
+    df = flowsa.flowbyfunctions.collapse_fbs_sectors(df)
 
     # determine list of subplots
     try:
@@ -284,7 +373,7 @@ def stackedBarChart(df,
     # create list of n colors based on number of allocation sources
     colors = df2[[stacking_col]].drop_duplicates()
     # add colors
-    vis = pd.read_csv(f'{datapath}VisualizationEssentials.csv').rename(
+    vis = pd.read_csv(datapath / 'VisualizationEssentials.csv').rename(
         columns={'AttributionSource': stacking_col})
     colors = colors.merge(vis[[stacking_col, 'Color']], how='left')
 
@@ -295,6 +384,7 @@ def stackedBarChart(df,
     df2 = df2.merge(colors, how='left')
 
     if subplot is None:
+        axis_title = axis_title or f"FlowAmount ({df_unit})"
         for r, c in zip(df2[stacking_col].unique(), df2['Color'].unique()):
             plot_df = df2[df2[stacking_col] == r]
             y_axis_col = plot_df[sector_variable]
@@ -303,13 +393,14 @@ def stackedBarChart(df,
                 y_axis_col = [plot_df[sector_variable], plot_df[var]]
             fig.add_trace(
                 go.Bar(x=plot_df['FlowAmount'],
-                       y=y_axis_col, name=r,
-                       orientation='h',
-                       marker_color=c
-                       ))
-        fig.update_xaxes(title_text=f"FlowAmount ({df_unit})")
+                        y=y_axis_col, name=r,
+                        orientation='h',
+                        marker_color=c
+                        ))
+        fig.update_xaxes(title_text=axis_title)
         fig.update_yaxes(title_text="Sector", tickmode='linear')
     else:
+        axis_title = axis_title or f"Flow Total ({plot_df['Unit'][0]})"
         s = 0
         for row in range(1, rows + 1):
             for col in range(1, cols + 1):
@@ -321,18 +412,18 @@ def stackedBarChart(df,
                     if orientation == 'h':
                         x_data = flow_col
                         y_data = sector_col
-                        xaxis_title = f"Flow Total ({plot_df['Unit'][0]})"
+                        xaxis_title = axis_title
                         yaxis_title = ""
                     else:
                         x_data = sector_col
                         y_data = flow_col
                         xaxis_title = ""
-                        yaxis_title = f"Flow Total ({plot_df['Unit'][0]})"
+                        yaxis_title = axis_title
                     fig.add_trace(
                         go.Bar(x=x_data, y=y_data, name=r,
-                               orientation=orientation,
-                               marker_color=c,
-                               ),
+                                orientation=orientation,
+                                marker_color=c,
+                                ),
                         row=row,
                         col=col
                     )
@@ -356,8 +447,8 @@ def stackedBarChart(df,
         if (trace.name in names) else names.add(trace.name))
 
     fig.show()
-    log.info(f'Saving file to %s', f"{plotoutputpath}{filename}.svg")
-    fig.write_image(f"{plotoutputpath}{filename}.svg", width=graphic_width,
+    log.info(f'Saving file to {plotoutputpath / filename}.svg')
+    fig.write_image(plotoutputpath / f"{filename}.svg", width=graphic_width,
                     height=graphic_height)
 
 
@@ -421,263 +512,265 @@ def convert_units_for_graphics(df):
 
     return df
 
+# todo: Need to update to work for recursive method - sector_aggregation()
+# def generateSankeyData(methodname,
+#                        target_sector_level=None,
+#                        target_subset_sector_level=None,
+#                        use_sectordefinition=False,
+#                        sectors_to_include=None,
+#                        fbsconfigpath=None,
+#                        value_label_format='line_break'):
+#     """
+#     Generate data used to create a sankey
+#     :param methodname: str, FBS methodname
+#     :param target_sector_level: numeric, sector length by which to
+#     aggregate, default is 'None' which returns the max sector length in a
+#     dataframe
+#     :param target_subset_sector_level: numeric, sector length by which to
+#     aggregate, default is 'None' which returns the max sector length in a
+#     dataframe
+#     :param sectors_to_include: list, sectors to include in output. Sectors
+#     are subset by all sectors that "start with" the values in this list
+#     :param fbsconfigpath, str, optional path to FBS method yaml
+#     :return: csv file for use in generating sankey diagram
+#     """
+#
+#     df = flowsa.FlowBySector.return_FBS(
+#         methodname, external_config_path=fbsconfigpath, download_sources_ok=True)
+#
+#     df = convert_units_for_graphics(df)
+#
+#     # subset df
+#     if sectors_to_include is not None:
+#         df = df[df['Sector'].str.startswith(tuple(sectors_to_include))]
+#
+#     method_dict = load_yaml_dict(methodname, flowbytype='FBS',
+#                                  filepath=fbsconfigpath)
+#
+#     if any(item is not None for item in [target_sector_level,
+#                                          target_subset_sector_level]):
+#         # subset by target sector levels, either those defined in
+#         # function call or in method_dict
+#         primary_sector_level = target_sector_level
+#         if primary_sector_level is None:
+#             primary_sector_level = method_dict['target_sector_level']
+#         # pull secondary sector level by methodname if specified, otherwise
+#         # use singular sector level
+#         try:
+#             secondary_sector_level = target_subset_sector_level[methodname]
+#         except KeyError:
+#             secondary_sector_level = target_subset_sector_level
+#         if secondary_sector_level is None:
+#             secondary_sector_level = method_dict.get(
+#                 'target_subset_sector_level')
+#         # check if different rules for sector columns
+#         if any([s in secondary_sector_level for s in
+#                 ['SectorProducedBy', 'SectorConsumedBy']]):
+#             sector_list = {}
+#             for s in ['Produced', 'Consumed']:
+#                 try:
+#                     sectors = get_sector_list(
+#                         primary_sector_level,
+#                         secondary_sector_level_dict=secondary_sector_level[f'Sector{s}By'])
+#                     sector_list[f'Sector{s}By'] = sectors
+#                 except KeyError:
+#                     sectors = get_sector_list(
+#                         primary_sector_level,
+#                         secondary_sector_level_dict=None)
+#                     sector_list[f'Sector{s}By'] = sectors
+#         else:
+#             sector_list = get_sector_list(
+#                 primary_sector_level,
+#                 secondary_sector_level_dict=secondary_sector_level)
+#
+#         # aggregate to all sector levels
+#         df = sector_aggregation(df, return_all_possible_sector_combos=True,
+#                                 sectors_to_exclude_from_agg=sector_list)
+#         df = replace_NoneType_with_empty_cells(df)
+#         for s in ['Produced', 'Consumed']:
+#             if isinstance(sector_list, dict):
+#                 df = df[df[f'Sector{s}By'].isin(sector_list[f'Sector{s}By'])]
+#             else:
+#                 df = df[df[f'Sector{s}By'].isin(sector_list)]
+#
+#     # add sector names
+#     sankeymappingfile = datapath / 'VisualizationEssentials.csv'
+#     df2 = addSectorNames(df, mappingfile=sankeymappingfile)
+#
+#     # subset df and aggregate flows by sectors
+#     df2 = df2[['SectorProducedBy', 'SectorConsumedBy', 'FlowAmount', 'Unit',
+#                'SectorProducedByName', 'SectorConsumedByName']]
+#     df3 = df2.groupby(['SectorProducedBy', 'SectorConsumedBy', 'Unit',
+#                        'SectorProducedByName', 'SectorConsumedByName']
+#                       )['FlowAmount'].agg('sum').reset_index()
+#
+#     # define which columns to use as source and target
+#     if use_sectordefinition:
+#         categories = ['SectorProducedByName', 'SectorConsumedByName']
+#         sources = 'SectorProducedByName'
+#         targets = 'SectorConsumedByName'
+#         sector_col = 'SectorName'
+#     else:
+#         categories = ['SectorProducedBy', 'SectorConsumedBy']
+#         sources = 'SectorProducedBy'
+#         targets = 'SectorConsumedBy'
+#         sector_col = 'Sector'
+#
+#     # sort df by categories to help order how sectors appear in sankey
+#     df3 = df3.sort_values(categories).reset_index(drop=True)
+#
+#     # create new df with node information
+#     nodes = pd.DataFrame(
+#         {'Sector': list(pd.unique(
+#             df3[['SectorProducedBy', 'SectorConsumedBy']].values.ravel('K'))),
+#          'SectorName': list(
+#              pd.unique(df3[['SectorProducedByName',
+#                             'SectorConsumedByName']].values.ravel('K')))
+#          })
+#
+#     # add colors
+#     vis = pd.read_csv(datapath / 'VisualizationEssentials.csv')
+#     nodes = nodes.merge(vis[['Sector', 'Color']], how='left')
+#     # fill in any colors missing from the color dictionary with random colors
+#     nodes['Color'] = nodes['Color'].apply(lambda x: x if pd.notnull(x) else
+#     "#%06x" % random.randint(0, 0xFFFFFF))
+#     nodes = nodes.rename(columns={sector_col: 'node'})
+#     # add label
+#     # determine flow amount labels - sum incoming and outgoing flow amounts,
+#     # use outgoing flow values when exist, otherwise incoming flow totals
+#     outgoing = df3[[sources, 'FlowAmount']]
+#     outgoing = outgoing.groupby([sources]).agg(
+#         {'FlowAmount': 'sum'}).reset_index()
+#     outgoing = outgoing.rename(columns={sources: 'node',
+#                                         'FlowAmount': 'outgoing'})
+#     incoming = df3[[targets, 'FlowAmount']]
+#     incoming = incoming.groupby([targets]).agg(
+#         {'FlowAmount': 'sum'}).reset_index()
+#     incoming = incoming.rename(columns={targets: 'node',
+#                                         'FlowAmount': 'incoming'})
+#     flow_labels = outgoing.merge(incoming, how='outer')
+#     flow_labels = (flow_labels.fillna(0)
+#                    .assign(flow=np.where(flow_labels['outgoing'] > 0,
+#                                          flow_labels['outgoing'],
+#                                          flow_labels['incoming'])))
+#     if value_label_format == 'line_break':
+#         flow_labels['Label'] = flow_labels['node'] + '<br>' + \
+#                                flow_labels['flow'].round(2).astype(str)
+#     elif value_label_format == 'brackets':
+#         flow_labels['Label'] = flow_labels['node'] + ' (' + \
+#                                flow_labels['flow'].round(2).astype(str) + ')'
+#     nodes = nodes.merge(flow_labels[['node', 'Label']], how='left')
+#
+#     # create flow dataframe where source and target are converted to numeric
+#     # indices
+#     flows = pd.DataFrame()
+#     label_list = list(pd.unique(df3[categories].values.ravel('K')))
+#     flows['source'] = df3[sources].apply(lambda x: label_list.index(x))
+#     flows['target'] = df3[targets].apply(lambda x: label_list.index(x))
+#     flows['value'] = df3['FlowAmount']
+#     flows['Unit'] = df3['Unit']
+#
+#     return nodes, flows
 
-def generateSankeyData(methodname,
-                       target_sector_level=None,
-                       target_subset_sector_level=None,
-                       use_sectordefinition=False,
-                       sectors_to_include=None,
-                       fbsconfigpath=None,
-                       value_label_format='line_break'):
-    """
-    Generate data used to create a sankey
-    :param methodname: str, FBS methodname
-    :param target_sector_level: numeric, sector length by which to
-    aggregate, default is 'None' which returns the max sector length in a
-    dataframe
-    :param target_subset_sector_level: numeric, sector length by which to
-    aggregate, default is 'None' which returns the max sector length in a
-    dataframe
-    :param sectors_to_include: list, sectors to include in output. Sectors
-    are subset by all sectors that "start with" the values in this list
-    :param fbsconfigpath, str, optional path to FBS method yaml
-    :return: csv file for use in generating sankey diagram
-    """
-
-    df = flowsa.getFlowBySector(methodname, fbsconfigpath=fbsconfigpath)
-    df = convert_units_for_graphics(df)
-
-    # subset df
-    if sectors_to_include is not None:
-        df = df[df['Sector'].str.startswith(tuple(sectors_to_include))]
-
-    method_dict = load_yaml_dict(methodname, flowbytype='FBS',
-                                 filepath=fbsconfigpath)
-
-    if any(item is not None for item in [target_sector_level,
-                                         target_subset_sector_level]):
-        # subset by target sector levels, either those defined in
-        # function call or in method_dict
-        primary_sector_level = target_sector_level
-        if primary_sector_level is None:
-            primary_sector_level = method_dict['target_sector_level']
-        # pull secondary sector level by methodname if specified, otherwise
-        # use singular sector level
-        try:
-            secondary_sector_level = target_subset_sector_level[methodname]
-        except KeyError:
-            secondary_sector_level = target_subset_sector_level
-        if secondary_sector_level is None:
-            secondary_sector_level = method_dict.get(
-                'target_subset_sector_level')
-        # check if different rules for sector columns
-        if any([s in secondary_sector_level for s in
-                ['SectorProducedBy', 'SectorConsumedBy']]):
-            sector_list = {}
-            for s in ['Produced', 'Consumed']:
-                try:
-                    sectors = get_sector_list(
-                        primary_sector_level,
-                        secondary_sector_level_dict=secondary_sector_level[f'Sector{s}By'])
-                    sector_list[f'Sector{s}By'] = sectors
-                except KeyError:
-                    sectors = get_sector_list(
-                        primary_sector_level,
-                        secondary_sector_level_dict=None)
-                    sector_list[f'Sector{s}By'] = sectors
-        else:
-            sector_list = get_sector_list(
-                primary_sector_level,
-                secondary_sector_level_dict=secondary_sector_level)
-
-        # aggregate to all sector levels
-        df = sector_aggregation(df, return_all_possible_sector_combos=True,
-                                sectors_to_exclude_from_agg=sector_list)
-        df = replace_NoneType_with_empty_cells(df)
-        for s in ['Produced', 'Consumed']:
-            if isinstance(sector_list, dict):
-                df = df[df[f'Sector{s}By'].isin(sector_list[f'Sector{s}By'])]
-            else:
-                df = df[df[f'Sector{s}By'].isin(sector_list)]
-
-    # add sector names
-    sankeymappingfile = f'{datapath}VisualizationEssentials.csv'
-    df2 = addSectorNames(df, mappingfile=sankeymappingfile)
-
-    # subset df and aggregate flows by sectors
-    df2 = df2[['SectorProducedBy', 'SectorConsumedBy', 'FlowAmount', 'Unit',
-               'SectorProducedByName', 'SectorConsumedByName']]
-    df3 = df2.groupby(['SectorProducedBy', 'SectorConsumedBy', 'Unit',
-                       'SectorProducedByName', 'SectorConsumedByName']
-                      )['FlowAmount'].agg('sum').reset_index()
-
-    # define which columns to use as source and target
-    if use_sectordefinition:
-        categories = ['SectorProducedByName', 'SectorConsumedByName']
-        sources = 'SectorProducedByName'
-        targets = 'SectorConsumedByName'
-        sector_col = 'SectorName'
-    else:
-        categories = ['SectorProducedBy', 'SectorConsumedBy']
-        sources = 'SectorProducedBy'
-        targets = 'SectorConsumedBy'
-        sector_col = 'Sector'
-
-    # sort df by categories to help order how sectors appear in sankey
-    df3 = df3.sort_values(categories).reset_index(drop=True)
-
-    # create new df with node information
-    nodes = pd.DataFrame(
-        {'Sector': list(pd.unique(
-            df3[['SectorProducedBy', 'SectorConsumedBy']].values.ravel('K'))),
-         'SectorName': list(
-             pd.unique(df3[['SectorProducedByName',
-                            'SectorConsumedByName']].values.ravel('K')))
-         })
-
-    # add colors
-    vis = pd.read_csv(f'{datapath}VisualizationEssentials.csv')
-    nodes = nodes.merge(vis[['Sector', 'Color']], how='left')
-    # fill in any colors missing from the color dictionary with random colors
-    nodes['Color'] = nodes['Color'].apply(lambda x: x if pd.notnull(x) else
-    "#%06x" % random.randint(0, 0xFFFFFF))
-    nodes = nodes.rename(columns={sector_col: 'node'})
-    # add label
-    # determine flow amount labels - sum incoming and outgoing flow amounts,
-    # use outgoing flow values when exist, otherwise incoming flow totals
-    outgoing = df3[[sources, 'FlowAmount']]
-    outgoing = outgoing.groupby([sources]).agg(
-        {'FlowAmount': 'sum'}).reset_index()
-    outgoing = outgoing.rename(columns={sources: 'node',
-                                        'FlowAmount': 'outgoing'})
-    incoming = df3[[targets, 'FlowAmount']]
-    incoming = incoming.groupby([targets]).agg(
-        {'FlowAmount': 'sum'}).reset_index()
-    incoming = incoming.rename(columns={targets: 'node',
-                                        'FlowAmount': 'incoming'})
-    flow_labels = outgoing.merge(incoming, how='outer')
-    flow_labels = (flow_labels.fillna(0)
-                   .assign(flow=np.where(flow_labels['outgoing'] > 0,
-                                         flow_labels['outgoing'],
-                                         flow_labels['incoming'])))
-    if value_label_format == 'line_break':
-        flow_labels['Label'] = flow_labels['node'] + '<br>' + \
-                               flow_labels['flow'].round(2).astype(str)
-    elif value_label_format == 'brackets':
-        flow_labels['Label'] = flow_labels['node'] + ' (' + \
-                               flow_labels['flow'].round(2).astype(str) + ')'
-    nodes = nodes.merge(flow_labels[['node', 'Label']], how='left')
-
-    # create flow dataframe where source and target are converted to numeric
-    # indices
-    flows = pd.DataFrame()
-    label_list = list(pd.unique(df3[categories].values.ravel('K')))
-    flows['source'] = df3[sources].apply(lambda x: label_list.index(x))
-    flows['target'] = df3[targets].apply(lambda x: label_list.index(x))
-    flows['value'] = df3['FlowAmount']
-    flows['Unit'] = df3['Unit']
-
-    return nodes, flows
-
-
-def generateSankeyDiagram(methodnames,
-                          target_sector_level=None,
-                          target_subset_sector_level=None,
-                          use_sectordefinition=False,
-                          sectors_to_include=None,
-                          fbsconfigpath=None,
-                          plot_title=None,
-                          orientation='horizonal',
-                          domain_dict=None,
-                          plot_dimension=None,
-                          value_label_format='line_break',
-                          subplot_titles=None,
-                          filename='flowsaSankey'):
-    """
-    Sankey diagram developed to map flows between sector produced by (source)
-    and sector consumed by (target). Sankey developed for subplot of 2
-    diagrams.
-    :param methodnames:
-    :param target_sector_level:
-    :param target_subset_sector_level:
-    :param replace_SPB_with_sectordefinition:
-    :param replace_SCB_with_sectordefinition:
-    :param sectors_to_include:
-    :param fbsconfigpath:
-    :param plot_title:
-    :param orientation:
-    :param domain_dict: dict, manually set x and y coordinates of each subplot
-    :param plot_dimension: list, [width, height]
-    :param value_label_format: string, either 'line_break' or 'brackets'
-    :param subplot_titles: list, subplot titles
-    :return:
-    """
-    if orientation == 'vertical':
-        rows = len(methodnames)
-        cols = 1
-    else:
-        rows = 1
-        cols = len(methodnames)
-
-    fig = make_subplots(rows=rows, cols=cols, shared_yaxes=True,
-                        subplot_titles=subplot_titles)
-
-    for i, m in enumerate(methodnames):
-        # return dfs of nodes and flows for Sankey
-        nodes, flows = generateSankeyData(
-            m, target_sector_level, target_subset_sector_level,
-            use_sectordefinition, sectors_to_include,
-            fbsconfigpath, value_label_format=value_label_format)
-
-        # define domain
-        if domain_dict is None:
-            if orientation == 'vertical':
-                domain = {'x': [0, 1],
-                          'y': [0 + (i / len(methodnames)) + 0.04,
-                                ((i + 1) / len(methodnames)) - 0.04]}
-            else:
-                domain = {'x': [0 + (i / len(methodnames)) + 0.02,
-                                ((i + 1) / len(methodnames)) - 0.02],
-                          'y': [0, 1]}
-        else:
-            domain = {'x': domain_dict[i]['x'],
-                      'y': domain_dict[i]['y']}
-
-        fig.add_trace(go.Sankey(
-            arrangement="snap",
-            domain=domain,
-            valueformat=".1f",
-            valuesuffix=flows['Unit'][0],
-            # Define nodes
-            node=dict(
-                pad=15,
-                thickness=15,
-                line=dict(color="black", width=0.5),
-                label=nodes['Label'].values.tolist(),
-                color=nodes['Color'].values.tolist(),
-            ),
-            # Add links
-            link=dict(source=flows['source'].values.tolist(),
-                      target=flows['target'].values.tolist(),
-                      value=flows['value'].values.tolist(),
-            ),
-        ))
-
-    fig.update_layout(
-        title_text=plot_title, font_size=10, margin_b=150)
-
-    if plot_dimension is None:
-        if orientation == 'vertical':
-            width = 1400
-            height = 1600
-        else:
-            width = 1100
-            height = 900
-    else:
-        width = plot_dimension[0]
-        height = plot_dimension[1]
-
-    fig.show()
-    log.info(f'Saving file to %s', f"{plotoutputpath}{filename}.svg")
-    fig.write_image(f"{plotoutputpath}{filename}.svg",
-                    width=width, height=height)
+# todo: comment back in once reformatted for recursive method
+# def generateSankeyDiagram(methodnames,
+#                           target_sector_level=None,
+#                           target_subset_sector_level=None,
+#                           use_sectordefinition=False,
+#                           sectors_to_include=None,
+#                           fbsconfigpath=None,
+#                           plot_title=None,
+#                           orientation='horizonal',
+#                           domain_dict=None,
+#                           plot_dimension=None,
+#                           value_label_format='line_break',
+#                           subplot_titles=None,
+#                           filename='flowsaSankey'):
+#     """
+#     Sankey diagram developed to map flows between sector produced by (source)
+#     and sector consumed by (target). Sankey developed for subplot of 2
+#     diagrams.
+#     :param methodnames:
+#     :param target_sector_level:
+#     :param target_subset_sector_level:
+#     :param replace_SPB_with_sectordefinition:
+#     :param replace_SCB_with_sectordefinition:
+#     :param sectors_to_include:
+#     :param fbsconfigpath:
+#     :param plot_title:
+#     :param orientation:
+#     :param domain_dict: dict, manually set x and y coordinates of each subplot
+#     :param plot_dimension: list, [width, height]
+#     :param value_label_format: string, either 'line_break' or 'brackets'
+#     :param subplot_titles: list, subplot titles
+#     :return:
+#     """
+#     if orientation == 'vertical':
+#         rows = len(methodnames)
+#         cols = 1
+#     else:
+#         rows = 1
+#         cols = len(methodnames)
+#
+#     fig = make_subplots(rows=rows, cols=cols, shared_yaxes=True,
+#                         subplot_titles=subplot_titles)
+#
+#     for i, m in enumerate(methodnames):
+#         # return dfs of nodes and flows for Sankey
+#         nodes, flows = generateSankeyData(
+#             m, target_sector_level, target_subset_sector_level,
+#             use_sectordefinition, sectors_to_include,
+#             fbsconfigpath, value_label_format=value_label_format)
+#
+#         # define domain
+#         if domain_dict is None:
+#             if orientation == 'vertical':
+#                 domain = {'x': [0, 1],
+#                           'y': [0 + (i / len(methodnames)) + 0.04,
+#                                 ((i + 1) / len(methodnames)) - 0.04]}
+#             else:
+#                 domain = {'x': [0 + (i / len(methodnames)) + 0.02,
+#                                 ((i + 1) / len(methodnames)) - 0.02],
+#                           'y': [0, 1]}
+#         else:
+#             domain = {'x': domain_dict[i]['x'],
+#                       'y': domain_dict[i]['y']}
+#
+#         fig.add_trace(go.Sankey(
+#             arrangement="snap",
+#             domain=domain,
+#             valueformat=".1f",
+#             valuesuffix=flows['Unit'][0],
+#             # Define nodes
+#             node=dict(
+#                 pad=15,
+#                 thickness=15,
+#                 line=dict(color="black", width=0.5),
+#                 label=nodes['Label'].values.tolist(),
+#                 color=nodes['Color'].values.tolist(),
+#             ),
+#             # Add links
+#             link=dict(source=flows['source'].values.tolist(),
+#                       target=flows['target'].values.tolist(),
+#                       value=flows['value'].values.tolist(),
+#             ),
+#         ))
+#
+#     fig.update_layout(
+#         title_text=plot_title, font_size=10, margin_b=150)
+#
+#     if plot_dimension is None:
+#         if orientation == 'vertical':
+#             width = 1400
+#             height = 1600
+#         else:
+#             width = 1100
+#             height = 900
+#     else:
+#         width = plot_dimension[0]
+#         height = plot_dimension[1]
+#
+#     fig.show()
+#     log.info(f'Saving file to {plotoutputpath / filename}.svg')
+#     fig.write_image(plotoutputpath / f"{filename}.svg",
+#                     width=width, height=height)

@@ -1,49 +1,50 @@
 # Attribute EPA's Wasted Food Report to sectors using the scoping memo for
 # attribution methodology
 
-target_sector_level: NAICS_6
-target_subset_sector_level: {NAICS_7: ['562212', '562219']}
-target_sector_source: NAICS_2012_Code
-target_geoscale: national
+industry_spec:
+  default: NAICS_6
+  NAICS_7: ['562212', '562219']
+year: 2018
+target_naics_year: 2012
+geoscale: national
+
 source_names:
-  "CNHW_national_2018":
-    data_format: 'FBS'
-    activity_set_attribution: True
+  CNHW_national_2018:
+    data_format: FBS
     selection_fields:
-      Flowable:
-        - Food
-    geoscale_to_use: national
-    clean_fbs_df_fxn: !script_function:EPA_WFR attribute_cnhw_food
+      Flowable: {'Food': 'Food Waste'}
     activity_sets:
       wasted_food_report:
-        names: !from_index:CNHW_Food_asets.csv wasted_food_report
-        allocation_method: proportional
-        allocation_source: EPA_WFR
-        allocation_source_class: Other
-        allocation_source_year: 2018
-        allocation_from_scale: national
-        allocation_merge_columns: [SectorProducedBy]
+        selection_fields:
+          PrimarySector: !from_index:CNHW_Food_asets.csv wasted_food_report
+        attribution_method: proportional
+        primary_action_type: Produced
+        attribute_on: [PrimarySector]
+        fill_columns: SectorConsumedBy
+        attribution_source:
+          EPA_WFR:
+            selection_fields:
+              Class: Other
       facts_and_figures:
-        names: !from_index:CNHW_Food_asets.csv facts_and_figures
-        allocation_method: proportional
-        allocation_source: EPA_FactsAndFigures
-        allocation_source_class: Other
-        allocation_flow:
-          - Food
-        allocation_source_year: 2018
-        allocation_from_scale: national
-        allocation_merge_columns: [SectorProducedBy]
+        selection_fields:
+          PrimarySector: !from_index:CNHW_Food_asets.csv facts_and_figures
+        attribution_method: proportional
+        attribute_on: [Flowable]
+        fill_columns: SectorConsumedBy
+        attribution_source:
+          EPA_FactsAndFigures:
+            selection_fields:
+              Class: Other
+              FlowName: {'Food': 'Food Waste'}
 
   # CNHW does not include residential food waste, so adding from EPA's
   # Wasted Food Report
-  "EPA_WFR":
-    data_format: 'FBA'
-    class: Other
-    geoscale_to_use: national
-    year: 2018
+  EPA_WFR:
+    selection_fields:
+      Class: Other
     activity_sets:
       residential:
-        names:
-          - "Residential"
-        allocation_method: direct
-        allocation_from_scale: national
+        selection_fields:
+          PrimaryActivity: "Residential"
+          FlowName: {'Food': 'Food Waste'} # rename for consistency above
+        attribution_method: direct

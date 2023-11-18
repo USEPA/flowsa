@@ -1,0 +1,40 @@
+# This is the 2017 target year method for CAP_HAP which builds off the generic
+# method in CAP_HAP_common. This state level method is at the detail level.
+# This FBS is for the Onroad portion ONLY
+
+!include:BEA_detail_target.yaml
+target_naics_year: 2012
+geoscale: state
+
+_emission_year: &year 2017
+
+_attribution_sources:
+  BEA_Detail_Use_SUT: &bea
+    year: *year
+    geoscale: national
+    activity_to_sector_mapping: BEA_2017_Detail
+    exclusion_fields:
+      # Drop irrelevant final demand and total sectors
+      ActivityConsumedBy: ['F03000', 'F04000', 'F05000', 'F02E00',
+                           'F06E00', 'F07E00', 'F10E00',
+                           'T001', 'T004', 'T007']
+      ActivityProducedBy: ['T007']
+    attribution_method: proportional
+    attribution_source:
+      Employment_national_2017:
+        data_format: FBS
+        year: *year
+
+source_names:
+  EPA_NEI_Onroad:
+    !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Onroad
+    year: *year
+    activity_sets:
+      !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Onroad:activity_sets
+      onroad_vehicles_gas_stations:
+        !include:CAP_HAP_common.yaml:source_names:EPA_NEI_Onroad:activity_sets:onroad_vehicles_gas_stations
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'324110': ''}  # Petroleum

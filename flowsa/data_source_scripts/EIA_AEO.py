@@ -19,7 +19,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 def eia_aeo_url_helper(*, build_url, year, config, **_):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py,
+    This helper function uses the "build_url" input from generateflowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
     string to be replaced with info specific to the data year. This function
     does not parse the data, only modifies the urls from which data is
@@ -170,7 +170,7 @@ def eia_aeo_parse(*, df_list, year, **_):
 
 def get_series_ids():
     # load crosswalk of series IDs
-    filepath = externaldatapath + 'AEOseriesIDs.csv'
+    filepath = externaldatapath / 'AEOseriesIDs.csv'
     return pd.read_csv(filepath)
 
 

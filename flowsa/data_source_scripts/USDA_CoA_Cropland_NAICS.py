@@ -11,15 +11,13 @@ import json
 import numpy as np
 import pandas as pd
 from flowsa.location import US_FIPS, abbrev_us_state
-from flowsa.common import WITHDRAWN_KEYWORD, \
-    fba_wsec_default_grouping_fields
-from flowsa.flowbyfunctions import assign_fips_location_system, \
-    equally_allocate_suppressed_parent_to_child_naics
+from flowsa.common import WITHDRAWN_KEYWORD
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def CoA_Cropland_NAICS_URL_helper(*, build_url, config, **_):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py,
+    This helper function uses the "build_url" input from generateflowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
     string to be replaced with info specific to the data year. This function
     does not parse the data, only modifies the urls from which data is
@@ -152,20 +150,4 @@ def coa_cropland_NAICS_parse(*, df_list, year, **_):
     df['MeasureofSpread'] = "RSD"
     df['DataReliability'] = 5  # tmp
     df['DataCollection'] = 2
-    return df
-
-
-def coa_cropland_naics_fba_wsec_cleanup(fba_w_sector, **kwargs):
-    """
-    Clean up the land fba for use in allocation
-    :param fba_w_sector: df, coa cropland naics flowbyactivity
-        with sector columns
-    :param kwargs: dictionary, requires df sourcename
-    :return: df, flowbyactivity with modified values
-    """
-
-    method = kwargs.get('method')
-    df = equally_allocate_suppressed_parent_to_child_naics(
-        fba_w_sector, method, 'SectorConsumedBy',
-        fba_wsec_default_grouping_fields)
     return df

@@ -6,15 +6,15 @@ from setuptools import setup, find_packages
 
 setup(
     name='flowsa',
-    version='1.3.2',
+    version='2.0.0',
     packages=find_packages(),
     package_dir={'flowsa': 'flowsa'},
     include_package_data=True,
-    python_requires=">=3.8",
+    python_requires=">=3.9",
     install_requires=[
-        'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List@v1.1.1#egg=fedelemflowlist',
-        'esupy @ git+https://github.com/USEPA/esupy@v0.2.2#egg=esupy',
-        'StEWI @ git+https://github.com/USEPA/standardizedinventories@v1.0.6#egg=StEWI',
+        'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List.git#egg=fedelemflowlist',
+        'esupy @ git+https://github.com/USEPA/esupy.git#egg=esupy',
+        'StEWI @ git+https://github.com/USEPA/standardizedinventories.git#egg=StEWI',
         'appdirs>=1.4.3',
         'bibtexparser>=1.2.0',
         "kaleido==0.1.0.post1;platform_system=='Windows'",
@@ -22,7 +22,7 @@ setup(
         'matplotlib>=3.4.3',
         'numpy>=1.20.1',
         'openpyxl>=3.0.7',
-        'pandas>=1.4.0',
+        'pandas>=1.4.0, <2.1.0',
         'pip>=9',
         'plotly>=5.10.0 ',
         'pycountry>=19.8.18',
@@ -37,8 +37,8 @@ setup(
     ],
     url='https://github.com/USEPA/FLOWSA',
     license='MIT',
-    author='Catherine Birney, Ben Young, Matthew Chambers, Melissa Conner, '
-           'Jacob Specht, Mo Li, and Wesley Ingwersen',
+    author='Catherine Birney, Ben Young, Matthew Chambers, and Wesley '
+           'Ingwersen',
     author_email='ingwersen.wesley@epa.gov',
     classifiers=[
         "Development Status :: 5 - Production/Stable",

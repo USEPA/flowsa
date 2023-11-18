@@ -44,9 +44,9 @@ if __name__ == '__main__':
     # but included in imported data. Will associate vacant with all CBECS NAICS
     sec_list = df['Sector'].drop_duplicates().values.tolist()
     for s in sec_list:
-        df = df.append(pd.DataFrame([[s, 'Vacant']],
-                                    columns=['Sector', 'Activity']),
-                       ignore_index=True, sort=False)
+        df = pd.concat([df, pd.DataFrame(
+            [[s, 'Vacant']], columns=['Sector', 'Activity'])],
+             ignore_index=True, sort=False)
 
     # the original dataset is for NAICS 2002, but 3 digit NAICS
     # have not changed between 2002 and 2012, so labeling 2012
@@ -71,5 +71,5 @@ if __name__ == '__main__':
         df = df.sort_values(['Activity', 'Sector']).reset_index(drop=True)
 
         # save as csv
-        df.to_csv(datapath + "activitytosectormapping/" +
-                  "NAICS_Crosswalk_EIA_CBECS_" + r + ".csv", index=False)
+        df.to_csv(f"{datapath}/activitytosectormapping/"
+                  f"NAICS_Crosswalk_EIA_CBECS_{r}.csv", index=False)

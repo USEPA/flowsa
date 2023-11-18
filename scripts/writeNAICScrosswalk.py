@@ -13,13 +13,12 @@ to NAICS crosswalk.
 
 
 import glob
-
+import re
 import numpy as np
 import pandas as pd
 
-from flowsa import log
+from flowsa.flowsa_log import log
 from flowsa.common import load_crosswalk
-from flowsa.dataclean import replace_NoneType_with_empty_cells, replace_strings_with_NoneType
 from flowsa.settings import datapath, crosswalkpath
 
 
@@ -58,15 +57,17 @@ def update_naics_crosswalk():
     """
 
     # read useeior master crosswalk, subset NAICS columns
-    naics_load = load_crosswalk('BEA')
+    naics_load = load_crosswalk('NAICS_to_BEA_Crosswalk_2012')
     naics = naics_load[['NAICS_2007_Code', 'NAICS_2012_Code', 'NAICS_2017_Code'
                         ]].drop_duplicates().reset_index(drop=True)
     # convert all rows to string
     naics = naics.astype(str)
-    # ensure all None are NoneType
-    naics = replace_strings_with_NoneType(naics)
     # drop rows where all None
-    naics = naics.dropna(how='all')
+    naics = (naics
+             .replace('nan', np.nan)
+             .replace('None', np.nan)
+             .dropna(axis=0, how='all')
+             )
 
     # drop naics > 6 in mastercrosswalk (all manufacturing) because unused
     # and slows functions
@@ -77,7 +78,7 @@ def update_naics_crosswalk():
     # and add to naics list
     missing_naics_df_list = []
     # read in all the crosswalk csv files (ends in toNAICS.csv)
-    for file_name in glob.glob(f'{crosswalkpath}NAICS_Crosswalk_*.csv'):
+    for file_name in glob.glob(f'{crosswalkpath}/NAICS_Crosswalk_*.csv'):
         # skip Statistics Canada GDP because not all sectors relevant
         if not any(s in file_name for s in ('StatCan', 'BEA')):
             df = pd.read_csv(file_name, low_memory=False, dtype=str)
@@ -115,6 +116,8 @@ def update_naics_crosswalk():
     # sort df
     missing_naics_df = missing_naics_df.sort_values(['NAICS_2012_Code'])
     missing_naics_df = missing_naics_df.reset_index(drop=True)
+    # duplicate 2012 into 2017 schema
+    missing_naics_df['NAICS_2017_Code'] = missing_naics_df['NAICS_2012_Code']
 
     # add missing naics to master naics crosswalk
     total_naics = pd.concat([naics, missing_naics_df], ignore_index=True)
@@ -132,15 +135,16 @@ def update_naics_crosswalk():
     naics_02 = load_naics_02_to_07_crosswalk()
     naics_cw = pd.merge(total_naics, naics_02, how='left')
 
-    # ensure NoneType
-    naics_cw = replace_strings_with_NoneType(naics_cw)
-
     # reorder
     naics_cw = naics_cw[['NAICS_2002_Code', 'NAICS_2007_Code',
                          'NAICS_2012_Code', 'NAICS_2017_Code']]
+    naics_cw = (naics_cw
+                .replace(np.nan, '')
+                .replace('nan', '')
+                )
 
     # save as csv
-    naics_cw.to_csv(datapath + "NAICS_Crosswalk_TimeSeries.csv", index=False)
+    naics_cw.to_csv(f"{datapath}/NAICS_Crosswalk_TimeSeries.csv", index=False)
 
 
 def merge_df_by_crosswalk_lengths(naics_cw, d, l):
@@ -161,106 +165,154 @@ def merge_df_by_crosswalk_lengths(naics_cw, d, l):
     return naics_cw
 
 
-def write_naics_2012_crosswalk():
+def write_annual_naics_crosswalk():
     """
     Create a NAICS 2 - 6 digit crosswalk
     :return:
     """
-    # load the useeior mastercrosswalk subset to the naics timeseries
-    cw_load = load_crosswalk('sector_timeseries')
+    for year in ['2012', '2017']:
+        # load the useeior mastercrosswalk subset to the naics timeseries
+        cw_load = load_crosswalk('NAICS_Crosswalk_TimeSeries')
 
-    # load BEA codes that will act as NAICS
-    house = load_crosswalk('household')
-    govt = load_crosswalk('government')
-    bea = pd.concat([house, govt], ignore_index=True).rename(
-        columns={'Code': 'NAICS_2012_Code',
-                 'NAICS_Level_to_Use_For': 'secLength'})
-    bea = bea[['NAICS_2012_Code', 'secLength']]
+        # load BEA codes that will act as NAICS
+        house = load_crosswalk('Household_SectorCodes')
+        govt = load_crosswalk('Government_SectorCodes')
+        bea = pd.concat([house, govt], ignore_index=True).rename(
+            columns={'Code': f'NAICS_{year}_Code',
+                     'NAICS_Level_to_Use_For': 'secLength'})
+        bea = bea[[f'NAICS_{year}_Code', 'secLength']]
 
-    # extract naics 2012 code column and drop duplicates and empty cells
-    cw = cw_load[['NAICS_2012_Code']].drop_duplicates()
-    cw = replace_NoneType_with_empty_cells(cw)
-    cw = cw[cw['NAICS_2012_Code'] != '']
-    # also drop the existing household and government codes because not all
-    # inclusive and does not conform to NAICS length standards
-    cw = cw[~cw['NAICS_2012_Code'].str.startswith(
-        tuple(['F0', 'S0', '562B']))].reset_index(drop=True)
+        # extract naics year code column and drop duplicates and empty cells
+        cw = cw_load[[f'NAICS_{year}_Code']].drop_duplicates()
+        cw = cw[cw[f'NAICS_{year}_Code'] != '']
+        # also drop the existing household and government codes because not all
+        # inclusive and does not conform to NAICS length standards
+        cw = cw[~cw[f'NAICS_{year}_Code'].str.startswith(
+            tuple(['F0', 'S0', '562B']))].reset_index(drop=True)
 
-    # add column of sector length
-    cw['secLength'] = cw['NAICS_2012_Code'].apply(
-        lambda x: f"NAICS_{str(len(x))}")
-    # add bea codes subbing for NAICS
-    cw2 = pd.concat([cw, bea], ignore_index=True).drop_duplicates()
-    # return max string length
-    max_naics_length = cw['NAICS_2012_Code'].apply(lambda x: len(x)).max()
+        # add column of sector length
+        cw['secLength'] = cw[f'NAICS_{year}_Code'].apply(
+            lambda x: f"NAICS_{str(len(x))}")
+        # add bea codes subbing for NAICS
+        cw2 = pd.concat([cw, bea], ignore_index=True).drop_duplicates()
+        # return max string length
+        max_naics_length = cw[f'NAICS_{year}_Code'].apply(lambda x: len(
+            x)).max()
 
-    # create dictionary of dataframes
-    d = dict(tuple(cw2.groupby('secLength')))
+        # create dictionary of dataframes
+        d = dict(tuple(cw2.groupby('secLength')))
 
-    for k in d.keys():
-        d[k].rename(columns=({'NAICS_2012_Code': k}), inplace=True)
+        for k in d.keys():
+            d[k].rename(columns=({f'NAICS_{year}_Code': k}), inplace=True)
 
-    naics_cw = d['NAICS_2']
-    for l in range(3, max_naics_length+1):
-        # first check that there are corresponding length - 1 sectors in the
-        # crosswalk, and if not, append the length-1 sectors to the previous
-        # run and rerun, drop government and household sectors
-        existing_sec_list = d[f'NAICS_{l-1}'][
-            f'NAICS_{l-1}'].drop_duplicates().tolist()
-        df_sub = d[f'NAICS_{l}'].copy()
-        df_sub[f'NAICS_{l}'] = df_sub[f'NAICS_{l}'].str[:-1]
-        df_sub.rename(columns={f'NAICS_{l}': f'NAICS_{l - 1}'}, inplace=True)
-        df_sub['secLength'] = df_sub['secLength'].str.replace(
-            f"{l}", f"{l - 1}")
-        # drop household and gov codes
-        df_sub = df_sub[~df_sub[f'NAICS_{l - 1}'].str.startswith(
-            tuple(['F0', 'S0', '562B']))].drop_duplicates()
-        missing_sectors = df_sub[~df_sub[f'NAICS_{l - 1}'].isin(
-            existing_sec_list)]
+        naics_cw = d['NAICS_2']
+        for l in range(3, max_naics_length+1):
+            # first check that there are corresponding length - 1 sectors in the
+            # crosswalk, and if not, append the length-1 sectors to the previous
+            # run and rerun, drop government and household sectors
+            existing_sec_list = d[f'NAICS_{l-1}'][
+                f'NAICS_{l-1}'].drop_duplicates().tolist()
+            df_sub = d[f'NAICS_{l}'].copy()
+            df_sub[f'NAICS_{l}'] = df_sub[f'NAICS_{l}'].str[:-1]
+            df_sub.rename(columns={f'NAICS_{l}': f'NAICS_{l - 1}'}, inplace=True)
+            df_sub['secLength'] = df_sub['secLength'].str.replace(
+                f"{l}", f"{l - 1}")
+            # drop household and gov codes
+            df_sub = df_sub[~df_sub[f'NAICS_{l - 1}'].str.startswith(
+                tuple(['F0', 'S0', '562B']))].drop_duplicates()
+            missing_sectors = df_sub[~df_sub[f'NAICS_{l - 1}'].isin(
+                existing_sec_list)]
 
-        # if there are missing sectors at length l-1, append the missing
-        # sectors and rerun the previous crosswalk merge
-        if (len(missing_sectors) > 0) & (l > 3):
-            d[f'NAICS_{l - 1}'] = pd.concat(
-                [d[f'NAICS_{l - 1}'], missing_sectors], ignore_index=True)
-            # redo merge at length l-1
-            naics_cw = merge_df_by_crosswalk_lengths(naics_cw, d, l - 1).drop(
-                columns=[f"NAICS_{l - 1}_y"]).drop_duplicates()
+            # if there are missing sectors at length l-1, append the missing
+            # sectors and rerun the previous crosswalk merge
+            if (len(missing_sectors) > 0) & (l > 3):
+                d[f'NAICS_{l - 1}'] = pd.concat(
+                    [d[f'NAICS_{l - 1}'], missing_sectors], ignore_index=True)
+                # redo merge at length l-1
+                naics_cw = merge_df_by_crosswalk_lengths(naics_cw, d, l - 1).drop(
+                    columns=[f"NAICS_{l - 1}_y"]).drop_duplicates()
 
-        naics_cw = merge_df_by_crosswalk_lengths(naics_cw, d, l)
+            naics_cw = merge_df_by_crosswalk_lengths(naics_cw, d, l)
 
-    # drop seclength column
-    naics_cw = naics_cw.drop(columns='secLength')
-    # reorder
-    naics_cw = naics_cw.reindex(sorted(naics_cw.columns), axis=1)
-    # save as csv
-    naics_cw.to_csv(datapath + "NAICS_2012_Crosswalk.csv", index=False)
+        # drop seclength column
+        naics_cw = naics_cw.drop(columns='secLength')
+        # reorder
+        naics_cw = naics_cw.reindex(sorted(naics_cw.columns), axis=1)
+        # save as csv
+        naics_cw.to_csv(f"{datapath}/NAICS_{year}_Crosswalk.csv", index=False)
 
 
-def update_sector_name_df():
-    """Update list of naics names with added sectors"""
-    sectors = pd.read_csv(f'{datapath}NAICS_2012_Names.csv', dtype=str)
+def write_sector_name_crosswalk():
+    """
+    Generate csv for NAICS 2012 and NAICS 2017 codes for the names of
+    sectors, include additional non-official sector codes/names
+    :return:
+    """
+    # import census defined NAICS
+    cols_2012 = ['index', 'NAICS_2012_Code', 'NAICS_2012_Name']
+    naics_2012 = pd.read_excel(
+        "https://www.census.gov/naics/2012NAICS/2-digit_2012_Codes.xls",
+        names=cols_2012, skiprows=[0], dtype=str)[['NAICS_2012_Code',
+                                                   'NAICS_2012_Name']]
 
-    # dictionary of new sector names
-    new_sectors = pd.DataFrame(
-        {"NAICS_2012_Code": ['5622191',
-                             '5622192',
-                             '5622121',
-                             '5629201',
-                             '311119'
-                             ],
-         "NAICS_2012_Name": ['Codigestion/Anaerobic Digestion',
-                             'Composting/Aerobic Processes',
-                             'MSW Landfill',
-                             'MSW Recycling',
-                             'Other Animal Food Manufacturing'
-                             ]})
-    df = pd.concat([sectors, new_sectors])
-    df = df.sort_values("NAICS_2012_Code")
-    df.to_csv(f'{datapath}Sector_2012_Names.csv', index=False)
+    cols_2017 = ['NAICS_2017_Code', 'NAICS_2017_Name',
+                 'NAICS_2017_Description']
+    naics_2017 = pd.read_excel(
+        "https://www.census.gov/naics/2017NAICS/2017_NAICS_Descriptions.xlsx",
+        names=cols_2017, dtype=str)[['NAICS_2017_Code', 'NAICS_2017_Name']]
+
+    # for loop through years to add unoffical NAICS and split hyphenated
+    # sectors
+    for y in ['2012', '2017']:
+        # dictionary of new sector names
+        new_sectors = pd.DataFrame(
+            {f"NAICS_{y}_Code": ['5622191',
+                                 '5622192',
+                                 '5622121',
+                                 '5629201',
+                                 '311119'
+                                 ],
+             f"NAICS_{y}_Name": ['Codigestion/Anaerobic Digestion',
+                                 'Composting/Aerobic Processes',
+                                 'MSW Landfill',
+                                 'MSW Recycling',
+                                 'Other Animal Food Manufacturing'
+                                 ]})
+
+        # add new sector names to offical sector names
+        df = pd.concat([vars()[f'naics_{y}'], new_sectors])
+        # # strip whitespaces
+        df[f"NAICS_{y}_Name"] = df[f"NAICS_{y}_Name"].str.rstrip()
+        # strip superscripts
+        df[f"NAICS_{y}_Name"] = (
+            df[f"NAICS_{y}_Name"]
+            .apply(lambda x: re.sub(r"(?<=[a-z])[A-Z]+$", "", x))
+            .apply(lambda x: re.sub(r"(?<=[)])[A-Z]+$", "", x))
+        )
+        # split and add names for hyphenated sectors
+        df[f"NAICS_{y}_Code"] = df[f"NAICS_{y}_Code"].str.split(
+            '\s*-\s*').apply(lambda x: list(range(int(x[0]), int(x[-1]) + 1)))
+        df = df.explode(f"NAICS_{y}_Code")
+        df[f"NAICS_{y}_Code"] = df[f"NAICS_{y}_Code"].astype(str)
+        # load household and gov sectors - do this after explode because
+        # household and gov sectors contain letters
+        for s in ["Government", "Household"]:
+            cw = (load_crosswalk(f"{s}_SectorCodes")[['Code', 'Name']]
+                  .rename(columns={"Code": f"NAICS_{y}_Code",
+                                   "Name": f"NAICS_{y}_Name"})
+                  .drop_duplicates()
+                  )
+            df = pd.concat([df, cw])
+        # sort and save csv
+        df = (df
+              .sort_values(f"NAICS_{y}_Code")
+              .drop_duplicates()
+              .reset_index(drop=True)
+              )
+        df.to_csv(f'{datapath}/Sector_{y}_Names.csv', index=False)
 
 
 if __name__ == '__main__':
     update_naics_crosswalk()
-    write_naics_2012_crosswalk()
-    update_sector_name_df()
+    write_annual_naics_crosswalk()
+    write_sector_name_crosswalk()

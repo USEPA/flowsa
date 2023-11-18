@@ -14,28 +14,22 @@ This script is designed to run with a configuration parameter
 
 import json
 import pandas as pd
-import numpy as np
-from flowsa.location import get_all_state_FIPS_2, get_county_FIPS, US_FIPS
-from flowsa.common import fba_default_grouping_fields, load_env_file_key
-from flowsa.schema import flow_by_activity_wsec_fields, \
-    flow_by_activity_mapped_wsec_fields
-from flowsa.flowbyfunctions import assign_fips_location_system, \
-    aggregator
-from flowsa.dataclean import add_missing_flow_by_fields, \
-    replace_strings_with_NoneType
+from flowsa.location import get_county_FIPS
+from flowsa.common import load_env_file_key
+from flowsa.flowbyfunctions import assign_fips_location_system
 
 
 def census_qwi_url_helper(*, build_url, year, config, **_):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py,
+    This helper function uses the "build_url" input from generateflowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
     string to be replaced with info specific to the data year. This function
     does not parse the data, only modifies the urls from which data is
     obtained.
     :param build_url: string, base url
     :param config: dictionary, items in FBA method yaml
-    :param args: dictionary, arguments specified when running flowbyactivity.py
-        flowbyactivity.py ('year' and 'source')
+    :param args: dictionary, arguments specified when running generateflowbyactivity.py
+        generateflowbyactivity.py ('year' and 'source')
     :return: list, urls to call, concat, parse, format into Flow-By-Activity
         format
     """
@@ -87,7 +81,7 @@ def census_qwi_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications

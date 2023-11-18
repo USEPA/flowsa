@@ -3,7 +3,7 @@ import math
 import numpy as np
 import pandas as pd
 from string import digits
-from flowsa.settings import log
+from flowsa.flowsa_log import log
 from flowsa.common import WITHDRAWN_KEYWORD
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.location import US_FIPS
@@ -82,8 +82,8 @@ def usgs_myb_year(years, current_year_str):
         column_val = current_year - lower_year + 1
         return "year_" + str(column_val)
     else:
-        log.info("Your year is out of scope. Pick a year between %s and %s",
-                 lower_year, upper_year)
+        log.info(f"Your year is out of scope. Pick a year between "
+                 f"{lower_year} and {upper_year}")
 
 
 def usgs_myb_name(USGS_Source):
@@ -135,15 +135,15 @@ def usgs_myb_remove_digits(value_string):
 
 def usgs_myb_url_helper(*, build_url, **_):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py,
+    This helper function uses the "build_url" input from generateflowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
     string to be replaced with info specific to the data year. This function
     does not parse the data, only modifies the urls from which data is
     obtained.
     :param build_url: string, base url
     :param config: dictionary, items in FBA method yaml
-    :param args: dictionary, arguments specified when running flowbyactivity.py
-        flowbyactivity.py ('year' and 'source')
+    :param args: dictionary, arguments specified when running generateflowbyactivity.py
+        generateflowbyactivity.py ('year' and 'source')
     :return: list, urls to call, concat, parse, format into Flow-By-Activity
         format
     """
@@ -223,7 +223,7 @@ def usgs_asbestos_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = WITHDRAWN_KEYWORD
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(dataframe,
                                                         str(year))
     return dataframe
@@ -236,7 +236,7 @@ def usgs_barite_call(*, resp, year, **_):
     :param url: string, url
     :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+        generateflowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     df_raw_data = pd.io.excel.read_excel(
@@ -263,7 +263,7 @@ def usgs_barite_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
@@ -300,7 +300,7 @@ def usgs_barite_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = str(0)
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -344,7 +344,7 @@ def usgs_bauxite_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
@@ -382,7 +382,7 @@ def usgs_bauxite_parse(*, df_list, source, year, **_):
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -395,7 +395,7 @@ def usgs_beryllium_call(*, resp, year, **_):
     :param url: string, url
     :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+        generateflowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(resp.content),
@@ -444,7 +444,7 @@ def usgs_beryllium_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
@@ -477,7 +477,7 @@ def usgs_beryllium_parse(*, df_list, source, year, **_):
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
                 data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -490,7 +490,7 @@ def usgs_boron_call(*, resp, year, **_):
     :param url: string, url
     :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+        generateflowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(resp.content),
@@ -537,7 +537,7 @@ def usgs_boron_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
@@ -580,7 +580,7 @@ def usgs_boron_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = WITHDRAWN_KEYWORD
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -593,7 +593,7 @@ def usgs_chromium_call(*, resp, year, **_):
     :param url: string, url
     :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+        generateflowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(resp.content),
@@ -624,7 +624,7 @@ def usgs_chromium_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
@@ -659,7 +659,7 @@ def usgs_chromium_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = str(0)
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -672,7 +672,7 @@ def usgs_clay_call(*, resp, year, **_):
     :param url: string, url
     :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+        generateflowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     df_raw_data_ball = pd.io.excel.read_excel(io.BytesIO(resp.content),
@@ -786,7 +786,7 @@ def usgs_clay_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
@@ -831,7 +831,7 @@ def usgs_clay_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = str(0)
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -844,7 +844,7 @@ def usgs_cobalt_call(*, resp, year, **_):
     :param url: string, url
     :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+        generateflowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(resp.content),
@@ -892,7 +892,7 @@ def usgs_cobalt_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
@@ -934,7 +934,7 @@ def usgs_cobalt_parse(*, df_list, source, year, **_):
                 data["FlowAmount"] = str(df.iloc[index][col_name])
                 remove_rows = ["(18)", "(2)"]
                 if data["FlowAmount"] not in remove_rows:
-                    dataframe = dataframe.append(data, ignore_index=True)
+                    dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                     dataframe = assign_fips_location_system(
                         dataframe, str(year))
     return dataframe
@@ -985,7 +985,7 @@ def usgs_copper_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
@@ -1015,7 +1015,7 @@ def usgs_copper_parse(*, df_list, source, year, **_):
             col_name = usgs_myb_year(YEARS_COVERED['copper'], year)
             data["Description"] = "Copper; Mine"
             data["FlowAmount"] = str(df.iloc[index][col_name])
-            dataframe = dataframe.append(data, ignore_index=True)
+            dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
             dataframe = assign_fips_location_system(
                 dataframe, str(year))
     return dataframe
@@ -1095,7 +1095,7 @@ def usgs_diatomite_parse(*, df_list, source, year, **_):
                 data["Description"] = name
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -1149,7 +1149,7 @@ def usgs_feldspar_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
@@ -1188,7 +1188,7 @@ def usgs_feldspar_parse(*, df_list, source, year, **_):
                     data['FlowName'] = name + " " + prod
                 else:
                     data['FlowName'] = name + " " + prod + " " + des
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -1277,7 +1277,7 @@ def usgs_fluorspar_parse(*, df_list, source, year, **_):
     """
      Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
@@ -1323,7 +1323,7 @@ def usgs_fluorspar_parse(*, df_list, source, year, **_):
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -1336,7 +1336,7 @@ def usgs_gallium_call(*, resp, year, **_):
     :param url: string, url
     :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+        generateflowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(resp.content),
@@ -1404,7 +1404,7 @@ def usgs_gallium_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = WITHDRAWN_KEYWORD
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -1494,7 +1494,7 @@ def usgs_garnet_parse(*, df_list, source, year, **_):
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -1507,7 +1507,7 @@ def usgs_gold_call(*, resp, year, **_):
     :param url: string, url
     :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+        generateflowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(resp.content),
@@ -1572,7 +1572,7 @@ def usgs_gold_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = str(0)
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -1645,7 +1645,7 @@ def usgs_graphite_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = WITHDRAWN_KEYWORD
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -1658,7 +1658,7 @@ def usgs_gypsum_call(*, resp, year, **_):
     :param url: string, url
     :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+        generateflowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(resp.content),
@@ -1729,7 +1729,7 @@ def usgs_gypsum_parse(*, df_list, source, year, **_):
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -1742,7 +1742,7 @@ def usgs_iodine_call(*, resp, year, **_):
     :param url: string, url
     :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+        generateflowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(resp.content),
@@ -1810,7 +1810,7 @@ def usgs_iodine_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = WITHDRAWN_KEYWORD
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -1881,7 +1881,7 @@ def usgs_iron_ore_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = str(0)
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -1926,7 +1926,7 @@ def usgs_kyanite_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
@@ -1960,7 +1960,7 @@ def usgs_kyanite_parse(*, df_list, source, year, **_):
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -1968,7 +1968,7 @@ def usgs_kyanite_parse(*, df_list, source, year, **_):
 
 def usgs_lead_url_helper(*, year, **_):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py,
+    This helper function uses the "build_url" input from generateflowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
     string to be replaced with info specific to the data year. This function
     does not parse the data, only modifies the urls from which data is
@@ -2149,7 +2149,7 @@ def usgs_lime_parse(*, df_list, source, year, **_):
                     data['FlowName'] = name + " " + prod
 
                 data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -2231,7 +2231,7 @@ def usgs_lithium_parse(*, df_list, source, year, **_):
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -2306,7 +2306,7 @@ def usgs_magnesium_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = WITHDRAWN_KEYWORD
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -2383,7 +2383,7 @@ def usgs_manganese_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = str(0)
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -2396,7 +2396,7 @@ def usgs_ma_call(*, resp, year, **_):
     :param url: string, url
     :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+        generateflowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(resp.content),
@@ -2434,7 +2434,7 @@ def usgs_ma_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
@@ -2462,7 +2462,7 @@ def usgs_ma_parse(*, df_list, source, year, **_):
                 col_name_array = col_name.split("_")
                 data["Description"] = product + " " + col_name_array[0]
                 data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -2535,7 +2535,7 @@ def usgs_mica_parse(*, df_list, source, year, **_):
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -2608,7 +2608,7 @@ def usgs_molybdenum_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = str(0)
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -2713,7 +2713,7 @@ def usgs_nickel_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = str(0)
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -2790,7 +2790,7 @@ def usgs_niobium_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = str(0)
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -2875,7 +2875,7 @@ def usgs_peat_parse(*, df_list, source, year, **_):
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -2960,7 +2960,7 @@ def usgs_perlite_parse(*, df_list, source, year, **_):
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -3053,7 +3053,7 @@ def usgs_phosphate_parse(*, df_list, source, year, **_):
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -3161,7 +3161,7 @@ def usgs_platinum_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = str(0)
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -3253,7 +3253,7 @@ def usgs_potash_parse(*, df_list, source, year, **_):
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -3337,7 +3337,7 @@ def usgs_pumice_parse(*, df_list, source, year, **_):
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -3417,7 +3417,7 @@ def usgs_rhenium_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = str(0)
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -3509,7 +3509,7 @@ def usgs_salt_parse(*, df_list, source, year, **_):
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -3583,7 +3583,7 @@ def usgs_sgc_parse(*, df_list, source, year, **_):
                 if product.strip() == "Quantity":
                     data['FlowName'] = "Sand Gravel Construction " + prod
                 data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -3676,7 +3676,7 @@ def usgs_sgi_parse(*, df_list, source, year, **_):
                 data["ActivityProducedBy"] = "Sand Gravel Industrial"
                 data['FlowName'] = "Sand Gravel Industrial " + prod
                 data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -3746,7 +3746,7 @@ def usgs_silver_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = str(0)
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -3781,7 +3781,7 @@ def description(value, code):
 
 def soda_url_helper(*, build_url, config, year, **_):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py,
+    This helper function uses the "build_url" input from generateflowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
     string to be replaced with info specific to the data year. This function
     does not parse the data, only modifies the urls from which data is
@@ -3863,14 +3863,14 @@ def soda_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
     total_glass = 0
 
-    data = {}
+    data = []
     row_to_use = ["Quantity", "Quantity2"]
     prod = ""
     name = usgs_myb_name(source)
@@ -3905,7 +3905,7 @@ def soda_parse(*, df_list, source, year, **_):
                     data["Description"] = des
                     data["ActivityProducedBy"] = name
                     data['FlowName'] = name + " " + prod
-                    dataframe = dataframe.append(data, ignore_index=True)
+                    dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                     dataframe = assign_fips_location_system(
                         dataframe, str(year))
             else:
@@ -3932,7 +3932,7 @@ def soda_parse(*, df_list, source, year, **_):
                         des_str = str(df.iloc[index]["NAICS code"])
                         data["Description"] = des_str
                 if df.iloc[index]["End use"].strip() != "Glass:":
-                    dataframe = dataframe.append(data, ignore_index=True)
+                    dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                     dataframe = assign_fips_location_system(
                         dataframe, str(year))
     return dataframe
@@ -4011,7 +4011,7 @@ def usgs_stonecr_parse(*, df_list, source, year, **_):
                 data['FlowName'] = "Stone Crushed " + prod
                 data["FlowAmount"] = str(df.iloc[index][col_name])
                 if prod != "recycle":
-                    dataframe = dataframe.append(data, ignore_index=True)
+                    dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                     dataframe = assign_fips_location_system(
                         dataframe, str(year))
     return dataframe
@@ -4083,7 +4083,7 @@ def usgs_stonedis_parse(*, df_list, source, year, **_):
                 data['FlowName'] = "Stone Dimension " + prod
 
                 data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -4172,7 +4172,7 @@ def usgs_strontium_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = str(0)
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -4259,7 +4259,7 @@ def usgs_talc_parse(*, df_list, source, year, **_):
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -4272,7 +4272,7 @@ def usgs_titanium_call(*, resp, year, **_):
     :param url: string, url
     :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+        generateflowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     df_raw_data = pd.io.excel.read_excel(io.BytesIO(resp.content),
@@ -4313,7 +4313,7 @@ def usgs_titanium_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
@@ -4351,7 +4351,7 @@ def usgs_titanium_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = str(0)
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -4427,7 +4427,7 @@ def usgs_tungsten_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = WITHDRAWN_KEYWORD
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -4476,7 +4476,7 @@ def usgs_vermiculite_parse(*, df_list, source, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
@@ -4511,7 +4511,7 @@ def usgs_vermiculite_parse(*, df_list, source, year, **_):
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -4592,7 +4592,7 @@ def usgs_zeolites_parse(*, df_list, source, year, **_):
                 data["Description"] = des
                 data["ActivityProducedBy"] = name
                 data['FlowName'] = name + " " + prod
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -4705,7 +4705,7 @@ def usgs_zinc_parse(*, df_list, source, year, **_):
                     data["ActivityProducedBy"] = name + " " + prod
                     data['FlowName'] = "Zinc; Mine"
 
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
@@ -4808,7 +4808,7 @@ def usgs_zirconium_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = WITHDRAWN_KEYWORD
                 else:
                     data["FlowAmount"] = str(df.iloc[index][col_name])
-                dataframe = dataframe.append(data, ignore_index=True)
+                dataframe = pd.concat([dataframe, pd.DataFrame.from_dict([data])], ignore_index=True)
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe

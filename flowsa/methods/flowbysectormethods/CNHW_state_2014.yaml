@@ -1,11 +1,46 @@
+# National Commercial Non-Haz Waste (CNHW) FBS for 2014
+# Extrapolates 2014 California data using employment data
+
 !include:USEEIO_summary_target.yaml
-# target_sector_level: NAICS_6
-# target_sector_source: NAICS_2012_Code
-target_geoscale: state
+year: 2014
+geoscale: state
+
 source_names:
-  "CNHW_CA_2014":
-    data_format: 'FBS'
-    clean_fbs_df_fxn: !script_function:CalRecycle_WasteCharacterization apply_tons_per_employee_per_year_to_states
-    year: 2014
-
-
+  CNHW_CA_2014:
+    data_format: FBS
+    activity_sets:
+      employment:
+        exclusion_fields:
+          SectorProducedBy:
+          - F01000
+        clean_fbs: !clean_function:flowbyclean calculate_flow_per_person
+        clean_source:
+          Employment_state_2014:
+            geoscale: state
+        attribution_method: multiplication
+        # To avoid matching Location, which is filled from attribution source,
+        # only attribute on SectorProducedBy
+        attribute_on: ['SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          Employment_state_2014:
+            geoscale: state
+      population: # Requires an alternate dataset for Households (F01000)
+        selection_fields:
+          SectorProducedBy:
+          - F01000
+          - F010
+        clean_fbs: !clean_function:flowbyclean calculate_flow_per_person
+        clean_source:
+          Census_PEP_Population:
+            year: 2014
+            geoscale: state
+        attribution_method: multiplication
+        # To avoid matching Location, which is filled from attribution source,
+        # only attribute on SectorProducedBy
+        attribute_on: ['SectorProducedBy']
+        fill_columns: Location
+        attribution_source:
+          Census_PEP_Population:
+            year: 2014
+            geoscale: state
