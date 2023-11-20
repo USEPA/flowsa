@@ -80,7 +80,7 @@ def eia_seds_parse(*, df_list, year, config, **_):
     
     ## Extract information for SEDS codes
     units = pd.read_excel(config['url']['activities_url'],
-                          sheet_name='Codes_and_Descriptions',
+                          sheet_name='MSN descriptions',
                           header=10, usecols='B:D')
     units['FuelCode'] = units['MSN'].str[0:2]
     units['SectorCode'] = units['MSN'].str[2:4]
