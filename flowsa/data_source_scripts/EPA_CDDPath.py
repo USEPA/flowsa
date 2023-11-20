@@ -13,6 +13,7 @@ import pandas as pd
 from tabula.io import read_pdf
 import re
 import os
+from esupy.remote import headers
 
 import flowsa.flowbyactivity
 from flowsa.location import US_FIPS
@@ -146,7 +147,10 @@ def call_generation_by_source(file_dict):
     """Extraction generation by source data from pdf"""
     pg = file_dict.get('pg')
     url = file_dict.get('url')
-    df = read_pdf(url, pages=pg, stream=True, guess=True)[0]
+    df = read_pdf(url, pages=pg, stream=True,
+              guess=True,
+              user_agent=headers.get('User-Agent')
+              )[0]
     # set headers
     df = df.rename(columns={df.columns[0]: 'FlowName',
                             df.columns[1]: 'Buildings',
