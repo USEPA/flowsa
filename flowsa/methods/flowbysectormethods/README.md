@@ -147,7 +147,8 @@ any level, and are inherited from higher-level sources.
   See description in `flowby.select_by_fields()`. 
 - _attribute_: (optional) include for sequential attribution. Follow with list of _attribution_method_ parameters. 
 - _attribution_method_: currently written for `direct`, `proportional`, 
-  `multiplication`, `equal`, `inheritance`. See "Method Descriptions" below.
+  `multiplication`, `division`, `equal`, `inheritance`. See "Method 
+  Descriptions" below.
 - _attribution_source_: The data source used to attribute the primary data 
   source. By default attribution is performed on the primary activity column.
 
@@ -204,6 +205,8 @@ Some functions allow for extra named parameters.
   NAICS crosswalk
 - multiplication: Multiply the values in the primary source with
   values sharing the same sectors in the attribution source
+- division: Divide valus in primary data source with values sharing the same 
+  sectors in the attribution source
 - proportional: Activities are proportionally attributed to sectors using
   specified attribution data source
 - equal: Equally attribute parent values to child values until reach target 
