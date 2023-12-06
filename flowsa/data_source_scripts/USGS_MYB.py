@@ -42,7 +42,7 @@ YEARS_COVERED = {
     "niobium": "2014-2018",
     "peat": "2014-2018",
     "perlite": "2013-2017",
-    "phosphate": "2014-2018",
+    "phosphate": "2014-2019",
     "platinum": "2014-2018",
     "potash": "2014-2018",
     "pumice": "2014-2018",
@@ -1977,7 +1977,6 @@ def usgs_kyanite_parse(*, df_list, source, year, **_):
 
 
 
-
 def usgs_lead_call(*, resp, year, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing
@@ -2970,6 +2969,12 @@ def usgs_phosphate_call(*, resp, year, **_):
 
     df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(resp.content),
                                              sheet_name='T1')
+    # replace cell in column one and then set row 4 as col names
+    df_raw_data_one.iloc[4,0] = 'Production'
+    df_raw_data_one.columns = df_raw_data_one.iloc[4]
+    df_raw_data_one.columns = df_raw_data_one.columns.astype(str).str.replace(
+        ".0", '')
+
     df_data_one = pd.DataFrame(df_raw_data_one.loc[7:9]).reindex()
     df_data_one = df_data_one.reset_index()
     del df_data_one["index"]
@@ -2978,27 +2983,9 @@ def usgs_phosphate_call(*, resp, year, **_):
     df_data_two = df_data_two.reset_index()
     del df_data_two["index"]
 
-    if len(df_data_one.columns) > 12:
-        for x in range(11, len(df_data_one.columns)):
-            col_name = "Unnamed: " + str(x)
-            del df_data_one[col_name]
-            del df_data_two[col_name]
-
-    if len(df_data_one. columns) == 12:
-        df_data_one.columns = ["Production", "unit", "space_1", "year_1",
-                               "space_3", "year_2", "space_4", "year_3",
-                               "space_5", "year_4", "space_6", "year_5"]
-        df_data_two.columns = ["Production", "unit", "space_1", "year_1",
-                               "space_3", "year_2", "space_4", "year_3",
-                               "space_5", "year_4", "space_6", "year_5"]
-
-    col_to_use = ["Production"]
-    col_to_use.append(usgs_myb_year(YEARS_COVERED['phosphate'], year))
-
-    for col in df_data_one.columns:
-        if col not in col_to_use:
-            del df_data_one[col]
-            del df_data_two[col]
+    col_to_use = ["Production", year]
+    df_data_one = df_data_one[col_to_use]
+    df_data_two = df_data_two[col_to_use]
 
     frames = [df_data_one, df_data_two]
     df_data = pd.concat(frames)
@@ -3023,7 +3010,7 @@ def usgs_phosphate_parse(*, df_list, source, year, **_):
     name = usgs_myb_name(source)
     des = name
     dataframe = pd.DataFrame()
-    col_name = usgs_myb_year(YEARS_COVERED['phosphate'], year)
+    col_name = year
     for df in df_list:
         for index, row in df.iterrows():
             if df.iloc[index]["Production"].strip() == \
