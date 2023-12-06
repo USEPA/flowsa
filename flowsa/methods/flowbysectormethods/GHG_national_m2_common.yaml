@@ -60,22 +60,18 @@ attribution_sources:
 _sources_to_cache:
   Detail_Use_YEAR:  ## Update year
     !include:Detail_Use_SUT.yaml
-    industry_spec: !include:BEA_detail_target.yaml:industry_spec
     # year: *ghgi_year
     source_names:
       BEA_Summary_Use_SUT:
         !include:Detail_Use_SUT.yaml:source_names:BEA_Summary_Use_SUT
-        industry_spec: !include:BEA_detail_target.yaml:industry_spec
         # year: *ghgi_year
 
   Detail_Supply_YEAR:
     !include:Detail_Supply.yaml
-    industry_spec: !include:BEA_detail_target.yaml:industry_spec
     # year: *ghgi_year
     source_names:
       BEA_Summary_Supply:
         !include:Detail_Supply.yaml:source_names:BEA_Summary_Supply
-        industry_spec: !include:BEA_detail_target.yaml:industry_spec
         # year: *ghgi_year
 
 source_names:
