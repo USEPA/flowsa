@@ -53,7 +53,7 @@ YEARS_COVERED = {
     "silver": "2012-2016",
     "sodaash": "2010-2017",
     "sodaash_t4": ["2016", "2017"],
-    "stonecrushed": "2013-2017",
+    "stonecrushed": "2014-2018",
     "stonedimension": "2013-2017",
     "strontium": "2014-2018",
     "talc": "2013-2017",
@@ -1974,7 +1974,6 @@ def usgs_kyanite_parse(*, df_list, source, year, **_):
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
-
 
 
 def usgs_lead_call(*, resp, year, **_):
