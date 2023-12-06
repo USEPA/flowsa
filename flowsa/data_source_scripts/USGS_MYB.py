@@ -133,7 +133,7 @@ def usgs_myb_remove_digits(value_string):
     return return_string
 
 
-def usgs_myb_url_helper(*, build_url, **_):
+def usgs_myb_url_helper(*, build_url, config, year, **_):
     """
     This helper function uses the "build_url" input from generateflowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -147,7 +147,17 @@ def usgs_myb_url_helper(*, build_url, **_):
     :return: list, urls to call, concat, parse, format into Flow-By-Activity
         format
     """
-    return [build_url]
+
+    # Replace year-dependent aspects of file url
+    url = (build_url
+           .replace('__FILENAME__', config.get('filename_replacement',
+                                               {}).get(int(year), 'NULL'))
+           .replace('__YEAR__', year)
+           .replace('__FORMAT__', config.get('file_format',
+                                             {}).get(int(year), 'NULL'))
+           )
+
+    return [url]
 
 
 def usgs_asbestos_call(*, resp, year, **_):
@@ -1966,24 +1976,6 @@ def usgs_kyanite_parse(*, df_list, source, year, **_):
     return dataframe
 
 
-def usgs_lead_url_helper(*, year, **_):
-    """
-    This helper function uses the "build_url" input from generateflowbyactivity.py,
-    which is a base url for data imports that requires parts of the url text
-    string to be replaced with info specific to the data year. This function
-    does not parse the data, only modifies the urls from which data is
-    obtained.
-    :param build_url: string, base url
-    :return: list, urls to call, concat, parse, format into Flow-By-Activity
-        format
-    """
-    # return file name based on data year
-    filename = _['config']['filename_replacement'].get(int(year))
-
-    # complete url
-    url = _['build_url'].replace('__filename__', filename)
-
-    return [url]
 
 
 def usgs_lead_call(*, resp, year, **_):
@@ -3777,25 +3769,6 @@ def description(value, code):
         return_val = value
     return_val = usgs_myb_remove_digits(return_val)
     return return_val
-
-
-def soda_url_helper(*, build_url, config, year, **_):
-    """
-    This helper function uses the "build_url" input from generateflowbyactivity.py,
-    which is a base url for data imports that requires parts of the url text
-    string to be replaced with info specific to the data year. This function
-    does not parse the data, only modifies the urls from which data is
-    obtained.
-    :param build_url: string, base url
-    :param config: dictionary, items in FBA method yaml
-    :param year: year
-    :return: list, urls to call, concat, parse, format into Flow-By-Activity
-        format
-    """
-    url = build_url
-    url = url.replace('__format__', str(config['formats'][year]))
-    url = url.replace('__url_text__', str(config['url_texts'][year]))
-    return [url]
 
 
 def soda_call(*, resp, year, **_):
