@@ -1,7 +1,8 @@
 # This file can be used to set up target NAICS for a detail level model
 # NAICS are targeted to enable 1:1 correspondence between NAICS and BEA
-# Detail sectors. The waste sectors (562) are targeted to NAICS 6 and NAICS
-# to align with the waste disaggregation in useeior
+# Detail sectors. The waste sectors (562) are targeted to NAICS 6
+# to align with the waste disaggregation in useeior.
+# Otherwise this mimics BEA_detail_target.yaml
 
 # To use in an FBS method add
 # !include:USEEIOv2_detail_target.yaml
@@ -30,7 +31,6 @@ industry_spec:
             '33599', '33611', '33621', '33641', '33661', '33699',
             '33712', '33721', '33911', '51731', '52411', '54151',
             '562', '72251','92', 'F010']
-  NAICS_7: ['562212', '562219', '562920']
 
 target_naics_year: 2017
 # This schema was created for 2017 NAICS but should also work for the schema
