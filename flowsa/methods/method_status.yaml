@@ -41,21 +41,6 @@ StateGHGI_VT:
     Status: Private data
     Type: FileNotFoundError
 
-USGS_MYB_Phosphate:
-    Active: False
-    Status: Error in source data links
-    Type: HTTPError
-
-USGS_MYB_Potash:
-    Active: False
-    Status: Error in source data links
-    Type: HTTPError
-
-USGS_MYB_StoneCrushed:
-    Active: False
-    Status: Error in source data links
-    Type: HTTPError
-
 
 # Flow By Sectors
 CAP_HAP_national_2017_m2:
