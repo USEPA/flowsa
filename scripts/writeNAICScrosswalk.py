@@ -266,21 +266,27 @@ def write_sector_name_crosswalk():
     for y in ['2012', '2017']:
         # dictionary of new sector names
         new_sectors = pd.DataFrame(
-            {f"NAICS_{y}_Code": ['5622191',
-                                 '5622192',
+            {f"NAICS_{y}_Code": ['311119',
                                  '5622121',
+                                 '5622122',
+                                 '5622191',
+                                 '5622192',
                                  '5629201',
-                                 '311119'
+                                 '5629202',
+                                 '5629203'
                                  ],
-             f"NAICS_{y}_Name": ['Codigestion/Anaerobic Digestion',
-                                 'Composting/Aerobic Processes',
+             f"NAICS_{y}_Name": ['Other Animal Food Manufacturing',
                                  'MSW Landfill',
+                                 'Industrial Waste Landfills',
+                                 'Anaerobic Digestion',
+                                 'MSW Composting',
                                  'MSW Recycling',
-                                 'Other Animal Food Manufacturing'
+                                 'Mixed CDD MRFs',
+                                 'Single material MRFs'
                                  ]})
 
         # add new sector names to offical sector names
-        df = pd.concat([vars()[f'naics_{y}'], new_sectors])
+        df = pd.concat([vars()[f'naics_{y}'], new_sectors], ignore_index=True)
         # # strip whitespaces
         df[f"NAICS_{y}_Name"] = df[f"NAICS_{y}_Name"].str.rstrip()
         # strip superscripts
@@ -302,7 +308,7 @@ def write_sector_name_crosswalk():
                                    "Name": f"NAICS_{y}_Name"})
                   .drop_duplicates()
                   )
-            df = pd.concat([df, cw])
+            df = pd.concat([df, cw], ignore_index=True)
         # sort and save csv
         df = (df
               .sort_values(f"NAICS_{y}_Code")
