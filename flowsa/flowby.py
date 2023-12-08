@@ -749,16 +749,26 @@ class _FlowBy(pd.DataFrame):
 
             else:
                 if all(fb.groupby('group_id')['group_id'].agg('count') == 1):
-                    log.info(f'No attribution needed for {fb.full_name} at '
-                             f'the given industry aggregation level')
+                    log.info(f'No allocation needed for {fb.full_name} at '
+                             f'the given industry aggregation level.')
                     attributed_fb = fb.copy()
                     validate = False
                 else:
+                    # issue warning if the attribution method is missing
+                    # from the method yaml
                     if step_config.get('attribution_method') is None:
-                        log.warning(f'No attribution method specified for '
-                                    f'{fb.full_name}. Using equal attribution '
+                        log.warning(f'No allocation method specified for '
+                                    f'{fb.full_name}. Using equal allocation '
                                     f'as default.')
-                    log.info(f"Equally attributing {self.full_name} to "
+                    # issue warning if "direct" attribution is specified,
+                    # but the method requires an "equal" allocation
+                    elif not all(fb.groupby('group_id')['group_id'].agg(
+                            'count') == 1):
+                        log.warning(f'Allocation of {fb.full_name} includes '
+                                    f'1:many mappings of activities:sectors. '
+                                    f'Using "equal" attribution instead of '
+                                    f'"direct".')
+                    log.info(f"Equally allocating {self.full_name} to "
                              f"target sectors.")
                     attributed_fb = fb.equally_attribute()
 
