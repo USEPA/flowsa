@@ -240,6 +240,7 @@ def stackedBarChart(df,
                     grouping_variable=None,
                     sector_variable='Sector',
                     subplot=None,
+                    subplot_order=None,
                     rows=1,
                     cols=1,
                     filename = 'flowsaBarChart',
@@ -253,9 +254,16 @@ def stackedBarChart(df,
     :param df: str or df, either an FBS methodname (ex. "Water_national_m1_2015") or a df
     :param impact_cat: str, name of impact category to apply and aggregate on
         impacts (e.g.: 'Global warming'). Use 'None' to aggregate by flow
-    :param industry_spec, dict e.g. {'default': 'NAICS_3',
+    :param industry_spec: dict e.g., {'default': 'NAICS_3',
                                      'NAICS_4': ['112', '113'],
                                      'NAICS_6': ['1129']}
+    :param subplot_order: dict, e.g., {'Carbon dioxide': 1,
+                                        'Methane': 2,
+                                        'Nitrous oxide': 3,
+                                        'Jobs': 4,
+                                        'Wages': 5,
+                                        'Taxes': 6
+                                        }
     :return: stacked, group bar plot
     """
     # if the df provided is a string, load the fbs method, otherwise use the
@@ -282,13 +290,9 @@ def stackedBarChart(df,
         "_", 1)[1].split("_", 1)[0]
 
     df = df.sector_aggregation()
-    df = flowsa.flowbyfunctions.collapse_fbs_sectors(df)
-
-    # determine list of subplots
-    try:
-        plot_list = df[subplot].drop_duplicates().values.tolist()
-    except KeyError:
-        plot_list = None
+    # collapse the df, if the df is not already collapsed
+    if 'Sector' not in df.columns:
+        df = flowsa.flowbyfunctions.collapse_fbs_sectors(df)
 
     # convert units
     df = convert_units_for_graphics(df)
@@ -337,13 +341,33 @@ def stackedBarChart(df,
     df2 = df.groupby(index_cols + [stacking_col],
                      as_index=False).agg({"FlowAmount": sum})
 
+    # determine list of subplots, use specified order if given in a dictionary
+    try:
+        primary_sort_col = [subplot]
+        if subplot_order is not None:
+            df2['order'] = df2[subplot].map(subplot_order)
+            primary_sort_col = ['order']
+        df2 = (df2
+               .sort_values(primary_sort_col + [sector_variable, grouping_variable])
+               .reset_index(drop=True)
+               .drop(columns='order', errors='ignore')
+               )
+        plot_list = df2[subplot].drop_duplicates().values.tolist()
+        # if subplot order specified, return list of dictionary keys
+    except KeyError:
+        plot_list = None
+
     # fill in non existent data with 0s to enable accurate sorting of sectors
-    flows = (df2[['Location', 'Unit', var, 'Sector']]
+    subset_cols = ['Location', 'Unit', var, subplot]
+    flows = (df2[df2.columns.intersection(subset_cols)]
              .drop_duplicates()
              )
-    scv = df[stacking_col].unique().tolist()
-    flows[stacking_col] = [scv for _ in range(len(flows))]
+    # match all possible stacking variables
+    flows[stacking_col] = [df[stacking_col].unique().tolist() for _ in range(len(flows))]
     flows = flows.explode(stacking_col)
+    # match all possible sector variables
+    flows[sector_variable] = [df[sector_variable].unique().tolist() for _ in range(len(flows))]
+    flows = flows.explode(sector_variable)
 
     df2 = df2.merge(flows, how='outer')
     df2['FlowAmount'] = df2['FlowAmount'].fillna(0)
@@ -380,12 +404,14 @@ def stackedBarChart(df,
     # fill in any colors missing from the color dictionary with random colors
     colors['Color'] = colors['Color'].apply(lambda x: x if pd.notnull(x) else
     "#%06x" % random.randint(0, 0xFFFFFF))
+    # sort in reverse alphabetical order for the legend order
+    colors = colors.sort_values([stacking_col], ascending=False).reset_index(drop=True)
     # merge back into df
     df2 = df2.merge(colors, how='left')
 
     if subplot is None:
-        axis_title = axis_title or f"FlowAmount ({df_unit})"
-        for r, c in zip(df2[stacking_col].unique(), df2['Color'].unique()):
+        axis_title = axis_title or f"Flow Total ({df_unit})"
+        for r, c in zip(colors[stacking_col], colors['Color']):
             plot_df = df2[df2[stacking_col] == r]
             y_axis_col = plot_df[sector_variable]
             # if there are more than one variable category add to y-axis
@@ -400,12 +426,12 @@ def stackedBarChart(df,
         fig.update_xaxes(title_text=axis_title)
         fig.update_yaxes(title_text="Sector", tickmode='linear')
     else:
-        axis_title = axis_title or f"Flow Total ({plot_df['Unit'][0]})"
         s = 0
         for row in range(1, rows + 1):
             for col in range(1, cols + 1):
-                df3 = df2[df2[subplot] == plot_list[s]].reset_index(drop=True)
-                for r, c in zip(df3[stacking_col].unique(), df3['Color'].unique()):
+                df3 = pd.DataFrame(df2[df2[subplot] == plot_list[s]].reset_index(drop=True))
+                axis_title = f"Flow Total ({df3['Unit'][0]})"
+                for r, c in zip(colors[stacking_col], colors['Color']):
                     plot_df = df3[df3[stacking_col] == r].reset_index(drop=True)
                     flow_col = plot_df['FlowAmount']
                     sector_col = [plot_df[sector_variable], plot_df[var]]
