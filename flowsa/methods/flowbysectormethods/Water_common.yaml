@@ -60,7 +60,7 @@ source_names:
     clean_fba_before_activity_sets: !script_function:USGS_NWIS_WU usgs_fba_data_cleanup
     activity_sets:
 
-      direct_attribution:
+      equal_attribution:
         selection_fields:
           PrimaryActivity:
             - "Aquaculture"
@@ -68,7 +68,7 @@ source_names:
             - "Public Supply"
             - "Thermoelectric Power"
             - "Domestic"
-        attribution_method: direct
+        attribution_method: equal
 
 
       employment_attribution:
@@ -125,6 +125,7 @@ source_names:
                             '11233', '11234', '11239', '1124', '11241',
                             '11242', '1129', '11291', '11292', '11293',
                             '11299']
+                        attribution_method: equal
                   - attribution_method: multiplication
                     attribution_source: USDA_IWMS
               cropland_attribution-cropland:
@@ -149,7 +150,7 @@ source_names:
                   PrimaryActivity: ORCHARDS
                 attribute:
                   # first directly attribute so orchards are equally attributed to related sectors
-                  - attribution_method: direct
+                  - attribution_method: equal
                   - attribution_method: multiplication
                     attribution_source: USDA_IWMS
 

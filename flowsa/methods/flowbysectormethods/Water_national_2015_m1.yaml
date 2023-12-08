@@ -16,8 +16,8 @@ source_names:
   USGS_NWIS_WU:
     !include:Water_common.yaml:source_names:USGS_NWIS_WU
     activity_sets: # do not import all activity sets from the common file because common file contains activity sets for multiple methods
-      direct_attribution:
-        !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:direct_attribution
+      equal_attribution:
+        !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:equal_attribution
       employment_attribution:
         !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:employment_attribution
         attribution_method: proportional
