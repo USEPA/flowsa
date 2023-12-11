@@ -416,8 +416,8 @@ def stackedBarChart(df,
     colors = colors.merge(vis[[stacking_col, 'Color']], how='left')
 
     # fill in any colors missing from the color dictionary with random colors
-    colors['Color'] = colors['Color'].apply(lambda x: x if pd.notnull(x) else
-    "#%06x" % random.randint(0, 0xFFFFFF))
+    colors['Color'] = colors['Color'].apply(
+        lambda x: x if pd.notnull(x) else "#%06x" % random.randint(0, 0xFFFFFF))
     # sort in reverse alphabetical order for the legend order
     colors = colors.sort_values([stacking_col], ascending=False).reset_index(drop=True)
     # merge back into df
@@ -487,9 +487,11 @@ def stackedBarChart(df,
         if (trace.name in names) else names.add(trace.name))
 
     fig.show()
-    log.info(f'Saving file to {plotoutputpath / filename}.svg')
-    fig.write_image(plotoutputpath / f"{filename}.svg", width=graphic_width,
-                    height=graphic_height)
+    if filename is not None:
+        log.info(f'Saving file to {plotoutputpath / filename}.svg')
+        fig.write_image(plotoutputpath / f"{filename}.svg", width=graphic_width,
+                        height=graphic_height)
+    return fig
 
 
 def plot_state_coefficients(fbs_coeff, indicator=None,
