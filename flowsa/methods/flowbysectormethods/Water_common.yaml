@@ -15,7 +15,7 @@ sources_to_cache:
   USDA_IWMS:
     industry_spec:
       default: NAICS_6
-      NAICS_7: ['111150', '111199', '111940'] # hay and haylage set to NAICS7 - will update to NAICS6
+      NAICS_7: ['1114', '111150', '111199', '111940'] # hay and haylage set to NAICS7 - will update to NAICS6
     geoscale: state
     # year: 2018  # specify in year-specific yaml
     selection_fields:
@@ -85,7 +85,7 @@ source_names:
       cropland_attribution:
         industry_spec:
           default: NAICS_6
-          NAICS_7: ['111150', '111199']
+          NAICS_7: ['1114', '111150', '111199']
         selection_fields:
           PrimaryActivity: "Irrigation Crop"
         attribution_method: proportional
@@ -143,6 +143,7 @@ source_names:
                           FlowName:
                             - "AG LAND, CROPLAND, HARVESTED"
                         estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
+                        attribution_method: equal
                   - attribution_method: multiplication
                     attribution_source: USDA_IWMS
               cropland_attribution-orchards:
