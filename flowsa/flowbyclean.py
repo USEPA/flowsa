@@ -580,6 +580,7 @@ def drop_parentincompletechild_descendants(
 
     return fba2
 
+
 def proxy_sector_data(
         fba: 'FlowByActivity',
         download_sources_ok: bool = True,
@@ -588,6 +589,13 @@ def proxy_sector_data(
     """
     Use a dictionary to use data for one sector as proxy data for a second
     sector.
+
+    To implement, use in an FBS method
+    attribution_method: direct
+    # equate the water application rates of strawberries to other berries
+    clean_fba_after_attribution: !clean_function:flowbyclean proxy_sector_data
+    proxy_sectors: {'111334': '111333'}
+
     :param fba:
     :param download_sources_ok:
     :param kwargs:
