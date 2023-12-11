@@ -1046,27 +1046,32 @@ class _FlowBy(pd.DataFrame):
                 unattributable = with_denominator.query(f'denominator == 0 ')
 
                 if not unattributable.empty:
-                    vlog.warning(f'Could not attribute activities in '
-                                 f'{unattributable.full_name} due to lack of '
-                                 f'flows in attribution source '
-                                 f'{other.full_name} for mapped {rank} sectors'
-                                 f' {sorted(set(unattributable[f"{rank}Sector"]))}. '
-                                 f'See validation_log for details.')
+                    # implode the location data to shorten warning message
+                    unatt_sub = unattributable.groupby(
+                        [f"{rank}Sector"], dropna=False, as_index=False).agg(
+                        {'Location': lambda x: ", ".join(x)})
+                    vlog.warning(
+                        f'Could not attribute activities in '
+                        f'{unattributable.full_name} due to lack of flows in '
+                        f'attribution source {other.full_name} for mapped '
+                        f'{rank} sectors/Location '
+                        f'{sorted(set(zip(unatt_sub[f"{rank}Sector"], unatt_sub.Location)))}. '
+                        f'See validation_log for details.')
                     if other_geoscale.aggregation_level < 5:
                         vlog.warning('This can occur when combining datasets '
-                                    'at a sub-national level when activities '
-                                    'do not align for some locations.')
+                                     'at a sub-national level when activities '
+                                     'do not align for some locations.')
                         vlog.warning(f'{other.full_name} is at geoscale '
                                      f'{other_geoscale}. Is that correct?')
                     vlog.debug(
                         'Unattributed activities: \n {}'.format(
                             unattributable
                             .drop(columns=schema.dq_fields +
-                                  ['LocationSystem', 'SectorSourceName', 'FlowType',
-                                   'ProducedBySectorType', 'ConsumedBySectorType',
-                                   'denominator', 'Suppressed'],
-                                  errors='ignore')
-                            .to_string()))
+                                  ['LocationSystem', 'SectorSourceName',
+                                   'FlowType', 'ProducedBySectorType',
+                                   'ConsumedBySectorType', 'denominator',
+                                   'Suppressed'], errors='ignore'
+                                  ).to_string()))
 
                 proportionally_attributed = (
                     non_zero_denominator
