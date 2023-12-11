@@ -1,6 +1,7 @@
 ActivitySourceName,Activity,SectorSourceName,Sector,SectorType
 USGS_WU_Coef,"Beef and other cattle, including calves",NAICS_2012_Code,11211,
 USGS_WU_Coef,Dairy cows,NAICS_2012_Code,11212,
+USGS_WU_Coef,"Beef and other cattle, including calves",NAICS_2012_Code,11213,
 USGS_WU_Coef,Hogs and pigs,NAICS_2012_Code,1122,
 USGS_WU_Coef,Laying hens,NAICS_2012_Code,11231,
 USGS_WU_Coef,Broilers and other chickens,NAICS_2012_Code,11232,
