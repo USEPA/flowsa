@@ -579,3 +579,33 @@ def drop_parentincompletechild_descendants(
     )
 
     return fba2
+
+def proxy_sector_data(
+        fba: 'FlowByActivity',
+        download_sources_ok: bool = True,
+        **kwargs
+) -> 'FlowByActivity':
+    """
+    Use a dictionary to use data for one sector as proxy data for a second
+    sector.
+    :param fba:
+    :param download_sources_ok:
+    :param kwargs:
+    :return:
+    """
+    col = return_primary_flow_column(fba, flowtype='FBS')
+    proxy = fba.config['proxy_sectors']
+
+    fba2 = fba.drop(columns='group_id')
+    for k, v in proxy.items():
+        fba2[col] = np.where(fba2[col] == k, f'{k},{v}', fba2[col])
+    # convert sector col to list
+    fba2[col] = fba2[col].str.split(",")
+    # break each sector into separate line
+    fba3 = (fba2
+            .explode(col)
+            .reset_index(drop=True).reset_index()
+            .rename(columns={'index': 'group_id'})
+            )
+
+    return fba3
