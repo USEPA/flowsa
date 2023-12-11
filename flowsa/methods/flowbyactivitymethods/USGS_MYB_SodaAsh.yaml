@@ -11,14 +11,14 @@ url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
 call_response_fxn: !script_function:USGS_MYB soda_call
 parse_response_fxn: !script_function:USGS_MYB soda_parse
 filename_replacement:
-  '2010': mineral-pubs/soda-ash
-  '2011': mineral-pubs/soda-ash
-  '2012': mineral-pubs/soda-ash
-  '2013': mineral-pubs/soda-ash
-  '2014': mineral-pubs/soda-ash
-  '2015': mineral-pubs/soda-ash
-  '2016': mineral-pubs/soda-ash
-  '2017': atoms/files
+  2010: mineral-pubs/soda-ash
+  2011: mineral-pubs/soda-ash
+  2012: mineral-pubs/soda-ash
+  2013: mineral-pubs/soda-ash
+  2014: mineral-pubs/soda-ash
+  2015: mineral-pubs/soda-ash
+  2016: mineral-pubs/soda-ash
+  2017: atoms/files
 years:
   - 2013
   - 2014
@@ -26,11 +26,11 @@ years:
   - 2016
   - 2017
 file_format:
-  '2010': xls
-  '2011': xls
-  '2012': xls
-  '2013': xls
-  '2014': xls
-  '2015': xlsx
-  '2016': xlsx
-  '2017': xls
+  2010: xls
+  2011: xls
+  2012: xls
+  2013: xls
+  2014: xls
+  2015: xlsx
+  2016: xlsx
+  2017: xls
