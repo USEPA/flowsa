@@ -93,7 +93,8 @@ def FBSscatterplot(method_dict,
     :param sectors_to_include: list, sectors to include in output. Sectors
     are subset by all sectors that "start with" the values in this list
     :param impact_cat: str, name of impact category to apply and aggregate on
-        impacts (e.g.: 'Global warming'). Use 'None' to aggregate by flow
+        impacts (e.g.: 'Global warming'), or dict in the form of
+        {impact_method: impact_category}. Use 'None' to aggregate by flow
     :param industry_spec, dict e.g. {'default': 'NAICS_3',
                                      'NAICS_4': ['112', '113'],
                                      'NAICS_6': ['1129']}
@@ -108,7 +109,7 @@ def FBSscatterplot(method_dict,
         dfm = flowsa.flowbysector.collapse_FlowBySector(method)
         if plottype == 'facet_graph':
             dfm['methodname'] = dfm['Unit'].apply(lambda x: f"{label} ({x})")
-        elif plottype == 'method_comparison':
+        elif plottype in ('method_comparison', 'boxplot'):
             dfm['methodname'] = label
         df_list.append(dfm)
     df = pd.concat(df_list, ignore_index=True)
@@ -216,11 +217,17 @@ def FBSscatterplot(method_dict,
         g = sns.relplot(data=df2, x="FlowAmount", y=y_axis,
                         hue="methodname", alpha=0.7, style="methodname",
                         palette="colorblind",
-                        aspect=1.5
+                        # height=5,
+                        aspect=1.5,
                         ).set(title=title)
         g._legend.set_title(legend_title)
         g.set_axis_labels(axis_title, "")
         g.tight_layout()
+    elif plottype == 'boxplot':
+        g = sns.boxplot(data=df2, x="FlowAmount", y=y_axis,
+                        color="gray")
+        g.set(xlabel = axis_title,
+              ylabel = "")
 
     return g
 
@@ -253,7 +260,8 @@ def stackedBarChart(df,
     group data by context as well as sector
     :param df: str or df, either an FBS methodname (ex. "Water_national_m1_2015") or a df
     :param impact_cat: str, name of impact category to apply and aggregate on
-        impacts (e.g.: 'Global warming'). Use 'None' to aggregate by flow
+        impacts (e.g.: 'Global warming'), or dict in the form of
+        {impact_method: impact_category}. Use 'None' to aggregate by flow
     :param industry_spec: dict e.g., {'default': 'NAICS_3',
                                      'NAICS_4': ['112', '113'],
                                      'NAICS_6': ['1129']}
@@ -300,17 +308,23 @@ def stackedBarChart(df,
     if index_cols is None:
         index_cols = ["Location", "Sector", "Unit"]
     if impact_cat:
+        if type(impact_cat)==str:
+            imp_method = 'TRACI2.1'
+            indicator = impact_cat
+        else:
+            imp_method = list(impact_cat.keys())[0]
+            indicator = list(impact_cat.values())[0]
         try:
             import lciafmt
-            df = (lciafmt.apply_lcia_method(df, 'TRACI2.1')
+            df = (lciafmt.apply_lcia_method(df, imp_method)
                   .rename(columns={'FlowAmount': 'InvAmount',
                                    'Impact': 'FlowAmount'}))
             var = 'Indicator'
-            df = df[df['Indicator'] == impact_cat]
+            df = df.query('Indicator == @indicator').reset_index(drop=True)
             df_unit = df['Indicator unit'][0]
             sort_cols = [sector_variable, stacking_col]
             if len(df) == 0:
-                log.exception(f'Impact category: {impact_cat} not found')
+                log.exception(f'Impact category: {indicator} not found')
                 return
         except ImportError:
             log.exception('lciafmt not installed')
@@ -402,8 +416,8 @@ def stackedBarChart(df,
     colors = colors.merge(vis[[stacking_col, 'Color']], how='left')
 
     # fill in any colors missing from the color dictionary with random colors
-    colors['Color'] = colors['Color'].apply(lambda x: x if pd.notnull(x) else
-    "#%06x" % random.randint(0, 0xFFFFFF))
+    colors['Color'] = colors['Color'].apply(
+        lambda x: x if pd.notnull(x) else "#%06x" % random.randint(0, 0xFFFFFF))
     # sort in reverse alphabetical order for the legend order
     colors = colors.sort_values([stacking_col], ascending=False).reset_index(drop=True)
     # merge back into df
@@ -473,9 +487,11 @@ def stackedBarChart(df,
         if (trace.name in names) else names.add(trace.name))
 
     fig.show()
-    log.info(f'Saving file to {plotoutputpath / filename}.svg')
-    fig.write_image(plotoutputpath / f"{filename}.svg", width=graphic_width,
-                    height=graphic_height)
+    if filename is not None:
+        log.info(f'Saving file to {plotoutputpath / filename}.svg')
+        fig.write_image(plotoutputpath / f"{filename}.svg", width=graphic_width,
+                        height=graphic_height)
+    return fig
 
 
 def plot_state_coefficients(fbs_coeff, indicator=None,
