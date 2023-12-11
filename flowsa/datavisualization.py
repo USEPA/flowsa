@@ -108,7 +108,7 @@ def FBSscatterplot(method_dict,
         dfm = flowsa.flowbysector.collapse_FlowBySector(method)
         if plottype == 'facet_graph':
             dfm['methodname'] = dfm['Unit'].apply(lambda x: f"{label} ({x})")
-        elif plottype == 'method_comparison':
+        elif plottype in ('method_comparison', 'boxplot'):
             dfm['methodname'] = label
         df_list.append(dfm)
     df = pd.concat(df_list, ignore_index=True)
@@ -216,11 +216,17 @@ def FBSscatterplot(method_dict,
         g = sns.relplot(data=df2, x="FlowAmount", y=y_axis,
                         hue="methodname", alpha=0.7, style="methodname",
                         palette="colorblind",
-                        aspect=1.5
+                        # height=5,
+                        aspect=1.5,
                         ).set(title=title)
         g._legend.set_title(legend_title)
         g.set_axis_labels(axis_title, "")
         g.tight_layout()
+    elif plottype == 'boxplot':
+        g = sns.boxplot(data=df2, x="FlowAmount", y=y_axis,
+                        color="gray")
+        g.set(xlabel = axis_title,
+              ylabel = "")
 
     return g
 
