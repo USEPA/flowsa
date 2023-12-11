@@ -93,7 +93,8 @@ def FBSscatterplot(method_dict,
     :param sectors_to_include: list, sectors to include in output. Sectors
     are subset by all sectors that "start with" the values in this list
     :param impact_cat: str, name of impact category to apply and aggregate on
-        impacts (e.g.: 'Global warming'). Use 'None' to aggregate by flow
+        impacts (e.g.: 'Global warming'), or dict in the form of
+        {impact_method: impact_category}. Use 'None' to aggregate by flow
     :param industry_spec, dict e.g. {'default': 'NAICS_3',
                                      'NAICS_4': ['112', '113'],
                                      'NAICS_6': ['1129']}
@@ -259,7 +260,8 @@ def stackedBarChart(df,
     group data by context as well as sector
     :param df: str or df, either an FBS methodname (ex. "Water_national_m1_2015") or a df
     :param impact_cat: str, name of impact category to apply and aggregate on
-        impacts (e.g.: 'Global warming'). Use 'None' to aggregate by flow
+        impacts (e.g.: 'Global warming'), or dict in the form of
+        {impact_method: impact_category}. Use 'None' to aggregate by flow
     :param industry_spec: dict e.g., {'default': 'NAICS_3',
                                      'NAICS_4': ['112', '113'],
                                      'NAICS_6': ['1129']}
@@ -306,17 +308,23 @@ def stackedBarChart(df,
     if index_cols is None:
         index_cols = ["Location", "Sector", "Unit"]
     if impact_cat:
+        if type(impact_cat)==str:
+            imp_method = 'TRACI2.1'
+            indicator = impact_cat
+        else:
+            imp_method = list(impact_cat.keys())[0]
+            indicator = list(impact_cat.values())[0]
         try:
             import lciafmt
-            df = (lciafmt.apply_lcia_method(df, 'TRACI2.1')
+            df = (lciafmt.apply_lcia_method(df, imp_method)
                   .rename(columns={'FlowAmount': 'InvAmount',
                                    'Impact': 'FlowAmount'}))
             var = 'Indicator'
-            df = df[df['Indicator'] == impact_cat]
+            df = df.query('Indicator == @indicator').reset_index(drop=True)
             df_unit = df['Indicator unit'][0]
             sort_cols = [sector_variable, stacking_col]
             if len(df) == 0:
-                log.exception(f'Impact category: {impact_cat} not found')
+                log.exception(f'Impact category: {indicator} not found')
                 return
         except ImportError:
             log.exception('lciafmt not installed')
