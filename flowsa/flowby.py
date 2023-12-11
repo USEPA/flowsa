@@ -1215,6 +1215,10 @@ class _FlowBy(pd.DataFrame):
         # determine if any flows are lost because multiplied by 0
         fb_null = fb[fb['FlowAmount'] == 0]
         if len(fb_null) > 0:
+            # implode the location data to shorten warning message
+            fb_null = fb_null.groupby(
+                ['ActivityProducedBy', 'ActivityConsumedBy'], dropna=False,
+                as_index=False).agg({'Location': lambda x: ", ".join(x)})
             log.warning('FlowAmounts in %s are reset to 0 due to lack of '
                         'flows in attribution source %s for '
                         'ActivityProducedBy/ActivityConsumedBy/Location: %s',
@@ -1224,7 +1228,7 @@ class _FlowBy(pd.DataFrame):
                                 fb_null.Location))
                         )
 
-            fb = fb[fb['FlowAmount'] != 0]
+            fb = fb[fb['FlowAmount'] != 0].reset_index(drop=True)
 
         # set new units, incorporating a check that units are correctly
         # converted
