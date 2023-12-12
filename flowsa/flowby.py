@@ -48,14 +48,14 @@ def get_flowby_from_config(
 
     external_data_path = config.get('external_data_path')
 
-    if config['data_format'] == 'FBA':
+    if config.get('data_format') == 'FBA':
         return FlowByActivity.return_FBA(
             full_name=name,
             config=config,
             download_ok=download_sources_ok,
             external_data_path=external_data_path
         )
-    elif config['data_format'] == 'FBS':
+    elif config.get('data_format') == 'FBS':
         return FlowBySector.return_FBS(
             method=name,
             config=config,
@@ -64,7 +64,7 @@ def get_flowby_from_config(
             download_fbs_ok=download_sources_ok,
             external_data_path=external_data_path
         )
-    elif config['data_format'] == 'FBS_outside_flowsa':
+    elif config.get('data_format') == 'FBS_outside_flowsa':
         return FlowBySector(
             config['FBS_datapull_fxn'](
                 config=config,
@@ -75,9 +75,14 @@ def get_flowby_from_config(
             config=config
         )
     else:
-        log.critical(f'Unrecognized data format {config["data_format"]} for '
-                     f'source {name}')
-        raise ValueError('Unrecognized data format')
+        log.critical(f'Unrecognized `config["data_format"] = '
+                     f'{config.get("data_format")}` for source {name}')
+        raise ValueError('Unrecognized data format, check assignment in '
+                         '.../flowsa/methods/method_status.yaml or assign '
+                         'within the method yaml. Data formats allowed: '
+                         '"FBA", "FBS", "FBS_outside_flowsa".')
+
+
 
 
 class _FlowBy(pd.DataFrame):
