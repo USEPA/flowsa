@@ -53,7 +53,7 @@ source_names:
       general_mining: # all blm pls activities other than hardrock
         selection_fields:
           PrimaryActivity: !from_index:BLM_PLS_2012_asets.csv general_mining
-        attribution_method: direct
+        attribution_method: equal
       hardrock_mining:
         selection_fields:
           PrimaryActivity: !from_index:BLM_PLS_2012_asets.csv hardrock_mining
@@ -101,10 +101,11 @@ source_names:
                       FlowName:
                         - "AG LAND, CROPLAND, HARVESTED"
                     estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
+                    attribution_method: equal
               cropland_attribution-orchards:
                 selection_fields:
                   PrimaryActivity: ORCHARDS
-                attribution_method: direct
+                attribution_method: equal
       pastureland:
         selection_fields:
          PrimaryActivity:
@@ -118,13 +119,14 @@ source_names:
               Class: Land
               FlowName: "FARM OPERATIONS"
             estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
+            attribution_method: equal
       forest:
         selection_fields:
          PrimaryActivity:
           - 'Forest-use land not grazed'
           - 'Land in defense and industrial areas'
           - 'Land in rural parks and wildlife areas'
-        attribution_method: direct
+        attribution_method: equal
       rural_transportation:
         selection_fields:
          PrimaryActivity:

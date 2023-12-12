@@ -1805,16 +1805,19 @@ NAICS_2012_Code,NAICS_2012_Name
 562211,Hazardous Waste Treatment and Disposal
 562212,Solid Waste Landfill
 5622121,MSW Landfill
+5622122,Industrial Waste Landfills
 562213,Solid Waste Combustors and Incinerators
 562219,Other Nonhazardous Waste Treatment and Disposal
-5622191,Codigestion/Anaerobic Digestion
-5622192,Composting/Aerobic Processes
+5622191,Anaerobic Digestion
+5622192,MSW Composting
 5629,Remediation and Other Waste Management Services
 56291,Remediation Services
 562910,Remediation Services
 56292,Materials Recovery Facilities
 562920,Materials Recovery Facilities
 5629201,MSW Recycling
+5629202,Mixed CDD MRFs
+5629203,Single material MRFs
 56299,All Other Waste Management Services
 562991,Septic Tank and Related Services
 562998,All Other Miscellaneous Waste Management Services

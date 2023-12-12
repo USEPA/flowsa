@@ -120,10 +120,11 @@ source_names:
                       FlowName:
                         - "AG LAND, CROPLAND, HARVESTED"
                     estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
+                    attribution_method: equal
               cropland_attribution-orchards:
                 selection_fields:
                   PrimaryActivity: ORCHARDS
-                attribution_method: direct
+                attribution_method: equal
       pastureland:
         selection_fields:
          PrimaryActivity:

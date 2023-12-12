@@ -15,21 +15,23 @@ from flowsa.naics import map_source_sectors_to_more_aggregated_sectors
 from flowsa.validation import compare_summation_at_sector_lengths_between_two_dfs
 
 
-def return_primary_activity_column(fba: FlowByActivity) -> \
-        FlowByActivity:
+def return_primary_flow_column(self: FB, flowtype='FBA') -> FB:
     """
     Determine activitiy column with values
-    :param fba: fbs df with two sector columns
+    :param self: fbs df with two sector columns
+    :param flowtype: str, 'FBA' or 'FBS'
     :return: string, primary sector column
     """
-    if fba['ActivityProducedBy'].isnull().all():
-        primary_column = 'ActivityConsumedBy'
-    elif fba['ActivityConsumedBy'].isnull().all():
-        primary_column = 'ActivityProducedBy'
+    flow = 'Activity'
+    if flowtype == 'FBS':
+        flow = 'Sector'
+    if self[f'{flow}ProducedBy'].isnull().all():
+        primary_column = f'{flow}ConsumedBy'
+    elif self[f'{flow}ConsumedBy'].isnull().all():
+        primary_column = f'{flow}ProducedBy'
     else:
-        log.error('Could not determine primary activity column as there '
-                  'are values in both ActivityProducedBy and '
-                  'ActivityConsumedBy')
+        log.error(f'Could not determine primary {flow} column as there are '
+                  f'values in both {flow}ProducedBy and {flow}ConsumedBy')
     return primary_column
 
 
@@ -207,7 +209,7 @@ def estimate_suppressed_sectors_equal_attribution(
     # forward fill
     naics_key = naics_key.T.ffill().T
 
-    col = return_primary_activity_column(fba)
+    col = return_primary_flow_column(fba, 'FBA')
 
     # determine if there are any 1:1 parent:child sectors that are missing,
     # if so, add them (true for usda_coa_cropland_naics df)
@@ -577,3 +579,41 @@ def drop_parentincompletechild_descendants(
     )
 
     return fba2
+
+
+def proxy_sector_data(
+        fba: 'FlowByActivity',
+        download_sources_ok: bool = True,
+        **kwargs
+) -> 'FlowByActivity':
+    """
+    Use a dictionary to use data for one sector as proxy data for a second
+    sector.
+
+    To implement, use in an FBS method
+    attribution_method: direct
+    # equate the water application rates of strawberries to other berries
+    clean_fba_after_attribution: !clean_function:flowbyclean proxy_sector_data
+    proxy_sectors: {'111334': '111333'}
+
+    :param fba:
+    :param download_sources_ok:
+    :param kwargs:
+    :return:
+    """
+    col = return_primary_flow_column(fba, flowtype='FBS')
+    proxy = fba.config['proxy_sectors']
+
+    fba2 = fba.drop(columns='group_id')
+    for k, v in proxy.items():
+        fba2[col] = np.where(fba2[col] == k, f'{k},{v}', fba2[col])
+    # convert sector col to list
+    fba2[col] = fba2[col].str.split(",")
+    # break each sector into separate line
+    fba3 = (fba2
+            .explode(col)
+            .reset_index(drop=True).reset_index()
+            .rename(columns={'index': 'group_id'})
+            )
+
+    return fba3

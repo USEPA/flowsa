@@ -1,72 +1,6 @@
 ## List of current inactive method files
 
 # FlowByActivity
-
-USGS_MYB_Barite:
-    Active: False
-    Status: Error in source data links
-    Type: HTTPError
-
-USGS_MYB_Gallium:
-    Active: False
-    Status: Error in source data links
-    Type: HTTPError
-
-USGS_MYB_Gypsum:
-    Active: False
-    Status: Error in source data links
-    Type: HTTPError
-
-USGS_MYB_IronOre:
-    Active: False
-    Status: Error in source data links
-    Type: HTTPError
-
-USGS_MYB_Kyanite:
-    Active: False
-    Status: Error in source data links
-    Type: HTTPError
-
-USGS_MYB_Mica:
-    Active: False
-    Status: Error in source data links
-    Type: HTTPError
-
-USGS_MYB_Niobium:
-    Active: False
-    Status: Error in source data links
-    Type: HTTPError
-
-USGS_MYB_Phosphate:
-    Active: False
-    Status: Error in source data links
-    Type: HTTPError
-
-USGS_MYB_Potash:
-    Active: False
-    Status: Error in source data links
-    Type: HTTPError
-
-USGS_MYB_SandGravelIndustrial:
-    Active: False
-    Status: Error in source data links
-    Type: HTTPError
-
-USGS_MYB_StoneCrushed:
-    Active: False
-    Status: Error in source data links
-    Type: HTTPError
-
-USGS_MYB_Vermiculite:
-    Active: False
-    Status: Error in source data links
-    Type: HTTPError
-
-USGS_MYB_Zeolites:
-    Active: False
-    Status: Error in source data links
-    Type: HTTPError
-
 BTS_Airlines:
     Active: True
     Status: Private data
@@ -86,6 +20,27 @@ EPA_NEI_Nonpoint:
     Active: True
     Status: Max retries exceeded with url - Certificate verify failed
     Type: SSLError
+
+EPA_SIT:
+    Active: True
+    Status: Private data
+    Type: FileNotFoundError
+
+StateGHGI_ME:
+    Active: True
+    Status: Private data
+    Type: FileNotFoundError
+
+StateGHGI_NY:
+    Active: True
+    Status: Private data
+    Type: FileNotFoundError
+
+StateGHGI_VT:
+    Active: True
+    Status: Private data
+    Type: FileNotFoundError
+
 
 # Flow By Sectors
 CAP_HAP_national_2017_m2:

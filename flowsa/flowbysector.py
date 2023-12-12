@@ -231,7 +231,11 @@ class FlowBySector(_FlowBy):
             'target_naics_year'])
 
         fbs = self
-        for direction in ['ProducedBy', 'ConsumedBy']:
+        sector_cols = ['ProducedBy', 'ConsumedBy']
+        # if using a collapsed FBS, only aggregate on "Sector" column
+        if 'Sector' in fbs.columns:
+            sector_cols = ['']
+        for direction in sector_cols:
             if fbs[f'Sector{direction}'].isna().all():
                 continue
             fbs = (

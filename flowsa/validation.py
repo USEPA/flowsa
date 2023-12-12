@@ -471,7 +471,7 @@ def compare_geographic_totals(
             subnational_geoscale = (subnational_geoscale
                                     or attr['allocation_from_scale'])
             if len(df_m_sub) == 0:
-                vlog.info(f'No data loss greater than 1%% between national '
+                vlog.info(f'No data loss greater than 1% between national '
                           f'level data and {subnational_geoscale} subset')
             else:
                 vlog.info(f'There are data differences between published national '
