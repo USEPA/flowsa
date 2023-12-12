@@ -33,45 +33,30 @@ def eia_aeo_url_helper(*, build_url, year, config, **_):
     # maximum number of series IDs that can be called at once
     max_num_series = 100
     
-    df_seriesIDs = get_series_ids()
-    # add year into series IDs
-    year_dict = {
-        '2012': '2014',
-        '2013': '2015',
-        '2014': '2016',
-        '2015': '2017',
-        '2016': '2018',
-        '2017': '2019',
-        '2018': '2019',
-        '2019': '2020',
-        '2020': '2021',
-        '2021': '2022',
-        # else 2022
-        }
-    aeo_year = year_dict.get(year, '2022')
-    df_seriesIDs['series_id'] = df_seriesIDs['series_id'].str.replace('__year__', aeo_year)
-    list_seriesIDs = df_seriesIDs['series_id'].to_list()
+    list_seriesIDs = config['series_id']
     
     # reshape list of series IDs into 2D array, padded with ''
     rows = max_num_series
     cols = math.ceil(len(list_seriesIDs) / max_num_series)   
-    list_seriesIDs = np.pad(list_seriesIDs, (0, rows*cols - len(list_seriesIDs)), 
-                            mode='constant', constant_values='')
+    list_seriesIDs = np.pad(list_seriesIDs, (0, rows*cols - len(list_seriesIDs)),
+                            mode='constant')
     array_seriesIDs = list_seriesIDs.reshape(cols, rows).T
 
     urls = []
     # for each batch of series IDs...
     for col in range(array_seriesIDs.shape[1]):
         # concatenate series IDs into a list separated by semicolons
-        series_list = ";".join(array_seriesIDs[:,col])
-        # remove any trailing semicolons
-        series_list = series_list.rstrip(";")
+        series_list = "&facets[seriesId][]=".join(array_seriesIDs[:,col])
+        # remove any empty seriesid
+        series_list = series_list.replace('&facets[seriesId][]=0', '')
         
         # create url from build url
         url = build_url
         userAPIKey = load_env_file_key('API_Key', config['api_name'])
         url = (url.replace("__API_KEY__", userAPIKey)
-               .replace("__SERIES_ID__", series_list))
+               .replace("__YEAR__", year)
+               .replace("__SERIES_ID__", series_list)
+               )
         urls.append(url)
     return urls
 
@@ -85,31 +70,19 @@ def eia_aeo_call(*, resp, year, **_):
     """
     df_json = json.loads(resp.text)
     # convert response to dataframe
-    series = df_json["series"]
-    df_series = pd.DataFrame(
-        data=series[1:len(series)], columns=series[0])
-    data = ["data"]
-    d = [pd.DataFrame(df_series[col].tolist()).add_prefix(col) for col in data]
-    df_series = pd.concat([df_series, d[0]], axis=1)
-    df_series = df_series.drop('data', axis=1)
-    row_1=df_series.iloc[0]
-    for col in df_series.columns:
-        if "data" in col:
-            # change the column name from the current data to the row 1 year value.
-            data = row_1[col]
-            year_str = data[0]
-            split_data = pd.DataFrame(df_series[col].to_list(),
-                                      columns=[col + "_split", year_str])
-            df_series = pd.concat([df_series, split_data], axis=1)
-            df_series = df_series.drop(col, axis=1)
-            df_series = df_series.drop(col + "_split", axis=1)
-            if year_str != year:
-                df_series = df_series.drop(year_str, axis=1)
-    df_series = df_series.drop(columns=["updated", "end", "start", "f",
-                                        "lastHistoricalPeriod", "description"])
-    df_series = df_series.rename(columns={"series_id": "Description"})
-    df_series = df_series.rename(columns={"units": "Unit"})
-    return df_series
+    series = df_json["response"]["data"]
+    df_load = pd.DataFrame(data=series[1:len(series)], columns=series[0])
+    # begin subsettting/renaming
+    df = (df_load
+          .query("period==2020")
+          .rename(columns={"seriesName": "Description",
+                           "value": "FlowAmount",
+                           "unit": "Unit"})
+          .drop(columns=['history', 'scenario', 'scenarioDescription',
+                         'tableId', 'tableName', 'seriesId'])
+          )
+
+    return df
 
 
 def eia_aeo_parse(*, df_list, year, **_):
@@ -123,12 +96,13 @@ def eia_aeo_parse(*, df_list, year, **_):
     # concat dataframes
     df = pd.concat(df_list, sort=False, ignore_index=True)
     df['Year'] = year
-    df['Location'] = '00000'
+    df['Location'] = np.where(df['regionId'].isin(['0-0', '1-0']),
+                                 '00000', None)
     df = df.rename(columns={year: "FlowAmount"})
 
     for index, row in df.iterrows():
         # split the string based on :
-        name_array = row["name"].split(":")
+        name_array = row["Description"].split(":")
         name_array = [n.strip() for n in name_array]
         if len(name_array) == 4:
             # Except when 3rd value is 'Natural Gas'
@@ -154,8 +128,6 @@ def eia_aeo_parse(*, df_list, year, **_):
             print(name_array)
         df.loc[index, 'FlowName'] = clean_string(name_string, 'flow')
         df.loc[index, 'ActivityConsumedBy'] = clean_string(apb_string, 'activity')
-    df = df.drop(columns=['Description'])
-    df = df.rename(columns={'name': 'Description'})
     df = assign_fips_location_system(df, year)
     # hard code data
     df['SourceName'] = 'EIA_AEO'
@@ -166,12 +138,6 @@ def eia_aeo_parse(*, df_list, year, **_):
     df['Compartment'] = None
     df['Class'] = 'Energy'
     return df
-
-
-def get_series_ids():
-    # load crosswalk of series IDs
-    filepath = externaldatapath / 'AEOseriesIDs.csv'
-    return pd.read_csv(filepath)
 
 
 def clean_string(s, string_type):

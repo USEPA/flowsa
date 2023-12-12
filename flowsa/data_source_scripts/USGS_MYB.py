@@ -42,9 +42,9 @@ YEARS_COVERED = {
     "niobium": "2014-2018",
     "peat": "2014-2018",
     "perlite": "2013-2017",
-    "phosphate": "2014-2018",
+    "phosphate": "2014-2019",
     "platinum": "2014-2018",
-    "potash": "2014-2018",
+    "potash": "2014-2019",
     "pumice": "2014-2018",
     "rhenium": "2014-2018",
     "salt": "2013-2017",
@@ -53,7 +53,7 @@ YEARS_COVERED = {
     "silver": "2012-2016",
     "sodaash": "2010-2017",
     "sodaash_t4": ["2016", "2017"],
-    "stonecrushed": "2013-2017",
+    "stonecrushed": "2014-2018",
     "stonedimension": "2013-2017",
     "strontium": "2014-2018",
     "talc": "2013-2017",
@@ -133,7 +133,7 @@ def usgs_myb_remove_digits(value_string):
     return return_string
 
 
-def usgs_myb_url_helper(*, build_url, **_):
+def usgs_myb_url_helper(*, build_url, config, year, **_):
     """
     This helper function uses the "build_url" input from generateflowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -147,7 +147,17 @@ def usgs_myb_url_helper(*, build_url, **_):
     :return: list, urls to call, concat, parse, format into Flow-By-Activity
         format
     """
-    return [build_url]
+
+    # Replace year-dependent aspects of file url
+    url = (build_url
+           .replace('__FILENAME__', config.get('filename_replacement',
+                                               {}).get(int(year), 'NULL'))
+           .replace('__YEAR__', year)
+           .replace('__FORMAT__', config.get('file_format',
+                                             {}).get(int(year), 'NULL'))
+           )
+
+    return [url]
 
 
 def usgs_asbestos_call(*, resp, year, **_):
@@ -1966,26 +1976,6 @@ def usgs_kyanite_parse(*, df_list, source, year, **_):
     return dataframe
 
 
-def usgs_lead_url_helper(*, year, **_):
-    """
-    This helper function uses the "build_url" input from generateflowbyactivity.py,
-    which is a base url for data imports that requires parts of the url text
-    string to be replaced with info specific to the data year. This function
-    does not parse the data, only modifies the urls from which data is
-    obtained.
-    :param build_url: string, base url
-    :return: list, urls to call, concat, parse, format into Flow-By-Activity
-        format
-    """
-    # return file name based on data year
-    filename = _['config']['filename_replacement'].get(int(year))
-
-    # complete url
-    url = _['build_url'].replace('__filename__', filename)
-
-    return [url]
-
-
 def usgs_lead_call(*, resp, year, **_):
     """
     Convert response for calling url to pandas dataframe, begin parsing
@@ -2978,6 +2968,12 @@ def usgs_phosphate_call(*, resp, year, **_):
 
     df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(resp.content),
                                              sheet_name='T1')
+    # replace cell in column one and then set row 4 as col names
+    df_raw_data_one.iloc[4,0] = 'Production'
+    df_raw_data_one.columns = df_raw_data_one.iloc[4]
+    df_raw_data_one.columns = df_raw_data_one.columns.astype(str).str.replace(
+        ".0", '')
+
     df_data_one = pd.DataFrame(df_raw_data_one.loc[7:9]).reindex()
     df_data_one = df_data_one.reset_index()
     del df_data_one["index"]
@@ -2986,27 +2982,9 @@ def usgs_phosphate_call(*, resp, year, **_):
     df_data_two = df_data_two.reset_index()
     del df_data_two["index"]
 
-    if len(df_data_one.columns) > 12:
-        for x in range(11, len(df_data_one.columns)):
-            col_name = "Unnamed: " + str(x)
-            del df_data_one[col_name]
-            del df_data_two[col_name]
-
-    if len(df_data_one. columns) == 12:
-        df_data_one.columns = ["Production", "unit", "space_1", "year_1",
-                               "space_3", "year_2", "space_4", "year_3",
-                               "space_5", "year_4", "space_6", "year_5"]
-        df_data_two.columns = ["Production", "unit", "space_1", "year_1",
-                               "space_3", "year_2", "space_4", "year_3",
-                               "space_5", "year_4", "space_6", "year_5"]
-
-    col_to_use = ["Production"]
-    col_to_use.append(usgs_myb_year(YEARS_COVERED['phosphate'], year))
-
-    for col in df_data_one.columns:
-        if col not in col_to_use:
-            del df_data_one[col]
-            del df_data_two[col]
+    col_to_use = ["Production", year]
+    df_data_one = df_data_one[col_to_use]
+    df_data_two = df_data_two[col_to_use]
 
     frames = [df_data_one, df_data_two]
     df_data = pd.concat(frames)
@@ -3031,7 +3009,7 @@ def usgs_phosphate_parse(*, df_list, source, year, **_):
     name = usgs_myb_name(source)
     des = name
     dataframe = pd.DataFrame()
-    col_name = usgs_myb_year(YEARS_COVERED['phosphate'], year)
+    col_name = year
     for df in df_list:
         for index, row in df.iterrows():
             if df.iloc[index]["Production"].strip() == \
@@ -3178,6 +3156,12 @@ def usgs_potash_call(*, resp, year, **_):
     """
     df_raw_data_one = pd.io.excel.read_excel(io.BytesIO(resp.content),
                                              sheet_name='T1')
+    # replace cell in column one and then set row 4 as col names
+    df_raw_data_one.iloc[4, 0] = 'Production'
+    df_raw_data_one.columns = df_raw_data_one.iloc[4]
+    df_raw_data_one.columns = df_raw_data_one.columns.astype(str).str.replace(
+        ".0", '')
+
     df_data_one = pd.DataFrame(df_raw_data_one.loc[6:8]).reindex()
     df_data_one = df_data_one.reset_index()
     del df_data_one["index"]
@@ -3186,27 +3170,11 @@ def usgs_potash_call(*, resp, year, **_):
     df_data_two = df_data_two.reset_index()
     del df_data_two["index"]
 
-    if len(df_data_one.columns) > 12:
-        for x in range(12, len(df_data_one.columns)):
-            col_name = "Unnamed: " + str(x)
-            del df_data_one[col_name]
-            del df_data_two[col_name]
 
-    if len(df_data_one. columns) == 12:
-        df_data_one.columns = ["Production", "space_1", "space_2",  "year_1",
-                               "space_3", "year_2", "space_4", "year_3",
-                               "space_5", "year_4", "space_6", "year_5"]
-        df_data_two.columns = ["Production", "space_1", "space_2", "year_1",
-                               "space_3", "year_2", "space_4", "year_3",
-                               "space_5", "year_4", "space_6", "year_5"]
 
-    col_to_use = ["Production"]
-    col_to_use.append(usgs_myb_year(YEARS_COVERED['potash'], year))
-
-    for col in df_data_one.columns:
-        if col not in col_to_use:
-            del df_data_one[col]
-            del df_data_two[col]
+    col_to_use = ["Production", year]
+    df_data_one = df_data_one[col_to_use]
+    df_data_two = df_data_two[col_to_use]
 
     frames = [df_data_one, df_data_two]
     df_data = pd.concat(frames)
@@ -3231,7 +3199,7 @@ def usgs_potash_parse(*, df_list, source, year, **_):
     name = usgs_myb_name(source)
     des = name
     dataframe = pd.DataFrame()
-    col_name = usgs_myb_year(YEARS_COVERED['potash'], year)
+    col_name = year
     for df in df_list:
         for index, row in df.iterrows():
             if df.iloc[index]["Production"].strip() == "Production:3":
@@ -3777,25 +3745,6 @@ def description(value, code):
         return_val = value
     return_val = usgs_myb_remove_digits(return_val)
     return return_val
-
-
-def soda_url_helper(*, build_url, config, year, **_):
-    """
-    This helper function uses the "build_url" input from generateflowbyactivity.py,
-    which is a base url for data imports that requires parts of the url text
-    string to be replaced with info specific to the data year. This function
-    does not parse the data, only modifies the urls from which data is
-    obtained.
-    :param build_url: string, base url
-    :param config: dictionary, items in FBA method yaml
-    :param year: year
-    :return: list, urls to call, concat, parse, format into Flow-By-Activity
-        format
-    """
-    url = build_url
-    url = url.replace('__format__', str(config['formats'][year]))
-    url = url.replace('__url_text__', str(config['url_texts'][year]))
-    return [url]
 
 
 def soda_call(*, resp, year, **_):

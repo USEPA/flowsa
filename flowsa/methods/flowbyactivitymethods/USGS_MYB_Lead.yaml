@@ -6,8 +6,8 @@ date_generated: '2023-01-26'
 years_available: 2012-2019
 format: xlsx
 url:
-  base_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/__filename__
-url_replace_fxn: !script_function:USGS_MYB usgs_lead_url_helper
+  base_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/__FILENAME__
+url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
 call_response_fxn: !script_function:USGS_MYB usgs_lead_call
 parse_response_fxn: !script_function:USGS_MYB usgs_lead_parse
 years:

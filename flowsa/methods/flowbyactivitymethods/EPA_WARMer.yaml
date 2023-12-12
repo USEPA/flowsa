@@ -1,13 +1,13 @@
 author: US Environmental Protection Acency
 source_name: EPA_WARMer
-source_url: 'https://raw.githubusercontent.com/USEPA/HIO/main/flowsa/WARMv15_env.csv'
+source_url: 'https://raw.githubusercontent.com/USEPA/HIO/main/data/WARMv15_env.csv'
 original_data_download_date: '2022-07-26'
 bib_id: EPA_WARMer
 api_name: None
 api_key_required: false
 format: csv
 url:
-  base_url: 'https://raw.githubusercontent.com/USEPA/HIO/main/flowsa/WARMv15_env.csv'
+  base_url: 'https://raw.githubusercontent.com/USEPA/HIO/main/data/WARMv15_env.csv'
 call_response_fxn: !script_function:EPA_WARMer warmer_call
 parse_response_fxn: !script_function:EPA_WARMer warmer_parse
 years:

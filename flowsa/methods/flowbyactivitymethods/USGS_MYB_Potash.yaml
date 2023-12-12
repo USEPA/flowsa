@@ -6,13 +6,21 @@ date_generated: '2021-03-26'
 years_available: 2014-2018
 format: xls
 url:
-  base_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/atoms/files/files/myb1-2018-potas.xls
+  base_url: https://d9-wret.s3-us-west-2.amazonaws.com/assets/palladium/production/atoms/files/__FILENAME__
 url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
 call_response_fxn: !script_function:USGS_MYB usgs_potash_call
 parse_response_fxn: !script_function:USGS_MYB usgs_potash_parse
 years:
-- 2014
-- 2015
-- 2016
-- 2017
-- 2018
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  - 2018
+  - 2019
+filename_replacement:
+  2019: myb1-2019-potas-adv.xlsx
+  2018: myb1-2019-potas-adv.xlsx
+  2017: myb1-2019-potas-adv.xlsx
+  2016: myb1-2019-potas-adv.xlsx
+  2015: myb1-2019-potas-adv.xlsx
+  2014: myb1-2017-potas.xls

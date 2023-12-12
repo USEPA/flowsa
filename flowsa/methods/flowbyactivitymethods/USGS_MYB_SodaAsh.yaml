@@ -6,35 +6,31 @@ bib_id: USGS_MYB_SA
 # api_key_required: false
 format: xlsx
 url:
-  base_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/__url_text__/myb1-__year__-sodaa.__format__
-url_replace_fxn: !script_function:USGS_MYB soda_url_helper
+  base_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/__FILENAME__/myb1-__YEAR__-sodaa.__FORMAT__
+url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
 call_response_fxn: !script_function:USGS_MYB soda_call
 parse_response_fxn: !script_function:USGS_MYB soda_parse
-url_texts:
-  '2010': mineral-pubs/soda-ash
-  '2011': mineral-pubs/soda-ash
-  '2012': mineral-pubs/soda-ash
-  '2013': mineral-pubs/soda-ash
-  '2014': mineral-pubs/soda-ash
-  '2015': mineral-pubs/soda-ash
-  '2016': mineral-pubs/soda-ash
-  '2017': atoms/files
+filename_replacement:
+  2010: mineral-pubs/soda-ash
+  2011: mineral-pubs/soda-ash
+  2012: mineral-pubs/soda-ash
+  2013: mineral-pubs/soda-ash
+  2014: mineral-pubs/soda-ash
+  2015: mineral-pubs/soda-ash
+  2016: mineral-pubs/soda-ash
+  2017: atoms/files
 years:
-#- 2010
-#- 2011
-#- 2012
-- 2013
-- 2014
-- 2015
-- 2016
-- 2017
-formats:
-  '2010': xls
-  '2011': xls
-  '2012': xls
-  '2013': xls
-  '2014': xls
-  '2015': xlsx
-  '2016': xlsx
-  '2017': xls
-
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+file_format:
+  2010: xls
+  2011: xls
+  2012: xls
+  2013: xls
+  2014: xls
+  2015: xlsx
+  2016: xlsx
+  2017: xls

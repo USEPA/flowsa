@@ -28,7 +28,6 @@ source_names:
     primary_action_type: Consumed # speeds processing
     # Drop unneeded codes
     exclusion_fields:
-    exclusion_fields:
       ActivityConsumedBy: ['Other', 'Used', 'Total Industry Output']
       ActivityProducedBy: ['Total Commodity Output']
     attribution_method: proportional

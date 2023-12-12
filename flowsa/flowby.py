@@ -749,16 +749,26 @@ class _FlowBy(pd.DataFrame):
 
             else:
                 if all(fb.groupby('group_id')['group_id'].agg('count') == 1):
-                    log.info(f'No attribution needed for {fb.full_name} at '
-                             f'the given industry aggregation level')
+                    log.info(f'No allocation needed for {fb.full_name} at '
+                             f'the given industry aggregation level.')
                     attributed_fb = fb.copy()
                     validate = False
                 else:
+                    # issue warning if the attribution method is missing
+                    # from the method yaml
                     if step_config.get('attribution_method') is None:
-                        log.warning(f'No attribution method specified for '
-                                    f'{fb.full_name}. Using equal attribution '
+                        log.warning(f'No allocation method specified for '
+                                    f'{fb.full_name}. Using equal allocation '
                                     f'as default.')
-                    log.info(f"Equally attributing {self.full_name} to "
+                    # issue warning if "direct" attribution is specified,
+                    # but the method requires an "equal" allocation
+                    elif not all(fb.groupby('group_id')['group_id'].agg(
+                            'count') == 1):
+                        log.warning(f'Allocation of {fb.full_name} includes '
+                                    f'1:many mappings of activities:sectors. '
+                                    f'Using "equal" attribution instead of '
+                                    f'"direct".')
+                    log.info(f"Equally allocating {self.full_name} to "
                              f"target sectors.")
                     attributed_fb = fb.equally_attribute()
 
@@ -1036,27 +1046,32 @@ class _FlowBy(pd.DataFrame):
                 unattributable = with_denominator.query(f'denominator == 0 ')
 
                 if not unattributable.empty:
-                    vlog.warning(f'Could not attribute activities in '
-                                 f'{unattributable.full_name} due to lack of '
-                                 f'flows in attribution source '
-                                 f'{other.full_name} for mapped {rank} sectors'
-                                 f' {sorted(set(unattributable[f"{rank}Sector"]))}. '
-                                 f'See validation_log for details.')
+                    # implode the location data to shorten warning message
+                    unatt_sub = unattributable.groupby(
+                        [f"{rank}Sector"], dropna=False, as_index=False).agg(
+                        {'Location': lambda x: ", ".join(x)})
+                    vlog.warning(
+                        f'Could not attribute activities in '
+                        f'{unattributable.full_name} due to lack of flows in '
+                        f'attribution source {other.full_name} for mapped '
+                        f'{rank} sectors/Location '
+                        f'{sorted(set(zip(unatt_sub[f"{rank}Sector"], unatt_sub.Location)))}. '
+                        f'See validation_log for details.')
                     if other_geoscale.aggregation_level < 5:
                         vlog.warning('This can occur when combining datasets '
-                                    'at a sub-national level when activities '
-                                    'do not align for some locations.')
+                                     'at a sub-national level when activities '
+                                     'do not align for some locations.')
                         vlog.warning(f'{other.full_name} is at geoscale '
                                      f'{other_geoscale}. Is that correct?')
                     vlog.debug(
                         'Unattributed activities: \n {}'.format(
                             unattributable
                             .drop(columns=schema.dq_fields +
-                                  ['LocationSystem', 'SectorSourceName', 'FlowType',
-                                   'ProducedBySectorType', 'ConsumedBySectorType',
-                                   'denominator', 'Suppressed'],
-                                  errors='ignore')
-                            .to_string()))
+                                  ['LocationSystem', 'SectorSourceName',
+                                   'FlowType', 'ProducedBySectorType',
+                                   'ConsumedBySectorType', 'denominator',
+                                   'Suppressed'], errors='ignore'
+                                  ).to_string()))
 
                 proportionally_attributed = (
                     non_zero_denominator
@@ -1205,6 +1220,10 @@ class _FlowBy(pd.DataFrame):
         # determine if any flows are lost because multiplied by 0
         fb_null = fb[fb['FlowAmount'] == 0]
         if len(fb_null) > 0:
+            # implode the location data to shorten warning message
+            fb_null = fb_null.groupby(
+                ['ActivityProducedBy', 'ActivityConsumedBy'], dropna=False,
+                as_index=False).agg({'Location': lambda x: ", ".join(x)})
             log.warning('FlowAmounts in %s are reset to 0 due to lack of '
                         'flows in attribution source %s for '
                         'ActivityProducedBy/ActivityConsumedBy/Location: %s',
@@ -1214,7 +1233,7 @@ class _FlowBy(pd.DataFrame):
                                 fb_null.Location))
                         )
 
-            fb = fb[fb['FlowAmount'] != 0]
+            fb = fb[fb['FlowAmount'] != 0].reset_index(drop=True)
 
         # set new units, incorporating a check that units are correctly
         # converted
