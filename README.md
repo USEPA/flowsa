@@ -50,8 +50,7 @@ Data Commons. \
 download_FBAs_if_missing=True)`
 
 ### Examples
-Additional example code can be found in the [examples](https://github.
-com/USEPA/flowsa/tree/master/examples) folder.
+Additional example code can be found in the [examples](https://github.com/USEPA/flowsa/tree/master/examples) folder.
 
 ## Installation
 `pip install git+https://github.com/USEPA/flowsa.git@vX.X.X#egg=flowsa`
