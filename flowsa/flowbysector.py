@@ -120,7 +120,7 @@ class FlowBySector(_FlowBy):
             external_config_path: str = None,
             download_sources_ok: bool = settings.DEFAULT_DOWNLOAD_IF_MISSING,
             retain_activity_columns: bool = False,
-            append_sector_name=False,
+            append_sector_names=False,
             **kwargs
     ) -> 'FlowBySector':
         '''
@@ -212,7 +212,7 @@ class FlowBySector(_FlowBy):
         fbs = fbs.assign(**dict.fromkeys(dq_cols, None))
 
         # append the sector names to the FBS if specified
-        if append_sector_name:
+        if append_sector_names:
             cw = load_crosswalk(
                 f'Sector_{fbs.config["target_naics_year"]}_Names')
             for s in ['Produced', 'Consumed']:
