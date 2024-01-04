@@ -680,9 +680,16 @@ class FlowByActivity(_FlowBy):
             external_config_path: str = None,
             download_sources_ok: bool = True,
             skip_select_by: bool = False,
+            retain_activity_columns: bool = False,
             ) -> 'FlowBySector':
 
         from flowsa.flowbysector import FlowBySector
+
+        # drop the activity columns in the FBS unless method yaml specifies
+        # to keep them
+        drop_cols = ['ActivityProducedBy', 'ActivityConsumedBy']
+        if retain_activity_columns:
+            drop_cols = []
 
         if 'activity_sets' in self.config:
             try:
@@ -691,7 +698,8 @@ class FlowByActivity(_FlowBy):
                         fba.prepare_fbs(
                             external_config_path=external_config_path,
                             download_sources_ok=download_sources_ok,
-                            skip_select_by=True)
+                            skip_select_by=True,
+                            retain_activity_columns=retain_activity_columns)
                         for fba in (
                             self
                             .select_by_fields()
@@ -718,7 +726,7 @@ class FlowByActivity(_FlowBy):
             .convert_to_geoscale()
             .attribute_flows_to_sectors(external_config_path=external_config_path,
                                         download_sources_ok=download_sources_ok)  # recursive call to prepare_fbs
-            .drop(columns=['ActivityProducedBy', 'ActivityConsumedBy'])
+            .drop(columns=drop_cols)
             .aggregate_flowby()
             .function_socket('clean_fbs_after_aggregation')
         )

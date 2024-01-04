@@ -12,7 +12,7 @@ import esupy.processed_data_mgmt
 import pandas as pd
 from pandas import ExcelWriter
 from flowsa import settings, metadata, common, exceptions, geo, naics
-from flowsa.common import get_catalog_info
+from flowsa.common import get_catalog_info, load_crosswalk
 from flowsa.flowby import _FlowBy, flowby_config, get_flowby_from_config
 from flowsa.flowbyfunctions import collapse_fbs_sectors
 from flowsa.settings import DEFAULT_DOWNLOAD_IF_MISSING
@@ -115,11 +115,13 @@ class FlowBySector(_FlowBy):
 
     @classmethod
     def generateFlowBySector(
-        cls,
-        method: str,
-        external_config_path: str = None,
-        download_sources_ok: bool = settings.DEFAULT_DOWNLOAD_IF_MISSING,
-        **kwargs
+            cls,
+            method: str,
+            external_config_path: str = None,
+            download_sources_ok: bool = settings.DEFAULT_DOWNLOAD_IF_MISSING,
+            retain_activity_columns: bool = False,
+            append_sector_name=False,
+            **kwargs
     ) -> 'FlowBySector':
         '''
         Generates a FlowBySector dataset.
@@ -157,7 +159,9 @@ class FlowBySector(_FlowBy):
                     external_config_path=external_config_path,
                     download_sources_ok=download_sources_ok
                 ).prepare_fbs(external_config_path=external_config_path,
-                              download_sources_ok=download_sources_ok)
+                              download_sources_ok=download_sources_ok,
+                              retain_activity_columns=retain_activity_columns
+                              )
             )
             # ^^^ This is done with a for loop instead of a dict comprehension
             #     so that later entries in method_config['sources_to_cache']
@@ -178,7 +182,9 @@ class FlowBySector(_FlowBy):
                 external_config_path=external_config_path,
                 download_sources_ok=download_sources_ok
             ).prepare_fbs(external_config_path=external_config_path,
-                          download_sources_ok=download_sources_ok)
+                          download_sources_ok=download_sources_ok,
+                          retain_activity_columns=retain_activity_columns
+                          )
             for source_name, config in sources.items()
         ])
 
@@ -204,6 +210,25 @@ class FlowBySector(_FlowBy):
                    'GeographicalCorrelation', 'TechnologicalCorrelation',
                    'DataCollection']
         fbs = fbs.assign(**dict.fromkeys(dq_cols, None))
+
+        # append the sector names to the FBS if specified
+        if append_sector_name:
+            cw = load_crosswalk(
+                f'Sector_{fbs.config["target_naics_year"]}_Names')
+            for s in ['Produced', 'Consumed']:
+                if not fbs[f'Sector{s}By'].isna().all():
+                    fbs = (
+                        fbs
+                        .merge(cw, how='left', left_on=f'Sector{s}By',
+                               right_on=f'NAICS_'
+                                        f'{fbs.config["target_naics_year"]}'
+                                        f'_Code')
+                        .drop(columns=[f'NAICS_'
+                                       f'{fbs.config["target_naics_year"]}'
+                                       f'_Code'])
+                        .rename(columns={
+                            f'NAICS_{fbs.config["target_naics_year"]}_Name':
+                                f'Sector{s}ByName'}))
 
         # Save fbs and metadata
         log.info(f'FBS generation complete, saving {method} to file')
