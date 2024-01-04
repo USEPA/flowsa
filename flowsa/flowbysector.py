@@ -279,10 +279,12 @@ class FlowBySector(_FlowBy):
         return fbs
 
     def prepare_fbs(
-        self: 'FlowBySector',
-        external_config_path: str = None,
-        download_sources_ok: bool = True
+            self: 'FlowBySector',
+            external_config_path: str = None,
+            download_sources_ok: bool = True,
+            **kwargs
     ) -> 'FlowBySector':
+
         if 'activity_sets' in self.config:
             try:
                 return (
