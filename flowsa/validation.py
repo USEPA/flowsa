@@ -653,24 +653,3 @@ def calculate_industry_coefficients(fbs_load, year,region,
     fbs_summary = fbs_summary.sort_values(by=sort_by_cols)
 
     return fbs_summary
-
-
-if __name__ == "__main__":
-    df1 = calculate_industry_coefficients(
-            flowsa.flowbysector.getFlowBySector('Water_national_2015_m1'), 2015,
-            "national", "summary", False)
-    df2 = calculate_industry_coefficients(
-            flowsa.flowbysector.getFlowBySector('GRDREL_national_2017'), 2017,
-            "national", "summary", True)
-    df3 = calculate_industry_coefficients(
-            flowsa.flowbysector.getFlowBySector('GRDREL_national_2017'), 2017,
-            "national", "detail", True)
-    df4 = calculate_industry_coefficients(
-            flowsa.flowbysector.getFlowBySector('GRDREL_state_2017'), 2017,
-            "national", "detail", True)
-    try:
-        df5 = calculate_industry_coefficients(
-                flowsa.flowbysector.getFlowBySector('GRDREL_state_2017'), 2017,
-                "state", "detail", True)
-    except TypeError:
-        df5 = None
