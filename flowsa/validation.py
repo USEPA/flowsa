@@ -200,8 +200,8 @@ def check_for_negative_flowamounts(df):
     return df
 
 
-def compare_FBA(source, year, fba1_version, fba2_version,
-                compare_to_remote=False):
+def compare_FBA_results(source, year, fba1_version, fba2_version,
+                        compare_to_remote=False):
     """
     Compare two FBA dataframes. Can specify version and git hash. Example:
 
