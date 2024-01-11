@@ -12,42 +12,6 @@ import numpy as np
 from flowsa.settings import datapath
 
 
-def get_US_urban_green_space_and_public_parks_ratio():
-    """
-    calculates weighted average of urban green space and public parks in
-    national total urban areas. Based on weighted average of 44 cities based
-    on city population.
-
-    weighted average value = 12.35%
-
-    Larson LR, Jennings V, Cloutier SA (2016) Public Parks and
-    Wellbeing in Urban Areas of the United States.
-    PLoS ONE 11(4): e0153211. https://doi.org/10.1371/journal.pone.0153211
-
-    :return: number, fraction of urban green space
-    """
-
-    # load Larson's saved SI data
-    df = pd.read_csv(datapath / "Larson_UrbanPublicParks_SI.csv")
-
-    # calculate a weighted value for ratio of urban land
-    # that belongs to parks based on city populations
-    # weighted average function
-    try:
-        wm = lambda x: np.ma.average(x, weights=df.loc[x.index, "CityPop2010"])
-    except ZeroDivisionError:
-        wm = 0
-
-    # column to weight
-    agg_funx = {"ParkPercent-2014": wm}
-
-    # weighted averages as value
-    value_series = df.agg(agg_funx)
-    value = value_series[0]
-
-    return value
-
-
 def get_Canadian_to_USD_exchange_rate(year):
     """
     Return exchange rate (Canadian $/USD)
