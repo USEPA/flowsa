@@ -78,7 +78,10 @@ source_names:
         selection_fields:
          PrimaryActivity: !from_index:BLM_PLS_2012_asets.csv hardrock_mining
         attribution_method: proportional
-        attribution_source: Employment_state_2012
+        attribution_source:
+          Employment_state_2012:
+            data_format: FBS
+            year: 2012
 
   USDA_ERS_MLU:
     fedefl_mapping: USDA_ERS_MLU
