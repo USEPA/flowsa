@@ -2,7 +2,7 @@ author: U.S. Bureau of Economic Analysis
 source_name: Make Detail Table Before Redefinitions
 source_url: 'https://www.bea.gov/industry/input-output-accounts-data'
 source_publication_date: 2022
-original_data_download_date: '2022-08-11'
+original_data_download_date: '2023-09-06'
 bib_id: BEA_Make_BR
 format: csv  # comma delineated data
 url: None

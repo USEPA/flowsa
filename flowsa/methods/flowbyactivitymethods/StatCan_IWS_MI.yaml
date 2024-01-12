@@ -1,7 +1,7 @@
 author: Statistics Canada
 source_name: Water use parameters in manufacturing industries, by industry
 source_url: https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=3810003701
-source_publication_date: 2020
+source_publication_date: ''
 bib_id: StatCan_IWS_MI
 api_name: Stat Canada
 api_key_required: false

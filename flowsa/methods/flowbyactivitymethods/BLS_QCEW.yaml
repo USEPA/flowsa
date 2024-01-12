@@ -1,7 +1,6 @@
 author: Bureau of Labor Statistics
 source_name: Quarterly Census of Employment and Wages
 source_url: https://www.bls.gov/cew/downloadable-data-files.htm
-source_publication_date: 2020
 bib_id: BLS_QCEW
 api_name: BLS
 api_key_required: false
