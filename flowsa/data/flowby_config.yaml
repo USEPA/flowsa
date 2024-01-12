@@ -28,7 +28,7 @@ _mapped_fields: &mapped_fields
   FlowUUID: object
   Flowable: object
 
-_fba_sector_fields: &fba_sector_fields
+_sector_fields: &fba_sector_fields
   ConsumedBySectorType: object
   ProducedBySectorType: object
   SectorConsumedBy: object
@@ -104,7 +104,7 @@ _fbs_base_fields: &fbs_base_fields
   Unit: object
   Year: int
 
-_fbs_sector_fields: &fbs_sector_fields
+_sector_fields: &fbs_sector_fields
   SectorConsumedBy: object
   SectorProducedBy: object
 
