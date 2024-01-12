@@ -45,7 +45,7 @@ class FlowByActivity(_FlowBy):
                 [c in data.columns for c in flowby_config['_mapped_fields']]
             )
             w_sector = w_sector or any(
-                [c in data.columns for c in flowby_config['_sector_fields']]
+                [c in data.columns for c in flowby_config['_fba_sector_fields']]
             )
 
             if mapped and w_sector:
