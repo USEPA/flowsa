@@ -200,7 +200,7 @@ def check_for_negative_flowamounts(df):
     return df
 
 
-def compare_FBA_results(source, year, fba1_version, fba2_version,
+def compare_FBA_results(source, year, fba1_version=None, fba2_version=None,
                         compare_to_remote=False):
     """
     Compare two FBA dataframes. Can specify version and git hash. Example:
@@ -234,8 +234,8 @@ def compare_FBA_results(source, year, fba1_version, fba2_version,
         df2 = flowsa.getFlowByActivity(
             datasource=source, year=year, git_version=fba2_version)
 
-    df1 = df1.rename(columns={'FlowAmount': 'FlowAmount_fbs1'})
-    df2 = df2.rename(columns={'FlowAmount': 'FlowAmount_fbs2'})
+    df1 = df1.rename(columns={'FlowAmount': 'FlowAmount_fba1'})
+    df2 = df2.rename(columns={'FlowAmount': 'FlowAmount_fba2'})
     merge_cols = [c for c in df2.select_dtypes(include=[
         'object', 'int']).columns if c not in dq_fields]
 
@@ -246,13 +246,13 @@ def compare_FBA_results(source, year, fba1_version, fba2_version,
         df2[c] = df2[c].astype(str)
 
     df_m = pd.DataFrame(
-        pd.merge(df1[merge_cols + ['FlowAmount_fbs1']],
-                 df2[merge_cols + ['FlowAmount_fbs2']],
+        pd.merge(df1[merge_cols + ['FlowAmount_fba1']],
+                 df2[merge_cols + ['FlowAmount_fba2']],
                  how='outer'))
-    df_m = df_m.assign(FlowAmount_diff=df_m['FlowAmount_fbs2']
-                       .fillna(0) - df_m['FlowAmount_fbs1'].fillna(0))
+    df_m = df_m.assign(FlowAmount_diff=df_m['FlowAmount_fba2']
+                       .fillna(0) - df_m['FlowAmount_fba1'].fillna(0))
     df_m = df_m.assign(
-        Percent_Diff=(df_m['FlowAmount_diff']/df_m['FlowAmount_fbs1']) * 100)
+        Percent_Diff=(df_m['FlowAmount_diff']/df_m['FlowAmount_fba1']) * 100)
     df_m = df_m[df_m['FlowAmount_diff'].apply(
         lambda x: round(abs(x), 2) != 0)].reset_index(drop=True)
     # if no differences, print, if differences, provide df subset
@@ -376,6 +376,35 @@ def compare_single_FBS_against_remote(m, outdir=diffpath,
         df.to_csv(f"{outdir}/{m}_diff.csv", index=False)
     else:
         print(f"***No differences found in {m}***")
+
+
+def compare_single_FBA_against_remote(source, year, outdir=diffpath,
+                                      run_single=False):
+    """Action function to compare a generated FBA with that in remote"""
+    meta_name = f'{source}_{year}'
+    downloaded = download_from_remote(set_fb_meta(
+        meta_name, "FlowByActivity"), paths)
+    if not downloaded:
+        if run_single:
+            # Run a single file even if no comparison available
+            flowsa.flowbyactivity.generateflowbyactivity.main(
+                year=year, source=source)
+        else:
+            print(f"{source} {year} not found in remote server. Skipping...")
+        return
+    print("--------------------------------\n"
+          f"Method: {source} {year}\n"
+          "--------------------------------")
+    df = compare_FBA_results(source, year, compare_to_remote=True)
+
+    df.rename(columns={'FlowAmount_fba1': 'FlowAmount_remote',
+                       'FlowAmount_fba2': 'FlowAmount_HEAD'},
+              inplace=True)
+    if len(df) > 0:
+        print(f"Saving differences in {source} {year} to csv")
+        df.to_csv(f"{outdir}/{source}_{year}_diff.csv", index=False)
+    else:
+        print(f"***No differences found in {source} {year}***")
 
 
 def compare_national_state_fbs(dataname=None, year=None, method=None,
