@@ -31,9 +31,12 @@ sources_to_cache:
     year: 2018
     attribution_source:
       Employment_state_2018: # Update to MECS year
+        data_format: FBS
         geoscale: national # Uses national at this stage prior to attributing to states
         year: 2018
-    clean_source: Employment_state_2018
+    clean_source:
+      Employment_state_2018:
+        data_format: FBS
 
 source_names:
   EPA_NEI_Nonpoint:

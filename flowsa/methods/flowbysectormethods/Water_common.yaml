@@ -79,6 +79,7 @@ source_names:
         attribution_method: proportional
 #        attribution_source:  # specify in year-specific yaml
 #          Employment_national_20XX: # specify in method
+#            data_format: FBS
 #            geoscale:  # specify in method
 
 

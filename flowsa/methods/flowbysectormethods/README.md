@@ -70,12 +70,14 @@ _proportional_attribution_ method can be applied using
           - attribution_method: proportional
             attribution_source:
               Employment_national_2012:
+                data_format: FBS
                 geoscale: national
           - attribution_method: proportional
             attribute_on: ['PrimarySector']
             fill_columns: Location
             attribution_source:
               Employment_state_2012:
+                data_format: FBS
                 geoscale: state
 
 ```

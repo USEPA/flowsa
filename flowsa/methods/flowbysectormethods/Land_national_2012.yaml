@@ -23,7 +23,6 @@ sources_to_cache:
         attribution_source:
           Employment_national_2012:
             data_format: FBS
-            year: 2012
   EIA_MECS_Land: &_eia_mecs_land  # manufacturing land use
     fedefl_mapping: EIA_MECS_Land
     year: 2014
@@ -67,7 +66,6 @@ source_names:
         attribution_source:
           Employment_national_2012:
             data_format: FBS
-            year: 2012
 
   USDA_ERS_MLU:
     fedefl_mapping: USDA_ERS_MLU

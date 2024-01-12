@@ -5,6 +5,7 @@ geoscale: state
 
 source_names:
   Employment_national_2016: !include:Employment_common.yaml:employment_fbs_allocation
+    data_format: FBS
     attribution_source:
       BLS_QCEW: !include:Employment_common.yaml:bls_load_and_clean_state
         year: 2016

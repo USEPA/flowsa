@@ -50,7 +50,6 @@ source_names:
         attribution_source:
           Employment_national_2018:
             data_format: FBS
-            year: 2018
       establishments:
         primary_action_type: Produced
         selection_fields:
@@ -116,4 +115,3 @@ source_names:
         attribution_source:
           Employment_national_2018:
           data_format: FBS
-          year: 2018
