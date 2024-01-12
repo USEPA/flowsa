@@ -8,6 +8,7 @@ run for additional years if there are new NAICS.
 
 import pandas as pd
 import flowsa
+import flowsa.flowbyactivity
 from flowsa.settings import flowbysectoractivitysetspath
 
 datasource = 'BLS_QCEW'
@@ -19,7 +20,7 @@ if __name__ == '__main__':
     # empty df
     df2 = pd.DataFrame()
     for y in as_years:
-        df_import = flowsa.getFlowByActivity(datasource, y)
+        df_import = flowsa.flowbyactivity.getFlowByActivity(datasource, y)
 
         df = (df_import[['ActivityProducedBy']]
               .drop_duplicates()
@@ -34,5 +35,5 @@ if __name__ == '__main__':
         # drop duplicates and save df
     df3 = df2.drop_duplicates()
     df3 = df3.sort_values(['activity_set', 'name']).reset_index(drop=True)
-    df3.to_csv(f"{flowbysectoractivitysetspath}{datasource}_asets.csv",
+    df3.to_csv(f"{flowbysectoractivitysetspath}/{datasource}_asets.csv",
                index=False)

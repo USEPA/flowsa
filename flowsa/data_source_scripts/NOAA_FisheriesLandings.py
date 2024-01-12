@@ -35,7 +35,7 @@ def noaa_parse(*, year, **_):
         specifications
     """
     # Read directly into a pandas df
-    df_raw = pd.read_csv(externaldatapath + "NOAA_FisheriesLandings.csv")
+    df_raw = pd.read_csv(externaldatapath / "NOAA_FisheriesLandings.csv")
 
     # read state fips from common.py
     df_state = get_state_FIPS().reset_index(drop=True)

@@ -31,7 +31,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        py-version: ['3.8', '3.9', '3.10']
+        py-version: ['3.9', '3.10', '3.11']
 
     steps:
     - uses: actions/checkout@v3
@@ -62,3 +62,28 @@ jobs:
     - name: Test with pytest
       run: |
         pytest --doctest-modules -m "not generate_fbs"
+
+  FBS_method_testing:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+
+    - name: Update pip & install testing pkgs
+      run: |
+        python -VV
+        python -m pip install --upgrade pip setuptools wheel
+        pip install pytest pytest-cov flake8
+
+    # install package & dependencies
+    - name: Install package and dependencies
+      run: |
+        pip install .
+
+    - name: Test FBS config
+      run: |
+        python tests/test_FBS_methods.py

@@ -10,9 +10,9 @@ import pandas as pd
 import numpy as np
 from string import ascii_uppercase
 from tabula.io import read_pdf
-from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
+from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.location import US_FIPS
-from flowsa.schema import flow_by_activity_mapped_fields
+from flowsa.flowbyactivity import FlowByActivity
 
 
 def epa_wfr_call(*, resp, **_):
@@ -22,7 +22,7 @@ def epa_wfr_call(*, resp, **_):
     :param url: string, url
     :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+        generateflowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     result_list = []
@@ -40,7 +40,7 @@ def epa_wfr_call(*, resp, **_):
                  'eight', 'K-12 Schools',  'Food Banks',
                  'Intermediate Amount Managed',
                  'Total Managed by Each Pathway'],
-                axis=1, inplace=False)
+                axis=1)
         else:
             df = df_l[0].set_axis(
                 ['Management Pathway', 'Manufacturing/Processing',
@@ -48,7 +48,7 @@ def epa_wfr_call(*, resp, **_):
                  'seven', 'K-12 Schools',  'Food Banks',
                  'Intermediate Amount Managed',
                  'Total Managed by Each Pathway'],
-                axis=1, inplace=False)
+                axis=1)
         df = drop_rows(df)
         df_list.append(df)
     for d in df_list:
@@ -215,129 +215,6 @@ def reorder_df(df):
     return df
 
 
-def attribute_cnhw_food(flows, method, k, v, *_):
-    """
-    TODO: incorporate this method into flowbysector.py after brining in
-     Matthew's changes - cnhw is loaded as the primary data source,
-     flowbysector.py is not set up for an FBS to be used as a primary data
-     source
-
-    Function is used to attribute CNHW food generation to waste management
-    paths using EPA WFR and Facts and Figures
-    :param flows:
-    :param method:
-    :return:
-    """
-    from flowsa.fbs_allocation import load_map_clean_fba
-    from flowsa.settings import vLog, log
-    from flowsa.validation import compare_activity_to_sector_flowamounts, \
-        compare_fba_geo_subset_and_fbs_output_totals
-
-    # empty list for activity results
-    activity_list = []
-    activities = v['activity_sets']
-    # subset activity data and allocate to sector
-    for aset, attr in activities.items():
-        # subset by named activities
-        names = attr['names']
-        vLog.info(f"Preparing to handle {aset} in {k}")
-        # subset fba data by activity
-        flows_subset = flows[flows['SectorProducedBy'].isin(
-            names)].reset_index(drop=True)
-
-        # load allocation df
-        # add parameters to dictionary if exist in method yaml
-        fba_dict = {}
-        if 'allocation_flow' in attr:
-            fba_dict['flowname_subset'] = attr['allocation_flow']
-        if 'allocation_compartment' in attr:
-            fba_dict['compartment_subset'] = attr['allocation_compartment']
-        if 'clean_allocation_fba' in attr:
-            fba_dict['clean_fba'] = attr['clean_allocation_fba']
-        if 'clean_allocation_fba_w_sec' in attr:
-            fba_dict['clean_fba_w_sec'] = attr['clean_allocation_fba_w_sec']
-
-        # load the allocation FBA
-        fba_allocation_wsec = \
-            load_map_clean_fba(method, attr,
-                               fba_sourcename=attr['allocation_source'],
-                               df_year=attr['allocation_source_year'],
-                               flowclass=attr['allocation_source_class'],
-                               geoscale_from=attr['allocation_from_scale'],
-                               geoscale_to=v['geoscale_to_use'],
-                               download_FBA_if_missing=True,
-                               **fba_dict)
-
-        # subset fba datasets to only keep the sectors associated
-        # with activity subset
-        if aset == 'wasted_food_report':
-            log.info("Subsetting %s for sectors in %s",
-                     attr['allocation_source'], k)
-            fba_allocation_subset = fba_allocation_wsec[fba_allocation_wsec[
-                'SectorProducedBy'].isin(names)].reset_index(drop=True)
-
-            # determine ratios of food waste by waste management pathway
-            fba_allocation_subset = fba_allocation_subset.assign(
-                Denominator=fba_allocation_subset.groupby(
-                    ['SectorProducedBy'])['FlowAmount'].transform('sum'))
-            fba_allocation_subset = fba_allocation_subset.assign(
-                FlowAmountRatio=fba_allocation_subset['FlowAmount'] /
-                                fba_allocation_subset['Denominator'])
-
-            # merge the primary data source and allocation data source,
-            # but first drop primary df sectorconsumedby because empty
-            flows_subset2 = flows_subset.drop(columns='SectorConsumedBy')
-            fbs = flows_subset2.merge(fba_allocation_subset[['SectorProducedBy',
-                                                             'SectorConsumedBy',
-                                                             'FlowAmountRatio']],
-                                      how='left')
-        elif aset == 'facts_and_figures':
-            # determine ratios of food waste by waste management pathway
-            fba_allocation_wsec = fba_allocation_wsec.assign(
-                Denominator=fba_allocation_wsec.groupby(
-                    ['FlowName'])['FlowAmount'].transform('sum'))
-            fba_allocation_wsec = fba_allocation_wsec.assign(
-                FlowAmountRatio=fba_allocation_wsec['FlowAmount'] /
-                                fba_allocation_wsec['Denominator'])
-
-            # merge the primary data source and allocation data source,
-            # but first drop primary df sectorconsumedby because empty
-            flows_subset2 = flows_subset.drop(columns='SectorConsumedBy')
-            # add temp merge col
-            df_list = [flows_subset2, fba_allocation_wsec]
-            for i, df in enumerate(df_list):
-                df_list[i]['merge_col'] = 1
-            fbs = flows_subset2.merge(fba_allocation_wsec[['SectorConsumedBy',
-                                                           'FlowAmountRatio',
-                                                           'merge_col']],
-                                      how='left').drop(columns='merge_col')
-
-        # calculate flow amounts for each sector
-        log.info("Calculating new flow amounts using flow ratios")
-        fbs['FlowAmount'] = fbs['FlowAmount'] * fbs['FlowAmountRatio']
-
-        # drop columns
-        fbs = fbs.drop(columns=['FlowAmountRatio'])
-
-        # check before and after totals
-        # compare flowbysector with flowbyactivity
-        compare_activity_to_sector_flowamounts(
-            flows_subset, fbs, aset, method, v, attr)
-        compare_fba_geo_subset_and_fbs_output_totals(
-            flows_subset, fbs, aset, k, v, attr, method)
-
-        activity_list.append(fbs)
-
-    cnhw = pd.concat(activity_list)
-
-    # for consistency with food waste m1 and with the data out of the EPA
-    # WFR which is used for residential food waste, update the flowable from
-    # 'Food' to 'Food Waste'
-    cnhw['Flowable'] = 'Food Waste'
-
-    return cnhw
-
-
 def return_REI_fraction_foodwaste_treated_commodities():
     """
     Return dictionary of how the food waste is used after entering
@@ -373,23 +250,22 @@ def return_REI_fraction_foodwaste_treated_commodities():
     return pathway_attribution
 
 
-def foodwaste_use(fba, source_dict):
+def foodwaste_use(fba: FlowByActivity) -> FlowByActivity:
     """
-    clean_fba_df_fxn
+    clean_fba_before_activity_sets
 
     Attribute food waste to how waste is used
     :param fba:
     :param source_dict:
     :return:
     """
-    use = source_dict.get('activity_parameters')
+    use = fba.config.get('activity_parameters')
     outputs = fba.loc[fba['ActivityConsumedBy'].isin(use)].reset_index(drop=True)
     outputs['ActivityProducedBy'] = outputs['ActivityConsumedBy']
     outputs = outputs.drop(columns='ActivityConsumedBy')
-    groupcols = list(outputs.select_dtypes(include=['object', 'int']).columns)
-    outputs2 = aggregator(outputs, groupcols)
+    outputs2 = outputs.aggregate_flowby()
 
-    # load fw treatment dictoinary
+    # load fw treatment dictionary
     fw_tmt = return_REI_fraction_foodwaste_treated_commodities()
     replace_keys = {'Animal meal, meat, fats, oils, and tallow': 'Bio-based Materials/Biochemical Processing',
                     'Anaerobic Digestion': 'Codigestion/Anaerobic Digestion',
@@ -403,22 +279,22 @@ def foodwaste_use(fba, source_dict):
               .reset_index())
     outputs3 = outputs2.merge(fw_tmt, how='left')
 
-    outputs3['Flowable'] = outputs3["Flowable"].apply(lambda x:
+    outputs3['FlowName'] = outputs3['FlowName'].apply(lambda x:
                                                       f"{x} Treated")
     # update flowamount with multiplier fractions
     outputs3['FlowAmount'] = outputs3['FlowAmount'] * outputs3['Multiplier']
     outputs3 = outputs3.drop(columns='Multiplier')
 
     # also in wasted food report - APB "food banks" are the output from the ACB "Food Donation"
-    fba['Flowable'] = np.where(fba['ActivityProducedBy'] == 'Food Banks',
-                               fba["Flowable"].apply(lambda x: f"{x} Treated"), fba["Flowable"])
+    fba['FlowName'] = np.where(fba['ActivityProducedBy'] == 'Food Banks',
+                               fba["FlowName"].apply(
+                                   lambda x: f"{x} Treated"),
+                               fba["FlowName"])
 
     df1 = pd.concat([fba, outputs3], ignore_index=True)
-    cols = flow_by_activity_mapped_fields.copy()
-    cols.pop('FlowAmount')
-    df1 = aggregator(df1, cols)
+    df2 = df1.aggregate_flowby()
 
-    return df1
+    return df2
 
 def reset_wfr_APB(fba, **_):
     """

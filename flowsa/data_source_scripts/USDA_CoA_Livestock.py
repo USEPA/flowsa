@@ -15,7 +15,7 @@ from flowsa.flowbyfunctions import assign_fips_location_system
 
 def CoA_Livestock_URL_helper(*, build_url, config, **_):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py,
+    This helper function uses the "build_url" input from generateflowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
     string to be replaced with info specific to the data year. This function
     does not parse the data, only modifies the urls from which data is
@@ -57,7 +57,7 @@ def coa_livestock_call(*, resp, **_):
     :param url: string, url
     :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+        generateflowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     livestock_json = json.loads(resp.text)
@@ -70,7 +70,7 @@ def coa_livestock_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications

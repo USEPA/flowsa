@@ -1,0 +1,11 @@
+author: U.S. Bureau of Economic Analysis
+source_name: Use Before Redefinitions Producer's Prices
+source_url: 'https://www.bea.gov/industry/input-output-accounts-data'
+source_publication_date: 2022
+original_data_download_date: '2022-08-11'
+bib_id: BEA_Use_BR
+format: csv
+url: None
+parse_response_fxn: !script_function:BEA bea_parse
+years:
+  - 2012

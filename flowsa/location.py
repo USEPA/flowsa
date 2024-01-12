@@ -9,7 +9,9 @@ import pandas as pd
 import numpy as np
 import pycountry
 import urllib.error
-from flowsa.settings import datapath, log
+from flowsa.flowsa_log import log
+from flowsa.geo import get_all_fips
+from flowsa.settings import datapath
 from flowsa.common import clean_str_and_capitalize
 
 
@@ -18,64 +20,6 @@ US_FIPS = "00000"
 fips_number_key = {"national": 0,
                    "state": 2,
                    "county": 5}
-
-
-def read_stored_FIPS(year='2015'):
-    """
-    Read fips based on year specified, year defaults to 2015
-    :param year: str, '2010', '2013', or '2015', default year is 2015
-        because most recent year of FIPS available
-    :return: df, FIPS for specified year
-    """
-
-    FIPS_df = pd.read_csv(datapath + "FIPS_Crosswalk.csv", header=0, dtype=str)
-    # subset columns by specified year
-    df = FIPS_df[["State", "FIPS_" + year, "County_" + year]]
-    # rename columns to drop data year
-    df.columns = ['State', 'FIPS', 'County']
-    # sort df
-    df = df.sort_values(['FIPS']).reset_index(drop=True)
-
-    return df
-
-
-def getFIPS(state=None, county=None, year='2015'):
-    """
-    Pass a state or state and county name to get the FIPS.
-
-    :param state: str. A US State Name or Puerto Rico, any case accepted
-    :param county: str. A US county
-    :param year: str. '2010', '2013', '2015', default year is 2015
-    :return: str. A five digit FIPS code
-    """
-    FIPS_df = read_stored_FIPS(year)
-
-    # default code
-    code = None
-
-    if county is None:
-        if state is not None:
-            state = clean_str_and_capitalize(state)
-            code = FIPS_df.loc[(FIPS_df["State"] == state)
-                               & (FIPS_df["County"].isna()), "FIPS"]
-        else:
-            log.error("To get state FIPS, state name must be passed in "
-                      "'state' param")
-    else:
-        if state is None:
-            log.error("To get county FIPS, state name must be passed in "
-                      "'state' param")
-        else:
-            state = clean_str_and_capitalize(state)
-            county = clean_str_and_capitalize(county)
-            code = FIPS_df.loc[(FIPS_df["State"] == state)
-                               & (FIPS_df["County"] == county), "FIPS"]
-    if code.empty:
-        log.error("No FIPS code found")
-    else:
-        code = code.values[0]
-
-    return code
 
 
 def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
@@ -94,6 +38,8 @@ def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
         df['State'] = df['State'].map(abbrev_us_state).fillna(df['State'])
     df['State'] = df.apply(lambda x: clean_str_and_capitalize(x.State),
                            axis=1)
+    if 'County' not in df:
+        df['County'] = ''
     df['County'] = df.apply(lambda x: clean_str_and_capitalize(x.County),
                             axis=1)
 
@@ -103,10 +49,10 @@ def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
 
     # Where no county match occurs, assign state FIPS instead
     mapping_FIPS = get_state_FIPS()
-    mapping_FIPS.drop(columns=['County'], inplace=True)
+    mapping_FIPS = mapping_FIPS.drop(columns=['County'])
     df = df.merge(mapping_FIPS, left_on='State', right_on='State', how='left')
     df['Location'] = df['FIPS_x'].where(df['FIPS_x'].notnull(), df['FIPS_y'])
-    df.drop(columns=['FIPS_x', 'FIPS_y'], inplace=True)
+    df = df.drop(columns=['FIPS_x', 'FIPS_y'])
 
     return df
 
@@ -120,13 +66,14 @@ def update_geoscale(df, to_scale):
     """
     # code for when the "Location" is a FIPS based system
     if to_scale == 'state':
-        df.loc[:, 'Location'] = df['Location'].apply(lambda x: str(x[0:2]))
-        # pad zeros
-        df.loc[:, 'Location'] = df['Location'].apply(lambda x:
-                                                     x.ljust(3 + len(x), '0')
-                                                     if len(x) < 5 else x)
+        df = df.assign(Location = (df['Location']
+                                   .apply(lambda x: str(x[0:2]))
+                                   .apply(lambda x:
+                                          x.ljust(3 + len(x), '0')
+                                          if len(x) < 5 else x))
+                      )
     elif to_scale == 'national':
-        df.loc[:, 'Location'] = US_FIPS
+        df = df.assign(Location = US_FIPS)
     return df
 
 
@@ -137,11 +84,13 @@ def get_state_FIPS(year='2015', abbrev=False):
     :return: FIPS df with only state level records
     """
 
-    fips = read_stored_FIPS(year)
+    fips = get_all_fips(year)
     fips = fips.drop_duplicates(subset='State')
     fips = fips[fips['State'].notnull()]
     if abbrev:
-        fips['State'] = fips['State'].str.title().replace(us_state_abbrev)
+        fips['State'] = (fips['State'].str.title()
+                         .replace(us_state_abbrev)
+                         .replace({'District Of Columbia': 'DC'}))
     return fips
 
 
@@ -151,7 +100,7 @@ def get_county_FIPS(year='2015'):
     :param year: str, year of FIPS, defaults to 2015
     :return: FIPS df with only county level records
     """
-    fips = read_stored_FIPS(year)
+    fips = get_all_fips(year)
     fips = fips.drop_duplicates(subset='FIPS')
     fips = fips[fips['County'].notnull()]
     return fips
@@ -235,7 +184,7 @@ def get_region_and_division_codes():
     Load the Census Regions csv
     :return: pandas df of census regions
     """
-    df = pd.read_csv(f"{datapath}Census_Regions_and_Divisions.csv",
+    df = pd.read_csv(datapath / "Census_Regions_and_Divisions.csv",
                      dtype="str")
     return df
 
@@ -311,7 +260,7 @@ def merge_urb_cnty_pct(df):
         return None
 
     years_xwalk = extract_fips_years(  # from xwalk headers
-        pd.read_csv(datapath + 'FIPS_Crosswalk.csv', nrows=0).columns)
+        pd.read_csv(datapath / 'FIPS_Crosswalk.csv', nrows=0).columns)
 
     if not {year} <= set(years_xwalk):  # compare data years as sets
         log.error('LocationSystem incompatible with FIPS_Crosswalk.csv')
@@ -323,7 +272,7 @@ def merge_urb_cnty_pct(df):
     # find unmerged nan pct_pop_urb values
     pct_na = sum(df['pct_pop_urb'].isna())
     if pct_na != 0:
-        log.error(f'WARNING {pct_na} FIPS codes did not merge successfully.\n'
+        log.error(f'WARNING {pct_na} records did not merge successfully.\n'
                   'In pct_pop_urb, "nan" values are not equal to 0%.')
 
     df = reshape_urb_rur_df(df)
@@ -394,7 +343,7 @@ def shift_census_cnty_tbl(df, year):
         # i.e., join by ['FIPS_{decade}'] field ensures pct_pop_urb inheritance
     # merges identified by duplicated 'FIPS_{year}' codes (A-->C, B-->C)
         # e.g., 51019 & 51515 --> 51019
-    fips_xwalk = pd.read_csv(datapath + 'FIPS_Crosswalk.csv', dtype=str,
+    fips_xwalk = pd.read_csv(datapath / 'FIPS_Crosswalk.csv', dtype=str,
                              usecols=[f'FIPS_{decade}', f'FIPS_{year}'])
     df = pd.merge(df, fips_xwalk, how='left', on=f'FIPS_{decade}')
 

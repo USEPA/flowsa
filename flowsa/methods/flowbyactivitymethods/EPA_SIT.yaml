@@ -1,13 +1,15 @@
 author: US Environmental Protection Agency
 source_name: State Inventory Tool
+# Aligns with March 2022 version of tool
 source_url: 'https://www.epa.gov/statelocalenergy/state-inventory-and-projection-tool'
 bib_id: EPA_SIT
 format: xlsm  # macro-enabled spreadsheet
 url: None
 parse_response_fxn: !script_function:EPA_SIT epa_sit_parse
-state: 'ME'
-file: 'Synthesis Tool.xlsm'
+state_list: ['ME', 'CT', 'VT']
 years:
+- 2019
+- 2018
 - 2017
 - 2016
 - 2015
@@ -37,195 +39,221 @@ years:
 - 1991
 - 1990
 
-sheet_dict:
+files:
 
-    'CO2FFC':
-        nrows: 32
-        unit: MMTCO2e
-        flow: CO2
-        headers:
-            - Residential
-            - Commercial
-            - Industrial
-            - Transportation
-            - Electric Utilities
-            - International Bunker Fuels
-            - TOTAL
+    'Synthesis Tool.xlsm':
+        
+        file_dict:
+        
+            'Fossil Fuel Combustion':
+                sheetname: 'CO2FFC'
+                nrows: 33
+                unit: MMTCO2e
+                flow: CO2
+                headers:
+                    - Residential
+                    - Commercial
+                    - Industrial
+                    - Transportation
+                    - Electric Utilities
+                    - International Bunker Fuels
+                    - TOTAL
+                    - Additional CO2 Emissions
+        
+            'Mobile Combustion CH4':
+                sheetname: Mobile Combustion
+                header: 55
+                nrows: 22
+                flow: CH4
+                unit: MTCO2e
+                headers:
+                    - Gasoline Highway
+                    - Diesel Highway
+                    - Non-Highway
+                    - Alternative Fuel Vehicles
+                    - Additional CH4 Emissions
+                    - Total
+        
+            'Mobile Combustion N2O':
+                sheetname: Mobile Combustion
+                header: 82
+                nrows: 22
+                flow: N2O
+                unit: MTCO2e
+                headers:
+                    - Gasoline Highway
+                    - Diesel Highway
+                    - Non-Highway
+                    - Alternative Fuel Vehicles
+                    - Additional N2O Emissions
+                    - Total
+        
+            'Coal Mining Activities':
+                sheetname: Coal
+                header: 3
+                nrows: 6
+                unit: MTCO2e
+                flow: CH4
+                headers:
+                    - Coal Mining
+                    - Abandoned Coal Mines
+                    - Additional Emissions Source
+        
+            'Oil and Gas Activities':
+                sheetname: Gas and Oil
+                header: 17
+                nrows: 5
+                unit: MT
+                flow: CH4
+                headers:
+                    - Natural Gas
+                    - Oil
+        
+            'Natural Gas Flaring':
+                sheetname: Gas and Oil
+                header: 24
+                nrows: 1
+                unit: MMT
+                flow: CO2
+                headers:
+                    - Natural Gas Flaring
+        
+            'Industrial Processes':
+                sheetname: IP
+                nrows: 23
+                unit: MTCO2e
+                headers:
+                    - Carbon Dioxide Emissions
+                    - Nitrous Oxide Emissions
+                    - HFC, PFC, SF6 and NF3 Emissions
+                    - Additional Carbon Dioxide Emissions
+                    - Additional Nitrous Oxide Emissions
+                    - Additional HFC, PFC, SF6, and NF3 Emissions
+                    - Total Emissions
+                subgroup: 'activitybyflow'
+        
+            'Agriculture':
+                sheetname: Agriculture
+                header: 26
+                nrows: 12
+                unit: MMT
+                headers:
+                    - Carbon Dioxide
+                    - Methane
+                    - Nitrous Oxide
+                subgroup: 'activitybyflow'
+        
+            'Agricultural Soil Management':
+                sheetname: Agriculture
+                tablename: Agricultural Soil Management
+                header: 41
+                nrows: 13
+                unit: MT
+                flow: N2O
+                headers:
+                    - Direct
+                    - Indirect
+                    - TOTAL
+                subsubheaders:
+                    - Fertilizer Runoff/Leached
+                    - Manure Runoff/Leached
+        
+            'Land-Use Change and Forest Emissions and Sequestration':
+                sheetname: Forest Management
+                header: 8
+                nrows: 37
+                unit: MMTCO2e
+                flow: CO2e
+                headers:
+                    - Forest Carbon Flux
+                    - Urban Trees
+                    - Landfilled Yard Trimmings and Food Scraps
+                    - Forest Fires
+                    - N2O from Settlement Soils
+                    - Agricultural Soil Carbon Flux
+                    - Additional Carbon Dioxide Emissions
+                    - Additional Methane Emissions
+                    - Additional Nitrous Oxide Emissions
+                    - Total
+                subsubheaders:
+                    - Aboveground Biomass
+                    - Belowground Biomass
+                    - Deadwood
+                    - Litter
+                    - Soil (Mineral)
+                    - Soil (Organic)
+                    - Drained Organic Soil
+                    - Total wood products and landfills
+                skiprowstart: 10
+                skiprowend: 18
+        
+            'Landfills':
+                sheetname: Waste
+                tablename: Emissions from Landfills
+                header: 13
+                nrows: 9
+                unit: MTCO2e
+                flow: CH4
+                headers:
+                    - Potential CH4
+                    - CH4 Avoided
+                    - Oxidation at MSW Landfills
+                    - Oxidation at Industrial Landfills
+                    - Total CH4 Emissions
+        
+            'Waste Combustion':
+                sheetname: Waste
+                tablename: Emissions from Waste Combustion
+                header: 25
+                nrows: 7
+                unit: MTCO2e
+                headers:
+                    - CO2
+                    - N2O
+                    - CH4
+                    - Total CO2, N2O, CH4 Emissions
+                subgroup: 'activitybyflow'
+        
+            'Wastewater':
+                header: 3
+                nrows: 10
+                unit: MMTCO2e
+                headers:
+                    - Municipal CH4
+                    - Municipal N2O
+                    - Industrial CH4
+                    - Additional Nitrous Oxide Emissions
+                    - Additional Methan Emissions
+                    - Total Emissions
+                subgroup: 'activitybyflow'
 
-    'IndirectCO2':
-        nrows: 45
-        unit: MMTCO2e
-        flow: CO2
-        headers:
-            - Residential
-            - Commercial
-            - Industrial
-            - Transportation
-            - TOTAL
-        subsubheaders:
-            - Conventional Boiler Use
-            - CHP and/or Cogeneration Process
-            - Process Heating
-            - Process Cooling and Refrigeration
-            - Machine Drive
-            - Electro-Chemical Processes
-            - Other Process use
-            - Facility HVAC
-            - Facility Lighting
-            - Other Facility Support
-            - Onsite Transportation
-            - Other Nonprocess Use
-
-    'Stationary':
-        nrows: 15
-        unit: MMTCO2e
-        headers:
-            - Residential
-            - Commercial
-            - Industrial
-            - Electric Utilities
-            - TOTAL
-        skiprowstart: 13
-        skiprowend: 15
-        subgroup: flow
-
-    'Mobile Combustion CH4':
-        sheetname: Mobile Combustion
-        header: 55
-        nrows: 21
-        flow: CH4
-        unit: MTCO2e
-        headers:
-            - Gasoline Highway
-            - Diesel Highway
-            - Non-Highway
-            - Alternative Fuel Vehicles
-            - Total
-
-    'Mobile Combustion N2O':
-        sheetname: Mobile Combustion
-        header: 82
-        nrows: 21
-        flow: N2O
-        unit: MTCO2e
-        headers:
-            - Gasoline Highway
-            - Diesel Highway
-            - Non-Highway
-            - Alternative Fuel Vehicles
-            - Total
-
-    'Coal':
-        header: 3
-        nrows: 5
-        unit: MTCO2e
-        flow: CH4
-        headers:
-            - Coal Mining
-            - Abandoned Coal Mines
-
-    'Gas and Oil':
-        header: 17
-        nrows: 5
-        unit: MT
-        flow: CH4
-        headers:
-            - Natural Gas
-            - Oil
-
-    'Natural Gas Flaring':
-        sheetname: 'Gas and Oil'
-        header: 24
-        nrows: 1
-        unit: MMT
-        flow: CO2
-        headers:
-            - Natural Gas Flaring
-
-    'IP':
-        nrows: 20
-        unit: MTCO2e
-        headers:
-            - Carbon Dioxide Emissions
-            - Nitrous Oxide Emissions
-            - HFC, PFC, SF6 and NF3 Emissions
-            - Total Emissions
-        subgroup: 'activitybyflow'
-
-    'Agriculture':
-        sheetname: Agriculture
-        header: 26
-        nrows: 12
-        unit: MMT
-        headers:
-            - Carbon Dioxide
-            - Methane
-            - Nitrous Oxide
-        subgroup: 'activitybyflow'
-
-    'Agricultural Soil Management':
-        sheetname: Agriculture
-        tablename: Agricultural Soil Management
-        header: 41
-        nrows: 13
-        unit: MT
-        flow: N2O
-        headers:
-            - Direct
-            - Indirect
-            - TOTAL
-        subsubheaders:
-            - Fertilizer Runoff/Leached
-            - Manure Runoff/Leached
-
-    'Land-Use Change and Forest Emissions and Sequestration':
-        sheetname: Forest Management
-        header: 8
-        nrows: 19
-        unit: MMTCO2E
-        flow: CO2E
-        headers:
-            - Forest Carbon Flux
-            - Urban Trees
-            - Landfilled Yard Trimmings and Food Scraps
-            - Forest Fires
-            - N2O from Settlement Soils
-            - Agricultural Soil Carbon Flux
-
-    'Emissions from Landfills':
-        sheetname: Waste
-        tablename: Emissions from Landfills
-        header: 13
-        nrows: 9
-        unit: MTCO2E
-        flow: CH4
-        headers:
-            - Potential CH4
-            - CH4 Avoided
-            - Oxidation at MSW Landfills
-            - Oxidation at Industrial Landfills
-            - Total CH4 Emissions
-
-    'Waste Combustion':
-        sheetname: Waste
-        tablename: Emissions from Waste Combustion
-        header: 25
-        nrows: 7
-        unit: MTCO2e
-        headers:
-            - CO2
-            - N2O
-            - CH4
-            - Total CO2, N2O, CH4 Emissions
-        subgroup: 'activitybyflow'
-
-    'Wastewater':
-        header: 3
-        nrows: 8
-        unit: MMTCO2e
-        headers:
-            - Municipal CH4
-            - Municipal N2O
-            - Industrial CH4
-            - Total Emissions
-        subgroup: 'activitybyflow'
+    
+    'Stationary Combustion Module.xlsm':
+        
+        file_dict:
+        
+            'Stationary Combustion CH4':
+                sheetname: Summary CH4
+                header: 4
+                nrows: 30
+                unit: MMTCO2e
+                flow: CH4
+                headers:
+                    - Residential
+                    - Commercial
+                    - Industrial
+                    - Electric Power
+                    - TOTAL
+                    
+            'Stationary Combustion N2O':
+                sheetname: Summary N2O
+                header: 4
+                nrows: 30
+                unit: MMTCO2e
+                flow: N2O
+                headers:
+                    - Residential
+                    - Commercial
+                    - Industrial
+                    - Electric Power
+                    - TOTAL

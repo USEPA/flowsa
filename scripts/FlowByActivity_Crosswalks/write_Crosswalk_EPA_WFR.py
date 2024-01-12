@@ -180,5 +180,5 @@ if __name__ == '__main__':
     # sort df
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(f"{crosswalkpath}NAICS_Crosswalk_{datasource}.csv",
+    df.to_csv(f"{crosswalkpath}/NAICS_Crosswalk_{datasource}.csv",
               index=False)

@@ -75,7 +75,7 @@ def name_and_unit_split(df_legend):
 
 def pi_url_helper(*, build_url, **_):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py,
+    This helper function uses the "build_url" input from generateflowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
     string to be replaced with info specific to the data year. This function
     does not parse the data, only modifies the urls from which data is
@@ -163,7 +163,7 @@ def pi_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications

@@ -7,12 +7,12 @@ import pandas as pd
 import numpy as np
 from flowsa.location import US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.fbs_allocation import direct_allocation_method
+from flowsa.flowbysector import FlowBySector
 
 
 def rei_url_helper(*, build_url, config, **_):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py,
+    This helper function uses the "build_url" input from generateflowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
     string to be replaced with info specific to the data year. This function
     does not parse the data, only modifies the urls from which data is
@@ -39,7 +39,7 @@ def rei_call(*, url, **_):
     :param url: string, url
     :param resp: df, response from url call
     :param args: dictionary, arguments specified when running
-        flowbyactivity.py ('year' and 'source')
+        generateflowbyactivity.py ('year' and 'source')
     :return: pandas dataframe of original source data
     """
     df = pd.read_csv(url)
@@ -163,44 +163,13 @@ def primary_factors_parse(*, df_list, year, **_):
     return df2
 
 
-def rei_waste_flows_attribution(*, flow_subset_mapped, k, names, method, **_):
+def rei_waste_national_cleanup(fbs: FlowBySector, **_) -> FlowBySector:
     """
-    Attribute REI waste data to include SPB and SCB.
-    todo: convert this function into yaml methods once we pull in Matthew's
-     updates
-    :param flow_subset_mapped:
-    :param k:
-    :param names:
-    :param attr:
-    :param fbs_list:
-    :param method:
-    :return:
+    Drop imports/exports from rei waste national FBS
     """
+    fbs = (fbs
+           .query('SectorConsumedBy not in ("F04000", "F05000")')
+           .reset_index(drop=True)
+          )
 
-    # subset data into activityproducedby and activityconsumedby datafarames
-    p = flow_subset_mapped[flow_subset_mapped['Description'] == 'makecol']
-    c = flow_subset_mapped[flow_subset_mapped['Description'] ==
-                           'useintersection']
-
-    # first directly attribute/equally attribute APB to sectors and drop ACB
-    # data
-    p2 = direct_allocation_method(p, k, names, method)
-    p2 = p2.drop(columns=['ActivityConsumedBy', 'SectorConsumedBy'])
-
-    # then create attribution ratios to activityconsumedby based on flowable
-    c2 = c[['Flowable', 'FlowAmount', 'Unit', 'ActivityConsumedBy',
-            'SectorConsumedBy']].assign(Denominator=c.groupby(
-        ['Flowable', 'Unit'])['FlowAmount'].transform('sum'))
-    c2 = c2.assign(AttributionRatio=c2['FlowAmount']/c2['Denominator'])
-    c2 = c2.sort_values(['Flowable', 'ActivityConsumedBy'])
-    # Drop imports and exports so that the quantity is not allocated to SCB
-    c2 = c2.query('SectorConsumedBy not in ("F04000", "F05000")').reset_index(drop=True)
-
-    # merge data and recalculate flow amounts
-    df = p2.merge(c2[['Flowable', 'Unit', 'ActivityConsumedBy',
-                      'SectorConsumedBy', 'AttributionRatio']],
-                  how='left')
-    df['FlowAmount'] = df['FlowAmount'] * df['AttributionRatio']
-    df = df.drop(columns='AttributionRatio')
-
-    return df
+    return fbs

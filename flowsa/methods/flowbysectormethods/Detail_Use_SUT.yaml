@@ -1,0 +1,58 @@
+# This method disaggregates a Summary Use table for target use based on the
+# 2017 Detail Use table. The resulting tables do not reflect valid balanced
+# Use tables
+
+# The full FBS for any year can be cached using:
+# sources_to_cache:
+#   Detail_Use_2019:
+#     !include:Detail_Use_SUT.yaml
+#     year: *year
+#     source_names:
+#       BEA_Summary_Use_SUT:
+#         !include:Detail_Use_SUT.yaml:source_names:BEA_Summary_Use_SUT
+#         year: *year
+
+!include:BEA_detail_target.yaml
+year: &summary_year 2018
+target_naics_year: 2017
+geoscale: national
+
+data_format: FBS
+activity_schema: NAICS_2017_Code # <- necessary? (long term just look at the FBS)
+
+source_names:
+  BEA_Summary_Use_SUT:
+    geoscale: national
+    year: *summary_year
+    activity_to_sector_mapping: BEA_2017_Summary
+    primary_action_type: Consumed # speeds processing
+
+    # Drop unneeded codes
+    exclusion_fields:
+      ActivityProducedBy: ['T00OSUB', 'T00OTOP', 'T00SUB', 'T00TOP', 'T018',
+                           'V001', 'V003', 'VABAS', 'VAPRO', 'T005',
+                           'Other', 'Used']
+      ActivityConsumedBy: ['F02E', 'F02N', 'F02R', 'F02S',
+                           'F030', 'F040', 'F06C', 'F06E', 'F06N', 'F06S', 'F07C', 'F07E',
+                           'F07N', 'F07S', 'F10C', 'F10E', 'F10N', 'F10S',
+                           'T001', 'T019']
+    attribution_method: proportional
+    attribute_on: ['PrimarySector', 'SecondarySector']
+    attribution_source:
+      BEA_Detail_Use_SUT:
+        year: 2017
+        activity_to_sector_mapping: BEA_2017_Detail
+        primary_action_type: Consumed # speeds processing
+
+        # Drop unneeded codes
+        exclusion_fields:
+          ActivityConsumedBy: ['T001', 'F02E00', 'F02N00', 'F02R00',
+                               'F02S00', 'F03000', 'F04000', 'F06C00', 'F06E00',
+                               'F06N00', 'F06S00', 'F07C00', 'F07E00', 'F07N00',
+                               'F07S00', 'F10C00', 'F10E00', 'F10N00', 'F10S00',
+                               'T019']
+          ActivityProducedBy: ['T005', 'V00100', 'T00OTOP', 'V00300', 'VABAS',
+                               'T018', 'T00TOP', 'T00SUB', 'VAPRO',
+                               'S00300', 'S00401', 'S00402'] # Noncomparable imports, Scrap, Used
+
+        attribution_method: equal

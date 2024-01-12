@@ -1,0 +1,37 @@
+# This file can be used to set up target NAICS for a detail level model
+# NAICS are targeted to enable 1:1 correspondence between NAICS and BEA
+# Detail sectors. The waste sectors (562) are targeted to NAICS 6
+# to align with the waste disaggregation in useeior.
+# Otherwise this mimics BEA_detail_target.yaml
+
+# To use in an FBS method add
+# !include:USEEIOv2_detail_target.yaml
+# to the top of the method replacing the three parameters below
+
+
+industry_spec:
+  default: NAICS_3
+  NAICS_4: ['111', '112', '212', '221', '311', '312', '313', '314',
+            '321', '327', '331', '332', '334', '336', '337', '423',
+            '424', '512', '515', '517', '518', '522', '523', '524',
+            '532', '541', '561', '611', '621', '623', '624', '711',
+            '713', '722', '811', '812', '813',]
+  NAICS_5: ['1111', '1121', '2122', '2123', '3112', '3114', '3115',
+            '3118', '3119', '3121', '3141', '3219', '3221', '3222',
+            '3231', '3241', '3251', '3253', '3255', '3256', '3259',
+            '3261', '3262', '3273', '3279', '3314', '3315', '3323',
+            '3324', '3327', '3331', '3339', '3342', '3346', '3351',
+            '3352', '3359', '3361', '3363', '3371', '3399', '5111',
+            '5112', '5191', '5241', '5416', '5419']
+  NAICS_6: ['23', '21311', '31111', '31122', '31151', '31161', '32229',
+            '32311', '32412', '3252',  '3254',  '32799', '33131',
+            '33141', '33211', '33291', '33299', '33311', '33324',
+            '33331', '33341', '33351', '33361', '33391', '33399',
+            '33411', '33441', '33451', '33522', '33531', '33591',
+            '33599', '33611', '33621', '33641', '33661', '33699',
+            '33712', '33721', '33911', '51731', '52411', '54151',
+            '562', '72251','92', 'F010']
+
+target_naics_year: 2017
+# This schema was created for 2017 NAICS but should also work for the schema
+# for the 2012 tables using 2012 NAICS

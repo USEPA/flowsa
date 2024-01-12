@@ -15,7 +15,7 @@ from rpy2.robjects import pandas2ri
 from flowsa.settings import datapath
 
 
-def import_useeior_mastercrosswalk():
+def import_useeior_mastercrosswalk(year):
     """
     Load USEEIOR's MasterCrosswalk that links BEA data to NAICS
     :return:
@@ -25,11 +25,11 @@ def import_useeior_mastercrosswalk():
     useeior = packages.importr('useeior')
     # load the .Rd file for
     cw = packages.data(useeior).fetch(
-        'MasterCrosswalk2012')['MasterCrosswalk2012']
+        f'MasterCrosswalk{year}')[f'MasterCrosswalk{year}']
 
     # save as csv
-    cw.to_csv(datapath + "NAICS_to_BEA_Crosswalk.csv", index=False)
+    cw.to_csv(datapath / f"NAICS_to_BEA_Crosswalk_{year}.csv", index=False)
 
 
 if __name__ == '__main__':
-    import_useeior_mastercrosswalk()
+    import_useeior_mastercrosswalk(year=2017)

@@ -11,7 +11,9 @@ years:
 - 2011
 - 2014
 - 2017
+- 2020
 version_dict:
+    '2020': '2020nei'
     '2017': '2017v1/2017neiApr'
     '2014': '2014v2/2014neiv2'
     '2011': '2011v2/2011neiv2'
@@ -29,11 +31,11 @@ col_dict:
     '2014':
         <<: *col_dict
         "FlowName": "pollutant_desc"
-    '2017':
-        <<: *col_dict
+    '2017': &col_dict_2017
         "FlowName": "pollutant desc"
         "FlowAmount": "total emissions"
         "ActivityProducedBy": "scc"
         "Location": "fips code"
         "Unit": "emissions uom"
         "Description": "pollutant code"
+    '2020': *col_dict_2017

@@ -1,27 +1,31 @@
-_bls_load_and_clean: &bls_load_and_clean
-  data_format: 'FBA'
-  class: Employment
-  clean_fba_df_fxn: !script_function:BLS_QCEW clean_bls_qcew_fba_for_employment_sat_table
-  clean_fba_w_sec_df_fxn: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
+_bls_selection_fields_national: &bls_selection_fields_national
+  selection_fields:
+    Class: Employment
+    Location: !include:Location_common.yaml:_national_location
 
-_bls_allocation: &bls_allocation
-  names: !from_index:BLS_QCEW_asets.csv qcew
-  allocation_method: direct
+_bls_selection_fields_state: &bls_selection_fields_state
+  selection_fields:
+    Class: Employment
+    Location: !include:Location_common.yaml:_state_location
+
+_bls_load_and_clean: &bls_load_and_clean
+  clean_fba_before_mapping: !script_function:BLS_QCEW estimate_suppressed_qcew
+  clean_fba: !script_function:BLS_QCEW clean_qcew_for_fbs
 
 bls_load_and_clean_national:
+  <<: *bls_selection_fields_national
   <<: *bls_load_and_clean
-  geoscale_to_use: &geoscaleNational national
-  source_fba_load_scale: *geoscaleNational
-
-bls_allocation_national:
-  <<: *bls_allocation
-  allocation_from_scale: *geoscaleNational
 
 bls_load_and_clean_state:
+  <<: *bls_selection_fields_state
   <<: *bls_load_and_clean
-  geoscale_to_use: &geoscaleState state
-  source_fba_load_scale: *geoscaleState
 
-bls_allocation_state:
-  <<: *bls_allocation
-  allocation_from_scale: *geoscaleState
+bls_allocation:
+  selection_fields:
+    PrimaryActivity: !from_index:BLS_QCEW_asets.csv qcew
+  attribution_method: direct
+
+employment_fbs_allocation:
+  attribution_method: proportional
+  attribute_on: ['SectorProducedBy']
+  fill_columns: Location

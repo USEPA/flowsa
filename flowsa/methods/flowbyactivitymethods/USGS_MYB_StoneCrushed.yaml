@@ -1,12 +1,12 @@
 # Downloads and parses CSV from USGS StoneCrushed Statistics and Information on an annual basis.
 ---
 source_name: USGS Mineral Yearbook Stone Crushed
-citable_url: https://pubs.usgs.gov/myb/vol1/2018/myb1-2018-zeolites.xlsx
+citable_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/files/myb1-2019-stonec-adv.xlsx
 date_generated: '2021-03-26'
 years_available: 2014-2018
 format: xls
 url:
-  base_url: https://pubs.usgs.gov/myb/vol1/2018/myb1-2018-zeolites.xlsx
+  base_url: https://pubs.usgs.gov/myb/vol1/2018/myb1-2018-stone-crushed.xlsx
 url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
 call_response_fxn: !script_function:USGS_MYB usgs_stonecr_call
 parse_response_fxn: !script_function:USGS_MYB usgs_stonecr_parse

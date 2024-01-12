@@ -1,0 +1,184 @@
+# This is the general method reference file for method 1 water attribution.
+# Year- and geographic-specific Water files import this file to define
+# attribution rules that are further customized
+
+# Do not use all activity sets for USGS_NWIS_WU because there are activity
+# sets for 3 methods. Instead, specifically call each activity set.
+
+industry_spec:
+  default: NAICS_6
+# year: 2015  # specify in year-specific yaml
+target_naics_year: 2012
+# geoscale: national  # specify target geoscale in each method yaml
+
+sources_to_cache:
+  USDA_IWMS:
+    industry_spec:
+      default: NAICS_6
+      NAICS_7: ['1114', '111150', '111199', '111940'] # hay and haylage set to NAICS7 - will update to NAICS6
+    geoscale: state
+    # year: 2018  # specify in year-specific yaml
+    selection_fields:
+      Class: Water
+    attribute:
+      - attribution_method: inheritance
+        clean_fba_after_attribution: !clean_function:flowbyclean substitute_nonexistent_values
+        clean_source:
+          USDA_IWMS:
+            geoscale: national
+            # year: 2018  # specify in year-specific yaml
+            selection_fields:
+              Class: Water
+            attribution_method: inheritance
+      - attribution_method: direct
+        clean_fba_after_attribution: !clean_function:flowbyclean weighted_average
+        replacement_dictionary: {'HAY & HAYLAGE, (EXCL ALFALFA)': 'HAY & HAYLAGE',
+                                 'HAY & HAYLAGE, ALFALFA': 'HAY & HAYLAGE',
+                                 '111940A': '111940',
+                                 '111940B': '111940'}
+        clean_source:
+          USDA_IWMS:
+            # year: 2018  # specify in year-specific yaml
+            selection_fields:
+              Class: Land
+              PrimaryActivity: ['HAY & HAYLAGE, (EXCL ALFALFA)', 'HAY & HAYLAGE, ALFALFA']
+
+source_names:
+  USGS_NWIS_WU:
+    fedefl_mapping: USGS_NWIS_WU
+    geoscale: state
+    exclusion_fields:
+      ActivityConsumedBy:
+        - Commercial
+        - Thermoelectric Power Closed-loop cooling
+        - Thermoelectric Power Once-through cooling
+      FlowName: wastewater
+      Compartment: air
+      Description:  # prevent double counting with "Public Supply deliveries to"
+        - Domestic deliveries from public supply, in Mgal/d
+        - Public Supply total deliveries, in Mgal/d
+    clean_fba_before_activity_sets: !script_function:USGS_NWIS_WU usgs_fba_data_cleanup
+    activity_sets:
+
+      equal_attribution:
+        selection_fields:
+          PrimaryActivity:
+            - "Aquaculture"
+            - "Irrigation Golf Courses"
+            - "Public Supply"
+            - "Thermoelectric Power"
+            - "Domestic"
+        attribution_method: equal
+
+
+      employment_attribution:
+        selection_fields:
+          PrimaryActivity:
+            - "Industrial"
+            - "Mining"
+        attribution_method: proportional
+#        attribution_source:  # specify in year-specific yaml
+#          Employment_national_20XX: # specify in method
+#            geoscale:  # specify in method
+
+
+      cropland_attribution:
+        industry_spec:
+          default: NAICS_6
+          NAICS_7: ['1114', '111150', '111199']
+        selection_fields:
+          PrimaryActivity: "Irrigation Crop"
+        attribution_method: proportional
+        attribution_source:
+          USDA_CoA_Cropland:
+            # year: 2017  # specify in year-specific yaml
+            selection_fields:
+              Class: "Land"
+              FlowName:
+                - "AREA HARVESTED, IRRIGATED"
+                - "AREA IN PRODUCTION, IRRIGATED"
+                - "AREA, IRRIGATED"
+                - 'AREA BEARING & NON-BEARING, IRRIGATED'
+                - 'AREA GROWN, IRRIGATED'
+            exclusion_fields:
+              ActivityConsumedBy:
+                - 'AG LAND'
+                - 'AG LAND, CROPLAND, HARVESTED'
+            activity_sets:
+              cropland_attribution-pastureland:
+                selection_fields:
+                  PrimaryActivity: 'AG LAND, (EXCL HARVESTED CROPLAND)'
+                attribute:
+                  - attribution_method: proportional
+                    attribution_source:
+                      USDA_CoA_Cropland_NAICS:
+                        # year: 2017  # specify in year-specific yaml
+                        selection_fields:
+                          Class: Land
+                          FlowName:
+                            - "FARM OPERATIONS"
+                        estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
+                        selection_fields_after_data_suppression_estimation:
+                          PrimaryActivity: [
+                            '112', '1121', '11211', '112111', '112112',
+                            '11212', '1122', '1123', '11231', '11232',
+                            '11233', '11234', '11239', '1124', '11241',
+                            '11242', '1129', '11291', '11292', '11293',
+                            '11299']
+                        attribution_method: equal
+                  - attribution_method: multiplication
+                    attribution_source: USDA_IWMS
+              cropland_attribution-cropland:
+                exclusion_fields:
+                  ActivityConsumedBy:
+                    - 'AG LAND, (EXCL HARVESTED CROPLAND)'
+                    - 'ORCHARDS'
+                attribute:
+                  - attribution_method: proportional
+                    attribution_source:
+                      USDA_CoA_Cropland_NAICS:
+                        # year: 2017  # specify in year-specific yaml
+                        selection_fields:
+                          Class: Land
+                          FlowName:
+                            - "AG LAND, CROPLAND, HARVESTED"
+                        estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
+                        attribution_method: equal
+                  - attribution_method: multiplication
+                    attribution_source: USDA_IWMS
+              cropland_attribution-orchards:
+                selection_fields:
+                  PrimaryActivity: ORCHARDS
+                attribute:
+                  # first directly attribute so orchards are equally attributed to related sectors
+                  - attribution_method: equal
+                  - attribution_method: multiplication
+                    attribution_source: USDA_IWMS
+
+
+      livestock_attribution:
+        industry_spec:
+          default: NAICS_6
+          NAICS_7: ['112130', '112320', '112390', '112910',
+                    '112920', '112930', '112990']
+        selection_fields:
+          PrimaryActivity:
+            - "Livestock"
+        attribution_method: proportional
+        attribution_source:
+          USDA_CoA_Livestock:
+            # year: 2017  # specify in year-specific yaml
+            selection_fields:
+              Class: Other
+              FlowName:
+                - "HEAD"
+                - "NUMBER"
+                - "COLONIES"
+              Compartment:
+                - "NOT SPECIFIED"
+            attribution_method: multiplication
+            attribution_source:
+              USGS_WU_Coef:
+                year: 2005
+                geoscale: national
+                attribution_method: inheritance

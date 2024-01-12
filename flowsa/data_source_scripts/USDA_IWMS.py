@@ -10,19 +10,16 @@ Water Management Survey data
 import json
 import pandas as pd
 import numpy as np
-from esupy.dqi import get_weighted_average
-from flowsa.location import US_FIPS
-from flowsa.common import WITHDRAWN_KEYWORD, fba_wsec_default_grouping_fields
-from flowsa.dataclean import replace_strings_with_NoneType, replace_NoneType_with_empty_cells
+from flowsa.location import US_FIPS, get_state_FIPS
+from flowsa.common import WITHDRAWN_KEYWORD
 from flowsa.flowbyfunctions import assign_fips_location_system, \
-    load_fba_w_standardized_units
-from flowsa.data_source_scripts.USDA_CoA_Cropland import disaggregate_pastureland, \
-    disaggregate_cropland
+    load_fba_w_standardized_units, filter_by_geoscale
+from flowsa.flowbyactivity import FlowByActivity
 
 
 def iwms_url_helper(*, build_url, config, **_):
     """
-    This helper function uses the "build_url" input from flowbyactivity.py,
+    This helper function uses the "build_url" input from generateflowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
     string to be replaced with info specific to the data year. This function
     does not parse the data, only modifies the urls from which data is
@@ -60,7 +57,7 @@ def iwms_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
@@ -123,87 +120,3 @@ def iwms_parse(*, df_list, year, **_):
            'IN THE OPEN, IRRIGATED', 'Compartment'] = 'IRRIGATED'
 
     return df
-
-
-def disaggregate_iwms_to_6_digit_naics_for_water_withdrawal(df, attr, method,
-                                                    **kwargs):
-    """
-    Disaggregate the data in the USDA Irrigation and Water Management Survey
-    to 6-digit NAICS using Census of Agriculture 'Land in Farm' data
-    :param df: df, FBA format
-    :param attr: dictionary, attribute data from method yaml for activity set
-    :param method: dictionary, FBS method yaml
-    :return: df, FBA format with disaggregated NAICS
-    """
-
-    # define sector column to base df modifications
-    sector_column = 'SectorConsumedBy'
-
-    # address double counting brought on by iwms categories
-    # applying to multiply NAICS
-    df.drop_duplicates(subset=['FlowName', 'FlowAmount', 'Compartment',
-                               'Location'], keep='first', inplace=True)
-    years = attr['allocation_source_year'] - 1
-    df = df[~df[sector_column].isna()].reset_index(drop=True)
-    # drop aquaculture when disaggregating pastureland because water use for
-    # aquaculture calculated separately
-    df = disaggregate_pastureland(df, attr, method, years, sector_column,
-                                  download_FBA_if_missing=kwargs[
-                                      'download_FBA_if_missing'],
-                                  parameter_drop=['1125'])
-    df = disaggregate_cropland(df, attr, method, years, sector_column,
-                               download_FBA_if_missing=kwargs['download_FBA_if_missing'])
-
-    return df
-
-
-def iwms_aggregation(df_load, **kwargs):
-    """
-    Before multiplying the USDA CoA Cropland data by IWMS data,
-    first aggregate the two hay values from IWMS
-    :param df_load:
-    :param kwargs:
-    :return:
-    """
-
-    # load the acreage information for iwms
-    land_load = load_fba_w_standardized_units(
-        "USDA_IWMS", year=kwargs['attr']['helper_source_year'],
-        flowclass="Land",
-        geographic_level="state")
-
-    # subset to hay and haylage
-    land = land_load[land_load['ActivityConsumedBy'].isin(
-        ['HAY & HAYLAGE, (EXCL ALFALFA)', 'HAY & HAYLAGE, ALFALFA'])]
-    land_sub = land[['ActivityConsumedBy', 'FlowAmount',
-                     'Location']].reset_index(drop=True)
-    land_sub = land_sub.rename(columns={'FlowAmount': 'HelperFlow'})
-
-    # merge the two dfs
-    df = pd.merge(df_load, land_sub, how='right')
-    df['HelperFlow'] = df['HelperFlow'].fillna(1)
-    # drop rows where flow is 0
-    df = df[df['FlowAmount'] != 0]
-    # reset hay sectors and rename
-    df['SectorConsumedBy'] = np.where(df['SectorConsumedBy'].isin([
-        '111940A', '111940B']), '11194', df['SectorConsumedBy'])
-    df['ActivityConsumedBy'] = np.where(df['SectorConsumedBy'] == '11194',
-                                        'HAY & HAYLAGE',
-                                        df['ActivityConsumedBy'])
-
-    wt_flow = df.groupby(df['Location']).apply(
-        lambda x: np.average(x['FlowAmount'], weights=x[
-            'HelperFlow'])).reset_index()
-    wt_flow = wt_flow.rename(columns={wt_flow.columns[1]:'NewFlow'})
-
-    df2 = df.merge(wt_flow)
-    # reset flowamount, drop duplicates, drop columns
-    df2 = df2.assign(FlowAmount=df2['NewFlow']).drop(columns=['HelperFlow',
-                                                        'NewFlow'])
-    df3 = df2.drop_duplicates()
-
-    # drop data from original, add in modifed data
-    df_o = df_load[~df_load['SectorConsumedBy'].isin(['111940A', '111940B'])]
-    df4 = pd.concat([df_o, df3], ignore_index=True)
-
-    return df4

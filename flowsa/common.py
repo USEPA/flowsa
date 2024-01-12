@@ -4,21 +4,24 @@
 
 """Common variables and functions used across flowsa"""
 
-import shutil
 import os
+import pprint
+from os import path
+import re
 import yaml
 import pandas as pd
 import numpy as np
+from copy import deepcopy
 from dotenv import load_dotenv
-from esupy.processed_data_mgmt import create_paths_if_missing
 import flowsa.flowsa_yaml as flowsa_yaml
 import flowsa.exceptions
+from flowsa.flowsa_log import log
 from flowsa.schema import flow_by_activity_fields, flow_by_sector_fields, \
     flow_by_sector_collapsed_fields, flow_by_activity_mapped_fields, \
     flow_by_activity_wsec_fields, flow_by_activity_mapped_wsec_fields, \
     activity_fields
-from flowsa.settings import datapath, MODULEPATH, logoutputpath, \
-    sourceconfigpath, log, flowbysectormethodpath, methodpath
+from flowsa.settings import datapath, MODULEPATH, \
+    sourceconfigpath, flowbysectormethodpath, methodpath
 
 
 # Sets default Sector Source Name
@@ -53,12 +56,12 @@ def load_env_file_key(env_file, key):
     :return: str, value of the key stored in the env
     """
     if env_file == 'API_Key':
-        load_dotenv(f'{MODULEPATH}API_Keys.env', verbose=True)
+        load_dotenv(f'{MODULEPATH}/API_Keys.env', verbose=True)
         value = os.getenv(key)
         if value is None:
             raise flowsa.exceptions.APIError(api_source=key)
     else:
-        load_dotenv(f'{MODULEPATH}external_paths.env', verbose=True)
+        load_dotenv(f'{MODULEPATH}/external_paths.env', verbose=True)
         value = os.getenv(key)
         if value is None:
             raise flowsa.exceptions.EnvError(key=key)
@@ -67,26 +70,24 @@ def load_env_file_key(env_file, key):
 
 def load_crosswalk(crosswalk_name):
     """
-    Load NAICS crosswalk between the years 2007, 2012, 2017
+    Used to load the crosswalks:
+
+    'NAICS_Crosswalk_TimeSeries', 'NAICS_2012_Crosswalk',
+    'Sector_2012_Names', 'Household_SectorCodes', 'Government_SectorCodes',
+    'NAICS_to_BEA_Crosswalk_2012', 'NAICS_to_BEA_Crosswalk_2017'
+
+    as a dataframe
+
     :return: df, NAICS crosswalk over the years
     """
 
-    cw_dict = {'sector_timeseries': 'NAICS_Crosswalk_TimeSeries',
-               'sector_length': 'NAICS_2012_Crosswalk',
-               'sector_name': 'Sector_2012_Names',
-               'household': 'Household_SectorCodes',
-               'government': 'Government_SectorCodes',
-               'BEA': 'NAICS_to_BEA_Crosswalk'
-               }
+    cw = pd.read_csv(datapath / f'{crosswalk_name}.csv', dtype="str")
 
-    fn = cw_dict.get(crosswalk_name)
-
-    cw = pd.read_csv(f'{datapath}{fn}.csv', dtype="str")
     return cw
 
 
-def load_sector_length_cw_melt():
-    cw_load = load_crosswalk('sector_length')
+def load_sector_length_cw_melt(year='2012'):
+    cw_load = load_crosswalk(f'NAICS_{year}_Crosswalk')
     cw_melt = cw_load.melt(var_name="SectorLength", value_name='Sector'
                            ).drop_duplicates().reset_index(drop=True)
     cw_melt = cw_melt.dropna().reset_index(drop=True)
@@ -105,7 +106,7 @@ def return_bea_codes_used_as_naics():
     :return: list of BEA codes used as NAICS
     """
     cw_list = []
-    for cw in ['household', 'government']:
+    for cw in ['Household_SectorCodes', 'Government_SectorCodes']:
         df = load_crosswalk(cw)
         cw_list.append(df)
     # concat data into single dataframe
@@ -114,36 +115,54 @@ def return_bea_codes_used_as_naics():
     return code_list
 
 
-def load_yaml_dict(filename, flowbytype=None, filepath=None):
+def load_yaml_dict(filename, flowbytype=None, filepath=None, **kwargs):
     """
     Load the information in a yaml file, from source_catalog, or FBA,
     or FBS files
     :return: dictionary containing all information in yaml
     """
+    # check if the version and githash are included in the filename, if so,
+    # drop, but return warning that we might be loading a revised version of
+    # the config file. The pattern looks for a "_v" followed by a number
+    # between [0-9] followed by a decimal
+    pattern = '_v[0-9].*'
+    if re.search(pattern, filename):
+        log.warning('Filename includes a github version and githash. Dropping '
+                 'the version and hash to load most up-to-date yaml config '
+                 'file. The yaml config file might not reflect the yaml used '
+                 'to generate the dataframe')
+        filename = re.sub(pattern,'', filename)
+
     if filename in ['source_catalog']:
         folder = datapath
     else:
         # first check if a filepath for the yaml is specified, as is the
         # case with FBS method files located outside FLOWSA
-        if filepath is not None:
-            log.info(f'Loading {filename}.yaml from'
-                     f' {filepath}flowbysectormethods/')
-            folder = f'{filepath}flowbysectormethods/'
+        # if filepath is not None:
+        if path.exists(path.join(str(filepath), f'{filename}.yaml')):
+            log.info(f'Loading {filename} from {filepath}')
+            folder = filepath
         else:
+            if filepath is not None:
+                log.warning(f'{filename} not found in {filepath}. '
+                            f'Checking default folders')
             if flowbytype == 'FBA':
                 folder = sourceconfigpath
             elif flowbytype == 'FBS':
                 folder = flowbysectormethodpath
             else:
                 raise KeyError('Must specify either \'FBA\' or \'FBS\'')
-    yaml_path = folder + filename + '.yaml'
+    yaml_path = f'{folder}/{filename}.yaml'
 
     try:
-        with open(yaml_path, 'r') as f:
+        with open(yaml_path, 'r', encoding='utf-8') as f:
             config = flowsa_yaml.load(f, filepath)
     except FileNotFoundError:
-        raise flowsa.exceptions.FlowsaMethodNotFoundError(
-            method_type=flowbytype, method=filename)
+        if 'config' in kwargs:
+            return deepcopy(kwargs['config'])
+        else:
+            raise flowsa.exceptions.FlowsaMethodNotFoundError(
+                method_type=flowbytype, method=filename)
     return config
 
 
@@ -153,32 +172,8 @@ def load_values_from_literature_citations_config():
     values from the literature come from
     :return: dictionary of the values from the literature information
     """
-    sfile = (f'{datapath}bibliographyinfo/'
-             f'values_from_literature_source_citations.yaml')
-    with open(sfile, 'r') as f:
-        config = yaml.safe_load(f)
-    return config
-
-
-def load_fbs_methods_additional_fbas_config():
-    """
-    Load the config file that contains information on where the
-    values from the literature come from
-    :return: dictionary of the values from the literature information
-    """
-    sfile = f'{datapath}bibliographyinfo/fbs_methods_additional_fbas.yaml'
-    with open(sfile, 'r') as f:
-        config = yaml.safe_load(f)
-    return config
-
-
-def load_functions_loading_fbas_config():
-    """
-    Load the config file that contains information on where the
-    values from the literature come from
-    :return: dictionary of the values from the literature information
-    """
-    sfile = datapath + 'bibliographyinfo/functions_loading_fbas.yaml'
+    sfile = (datapath / 'bibliographyinfo' /
+             'values_from_literature_source_citations.yaml')
     with open(sfile, 'r') as f:
         config = yaml.safe_load(f)
     return config
@@ -192,11 +187,9 @@ def create_fill_na_dict(flow_by_fields):
     """
     fill_na_dict = {}
     for k, v in flow_by_fields.items():
-        if v[0]['dtype'] == 'str':
-            fill_na_dict[k] = ""
-        elif v[0]['dtype'] == 'int':
-            fill_na_dict[k] = 0
-        elif v[0]['dtype'] == 'float':
+        if v[0]['dtype'] in ['str', 'object']:
+            fill_na_dict[k] = np.nan
+        else:
             fill_na_dict[k] = 0
     return fill_na_dict
 
@@ -275,7 +268,7 @@ def get_flowsa_base_name(filedirectory, filename, extension):
     If filename does not match filename within flowsa due to added extensions
     onto the filename, cycle through
     name, dropping strings after each underscore until the name is found
-    :param filedirectory: string, path to directory
+    :param filedirectory: Path object, path to directory
     :param filename: string, name of original file searching for
     :param extension: string, type of file, such as "yaml" or "py"
     :return: string, corrected file path name
@@ -284,44 +277,11 @@ def get_flowsa_base_name(filedirectory, filename, extension):
     # underscore. Repeat this process until the file name exists or no
     # underscores are left.
     while '_' in filename:
-        if os.path.exists(f"{filedirectory}{filename}.{extension}"):
+        if (filedirectory / f"{filename}.{extension}").is_file():
             break
         filename, _ = filename.rsplit('_', 1)
 
     return filename
-
-
-def rename_log_file(filename, fb_meta):
-    """
-    Rename the log file saved to local directory using df meta for df
-    :param filename: str, name of dataset
-    :param fb_meta: metadata for parquet
-    :return: modified log file name
-    """
-    # original log file name - all log statements
-    log_file = f'{logoutputpath}{"flowsa.log"}'
-    # generate new log name
-    new_log_name = (f'{logoutputpath}{filename}_v'
-                    f'{fb_meta.tool_version}'
-                    f'{"_" + fb_meta.git_hash if fb_meta.git_hash else ""}'
-                    f'.log')
-    # create log directory if missing
-    create_paths_if_missing(logoutputpath)
-    # rename the standard log file name (os.rename throws error if file
-    # already exists)
-    shutil.copy(log_file, new_log_name)
-    # original log file name - validation
-    log_file = f'{logoutputpath}{"validation_flowsa.log"}'
-    # generate new log name
-    new_log_name = (f'{logoutputpath}{filename}_v'
-                    f'{fb_meta.tool_version}'
-                    f'{"_" + fb_meta.git_hash if fb_meta.git_hash else ""}'
-                    f'_validation.log')
-    # create log directory if missing
-    create_paths_if_missing(logoutputpath)
-    # rename the standard log file name (os.rename throws error if file
-    # already exists)
-    shutil.copy(log_file, new_log_name)
 
 
 def return_true_source_catalog_name(sourcename):
@@ -332,36 +292,6 @@ def return_true_source_catalog_name(sourcename):
             '_' in sourcename):
         sourcename = sourcename.rsplit("_", 1)[0]
     return sourcename
-
-
-def check_activities_sector_like(df_load, sourcename=None):
-    """
-    Check if the activities in a df are sector-like,
-    if cannot find the sourcename in the source catalog, drop extensions on the
-    source name
-    :param df_load: df, df to determine if activities are sector-like
-    :param source: str, optionial, can identify sourcename to use
-    """
-    # identify sourcename
-    if sourcename is not None:
-        s = sourcename
-    else:
-        if 'SourceName' in df_load.columns:
-            s = pd.unique(df_load['SourceName'])[0]
-        elif 'MetaSources' in df_load.columns:
-            s = pd.unique(df_load['MetaSources'])[0]
-
-    sourcename = return_true_source_catalog_name(s)
-
-    try:
-        sectorLike = load_yaml_dict('source_catalog')[sourcename][
-            'sector-like_activities']
-    except KeyError:
-        log.info(f'%s not found in {datapath}source_catalog.yaml, assuming '
-                 f'activities are not sector-like', sourcename)
-        sectorLike = False
-
-    return sectorLike
 
 
 def str2bool(v):
@@ -380,7 +310,62 @@ def str2bool(v):
 
 def check_method_status():
     """Read the current method status"""
-    yaml_path = methodpath + 'method_status.yaml'
+    yaml_path = methodpath / 'method_status.yaml'
     with open(yaml_path, 'r') as f:
         method_status = yaml.safe_load(f)
     return method_status
+
+
+def get_catalog_info(source_name: str) -> dict:
+    '''
+    Retrieves the information on a given source from source_catalog.yaml.
+    Replaces various pieces of code that load the source_catalog yaml.
+    '''
+    source_catalog = load_yaml_dict('source_catalog')
+    source_name = return_true_source_catalog_name(source_name)
+    return source_catalog.get(source_name, {})
+
+
+def seeAvailableFlowByModels(flowbytype, print_method=True):
+    """
+    Console print and return available Flow-By-Activity or Flow-By-Sector models
+    :param flowbytype: 'FBA' or 'FBS'
+    :param print_method: False to skip printing to console
+    :return: dict or list of available models
+    """
+
+    # fb directory contents dependent on FBA or FBS
+    if flowbytype == 'FBA':
+        fb_dir = os.listdir(sourceconfigpath)
+    elif flowbytype == 'FBS':
+        fb_dir = os.listdir(flowbysectormethodpath)
+    else:
+        raise ValueError("flowbytype must be 'FBA' or 'FBS'")
+
+    # list of file names (drop extension) for yaml files in flow directory
+    fb_names = [os.path.splitext(f)[0] for f in fb_dir if f.endswith('.yaml')]
+
+    # further reduce list of file names by excluding common and summary_target
+    exclude = ["_common", "_Common", "_target"]
+    fb_names = [f for f in fb_names if all(s not in f for s in exclude)]
+
+    if flowbytype == 'FBA':
+        # create empty dictionary, this will be the data format to print FBA
+        data_print = {}
+        # iterate over names to build dict for FBA and handling years
+        for f in fb_names:
+            s = load_yaml_dict(f, 'FBA')
+            try:
+                years = s['years']
+            except KeyError:
+                years = 'YAML missing information on years'
+            data_print.update({f: years})
+    else:
+        # data format to print FBS
+        data_print = fb_names
+
+    if print_method:
+        # print data in human-readable format
+        pprint.pprint(data_print, width=79, compact=True)
+
+    return data_print

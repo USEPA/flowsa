@@ -1,7 +1,0 @@
-target_sector_level: NAICS_6
-target_sector_source: NAICS_2012_Code
-target_geoscale: national
-source_names:
-  "elciFBS":
-    data_format: 'FBS_outside_flowsa'
-    FBS_datapull_fxn: !script_function:elciFBS get_elci_emissions

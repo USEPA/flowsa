@@ -25,15 +25,17 @@ if __name__ == '__main__':
     df['Sector'] = df['Activity'].copy()
     # modify the sector for activity = '31-33'
     df.loc[df['Activity'] == '31-33', 'Sector'] = '31'
-    df = df.append(pd.DataFrame([['Census_CBP', '31-33', '32']],
-                                columns=['ActivitySourceName', 'Activity', 'Sector']), sort=True)
-    df = df.append(pd.DataFrame([['Census_CBP', '31-33', '33']],
-                                columns=['ActivitySourceName', 'Activity', 'Sector']), sort=True)
+    df = pd.concat([df, pd.DataFrame(
+        [['Census_CBP', '31-33', '32']],
+        columns=['ActivitySourceName', 'Activity', 'Sector'])], sort=True)
+    df = pd.concat([df, pd.DataFrame(
+        [['Census_CBP', '31-33', '33']],
+        columns=['ActivitySourceName', 'Activity', 'Sector'])], sort=True)
     # Add additional columns
     df['SectorSourceName'] = "NAICS_2012_Code"
     df['SectorType'] = "I"
     # reorder
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(datapath + "activitytosectormapping/" +
-              "NAICS_Crosswalk_" + datasource + ".csv", index=False)
+    df.to_csv(f"{datapath}/activitytosectormapping/NAICS_Crosswalk_"
+              f"{datasource}.csv", index=False)

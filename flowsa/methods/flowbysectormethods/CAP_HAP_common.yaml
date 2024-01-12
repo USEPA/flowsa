@@ -1,0 +1,321 @@
+# This is the general method reference file.
+# Year-specific CAP_HAP files import this file to define attribution rules
+# that are further customized
+
+sources_to_cache:
+  EIA_MECS_Energy:
+    # year: 2018 # Specify target MECS year
+    selection_fields:
+      Class: Energy
+      Unit: Trillion Btu
+      Location: '00000'
+      Description:
+          - Table 2.2
+          - Table 3.2
+    exclusion_fields:
+      ActivityConsumedBy: '31-33'
+    estimate_suppressed: !script_function:EIA_MECS estimate_suppressed_mecs_energy
+    attribution_method: proportional
+    # attribution_source:
+    #   Employment_national_2018:  # Use target MECS year
+    #     data_format: FBS
+    #     year: 2018
+
+  EIA_MECS_Energy_state: ## Version to use in state models
+    # year: 2018 # Specify target MECS year
+    geoscale: state
+    selection_fields:
+      Class: Energy
+      Unit: Trillion Btu
+      Description:
+          - Table 2.2
+          - Table 3.2
+    exclusion_fields:
+      Location: '00000'
+      ActivityConsumedBy: '31-33'
+    estimate_suppressed: !script_function:EIA_MECS estimate_suppressed_mecs_energy
+    attribution_method: proportional
+    attribution_source: # Required to attribute a few sectors to full target sector level
+      Employment_state_2018: # Update to MECS year
+        geoscale: national # Uses national at this stage prior to attributing to states
+        year: 2018
+    clean_fba_after_attribution: !script_function:EIA_MECS clean_mapped_mecs_energy_fba_to_state
+    clean_source: Employment_state_2018 ## Update to MECS year
+
+_attribution_sources:
+  BEA: &bea
+    year: 2012
+    geoscale: national
+    activity_to_sector_mapping: BEA_2012_Detail
+    attribution_method: proportional
+    attribution_source:
+      Employment_national_2012:
+        data_format: FBS
+        year: 2012
+
+  USDA_CoA_Cropland: &cropland_allocation
+    year: 2017
+    geoscale: state
+    selection_fields:
+      Class: Land
+      FlowName: AREA HARVESTED
+    attribution_method: proportional
+    attribution_source:
+      USDA_CoA_Cropland_NAICS:
+        year: 2017
+        geoscale: state
+        selection_fields:
+          Class: Land
+          FlowName: AG LAND, CROPLAND, HARVESTED
+        estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
+
+  USDA_CoA_Livestock: &livestock_allocation
+    year: 2017
+    geoscale: state
+    selection_fields:
+        Class: Other
+        FlowName:
+          - HEAD
+          - NUMBER
+          - COLONIES
+        Compartment: NOT SPECIFIED
+
+source_names:
+  EPA_NEI_Nonpoint:
+    geoscale: state
+    # year: 2017 # Replace with data year
+    primary_action_type: Produced
+    activity_to_sector_mapping: SCC
+    exclusion_fields:
+        FlowName:
+          - PM10-Primary from certain diesel engines
+          - PM25-Primary from certain diesel engines
+          - Carbon Dioxide
+          - Methane
+          - Nitrous Oxide
+          - Sulfur Hexafluoride
+    clean_fba_before_activity_sets: !script_function:EPA_NEI clean_NEI_fba
+    fedefl_mapping: NEI
+    drop_unmapped_rows: True
+    activity_sets:
+      direct_allocation:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv direct_allocation
+        attribution_method: direct
+
+      cropland:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv cropland
+        attribution_method: proportional
+        attribution_source:
+          USDA_CoA_Cropland: *cropland_allocation
+
+      industry_combustion_coal:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv industry_combustion_coal
+        attribution_method: proportional
+        attribution_source:
+          EIA_MECS_Energy:
+            selection_fields:
+              Flowable: Coal
+
+      industry_combustion_coke:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv industry_combustion_coke
+        attribution_method: proportional
+        attribution_source:
+          EIA_MECS_Energy:
+            selection_fields:
+              Flowable: Coke and Breeze
+
+      industry_combustion_distillate:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv industry_combustion_distillate
+        attribution_method: proportional
+        attribution_source:
+          EIA_MECS_Energy:
+            selection_fields:
+              Flowable: Distillate Fuel Oil
+
+      industry_combustion_hgl:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv industry_combustion_hgl
+        attribution_method: proportional
+        attribution_source:
+          EIA_MECS_Energy:
+            selection_fields:
+              Flowable: Hydrocarbon Gas Liquids, excluding natural gasoline
+
+      industry_combustion_nat_gas:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv industry_combustion_nat_gas
+        attribution_method: proportional
+        attribution_source:
+          EIA_MECS_Energy:
+            selection_fields:
+              Flowable: Natural Gas
+
+      industry_combustion_other:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv industry_combustion_other
+        attribution_method: proportional
+        attribution_source:
+          EIA_MECS_Energy:
+            selection_fields:
+              Flowable: Other
+
+      industry_combustion_residual:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv industry_combustion_residual
+        attribution_method: proportional
+        attribution_source:
+          EIA_MECS_Energy:
+            selection_fields:
+              Flowable: Residual Fuel Oil
+
+      livestock:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv livestock
+        attribution_method: proportional
+        attribution_source:
+          USDA_CoA_Livestock: *livestock_allocation
+
+      mobile_and_fuel_storage:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv mobile_and_fuel_storage
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'324110': ''}  # Petroleum
+
+      fertilizers:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv fertilizers
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'325310': ''}  # Fertilizers
+
+      pesticides:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv pesticides
+        exclusion_fields:
+        # To avoid overlap with other datasets, emissions of pesticides
+        # from pesticide application are removed.
+          FlowName:
+            - 2,4-Dichlorophenoxy Acetic Acid
+            - Captan
+            - Carbaryl
+            - Methyl Bromide
+            - Methyl Iodide
+            - Parathion
+            - Trifluralin
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'325320': ''}  # Pesticides
+
+      output_allocation: # Gross Output
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonpoint_asets.csv output_allocation
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_GrossOutput_IO:
+            # year: 2017
+            geoscale: national
+            activity_to_sector_mapping: BEA_2012_Detail
+            # attribution_method: proportional
+            # attribution_source:
+            #   Employment_national_2017:
+            #     data_format: FBS
+            #     year: 2017
+
+
+  EPA_NEI_Nonroad:
+    geoscale: state
+    # year: 2017 # Replace with data year
+    primary_action_type: Produced
+    activity_to_sector_mapping: SCC
+    exclusion_fields:
+        FlowName:
+          - PM10-Primary from certain diesel engines
+          - PM25-Primary from certain diesel engines
+          - Carbon Dioxide
+          - Methane
+          - Nitrous Oxide
+          - Sulfur Hexafluoride
+    clean_fba_before_activity_sets: !script_function:EPA_NEI clean_NEI_fba
+    fedefl_mapping: NEI
+    drop_unmapped_rows: True
+    activity_sets:
+      direct_allocation:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonroad_asets.csv direct_allocation
+        attribution_method: direct
+
+      offroad_vehicles_equipment:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Nonroad_asets.csv offroad_vehicles_equipment
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'324110': ''}  # Petroleum
+
+  EPA_NEI_Onroad:
+    geoscale: state
+    # year: 2017 # Replace with data year
+    primary_action_type: Produced
+    activity_to_sector_mapping: SCC
+    exclusion_fields:
+        FlowName:
+          - PM10-Primary from certain diesel engines
+          - PM25-Primary from certain diesel engines
+          - Carbon Dioxide
+          - Methane
+          - Nitrous Oxide
+          - Sulfur Hexafluoride
+    clean_fba_before_activity_sets: !script_function:EPA_NEI clean_NEI_fba
+    fedefl_mapping: NEI
+    drop_unmapped_rows: True
+    activity_sets:
+      direct_allocation:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Onroad_asets.csv direct_allocation
+        attribution_method: direct
+
+      onroad_vehicles_gas_stations:
+        selection_fields:
+          PrimaryActivity: !from_index:NEI_Onroad_asets.csv onroad_vehicles_gas_stations
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_PRO_BeforeRedef:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'324110': ''}  # Petroleum
+
+  stewiFBS:
+    data_format: FBS_outside_flowsa
+    activity_schema: NAICS_2012_Code
+    FBS_datapull_fxn: !script_function:stewiFBS stewicombo_to_sector
+    # inventory_dict: # assign in primary method
+    #   NEI: 2017
+    #   TRI: 2017
+    # local_inventory_name: NEI_TRI_air_2017
+    compartments:
+      - air
+    reassign_process_to_sectors:
+      - airplane_emissions
+    exclusion_fields:
+      FlowName:
+        - Carbon Dioxide
+        - Methane
+        - Nitrous Oxide
+        - Sulfur Hexafluoride

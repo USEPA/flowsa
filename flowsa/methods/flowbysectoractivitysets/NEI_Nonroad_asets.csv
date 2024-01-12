@@ -1,0 +1,438 @@
+activity_set,name,note
+direct_allocation,2260004021,Lawn and Garden Equipment
+direct_allocation,2260004022,Lawn and Garden Equipment
+direct_allocation,2260004036,Lawn and Garden Equipment
+direct_allocation,2260004044,Lawn and Garden Equipment
+direct_allocation,2265004022,Lawn and Garden Equipment
+direct_allocation,2265004036,Lawn and Garden Equipment
+direct_allocation,2265004044,Lawn and Garden Equipment
+direct_allocation,2267004022,Lawn and Garden Equipment
+direct_allocation,2267004044,Lawn and Garden Equipment
+direct_allocation,2268004022,Lawn and Garden Equipment
+direct_allocation,2268004044,Lawn and Garden Equipment
+direct_allocation,2270004022,Lawn and Garden Equipment
+direct_allocation,2270004036,Lawn and Garden Equipment
+direct_allocation,2270004044,Lawn and Garden Equipment
+direct_allocation,2260004016,Lawn and Garden Equipment
+direct_allocation,2260004026,Lawn and Garden Equipment
+direct_allocation,2260004031,Lawn and Garden Equipment
+direct_allocation,2260004071,Lawn and Garden Equipment
+direct_allocation,2265004011,Lawn and Garden Equipment
+direct_allocation,2265004016,Lawn and Garden Equipment
+direct_allocation,2265004026,Lawn and Garden Equipment
+direct_allocation,2265004031,Lawn and Garden Equipment
+direct_allocation,2265004041,Lawn and Garden Equipment
+direct_allocation,2265004046,Lawn and Garden Equipment
+direct_allocation,2265004051,Lawn and Garden Equipment
+direct_allocation,2265004056,Lawn and Garden Equipment
+direct_allocation,2265004066,Lawn and Garden Equipment
+direct_allocation,2265004071,Lawn and Garden Equipment
+direct_allocation,2265004076,Lawn and Garden Equipment
+direct_allocation,2267004066,Lawn and Garden Equipment
+direct_allocation,2270004031,Lawn and Garden Equipment
+direct_allocation,2270004046,Lawn and Garden Equipment
+direct_allocation,2270004056,Lawn and Garden Equipment
+direct_allocation,2270004066,Lawn and Garden Equipment
+direct_allocation,2270004071,Lawn and Garden Equipment
+direct_allocation,2270004076,Lawn and Garden Equipment
+direct_allocation,2260001020,"Recreational equipment, lawn and garden"
+direct_allocation,2260001022,"Recreational equipment, lawn and garden"
+direct_allocation,2260001060,"Recreational equipment, lawn and garden"
+direct_allocation,2260004020,"Recreational equipment, lawn and garden"
+direct_allocation,2260004033,"Recreational equipment, lawn and garden"
+direct_allocation,2260004035,"Recreational equipment, lawn and garden"
+direct_allocation,2265001022,"Recreational equipment, lawn and garden"
+direct_allocation,2265001050,"Recreational equipment, lawn and garden"
+direct_allocation,2265001060,"Recreational equipment, lawn and garden"
+direct_allocation,2265004033,"Recreational equipment, lawn and garden"
+direct_allocation,2265004035,"Recreational equipment, lawn and garden"
+direct_allocation,2267001060,"Recreational equipment, lawn and garden"
+direct_allocation,2267004033,"Recreational equipment, lawn and garden"
+direct_allocation,2268004033,"Recreational equipment, lawn and garden"
+direct_allocation,2270001060,"Recreational equipment, lawn and garden"
+direct_allocation,2270004033,"Recreational equipment, lawn and garden"
+direct_allocation,2282005022,"Recreational equipment, lawn and garden"
+direct_allocation,2282010005,"Recreational equipment, lawn and garden"
+direct_allocation,2282020022,"Recreational equipment, lawn and garden"
+direct_allocation,2260001010,"Recreational equipment, lawn and garden"
+direct_allocation,2260001030,"Recreational equipment, lawn and garden"
+direct_allocation,2260004015,"Recreational equipment, lawn and garden"
+direct_allocation,2260004025,"Recreational equipment, lawn and garden"
+direct_allocation,2260004030,"Recreational equipment, lawn and garden"
+direct_allocation,2265001010,"Recreational equipment, lawn and garden"
+direct_allocation,2265001030,"Recreational equipment, lawn and garden"
+direct_allocation,2265004010,"Recreational equipment, lawn and garden"
+direct_allocation,2265004015,"Recreational equipment, lawn and garden"
+direct_allocation,2265004025,"Recreational equipment, lawn and garden"
+direct_allocation,2265004030,"Recreational equipment, lawn and garden"
+direct_allocation,2265004040,"Recreational equipment, lawn and garden"
+direct_allocation,2265004055,"Recreational equipment, lawn and garden"
+direct_allocation,2265004075,"Recreational equipment, lawn and garden"
+direct_allocation,2282005010,"Recreational equipment, lawn and garden"
+direct_allocation,2282005015,"Recreational equipment, lawn and garden"
+direct_allocation,2282020005,"Recreational equipment, lawn and garden"
+direct_allocation,2282020010,"Recreational equipment, lawn and garden"
+direct_allocation,2265004050,"Recreational equipment, lawn and garden"
+direct_allocation,2270010010,Oil and gas equipement
+offroad_vehicles_equipment,2260005022,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2265005022,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2267005022,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2268005022,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2270005022,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2260005035,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2265005010,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2265005015,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2265005020,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2265005025,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2265005030,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2265005035,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2265005040,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2265005045,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2265005055,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2265005060,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2267005055,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2267005060,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2268005055,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2268005060,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2270005010,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2270005015,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2270005020,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2270005025,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2270005030,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2270005035,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2270005040,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2270005045,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2270005055,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2270005060,Agricultural off-highway vehicles
+offroad_vehicles_equipment,2260002022,Construction equipment
+offroad_vehicles_equipment,2265002022,Construction equipment
+offroad_vehicles_equipment,2267002022,Construction equipment
+offroad_vehicles_equipment,2268002022,Construction equipment
+offroad_vehicles_equipment,2270002022,Construction equipment
+offroad_vehicles_equipment,2260003022,Industrial off-highway vehicles
+offroad_vehicles_equipment,2265003022,Industrial off-highway vehicles
+offroad_vehicles_equipment,2265003060,Industrial off-highway vehicles
+offroad_vehicles_equipment,2265010010,Industrial off-highway vehicles
+offroad_vehicles_equipment,2267003022,Industrial off-highway vehicles
+offroad_vehicles_equipment,2268003022,Industrial off-highway vehicles
+offroad_vehicles_equipment,2268003060,Industrial off-highway vehicles
+offroad_vehicles_equipment,2268010010,Industrial off-highway vehicles
+offroad_vehicles_equipment,2270003022,Industrial off-highway vehicles
+offroad_vehicles_equipment,2270003060,Industrial off-highway vehicles
+offroad_vehicles_equipment,2260003030,Industrial off-highway vehicles
+offroad_vehicles_equipment,2260003040,Industrial off-highway vehicles
+offroad_vehicles_equipment,2265003010,Industrial off-highway vehicles
+offroad_vehicles_equipment,2265003020,Industrial off-highway vehicles
+offroad_vehicles_equipment,2265003030,Industrial off-highway vehicles
+offroad_vehicles_equipment,2265003040,Industrial off-highway vehicles
+offroad_vehicles_equipment,2265003050,Industrial off-highway vehicles
+offroad_vehicles_equipment,2265003070,Industrial off-highway vehicles
+offroad_vehicles_equipment,2267003010,Industrial off-highway vehicles
+offroad_vehicles_equipment,2267003020,Industrial off-highway vehicles
+offroad_vehicles_equipment,2267003030,Industrial off-highway vehicles
+offroad_vehicles_equipment,2267003040,Industrial off-highway vehicles
+offroad_vehicles_equipment,2267003050,Industrial off-highway vehicles
+offroad_vehicles_equipment,2267003070,Industrial off-highway vehicles
+offroad_vehicles_equipment,2268003020,Industrial off-highway vehicles
+offroad_vehicles_equipment,2268003030,Industrial off-highway vehicles
+offroad_vehicles_equipment,2268003040,Industrial off-highway vehicles
+offroad_vehicles_equipment,2268003070,Industrial off-highway vehicles
+offroad_vehicles_equipment,2270003010,Industrial off-highway vehicles
+offroad_vehicles_equipment,2270003020,Industrial off-highway vehicles
+offroad_vehicles_equipment,2270003030,Industrial off-highway vehicles
+offroad_vehicles_equipment,2270003040,Industrial off-highway vehicles
+offroad_vehicles_equipment,2270003050,Industrial off-highway vehicles
+offroad_vehicles_equipment,2270003070,Industrial off-highway vehicles
+offroad_vehicles_equipment,2260007022,Logging equipment
+offroad_vehicles_equipment,2265007022,Logging equipment
+offroad_vehicles_equipment,2267007022,Logging equipment
+offroad_vehicles_equipment,2268007022,Logging equipment
+offroad_vehicles_equipment,2270007022,Logging equipment
+offroad_vehicles_equipment,2260007005,Logging equipment
+offroad_vehicles_equipment,2265007010,Logging equipment
+offroad_vehicles_equipment,2265007015,Logging equipment
+offroad_vehicles_equipment,2270007015,Logging equipment
+offroad_vehicles_equipment,2270007010,Logging equipment
+offroad_vehicles_equipment,2270009010,Mining equipment
+offroad_vehicles_equipment,2260002006,Construction and mining equipment
+offroad_vehicles_equipment,2260002009,Construction and mining equipment
+offroad_vehicles_equipment,2260002021,Construction and mining equipment
+offroad_vehicles_equipment,2260002027,Construction and mining equipment
+offroad_vehicles_equipment,2260002039,Construction and mining equipment
+offroad_vehicles_equipment,2260002054,Construction and mining equipment
+offroad_vehicles_equipment,2265002003,Construction and mining equipment
+offroad_vehicles_equipment,2265002006,Construction and mining equipment
+offroad_vehicles_equipment,2265002009,Construction and mining equipment
+offroad_vehicles_equipment,2265002015,Construction and mining equipment
+offroad_vehicles_equipment,2265002021,Construction and mining equipment
+offroad_vehicles_equipment,2265002024,Construction and mining equipment
+offroad_vehicles_equipment,2265002027,Construction and mining equipment
+offroad_vehicles_equipment,2265002030,Construction and mining equipment
+offroad_vehicles_equipment,2265002033,Construction and mining equipment
+offroad_vehicles_equipment,2265002039,Construction and mining equipment
+offroad_vehicles_equipment,2265002042,Construction and mining equipment
+offroad_vehicles_equipment,2265002045,Construction and mining equipment
+offroad_vehicles_equipment,2265002054,Construction and mining equipment
+offroad_vehicles_equipment,2265002057,Construction and mining equipment
+offroad_vehicles_equipment,2265002060,Construction and mining equipment
+offroad_vehicles_equipment,2265002066,Construction and mining equipment
+offroad_vehicles_equipment,2265002072,Construction and mining equipment
+offroad_vehicles_equipment,2265002078,Construction and mining equipment
+offroad_vehicles_equipment,2265002081,Construction and mining equipment
+offroad_vehicles_equipment,2267002003,Construction and mining equipment
+offroad_vehicles_equipment,2267002015,Construction and mining equipment
+offroad_vehicles_equipment,2267002021,Construction and mining equipment
+offroad_vehicles_equipment,2267002024,Construction and mining equipment
+offroad_vehicles_equipment,2267002030,Construction and mining equipment
+offroad_vehicles_equipment,2267002033,Construction and mining equipment
+offroad_vehicles_equipment,2267002039,Construction and mining equipment
+offroad_vehicles_equipment,2267002045,Construction and mining equipment
+offroad_vehicles_equipment,2267002054,Construction and mining equipment
+offroad_vehicles_equipment,2267002057,Construction and mining equipment
+offroad_vehicles_equipment,2267002060,Construction and mining equipment
+offroad_vehicles_equipment,2267002066,Construction and mining equipment
+offroad_vehicles_equipment,2267002072,Construction and mining equipment
+offroad_vehicles_equipment,2267002081,Construction and mining equipment
+offroad_vehicles_equipment,2268002081,Construction and mining equipment
+offroad_vehicles_equipment,2270002003,Construction and mining equipment
+offroad_vehicles_equipment,2270002006,Construction and mining equipment
+offroad_vehicles_equipment,2270002009,Construction and mining equipment
+offroad_vehicles_equipment,2270002015,Construction and mining equipment
+offroad_vehicles_equipment,2270002018,Construction and mining equipment
+offroad_vehicles_equipment,2270002021,Construction and mining equipment
+offroad_vehicles_equipment,2270002024,Construction and mining equipment
+offroad_vehicles_equipment,2270002027,Construction and mining equipment
+offroad_vehicles_equipment,2270002030,Construction and mining equipment
+offroad_vehicles_equipment,2270002033,Construction and mining equipment
+offroad_vehicles_equipment,2270002036,Construction and mining equipment
+offroad_vehicles_equipment,2270002039,Construction and mining equipment
+offroad_vehicles_equipment,2270002042,Construction and mining equipment
+offroad_vehicles_equipment,2270002045,Construction and mining equipment
+offroad_vehicles_equipment,2270002048,Construction and mining equipment
+offroad_vehicles_equipment,2270002051,Construction and mining equipment
+offroad_vehicles_equipment,2270002054,Construction and mining equipment
+offroad_vehicles_equipment,2270002057,Construction and mining equipment
+offroad_vehicles_equipment,2270002060,Construction and mining equipment
+offroad_vehicles_equipment,2270002066,Construction and mining equipment
+offroad_vehicles_equipment,2270002069,Construction and mining equipment
+offroad_vehicles_equipment,2270002072,Construction and mining equipment
+offroad_vehicles_equipment,2270002075,Construction and mining equipment
+offroad_vehicles_equipment,2270002078,Construction and mining equipment
+offroad_vehicles_equipment,2270002081,Construction and mining equipment
+offroad_vehicles_equipment,2285002015,Railroad maintenance
+offroad_vehicles_equipment,2285004015,Railroad maintenance
+offroad_vehicles_equipment,2285006015,Railroad maintenance
+offroad_vehicles_equipment,2260006022,Commercial Equipment
+offroad_vehicles_equipment,2265006022,Commercial Equipment
+offroad_vehicles_equipment,2267006022,Commercial Equipment
+offroad_vehicles_equipment,2268006022,Commercial Equipment
+offroad_vehicles_equipment,2270006022,Commercial Equipment
+offroad_vehicles_equipment,2260006005,Commercial Equipment
+offroad_vehicles_equipment,2260006010,Commercial Equipment
+offroad_vehicles_equipment,2260006015,Commercial Equipment
+offroad_vehicles_equipment,2260006035,Commercial Equipment
+offroad_vehicles_equipment,2265006005,Commercial Equipment
+offroad_vehicles_equipment,2265006010,Commercial Equipment
+offroad_vehicles_equipment,2265006015,Commercial Equipment
+offroad_vehicles_equipment,2265006025,Commercial Equipment
+offroad_vehicles_equipment,2265006030,Commercial Equipment
+offroad_vehicles_equipment,2265006035,Commercial Equipment
+offroad_vehicles_equipment,2267006005,Commercial Equipment
+offroad_vehicles_equipment,2267006010,Commercial Equipment
+offroad_vehicles_equipment,2267006015,Commercial Equipment
+offroad_vehicles_equipment,2267006025,Commercial Equipment
+offroad_vehicles_equipment,2267006030,Commercial Equipment
+offroad_vehicles_equipment,2267006035,Commercial Equipment
+offroad_vehicles_equipment,2268006005,Commercial Equipment
+offroad_vehicles_equipment,2268006010,Commercial Equipment
+offroad_vehicles_equipment,2268006015,Commercial Equipment
+offroad_vehicles_equipment,2268006020,Commercial Equipment
+offroad_vehicles_equipment,2270006005,Commercial Equipment
+offroad_vehicles_equipment,2270006010,Commercial Equipment
+offroad_vehicles_equipment,2270006015,Commercial Equipment
+offroad_vehicles_equipment,2270006025,Commercial Equipment
+offroad_vehicles_equipment,2270006030,Commercial Equipment
+offroad_vehicles_equipment,2270006035,Commercial Equipment
+offroad_vehicles_equipment,2268006035,Commercial Equipment
+offroad_vehicles_equipment,2270006020,Commercial Equipment
+offroad_vehicles_equipment_a,2260005022,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2265005022,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2267005022,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2268005022,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2270005022,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2260005035,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2265005010,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2265005015,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2265005020,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2265005025,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2265005030,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2265005035,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2265005040,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2265005045,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2265005055,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2265005060,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2267005055,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2267005060,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2268005055,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2268005060,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2270005010,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2270005015,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2270005020,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2270005025,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2270005030,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2270005035,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2270005040,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2270005045,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2270005055,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2270005060,Agricultural off-highway vehicles
+offroad_vehicles_equipment_a,2260002022,Construction equipment
+offroad_vehicles_equipment_a,2265002022,Construction equipment
+offroad_vehicles_equipment_a,2267002022,Construction equipment
+offroad_vehicles_equipment_a,2268002022,Construction equipment
+offroad_vehicles_equipment_a,2270002022,Construction equipment
+offroad_vehicles_equipment_b,2260003022,Industrial off-highway vehicles
+offroad_vehicles_equipment_b,2265003022,Industrial off-highway vehicles
+offroad_vehicles_equipment_b,2265003060,Industrial off-highway vehicles
+offroad_vehicles_equipment_b,2265010010,Industrial off-highway vehicles
+offroad_vehicles_equipment_b,2267003022,Industrial off-highway vehicles
+offroad_vehicles_equipment_b,2268003022,Industrial off-highway vehicles
+offroad_vehicles_equipment_b,2268003060,Industrial off-highway vehicles
+offroad_vehicles_equipment_b,2268010010,Industrial off-highway vehicles
+offroad_vehicles_equipment_b,2270003022,Industrial off-highway vehicles
+offroad_vehicles_equipment_b,2270003060,Industrial off-highway vehicles
+offroad_vehicles_equipment_b,2260003030,Industrial off-highway vehicles
+offroad_vehicles_equipment_b,2260003040,Industrial off-highway vehicles
+offroad_vehicles_equipment_b,2265003010,Industrial off-highway vehicles
+offroad_vehicles_equipment_b,2265003020,Industrial off-highway vehicles
+offroad_vehicles_equipment_b,2265003030,Industrial off-highway vehicles
+offroad_vehicles_equipment_b,2265003040,Industrial off-highway vehicles
+offroad_vehicles_equipment_b,2265003050,Industrial off-highway vehicles
+offroad_vehicles_equipment_b,2265003070,Industrial off-highway vehicles
+offroad_vehicles_equipment_b,2267003010,Industrial off-highway vehicles
+offroad_vehicles_equipment_e,2267003020,Industrial off-highway vehicles
+offroad_vehicles_equipment_e,2267003030,Industrial off-highway vehicles
+offroad_vehicles_equipment_e,2267003040,Industrial off-highway vehicles
+offroad_vehicles_equipment_e,2267003050,Industrial off-highway vehicles
+offroad_vehicles_equipment_e,2267003070,Industrial off-highway vehicles
+offroad_vehicles_equipment_e,2268003020,Industrial off-highway vehicles
+offroad_vehicles_equipment_e,2268003030,Industrial off-highway vehicles
+offroad_vehicles_equipment_e,2268003040,Industrial off-highway vehicles
+offroad_vehicles_equipment_e,2268003070,Industrial off-highway vehicles
+offroad_vehicles_equipment_e,2270003010,Industrial off-highway vehicles
+offroad_vehicles_equipment_e,2270003020,Industrial off-highway vehicles
+offroad_vehicles_equipment_e,2270003030,Industrial off-highway vehicles
+offroad_vehicles_equipment_e,2270003040,Industrial off-highway vehicles
+offroad_vehicles_equipment_e,2270003050,Industrial off-highway vehicles
+offroad_vehicles_equipment_e,2270003070,Industrial off-highway vehicles
+offroad_vehicles_equipment_c,2260007022,Logging equipment
+offroad_vehicles_equipment_c,2265007022,Logging equipment
+offroad_vehicles_equipment_c,2267007022,Logging equipment
+offroad_vehicles_equipment_c,2268007022,Logging equipment
+offroad_vehicles_equipment_c,2270007022,Logging equipment
+offroad_vehicles_equipment_c,2260007005,Logging equipment
+offroad_vehicles_equipment_c,2265007010,Logging equipment
+offroad_vehicles_equipment_c,2265007015,Logging equipment
+offroad_vehicles_equipment_c,2270007015,Logging equipment
+offroad_vehicles_equipment_c,2270007010,Logging equipment
+offroad_vehicles_equipment_c,2270009010,Mining equipment
+offroad_vehicles_equipment_c,2260002006,Construction and mining equipment
+offroad_vehicles_equipment_c,2260002009,Construction and mining equipment
+offroad_vehicles_equipment_c,2260002021,Construction and mining equipment
+offroad_vehicles_equipment_c,2260002027,Construction and mining equipment
+offroad_vehicles_equipment_c,2260002039,Construction and mining equipment
+offroad_vehicles_equipment_c,2260002054,Construction and mining equipment
+offroad_vehicles_equipment_c,2265002003,Construction and mining equipment
+offroad_vehicles_equipment_c,2265002006,Construction and mining equipment
+offroad_vehicles_equipment_c,2265002009,Construction and mining equipment
+offroad_vehicles_equipment_c,2265002015,Construction and mining equipment
+offroad_vehicles_equipment_c,2265002021,Construction and mining equipment
+offroad_vehicles_equipment_c,2265002024,Construction and mining equipment
+offroad_vehicles_equipment_c,2265002027,Construction and mining equipment
+offroad_vehicles_equipment_c,2265002030,Construction and mining equipment
+offroad_vehicles_equipment_c,2265002033,Construction and mining equipment
+offroad_vehicles_equipment_c,2265002039,Construction and mining equipment
+offroad_vehicles_equipment_c,2265002042,Construction and mining equipment
+offroad_vehicles_equipment_c,2265002045,Construction and mining equipment
+offroad_vehicles_equipment_c,2265002054,Construction and mining equipment
+offroad_vehicles_equipment_c,2265002057,Construction and mining equipment
+offroad_vehicles_equipment_c,2265002060,Construction and mining equipment
+offroad_vehicles_equipment_c,2265002066,Construction and mining equipment
+offroad_vehicles_equipment_c,2265002072,Construction and mining equipment
+offroad_vehicles_equipment_c,2265002078,Construction and mining equipment
+offroad_vehicles_equipment_c,2265002081,Construction and mining equipment
+offroad_vehicles_equipment_c,2267002003,Construction and mining equipment
+offroad_vehicles_equipment_c,2267002015,Construction and mining equipment
+offroad_vehicles_equipment_c,2267002021,Construction and mining equipment
+offroad_vehicles_equipment_c,2267002024,Construction and mining equipment
+offroad_vehicles_equipment_c,2267002030,Construction and mining equipment
+offroad_vehicles_equipment_c,2267002033,Construction and mining equipment
+offroad_vehicles_equipment_c,2267002039,Construction and mining equipment
+offroad_vehicles_equipment_c,2267002045,Construction and mining equipment
+offroad_vehicles_equipment_c,2267002054,Construction and mining equipment
+offroad_vehicles_equipment_c,2267002057,Construction and mining equipment
+offroad_vehicles_equipment_c,2267002060,Construction and mining equipment
+offroad_vehicles_equipment_c,2267002066,Construction and mining equipment
+offroad_vehicles_equipment_c,2267002072,Construction and mining equipment
+offroad_vehicles_equipment_c,2267002081,Construction and mining equipment
+offroad_vehicles_equipment_c,2268002081,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002003,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002006,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002009,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002015,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002018,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002021,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002024,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002027,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002030,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002033,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002036,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002039,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002042,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002045,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002048,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002051,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002054,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002057,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002060,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002066,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002069,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002072,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002075,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002078,Construction and mining equipment
+offroad_vehicles_equipment_c,2270002081,Construction and mining equipment
+offroad_vehicles_equipment_c,2285002015,Railroad maintenance
+offroad_vehicles_equipment_c,2285004015,Railroad maintenance
+offroad_vehicles_equipment_c,2285006015,Railroad maintenance
+offroad_vehicles_equipment_d,2260006022,Commercial Equipment
+offroad_vehicles_equipment_d,2265006022,Commercial Equipment
+offroad_vehicles_equipment_d,2267006022,Commercial Equipment
+offroad_vehicles_equipment_d,2268006022,Commercial Equipment
+offroad_vehicles_equipment_d,2270006022,Commercial Equipment
+offroad_vehicles_equipment_d,2260006005,Commercial Equipment
+offroad_vehicles_equipment_d,2260006010,Commercial Equipment
+offroad_vehicles_equipment_d,2260006015,Commercial Equipment
+offroad_vehicles_equipment_d,2260006035,Commercial Equipment
+offroad_vehicles_equipment_d,2265006005,Commercial Equipment
+offroad_vehicles_equipment_d,2265006010,Commercial Equipment
+offroad_vehicles_equipment_d,2265006015,Commercial Equipment
+offroad_vehicles_equipment_d,2265006025,Commercial Equipment
+offroad_vehicles_equipment_d,2265006030,Commercial Equipment
+offroad_vehicles_equipment_d,2265006035,Commercial Equipment
+offroad_vehicles_equipment_d,2267006005,Commercial Equipment
+offroad_vehicles_equipment_d,2267006010,Commercial Equipment
+offroad_vehicles_equipment_d,2267006015,Commercial Equipment
+offroad_vehicles_equipment_d,2267006025,Commercial Equipment
+offroad_vehicles_equipment_d,2267006030,Commercial Equipment
+offroad_vehicles_equipment_d,2267006035,Commercial Equipment
+offroad_vehicles_equipment_d,2268006005,Commercial Equipment
+offroad_vehicles_equipment_d,2268006010,Commercial Equipment
+offroad_vehicles_equipment_d,2268006015,Commercial Equipment
+offroad_vehicles_equipment_d,2268006020,Commercial Equipment
+offroad_vehicles_equipment_d,2270006005,Commercial Equipment
+offroad_vehicles_equipment_d,2270006010,Commercial Equipment
+offroad_vehicles_equipment_d,2270006015,Commercial Equipment
+offroad_vehicles_equipment_d,2270006025,Commercial Equipment
+offroad_vehicles_equipment_d,2270006030,Commercial Equipment
+offroad_vehicles_equipment_d,2270006035,Commercial Equipment
+offroad_vehicles_equipment_d,2268006035,Commercial Equipment
+offroad_vehicles_equipment_d,2270006020,Commercial Equipment

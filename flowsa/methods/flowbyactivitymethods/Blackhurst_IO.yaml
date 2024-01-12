@@ -3,13 +3,10 @@ source_name: Direct and Indirect Water Withdrawals for US Industrial sectors
 source_url: https://pubs.acs.org/doi/abs/10.1021/es903147k
 source_publication_date: 2010
 bib_id: Blackhurst_IO
-api_name: Blackhurst_IO
+api_name: None
 api_key_required: false
 format: pdf  # comma delineated data
-url:
-  base_url: https://pubs.acs.org/doi/suppl/10.1021/es903147k/suppl_file/es903147k_si_001.pdf
-allow_http_request_cookies: True
-call_response_fxn: !script_function:Blackhurst_IO bh_call
+url: None
 parse_response_fxn: !script_function:Blackhurst_IO bh_parse
 years:
 - 2002

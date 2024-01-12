@@ -1,0 +1,33 @@
+
+GRDREL:
+    data_format: FBS_outside_flowsa
+    activity_schema: NAICS_2012_Code
+    FBS_datapull_fxn: !script_function:stewiFBS stewicombo_to_sector
+    # Below are arguments needed by the stewicombo_to_sector function
+    inventory_dict:
+      TRI: 2017
+    local_inventory_name: TRI_GRDREL_2017
+    compartments:
+      - soil
+
+TRI_DMR:
+    data_format: FBS_outside_flowsa
+    activity_schema: NAICS_2012_Code
+    FBS_datapull_fxn: !script_function:stewiFBS stewicombo_to_sector
+    # Below are arguments needed by the stewicombo_to_sector function
+    inventory_dict:
+      TRI: 2017
+      DMR: 2017
+    local_inventory_name: TRI_DMR_2017
+    compartments:
+      - water
+
+CRHW:
+    data_format: FBS_outside_flowsa
+    activity_schema: NAICS_2012_Code
+    FBS_datapull_fxn: !script_function:stewiFBS stewi_to_sector
+    # Below are arguments needed by the stewicombo_to_sector function
+    inventory_dict:
+      RCRAInfo: 2017
+    compartments:
+      - waste

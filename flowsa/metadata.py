@@ -9,10 +9,10 @@ FlowByActivity (FBA) and FlowBySector (FBS) datasets
 import pandas as pd
 from esupy.processed_data_mgmt import FileMeta, write_metadata_to_file, \
     read_source_metadata
-from flowsa.common import load_functions_loading_fbas_config, \
-    load_fbs_methods_additional_fbas_config, return_true_source_catalog_name
+from flowsa.common import return_true_source_catalog_name, get_catalog_info
+from flowsa.flowsa_log import log
 from flowsa.settings import paths, PKG, PKG_VERSION_NUMBER, WRITE_FORMAT, \
-    GIT_HASH, GIT_HASH_LONG, log
+    GIT_HASH, GIT_HASH_LONG
 
 
 def set_fb_meta(name_data, category):
@@ -95,13 +95,6 @@ def return_fbs_method_data(source_name, config):
     from flowsa.data_source_scripts.stewiFBS import add_stewi_metadata,\
         add_stewicombo_metadata
 
-    # load the yaml that lists what additional fbas are
-    # used in creating the fbs
-    try:
-        add_fbas = load_fbs_methods_additional_fbas_config()[source_name]
-    except KeyError:
-        add_fbas = None
-
     # Create empty dictionary for storing meta data
     meta = {}
     # subset the FBS dictionary into a dictionary of source names
@@ -118,52 +111,62 @@ def return_fbs_method_data(source_name, config):
                 meta['primary_source_meta'][k] = add_stewi_metadata(
                     v['inventory_dict'])
             continue
-        if v['data_format'] in ('FBS', 'FBS_outside_flowsa'):
-            meta['primary_source_meta'][k] = \
-                getMetadata(k, category='FlowBySector')
-            continue
+
+        cat = (get_catalog_info(k).get('data_format', v.get('data_format', ''))
+               .replace('FBS', 'FlowBySector')
+               .replace('FBA', 'FlowByActivity'))
+
         # append source and year
-        meta['primary_source_meta'][k] = getMetadata(k, v["year"])
+        year = v.get('year', config.get('year'))
+        meta['primary_source_meta'][k] = getMetadata(k, year=year,
+                                                     category=cat)
         # create dictionary of allocation datasets for different activities
-        activities = v['activity_sets']
+        activities = v.get('activity_sets')
+        if activities is None:
+            if 'attribution_source' in v:
+                # for single attribution with no activity sets
+                activities = {'activity': v.copy()}
+            else:
+                continue
         # initiate nested dictionary
-        meta['primary_source_meta'][k]['allocation_source_meta'] = {}
+        attr_source_meta = {}
         # subset activity data and allocate to sector
         for aset, attr in activities.items():
-            if attr['allocation_method'] not in \
-                    (['direct', 'allocation_function']):
+            attr_dict = attr.get('attribution_source')
+            if attr_dict:
                 # append fba meta
-                meta['primary_source_meta'][k]['allocation_source_meta'][
-                    attr['allocation_source']] = getMetadata(
-                    attr['allocation_source'], attr['allocation_source_year'])
-            if 'helper_source' in attr:
-                meta['primary_source_meta'][k][
-                    'allocation_source_meta'][attr['helper_source']] = \
-                    getMetadata(attr['helper_source'],
-                                attr['helper_source_year'])
+                try:
+                    source = list(attr_dict.keys())[0]
+                    # Check first for cached source
+                    if source in config.get('sources_to_cache', ()):
+                        source_dict = config.get('sources_to_cache')[source]
+                        year = source_dict.get('year', v.get('year'))
+                    else:
+                        year = attr_dict[source].get('year', v.get('year'))
+                except AttributeError:
+                    source = attr_dict
+                    year = None
+                if source in attr_source_meta.keys():
+                    continue
+                cat = (get_catalog_info(source).get('data_format', 'FBS')
+                       .replace('FBS', 'FlowBySector')
+                       .replace('FBA', 'FlowByActivity'))
+
+                attr_source_meta[source] = getMetadata(
+                    source, year=year, category=cat)
+
             if 'literature_sources' in attr:
                 lit = attr['literature_sources']
                 for s, y in lit.items():
                     lit_meta = return_fba_method_meta(s, year=y)
                     # append fba meta
-                    meta['primary_source_meta'][k][
-                        'allocation_source_meta'][s] = lit_meta
-                    # subset the additional fbas to the source and
-                    # activity set, if exists
-        if add_fbas is not None:
-            try:
-                fbas = add_fbas[k]
-                for acts, fxn_info in fbas.items():
-                    for fxn, fba_info in fxn_info.items():
-                        for fba, y in fba_info.items():
-                            fxn_config = \
-                                load_functions_loading_fbas_config()[fxn][fba]
-                            meta['primary_source_meta'][k][
-                                'allocation_source_meta'][
-                                fxn_config['source']] = getMetadata(
-                                fxn_config['source'], y)
-            except KeyError:
-                pass
+                    attr_source_meta[s] = lit_meta
+            if 'attribution_source_meta' in meta['primary_source_meta'][k]:
+                meta['primary_source_meta'][k][
+                    'attribution_source_meta'].update(attr_source_meta)
+            else:
+                meta['primary_source_meta'][k][
+                    'attribution_source_meta'] = attr_source_meta
 
     return meta
 
@@ -202,7 +205,7 @@ def return_fba_method_meta(sourcename, **kwargs):
     return fba_dict
 
 
-def getMetadata(source, year=None, category='FlowByActivity'):
+def getMetadata(source, year=None, category=None):
     """
     Use the esupy package functions to return the metadata for
     a FBA or FBS used to generate a FBS
@@ -211,7 +214,15 @@ def getMetadata(source, year=None, category='FlowByActivity'):
     :param category: string, 'FlowBySector' or 'FlowByActivity'
     :return: meta object, previously generated FBA or FBS meta
     """
-    from flowsa.flowbyactivity import set_fba_name
+    from flowsa.generateflowbyactivity import set_fba_name
+
+    if category is None:
+        log.error('Category required, specify "FlowByActivity" or '
+                  '"FlowBySector"')
+    # if category is FBS ensure year is not added to source name when
+    # looking for metadata
+    if category == 'FlowBySector':
+        year=None
 
     name = set_fba_name(source, year)
     meta = read_source_metadata(paths, set_fb_meta(name, category))

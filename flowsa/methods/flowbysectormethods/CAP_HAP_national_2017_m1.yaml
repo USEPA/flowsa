@@ -1,0 +1,28 @@
+# This is the 2017 target year method for National detail models
+# It aggregates the state detail models
+
+!include:BEA_detail_target.yaml
+target_naics_year: 2012
+geoscale: national
+
+_emission_year: &year 2017
+
+source_names:
+  CAP_HAP_Nonpoint_2017: # detail state model
+    year: *year
+    data_format: FBS
+
+  CAP_HAP_Nonroad_2017: # detail state model
+    year: *year
+    data_format: FBS
+
+  CAP_HAP_Onroad_2017: # detail state model
+    year: *year
+    data_format: FBS
+
+  stewiFBS:
+    !include:CAP_HAP_common.yaml:source_names:stewiFBS
+    inventory_dict:
+      NEI: *year
+      TRI: *year
+    local_inventory_name: NEI_TRI_air_2017

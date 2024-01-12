@@ -1,24 +1,56 @@
 ## List of current inactive method files
 
 # FlowByActivity
-
-USGS_MYB_Potash:
-    Active: False
-    Status: Error in source data links
-    Type: HTTPError
-
-USGS_MYB_Phosphate:
-    Active: False
-    Status: Error in source data links
-    Type: HTTPError
-
-Blackhurst_IO:
+BTS_Airlines:
     Active: True
-    Status: Error in HTTP request during testing only
-    Type: HTTPError
+    Status: Private data
+    Type: FileNotFoundError
 
-
-# Flow By Sector
-CNHW_state_2014:
+EPA_NEI_Nonroad:
     Active: True
-    Status: Memory Error # Skip during GH-action testing
+    Status: Max retries exceeded with url - Certificate verify failed
+    Type: SSLError
+
+EPA_NEI_Onroad:
+    Active: True
+    Status: Max retries exceeded with url - Certificate verify failed
+    Type: SSLError
+
+EPA_NEI_Nonpoint:
+    Active: True
+    Status: Max retries exceeded with url - Certificate verify failed
+    Type: SSLError
+
+EPA_SIT:
+    Active: True
+    Status: Private data
+    Type: FileNotFoundError
+
+StateGHGI_ME:
+    Active: True
+    Status: Private data
+    Type: FileNotFoundError
+
+StateGHGI_NY:
+    Active: True
+    Status: Private data
+    Type: FileNotFoundError
+
+StateGHGI_VT:
+    Active: True
+    Status: Private data
+    Type: FileNotFoundError
+
+
+# Flow By Sectors
+CAP_HAP_national_2017_m2:
+    Active: True
+    Status: During action causes memory error; too long
+
+CAP_HAP_Nonroad_2014:
+    Active: True
+    Status: During action causes memory error; too long
+
+CAP_HAP_national_2014_m1:
+    Active: True
+    Status: Issue with CAP_HAP_Nonroad_2014 prevents method completion

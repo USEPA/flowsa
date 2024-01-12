@@ -1,18 +1,19 @@
 # Attribute EPA's Wasted Food Report to sectors using the scoping memo for
 # attribution methodology
 
-target_sector_level: NAICS_6
-target_subset_sector_level: {NAICS_7: ['562212', '562219']}
-target_sector_source: NAICS_2012_Code
-target_geoscale: national
+industry_spec:
+  default: NAICS_6
+  NAICS_7: ['562212', '562219']
+year: 2018
+target_naics_year: 2012
+geoscale: national
+
 source_names:
-  "EPA_WFR":
-    data_format: 'FBA'
-    class: Other
-    geoscale_to_use: national
-    year: 2018
+  EPA_WFR:
+    selection_fields:
+      Class: Other
     # the below function adds in treated waste and uses REI data to proportionally attribute ABP to ACB
-    clean_fba_df_fxn: !script_function:EPA_WFR foodwaste_use
+    clean_fba_before_activity_sets: !script_function:EPA_WFR foodwaste_use
     # use the activity_parameters to attribute treated food waste to sectors
     activity_parameters:
       - "Animal Feed"
@@ -21,77 +22,92 @@ source_names:
       - "Composting/Aerobic Processes"
     activity_sets:
       direct:
-        names:
-          - "Colleges & Universities"
-          - "Food Banks"
-          - "K-12 Schools"
-          - "Military Installations"
-          - "Residential"
-          - "Sports Venues"
-        allocation_method: direct
-        allocation_from_scale: national
+        selection_fields:
+          PrimaryActivity:
+            - "Colleges & Universities"
+            - "Food Banks"
+            - "K-12 Schools"
+            - "Military Installations"
+            - "Residential"
+            - "Sports Venues"
+        attribution_method: direct
       employment:
-        names:
-          - "Correctional Facilities"
-          - "Hospitals"
-          - "Hotels"
-          - "Nursing Homes"
-          - "Office Buildings"
-          - "Restaurants/Food Services"
-          - "Retail"
-        allocation_method: proportional
-        allocation_source: "BLS_QCEW"
-        allocation_source_class: "Employment"
-        allocation_source_year: 2018
-        allocation_from_scale: national
-        allocation_fba_load_scale: national
-        clean_allocation_fba_w_sec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
+        primary_action_type: Produced
+        selection_fields:
+          PrimaryActivity:
+            - "Correctional Facilities"
+            - "Hospitals"
+            - "Hotels"
+            - "Nursing Homes"
+            - "Office Buildings"
+            - "Restaurants/Food Services"
+            - "Retail"
+        attribution_method: proportional
+#        do not want to attribute the waste management pathways using
+#        employment data (SectorConsumedBy), only attribute the waste
+#        generation activities (SectorProducedBy)
+        attribute_on: [PrimarySector]
+        attribution_source: Employment_national_2018
       establishments:
-        names:
-          - "Wholesale"
-        allocation_method: proportional
-        allocation_source: "BLS_QCEW"
-        allocation_source_class: "Other"
-        allocation_source_year: 2018
-        allocation_from_scale: national
-        allocation_fba_load_scale: national
-        clean_allocation_fba_w_sec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
+        primary_action_type: Produced
+        selection_fields:
+          PrimaryActivity:
+            - "Wholesale"
+        attribution_method: proportional
+        # do not want to attribute the waste management pathways using employment data (SectorConsumedBy)
+        attribute_on: [PrimarySector]
+        attribution_source:
+          BLS_QCEW:
+            selection_fields:
+              Class: "Other"
+              Location: !include:Location_common.yaml:_national_location
+            estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
+            selection_fields_after_data_suppression_estimation:
+              FlowName: {
+                'Number of establishments, Federal Government': 'Number of establishments',
+                'Number of establishments, Local Government': 'Number of establishments',
+                'Number of establishments, Private': 'Number of establishments',
+                'Number of establishments, State Government': 'Number of establishments'
+              }  # standardize after estimating suppressed
       manufacturing:
-        names:
-          - "Manufacturing/Processing"
-        allocation_method: proportional
-        allocation_source: "Census_ASM"
-        allocation_source_class: "Money"
-        allocation_source_year: 2018
-        allocation_from_scale: national
-        allocation_fba_load_scale: national
+        primary_action_type: Produced
+        selection_fields:
+          PrimaryActivity:
+            - "Manufacturing/Processing"
+        attribution_method: proportional
+        # do not want to attribute the waste management pathways using employment data (SectorConsumedBy)
+        attribute_on: [PrimarySector]
+        attribution_source:
+          Census_ASM:
+            selection_fields:
+              Class: Money
       treated_waste_direct:
-        names:
-          - 'Dog and cat food manufacturing'
-          - 'Other animal food manufacturing'
-          - 'Petrochemical manufacturing'
-          - 'Other basic organic chemical manufacturing'
-          - 'Soap and cleaning compound manufacturing'
-          - 'Toilet preparation manufacturing'
-          - 'Printing ink manufacturing'
-          - 'Gasoline'
-          - 'Natural gas'
-          - 'Pesticide and other agricultural chemical manufacturing'
-        allocation_method: direct
-        allocation_from_scale: national
+        primary_action_type: Consumed
+        selection_fields:
+          Activity:
+            - 'Dog and cat food manufacturing'
+            - 'Other animal food manufacturing'
+            - 'Petrochemical manufacturing'
+            - 'Other basic organic chemical manufacturing'
+            - 'Soap and cleaning compound manufacturing'
+            - 'Toilet preparation manufacturing'
+            - 'Printing ink manufacturing'
+            - 'Gasoline'
+            - 'Natural gas'
+            - 'Pesticide and other agricultural chemical manufacturing'
+        attribution_method: direct
       treated_waste_proportional:
-        names:
-          - 'Fresh wheat, corn'
-          - 'Support activities for agriculture and forestry'
-          - 'Stone mining and quarrying'
-          - 'Other nonresidential structures'
-          - 'Wholesale Trade'
-          - 'Services to buildings and dwellings'
-          - 'Museums, historical sites, zoos, and parks'
-        allocation_method: proportional
-        allocation_source: "BLS_QCEW"
-        allocation_source_class: "Employment"
-        allocation_source_year: 2018
-        allocation_from_scale: national
-        allocation_fba_load_scale: national
-        clean_allocation_fba_w_sec: !script_function:BLS_QCEW bls_clean_allocation_fba_w_sec
+        primary_action_type: Consumed
+        selection_fields:
+          Activity:
+            - 'Fresh wheat, corn'
+            - 'Support activities for agriculture and forestry'
+            - 'Stone mining and quarrying'
+            - 'Other nonresidential structures'
+            - 'Wholesale Trade'
+            - 'Services to buildings and dwellings'
+            - 'Museums, historical sites, zoos, and parks'
+        attribution_method: proportional
+        # do not want to attribute the waste management pathways using employment data (SectorProducedBy)
+        attribute_on: ['PrimarySector']  # In this case, only SectorConsumedBy
+        attribution_source: Employment_national_2018

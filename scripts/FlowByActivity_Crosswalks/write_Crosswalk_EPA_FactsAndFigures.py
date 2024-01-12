@@ -40,7 +40,7 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'Landfilled', 'Sector'] = '5622121'
     df.loc[df['Activity'] == 'Recycled', 'Sector'] = \
         '5629201'  # child NAICS 1 for MSW
-    df.loc[df['Activity'] == 'Sewer/Wastewater Treatment', 'Sector'] = '22132'
+    df.loc[df['Activity'] == 'Sewer/Wastewater Treatment', 'Sector'] = '221320'
 
     return df
 
@@ -66,5 +66,5 @@ if __name__ == '__main__':
     # sort df
     df = order_crosswalk(df)
     # save as csv
-    df.to_csv(f'{datapath}activitytosectormapping/NAICS_Crosswalk_'
+    df.to_csv(f'{datapath}/activitytosectormapping/NAICS_Crosswalk_'
               f'{datasource}.csv', index=False)

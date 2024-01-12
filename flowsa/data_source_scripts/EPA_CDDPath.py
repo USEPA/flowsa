@@ -13,8 +13,12 @@ import pandas as pd
 from tabula.io import read_pdf
 import re
 import os
+from esupy.remote import headers
+
+import flowsa.flowbyactivity
 from flowsa.location import US_FIPS
-from flowsa.settings import externaldatapath, log
+from flowsa.flowsa_log import log
+from flowsa.settings import externaldatapath
 from flowsa.flowbyfunctions import assign_fips_location_system, aggregator
 from flowsa.dataclean import standardize_units
 from flowsa.schema import flow_by_activity_mapped_fields
@@ -40,14 +44,14 @@ def call_cddpath_model(*, resp, year, config, **_):
         except KeyError:
             log.error('CDDPath filepath not provided in FBA method')
             raise
-        source_data = externaldatapath + file
+        source_data = externaldatapath / file
         if os.path.isfile(source_data):
             log.info(f"Reading from local file {file}")
         else:
             log.error(f"{file} not found in external data directory. "
                       "The source dataset is not available publicly, but "
                       "the published FBA can be found on Data Commons at "
-                      "https://edap-ord-data-commons.s3.amazonaws.com/index.html?prefix=flowsa/")
+                      "https://dmap-data-commons-ord.s3.amazonaws.com/index.html?prefix=flowsa/")
             raise FileNotFoundError
         sheet_name = f"Final Results {year}"
 
@@ -83,7 +87,7 @@ def epa_cddpath_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
-    :param args: dictionary, used to run flowbyactivity.py
+    :param args: dictionary, used to run generateflowbyactivity.py
         ('year' and 'source')
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
@@ -120,7 +124,7 @@ def combine_cdd_path(*, resp, year, config, **_):
     if df_csv is None:
         # if not available, default to 2014 ratios
         file = config['generation_by_source'].get('2014')
-        df_csv = pd.read_csv(externaldatapath + file, header=0,
+        df_csv = pd.read_csv(externaldatapath / file, header=0,
                              names=['FlowName', 'ActivityProducedBy',
                                     'FlowAmount'])
     df_csv['pct'] = (df_csv['FlowAmount']/
@@ -143,7 +147,10 @@ def call_generation_by_source(file_dict):
     """Extraction generation by source data from pdf"""
     pg = file_dict.get('pg')
     url = file_dict.get('url')
-    df = read_pdf(url, pages=pg, stream=True, guess=True)[0]
+    df = read_pdf(url, pages=pg, stream=True,
+              guess=True,
+              user_agent=headers.get('User-Agent')
+              )[0]
     # set headers
     df = df.rename(columns={df.columns[0]: 'FlowName',
                             df.columns[1]: 'Buildings',
@@ -167,26 +174,6 @@ def call_generation_by_source(file_dict):
                   var_name="ActivityProducedBy",
                   value_name="FlowAmount")
     return df2
-
-
-def assign_wood_to_engineering(fba, **_):
-    """clean_fba_df_fxn that reclassifies Wood from 'Other' to
-    'Other - Wood' so that its mapping can be adjusted to only use
-    237990/Heavy engineering NAICS according to method in Meyer et al. 2020
-    :param fba: df, FBA of CDDPath
-    :return: df, CDDPath FBA with wood reassigned
-    """
-
-    # Update wood to a new activity for improved mapping
-    fba.loc[((fba.FlowName == 'Wood') &
-           (fba.ActivityProducedBy == 'Other')),
-           'ActivityProducedBy'] = 'Other - Wood'
-
-    # if no mapping performed, still update units
-    if 'short tons' in fba['Unit'].values:
-        fba = standardize_units(fba)
-
-    return fba
 
 
 def keep_activity_consumed_by(fba, **_):
@@ -246,8 +233,7 @@ def cdd_processing(fba, source_dict):
 
 if __name__ == "__main__":
     import flowsa
-    flowsa.flowbyactivity.main(source='EPA_CDDPath', year=2018)
-    fba = flowsa.getFlowByActivity(datasource='EPA_CDDPath', year=2018)
+    flowsa.generateflowbyactivity.main(source='EPA_CDDPath', year=2018)
+    fba = flowsa.flowbyactivity.getFlowByActivity(datasource='EPA_CDDPath', year=2018)
 
-    # flowsa.flowbysector.main(method='CDD_concrete_national_2014')
-    # fbs = flowsa.getFlowBySector(methodname='CDD_concrete_national_2014')
+    # fbs = flowsa.return_FBS(methodname='CDD_concrete_national_2014')
