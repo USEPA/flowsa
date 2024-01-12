@@ -102,14 +102,17 @@ def get_source_metadata(source, nested_attr, attr_source_meta,
         attr_source_meta[source] = getMetadata(source, year=year, category=cat)
 
         if nested_attr is not None:
-            if 'attribution_source' in nested_attr:
-                process_nested_sources(
-                    nested_attr['attribution_source'], attr_source_meta,
-                    primary_source_meta, config, v, nested_attr)
-            elif 'activity_sets' in nested_attr:
+            if 'activity_sets' in nested_attr:
                 activities = nested_attr['activity_sets']
                 recursive_attribution(activities, attr_source_meta,
                                       primary_source_meta, config)
+            else:
+                attr_dict = nested_attr.get('attribution_source') or \
+                               nested_attr.get('attribute') or \
+                               nested_attr.get('clean_source')
+                process_nested_sources(
+                    attr_dict, attr_source_meta,
+                    primary_source_meta, config, v, nested_attr)
 
 
 def process_nested_sources(attr_dict, attr_source_meta, primary_source_meta,
@@ -117,7 +120,8 @@ def process_nested_sources(attr_dict, attr_source_meta, primary_source_meta,
     if isinstance(attr_dict, list):
         for nested_attr in attr_dict:
             nested_attr_dict = nested_attr.get('attribution_source') or \
-                               nested_attr.get('attribute')
+                               nested_attr.get('attribute') or \
+                               nested_attr.get('clean_source')
             process_nested_sources(nested_attr_dict, attr_source_meta,
                                    primary_source_meta, config, v)
     else:
@@ -136,7 +140,8 @@ def process_nested_sources(attr_dict, attr_source_meta, primary_source_meta,
 def recursive_attribution(activities, attr_source_meta,
                           primary_source_meta, config):
     for aset, attr in activities.items():
-        attr_dict = attr.get('attribution_source') or attr.get('attribute')
+        attr_dict = attr.get('attribution_source') or attr.get('attribute') \
+                    or attr.get('clean_source')
         process_nested_sources(attr_dict, attr_source_meta,
                                primary_source_meta, config, attr)
 
