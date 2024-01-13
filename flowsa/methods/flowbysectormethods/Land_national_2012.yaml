@@ -39,8 +39,8 @@ sources_to_cache:
         attribution_method: proportional
         attribution_source:
           Employment_national_2014:
-          data_format: FBS
-          year: 2014
+            data_format: FBS
+            year: 2014
 
 source_names:
   EIA_CBECS_Land:
@@ -107,7 +107,7 @@ source_names:
                       Class: Land
                       FlowName:
                         - "AG LAND, CROPLAND, HARVESTED"
-                    estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
+#                    estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
                     attribution_method: equal
               cropland_attribution-orchards:
                 selection_fields:
@@ -125,7 +125,7 @@ source_names:
             selection_fields:
               Class: Land
               FlowName: "FARM OPERATIONS"
-            estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
+#            estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
             attribution_method: equal
       forest:
         selection_fields:
