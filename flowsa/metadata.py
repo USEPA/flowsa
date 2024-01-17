@@ -231,12 +231,23 @@ def return_fba_method_meta(sourcename, **kwargs):
     try:
         # loop through the FBA yaml and add info
         for k, v in fba.items():
-            # include bib_id because this ifno pulled
+            # include bib_id because this info pulled
             # when generating a method bib
             if k in ('author', 'source_name', 'source_url',
                      'original_data_download_date',
-                     'date_accessed', 'bib_id'):
-                fba_dict[k] = str(v)
+                     'date_accessed', 'source_publication_date', 'bib_id'):
+                if k == 'source_publication_date':
+                    if isinstance(v, dict):
+                        try:
+                            fba_dict[k] = str(v[kwargs['year']])
+                        except KeyError:
+                            log.info("There is no information on the "
+                                     "publication date for kwargs['year'] in "
+                                     "the FBA method yaml.")
+                    else:
+                        fba_dict[k] = str(v)
+                else:
+                    fba_dict[k] = str(v)
     except:
         log.warning('No metadata found for %s', sourcename)
         fba_dict['meta_data'] = f'No metadata found for {sourcename}'
