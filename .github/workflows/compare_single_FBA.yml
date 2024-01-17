@@ -40,9 +40,11 @@ jobs:
 
     - name: Generate FBA
       env:
-          METHOD: ${{ github.event.inputs.method }}
+          SOURCE: ${{ github.event.inputs.source }}
+          YEAR: ${{ github.event.inputs.year }}
       run: |
-        echo "Method: ${{ github.event.inputs.method }}"
+        echo "Source: ${{ github.event.inputs.source }}"
+        echo "Year: ${{ github.event.inputs.year }}"
         python tests/test_FBA_against_remote.py --source $SOURCE --year $YEAR
 
     - name: Upload files
@@ -50,7 +52,7 @@ jobs:
       uses: actions/upload-artifact@v3.1.1
       with:
         # Artifact name
-        name: "${{ github.event.inputs.method }}"
+        name: "${{ github.event.inputs.source }} ${{ github.event.inputs.year }}"
         # A file, directory or wildcard patter that describes what to upload
         path: | # uses local user data dir for macos
           ~/Library/Application Support/flowsa/FBAComparisons/*
