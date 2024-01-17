@@ -114,4 +114,4 @@ source_names:
         attribute_on: ['PrimarySector']  # In this case, only SectorConsumedBy
         attribution_source:
           Employment_national_2018:
-          data_format: FBS
+            data_format: FBS
