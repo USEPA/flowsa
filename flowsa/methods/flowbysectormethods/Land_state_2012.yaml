@@ -22,12 +22,14 @@ sources_to_cache:
           - attribution_method: proportional
             attribution_source:
               Employment_national_2012:
+                data_format: FBS
                 geoscale: national
           - attribution_method: proportional
             attribute_on: ['PrimarySector']
             fill_columns: Location
             attribution_source:
               Employment_state_2012:
+                data_format: FBS
                 geoscale: state
   EIA_MECS_Land: &_eia_mecs_land  # manufacturing land use
     fedefl_mapping: EIA_MECS_Land
@@ -49,12 +51,14 @@ sources_to_cache:
           - attribution_method: proportional
             attribution_source:
               Employment_national_2014:
+                data_format: FBS
                 geoscale: national
           - attribution_method: proportional
             attribute_on: ['PrimarySector']
             fill_columns: Location
             attribution_source:
               Employment_state_2014:  # use 2014 bc MECS is 2014
+                data_format: FBS
                 geoscale: state
 
 source_names:
@@ -78,7 +82,9 @@ source_names:
         selection_fields:
          PrimaryActivity: !from_index:BLM_PLS_2012_asets.csv hardrock_mining
         attribution_method: proportional
-        attribution_source: Employment_state_2012
+        attribution_source:
+          Employment_state_2012:
+            data_format: FBS
 
   USDA_ERS_MLU:
     fedefl_mapping: USDA_ERS_MLU

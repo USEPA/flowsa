@@ -200,6 +200,72 @@ def check_for_negative_flowamounts(df):
     return df
 
 
+def compare_FBA_results(source, year, fba1_version=None, fba2_version=None,
+                        compare_to_remote=False):
+    """
+    Compare two FBA dataframes. Can specify version and git hash. Example:
+
+    source = 'USDA_CoA_Cropland'
+    year = 2017
+    fba1_version = 'v1.2.1'
+    fba2_version = 'v1.3.0'
+    compare_to_remote=False
+
+    :param source:
+    :param year:
+    :param fba1_version:
+    :param fba2_version:
+    :param compare_to_remote:
+    :return:
+    """
+    import flowsa
+    from flowsa.flowbyactivity import FlowByActivity
+
+    # load first file (if compare to remote, this is remote file)
+    df1 = flowsa.getFlowByActivity(datasource=source, year=year,
+                                   git_version=fba1_version,
+                                   download_FBA_if_missing=compare_to_remote)
+    # load second file
+    if compare_to_remote:
+        # Generate the FBS locally and then immediately load
+        flowsa.generateflowbyactivity.main(source=source, year=year)
+        df2 = flowsa.getFlowByActivity(datasource=source, year=year)
+    else:
+        df2 = flowsa.getFlowByActivity(
+            datasource=source, year=year, git_version=fba2_version)
+
+    df1 = df1.rename(columns={'FlowAmount': 'FlowAmount_fba1'})
+    df2 = df2.rename(columns={'FlowAmount': 'FlowAmount_fba2'})
+    merge_cols = [c for c in df2.select_dtypes(include=[
+        'object', 'int']).columns if c not in dq_fields]
+
+    # convert activity columns to object to avoid valueErrors
+    cols = ['ActivityProducedBy', 'ActivityConsumedBy']
+    for c in cols:
+        df1[c] = df1[c].astype(str)
+        df2[c] = df2[c].astype(str)
+
+    df_m = pd.DataFrame(
+        pd.merge(df1[merge_cols + ['FlowAmount_fba1']],
+                 df2[merge_cols + ['FlowAmount_fba2']],
+                 how='outer'))
+    df_m = df_m.assign(FlowAmount_diff=df_m['FlowAmount_fba2']
+                       .fillna(0) - df_m['FlowAmount_fba1'].fillna(0))
+    df_m = df_m.assign(
+        Percent_Diff=(df_m['FlowAmount_diff']/df_m['FlowAmount_fba1']) * 100)
+    df_m = df_m[df_m['FlowAmount_diff'].apply(
+        lambda x: round(abs(x), 2) != 0)].reset_index(drop=True)
+    # if no differences, print, if differences, provide df subset
+    if len(df_m) == 0:
+        log.info(f'No differences between FBA dataframes for {source}')
+    else:
+        log.info(f'Differences exist between FBA dataframes for {source}')
+        df_m = df_m.sort_values(['Location', 'ActivityProducedBy',
+                                 'ActivityConsumedBy', 'FlowName',
+                                 'Class']).reset_index(drop=True)
+    return df_m
+
+
 def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
                         compare_to_remote=False):
     """
@@ -310,6 +376,35 @@ def compare_single_FBS_against_remote(m, outdir=diffpath,
         df.to_csv(f"{outdir}/{m}_diff.csv", index=False)
     else:
         print(f"***No differences found in {m}***")
+
+
+def compare_single_FBA_against_remote(source, year, outdir=diffpath,
+                                      run_single=False):
+    """Action function to compare a generated FBA with that in remote"""
+    meta_name = f'{source}_{year}'
+    downloaded = download_from_remote(set_fb_meta(
+        meta_name, "FlowByActivity"), paths)
+    if not downloaded:
+        if run_single:
+            # Run a single file even if no comparison available
+            flowsa.flowbyactivity.generateflowbyactivity.main(
+                year=year, source=source)
+        else:
+            print(f"{source} {year} not found in remote server. Skipping...")
+        return
+    print("--------------------------------\n"
+          f"Method: {source} {year}\n"
+          "--------------------------------")
+    df = compare_FBA_results(source, year, compare_to_remote=True)
+
+    df.rename(columns={'FlowAmount_fba1': 'FlowAmount_remote',
+                       'FlowAmount_fba2': 'FlowAmount_HEAD'},
+              inplace=True)
+    if len(df) > 0:
+        print(f"Saving differences in {source} {year} to csv")
+        df.to_csv(f"{outdir}/{source}_{year}_diff.csv", index=False)
+    else:
+        print(f"***No differences found in {source} {year}***")
 
 
 def compare_national_state_fbs(dataname=None, year=None, method=None,
@@ -587,24 +682,3 @@ def calculate_industry_coefficients(fbs_load, year,region,
     fbs_summary = fbs_summary.sort_values(by=sort_by_cols)
 
     return fbs_summary
-
-
-if __name__ == "__main__":
-    df1 = calculate_industry_coefficients(
-            flowsa.flowbysector.getFlowBySector('Water_national_2015_m1'), 2015,
-            "national", "summary", False)
-    df2 = calculate_industry_coefficients(
-            flowsa.flowbysector.getFlowBySector('GRDREL_national_2017'), 2017,
-            "national", "summary", True)
-    df3 = calculate_industry_coefficients(
-            flowsa.flowbysector.getFlowBySector('GRDREL_national_2017'), 2017,
-            "national", "detail", True)
-    df4 = calculate_industry_coefficients(
-            flowsa.flowbysector.getFlowBySector('GRDREL_state_2017'), 2017,
-            "national", "detail", True)
-    try:
-        df5 = calculate_industry_coefficients(
-                flowsa.flowbysector.getFlowBySector('GRDREL_state_2017'), 2017,
-                "state", "detail", True)
-    except TypeError:
-        df5 = None

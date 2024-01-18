@@ -18,11 +18,13 @@ source_names:
         clean_fbs: !clean_function:flowbyclean calculate_flow_per_person
         clean_source:
           Employment_state_2014: # aligns with CA 2014 data
+            data_format: FBS
             geoscale: state
         attribution_method: multiplication
         fill_columns: Year
         attribution_source:
           Employment_state_2018:
+            data_format: FBS
             geoscale: state
       population: # Requires an alternate dataset for Households (F01000)
         selection_fields:

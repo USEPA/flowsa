@@ -80,6 +80,7 @@ class FlowByActivity(_FlowBy):
         cls,
         full_name: str,
         year: int = None,
+        git_version: str = None,
         config: dict = None,
         download_ok: bool = settings.DEFAULT_DOWNLOAD_IF_MISSING,
         **kwargs
@@ -99,8 +100,16 @@ class FlowByActivity(_FlowBy):
         if year is None and isinstance(config, dict):
             year = config.get('year')
 
+        # set metaname
+        if year is None:
+            meta_name = full_name
+        else:
+            meta_name = f'{full_name}_{year}'
+        if git_version is not None:
+            meta_name = f'{meta_name}_{git_version}'
+
         file_metadata = metadata.set_fb_meta(
-            full_name if year is None else f'{full_name}_{year}',
+            meta_name,
             'FlowByActivity'
         )
         flowby_generator = partial(
@@ -866,8 +875,9 @@ class _FBASeries(pd.Series):
 
 
 def getFlowByActivity(
-        datasource,
-        year,
+        datasource: str,
+        year: int,
+        git_version: str = None,
         flowclass=None,
         geographic_level=None,
         download_FBA_if_missing=DEFAULT_DOWNLOAD_IF_MISSING
@@ -888,6 +898,7 @@ def getFlowByActivity(
         full_name=datasource,
         config={},
         year=int(year),
+        git_version=git_version,
         download_ok=download_FBA_if_missing
     )
 
