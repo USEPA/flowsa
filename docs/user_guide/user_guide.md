@@ -81,7 +81,7 @@ In addition to the parquet datasets output by FLOWSA, we also capture:
 # FLOWSA Schematic
 The following schematic captures how the files found within FLOWSA are linked, as well as how additional USEPA industrial ecology modeling tools are used within FLOWSA. This schematic is pulled from Birney et al. 2022 [https://doi.org/10.3390/app12115742](https://doi.org/10.3390/app12115742).
 
-![](user_guide_images/FLOWSA_schematic.png){#fig:flowsa_schematic}
+<img src="user_guide_images/FLOWSA_schematic.png" width=100%>
 
 # Flow-By-Activity (FBA) Datasets
 Flow-By-Activity (FBA) datasets are environmental and other data formatted into a [standardized table](https://github.com/USEPA/flowsa/blob/master/format%20specs/FlowByActivity.md). 
@@ -106,12 +106,12 @@ The name for the FBA is [“USDA_CoA_Cropland”](https://github.com/USEPA/flows
 
 2. The first lines of the YAML are used to generate bibliography information.
 
-    ![](user_guide_images/FBA_USDA_CoA_Cropland_bibliography.png){#fig:fba_bib}
+    <img src="user_guide_images/FBA_USDA_CoA_Cropland_bibliography.png" width=50%>
 
 3. The next lines indicate if an API key is required and if so, the name of 
    the API key.
 
-   ![](user_guide_images/FBA_USDA_CoA_Cropland_api_key.png){#fig:fba_api_key}
+    <img src="user_guide_images/FBA_USDA_CoA_Cropland_api_key.png" width=25%>
 
 4. If an API key is required, a user must generate their own API key 
    ([instructions in the wiki](https://github.com/USEPA/flowsa/wiki/Using-FLOWSA#api-keys)) 
@@ -126,17 +126,17 @@ The name for the FBA is [“USDA_CoA_Cropland”](https://github.com/USEPA/flows
    double underscores to indicate that a string function will dynamically 
    replace the variable when the URLs are built, such as "__secLevel__." 
 
-    ![](user_guide_images/FBA_USDA_CoA_Cropland_url_info.png){#fig:fba_url}
+    <img src="user_guide_images/FBA_USDA_CoA_Cropland_url_info.png" width=50%>
 
 6. If there are any variables that need replacement in the URL build 
    ("__secLevel__"), the list of strings with which to replace the variable 
    are also listed in the YAML.
-    
-![](user_guide_images/FBA_USDA_CoA_Cropland_url_param_replacement.png){#fig:fba_url_replace}
+
+    <img src="user_guide_images/FBA_USDA_CoA_Cropland_url_param_replacement.png" width=50%>
 
 7. Although the functions to load, build, and parse Flow-By-Activity datasets are generalized, each FBA requires functions specific to the dataset. These functions are listed in the method yaml. We defined custom YAML tags to allow inheriting code from other yaml files. The primary tag found in FBA yamls is `!script_function:`, as included in the screenshot below. This tag directs the yaml to look for a file in the [data_source_scripts](https://github.com/USEPA/flowsa/tree/master/flowsa/data_source_scripts) directory, specifically at the file listed after `!script_function:`. In this case, we pull a function from [USDA_CoA_Cropland.py](https://github.com/USEPA/flowsa/blob/master/flowsa/data_source_scripts/USDA_CoA_Cropland.py). The final portion of the tag is which function to load for the FBA method. Here, when we want to call `url_replace_fxn`, we load the function `CoA_Cropland_URL_helper()` defined in [USDA_CoA_Cropland.py](https://github.com/USEPA/flowsa/blob/master/flowsa/data_source_scripts/USDA_CoA_Cropland.py).
 
-![](user_guide_images/FBA_USDA_CoA_Cropland_source_specific_functions.png){#fig:fba_source_fxns}
+    <img src="user_guide_images/FBA_USDA_CoA_Cropland_source_specific_functions.png" width=50%>
 
 
 ## Source-specific FBA column assignments
