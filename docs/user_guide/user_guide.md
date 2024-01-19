@@ -24,6 +24,8 @@ FLOWSA v2.0.1: A FLOWSA User-Guide
     - Purpose of fed elem flow list
     - How to create flow list mapping in fed flow list package
   - Mapping to materials list
+  - Harmonize FBAs before merging data
+    - Geoscale, sectors, sector-year, units
   - Logistics of how an FBS is generated
     - All data first mapped to NAICS
   - Available attribution/allocation methods
@@ -64,38 +66,43 @@ Users can access the most recent datasets output from FLOWSA via EPA's Amazon s3
 FLOWSA generates two types of data sets:
 
 1. Import environmental (and other types of) data from publicly available 
-   datasets, formatting the data into a standardized table, a [Flow-By-Activity](https://github.com/USEPA/flowsa/blob/master/format%20specs/FlowByActivity.md) dataset. Flow-By-Activity datasets are largely unchanged from the original data source, with the exception of formatting. Data that are currently available in the Flow-By-Activity format are listed [here](https://github.com/USEPA/flowsa/wiki/Available-Data#flow-by-activity-datasets). See [Creating a Flow-By-Activity Dataset](https://github.com/USEPA/flowsa/wiki/Contributing#creating-a-flow-by-activity-dataset) for details on methodology.
+   datasets, formatting the data into a standardized table, a [Flow-By-Activity](https://github.com/USEPA/flowsa/blob/master/format%20specs/FlowByActivity.md) dataset. Flow-By-Activity datasets are largely unchanged from the original data source, except for formatting.
 
-1. Attribute resource use, waste, emissions, and loss to economic sectors, generally 2-6 digit NAICS Codes, formatting the data into a standardized [Flow-By-Sector](https://github.com/USEPA/flowsa/blob/master/format%20specs/FlowBySector.md) table. These new datasets are generally created using multiple Flow-By-Activity datasets. A list of available Flow-By-Sector datasets can be found [here](https://github.com/USEPA/flowsa/wiki/Available-Data#flow-by-sector-datasets), with a more detailed explanation of methodology found in [Creating a Flow-By-Sector Dataset](https://github.com/USEPA/flowsa/wiki/Contributing#creating-a-flow-by-sector-dataset).
+1. Attribute resource use, waste, emissions, and loss to economic sectors, generally 2-6 digit NAICS Codes, formatting the data into a standardized [Flow-By-Sector](https://github.com/USEPA/flowsa/blob/master/format%20specs/FlowBySector.md) table. These new datasets are generally created using multiple Flow-By-Activity datasets.
 
     * Flow-By-Sector example: The main data source for creating a ["Water" Flow-By-Sector](https://github.com/USEPA/flowsa/blob/master/flowsa/methods/flowbysectormethods/Water_national_2015_m1.yaml) table is the [USGS](https://waterdata.usgs.gov/nwis), which publishes national water withdrawal information for nine broad categories. One of these categories is "Irrigation Crop", which can only be [mapped](https://github.com/USEPA/flowsa/blob/master/flowsa/data/activitytosectormapping/NAICS_Crosswalk_USGS_NWIS_WU.csv) to 3-digit NAICS ('111' and '112'). To reach the objective of mapping water withdrawal information to 6-digit NAICS, additional Flow-By-Activity datasets arecalled on for allocation purposes. In the case of "Irrigation Crop," acreage by crop type and water application rates (gal/acre) by crop type are multiplied to calculate water use by crop type at the 6-digit NAICS. A ratio is calculated for the quantity of water used by a crop out of the total water use calculated using the USDA datasets. This ratio is then multiplied by the USGS water withdrawal information for "Irrigation Crop," allocating the 3-digit NAICS to 6-digits.
       * Acreage information is published in the US Department of Agriculture (USDA) Census of Agriculture (CoA) and water application rates are published in the USDA Irrigation and Water Management Survey (IWMS).
 
 ## Documentation Outputs
 In addition to the parquet datasets output by FLOWSA, we also capture:
-1. Log Files
-2. Metadata files: Captures the git hash and versions of each primary and attribution FBA dataset used. Provides links to the code within the FLOWSA GitHub repository at the time the datasets were generated. 
-      
+1. Log Files: Captures console readouts of the model build. 
+2. Metadata files: Captures the git hash and versions of each primary and attribution FBA dataset used. Provides links to the code within the FLOWSA GitHub repository at the time the datasets were generated.
 
-# Step-By-Step Guide to Generating a Flow-By-Activity Dataset
+# FLOWSA Schematic
+The following schematic captures how the files found within FLOWSA are linked, as well as how additional USEPA industrial ecology modeling tools are used within FLOWSA. This schematic is pulled from Birney et al. 2022 [https://doi.org/10.3390/app12115742](https://doi.org/10.3390/app12115742).
 
+![](user_guide_images/FLOWSA_schematic.png){#fig:flowsa_schematic}
+
+# Flow-By-Activity (FBA) Datasets
 Flow-By-Activity (FBA) datasets are environmental and other data formatted into a [standardized table](https://github.com/USEPA/flowsa/blob/master/format%20specs/FlowByActivity.md). 
-The data are standardized to enable use for Flow-By-Sector (FBS) table generation. 
+The data are standardized to enable use for Flow-By-Sector (FBS) model generation. 
 The defining columns for an FBA dataset are the "ActivityProducedBy" and "ActivityConsumedBy" columns. 
 These columns contain information on the "activity" that either produces or consumes 
 The FBA tables can include optional columns, but all FBAs must contain a number of the same columns. 
-One such optional column is "Suppressed" which can be used to indicate which rows contain suppressed data and then used in source-sepecific functions to estimate suppressed data.
+One such optional column is "Suppressed" which can be used to indicate which rows contain suppressed data and then used in source-specific functions to estimate suppressed data.
+
+## Step-By-Step Guide to Generating a Flow-By-Activity Dataset
 
 This example demonstrates creating the 2017 US Department of Agriculture (USDA) Census of Agriculture (CoA) Cropland FBA. 
-The name for the FBA is “USDA_CoA_Cropland_2017.”
+The name for the FBA is [“USDA_CoA_Cropland”](https://github.com/USEPA/flowsa/blob/master/flowsa/methods/flowbyactivitymethods/USDA_CoA_Cropland.yaml).
 
-A summary of how to generate an FBS is as follows.
-1. Create a new YAML method file
-2. Determine where the data is accessed 
-3. Create source-sepecific functions in a data source .py file
+### A summary of how to generate an FBA is as follows.
+1. Create a new YAML method file in the [methods/flowbyactivitymethods](https://github.com/USEPA/flowsa/tree/master/flowsa/methods/flowbyactivitymethods) directory
+2. Determine where the data is accessed, for example the USDA_CoA_Cropland data is pulled from [USDA NASS Quick Stats](https://quickstats.nass.usda.gov/)
+3. Create source-specific functions in a data source .py file, hosted in the [data_source_scripts](https://github.com/USEPA/flowsa/tree/master/flowsa/data_source_scripts) directory
 
-Steps to writing an FBA method YAML:
-1. The first step is to write instructions for how to access the original source data. All FBA files are housed in the same directory [methods/flowbyactivitymethods](https://github.com/USEPA/flowsa/tree/master/flowsa/methods/flowbyactivitymethods). These instructions are written in a human-readable form (YAML files) and are later read in as a pandas dictionary in python. The YAML for USGS_NWIS_WU can be found [here](https://github.com/USEPA/flowsa/blob/master/flowsa/methods/flowbyactivitymethods/USDA_CoA_Cropland.yaml), with an explanation of possible parameters found in the [README](https://github.com/USEPA/flowsa/blob/master/flowsa/methods/flowbyactivitymethods/README.md).
+### Steps to writing an FBA method YAML:
+1. The first step is to write instructions for how to access the original source data. All FBA files are housed in the same directory [methods/flowbyactivitymethods](https://github.com/USEPA/flowsa/tree/master/flowsa/methods/flowbyactivitymethods). These instructions are written in a human-readable form (YAML files) and are later read in as a pandas dictionary in python. The YAML for USDA_CoA_Cropland can be found [here](https://github.com/USEPA/flowsa/blob/master/flowsa/methods/flowbyactivitymethods/USDA_CoA_Cropland.yaml), with an explanation of all possible parameters defined in any FBA method yaml found in the [flowbyactivitymethods/README](https://github.com/USEPA/flowsa/blob/master/flowsa/methods/flowbyactivitymethods/README.md).
 
 2. The first lines of the YAML are used to generate bibliography information.
 
@@ -122,15 +129,13 @@ Steps to writing an FBA method YAML:
     ![](user_guide_images/FBA_USDA_CoA_Cropland_url_info.png){#fig:fba_url}
 
 6. If there are any variables that need replacement in the URL build 
-   ("__secLevel__), the list of strings with which to replace the variable 
+   ("__secLevel__"), the list of strings with which to replace the variable 
    are also listed in the YAML.
     
 ![](user_guide_images/FBA_USDA_CoA_Cropland_url_param_replacement.png){#fig:fba_url_replace}
 
-7. Although the functions to load, build, and parse Flow-By-Activity 
-   datasets are generalized, each FBA requires functions specific to the 
-   dataset. These functions are listed in the method yaml.
-    
+7. Although the functions to load, build, and parse Flow-By-Activity datasets are generalized, each FBA requires functions specific to the dataset. These functions are listed in the method yaml. We defined custom YAML tags to allow inheriting code from other yaml files. The primary tag found in FBA yamls is `!script_function:`, as included in the screenshot below. This tag directs the yaml to look for a file in the [data_source_scripts](https://github.com/USEPA/flowsa/tree/master/flowsa/data_source_scripts) directory, specifically at the file listed after `!script_function:`. In this case, we pull a function from [USDA_CoA_Cropland.py](https://github.com/USEPA/flowsa/blob/master/flowsa/data_source_scripts/USDA_CoA_Cropland.py). The final portion of the tag is which function to load for the FBA method. Here, when we want to call `url_replace_fxn`, we load the function `CoA_Cropland_URL_helper()` defined in [USDA_CoA_Cropland.py](https://github.com/USEPA/flowsa/blob/master/flowsa/data_source_scripts/USDA_CoA_Cropland.py).
+
 ![](user_guide_images/FBA_USDA_CoA_Cropland_source_specific_functions.png){#fig:fba_source_fxns}
 
 
@@ -156,8 +161,59 @@ Many of these columns can be filled by filtering the original source data, while
   - DataReliability, DataCollection: Data scores are assigned using the [Data Quality Pedigree Matrix](https://github.com/USEPA/flowsa/blob/master/docs/DataQualityPedigreeMatrix.md).
 
 
+## Steps to take before using Flow-By-Activity datasets
+To use an FBA dataset within a Flow-By-Sector (FBS) method, 
+1. Generate the FBA using the [FBA yaml method file](https://github.com/USEPA/flowsa/tree/master/flowsa/methods/flowbyactivitymethods)
+2. Update the [source catalog](https://github.com/USEPA/flowsa/blob/master/flowsa/data/source_catalog.yaml)
+3. Create an [activity-to-sector crosswalk](https://github.com/USEPA/flowsa/tree/master/flowsa/data/activitytosectormapping)
+4. [Re-generate](https://github.com/USEPA/flowsa/blob/master/scripts/writeNAICScrosswalk.py) the master NAICS crosswalk, if the activity-to-sector crosswalk contains any new unoffical NAICS. 
 
-## Activity-to-Sector Crosswalks
+
+
+
+
+# Flow-By-Sector Datasets
+Flow-By-Sector datasets are standardized tables generated by attributing Flow-By-Activity data to sectors. 
+The FBS tables contain standard columns as defined in [format specs/FlowBySector.md](https://github.com/USEPA/flowsa/blob/master/format%20specs/FlowBySector.md). 
+FBS datasets can be created from a single FBA or from as many FBAs as are necessary. 
+To create an FBS, identify one or multiple primary FBAs that contain the primary data to be attributed to sectors. 
+For example in the [Water_national_2015_m1](https://github.com/USEPA/flowsa/blob/master/flowsa/methods/flowbysectormethods/Water_national_2015_m1.yaml) methodology, there is one primary FBA identified to be attributed to sectors, [USGS_NWIS_WU](https://github.com/USEPA/flowsa/blob/master/flowsa/methods/flowbyactivitymethods/USGS_NWIS_WU.yaml).
+This means that in the water method, we want to convert the water withdrawal data and terminology generated by [USGS](https://waterdata.usgs.gov/nwis/wu) to sectors. 
+The USGS water withdrawal data fully represents water withdrawal within the US. 
+On the other hand, in [Land_national_2012](https://github.com/USEPA/flowsa/blob/master/flowsa/methods/flowbysectormethods/Land_national_2012.yaml) there are four primary FBA datasets identified that contain information on how land is used in the US: EIA_CBECS_Land, EIA_MECS_Land, BLM_PLS, USDA_ERS_MLU.
+To fully capture US land use, we need to pull data from four FBAs. 
+
+## Generating Flow-By-Sector Models
+Summary:
+1. Create a Flow-By-Sector method yaml within the [methods/flowbysectormethods](https://github.com/USEPA/flowsa/tree/master/flowsa/methods/flowbysectormethods) directory
+1. Identify targets for the FBS output
+   - Target sector level for the FBS
+   - Sector year (e.g, NAICS_2012_Code)
+   - Geographic scale
+1. Identify the primary FBA or FBS datasets required to generate an FBS
+1. Mapping to [fed elem flow list](https://github.com/USEPA/fedelemflowlist)
+1. Subset the primary data sources to only include the necessary data for the FBS method
+1. Break the primary FBA/FBS datasets into "activity sets", grouped by _how_ the data will be attributed to sectors. Data within an FBA often requires multiple types of attribution. We can attribute data within a single FBS using different attribution methods, attribution sources. 
+   - Optionally, can create an activity set csv file within [flowbysectoractivitysets](https://github.com/USEPA/flowsa/tree/master/flowsa/methods/flowbysectoractivitysets). These activity sets are generally created with method-specific scripts stored in [scripts/FlowBySector_Activity_Sets](https://github.com/USEPA/flowsa/tree/master/scripts/FlowBySector_Activity_Sets).
+1. Identify additional FBA/FBS datasets required to attribute each "activity set" of the primary FBA to target sectors
+
+
+## Behind-the-scenes steps in generating FBS
+FLOWSA takes care of the behind-the-scenes logistics of attributing FBA data to sectors. 
+These steps exist for all FBS methods, regardless of the type of data being attributed to sectors. 
+1. Map all FBAs to sectors using crosswalks
+1. Harmonize the FBAs by standardizing column information
+   - Sectors
+     - Converted to same sector year
+   - [Units](https://github.com/USEPA/flowsa/blob/master/flowsa/data/unit_conversion.csv)
+     - Converted to specific units identified within FLOWSA 
+   - Location 
+     - Standardize if datasets have disparate Locations (e.g., national-level vs state-level)
+   - Geography levels (National, State, County)
+
+### Harmonizing/Standardizing FBA Data
+
+#### Mapping FBA data to sectors via Activity-to-Sector Crosswalks
 
 Before Flow-By-Activity (FBA) datasets can be merged, the data in each FBA must be standardized. 
 Data in FLOWSA are standardized by attributing all activity names (original data source terminology) to industrial and final-use sectors, generally North American Industry Classification System (NAICS) codes. 
@@ -173,66 +229,24 @@ There are no NAICS for household and government activities.
 For these situations, we create non-NAICS to represent the activites, generally using Bureau of Economic Analysis (BEA) codes when applicable. 
 Mappings for household and government codes are defined in the [data/](https://github.com/USEPA/flowsa/tree/master/flowsa/data) directory within [Household_SectorCodes](https://github.com/USEPA/flowsa/blob/master/flowsa/data/Household_SectorCodes.csv) and [Government_SectorCodes](https://github.com/USEPA/flowsa/blob/master/flowsa/data/Government_SectorCodes.csv), respectively.
 
-### Sector Years
+##### Re-Running Sector Master Crosswalks
+There is a master sector crosswalk for each NAICS year available in FLOWSA. 
+The master crosswalk needs to be re-generated anytime new, unoffical NAICS are added to an activity-to-sector crosswalk. 
+If no unoffical NAICS are used in a new crosswalk, the master crosswalk does not need regeneration.
+To re-generate the NAICS master crosswalks, run [flowsa/scripts/writeNAICScrosswalk.py](https://github.com/USEPA/flowsa/blob/master/scripts/writeNAICScrosswalk.py).
+
+#### Sector Years
 The BEA releases new sector codes in 5-year intervals. 
 FLOWSA includes 2012 and 2017 codes. 
 As codes change over time, it is important to note what year of data the sectors represent. 
 If imported FBAs are sector-based, the sector year is defined as `activity_schema` in the [source_catalog](https://github.com/USEPA/flowsa/blob/master/flowsa/data/source_catalog.yaml). 
 A single FBA can have different sector years based on the data source year. 
 
-### Sector Hierarchy 
+#### Sector Hierarchy 
 Data can be "parent-completeChild", "parent-incompleteChild", or "flat."
 
-### Re-Running NAICS Master Crosswalks
-There is a master sector crosswalk for each NAICS year available in FLOWSA. 
-The master crosswalk needs to be re-generated anytime new, unoffical NAICS are added to an activity-to-sector crosswalk. 
-If no unoffical NAICS are used in a new crosswalk, the master crosswalk does not need regeneration.
-To re-generate the NAICS master crosswalks, run [flowsa/scripts/writeNAICScrosswalk.py](https://github.com/USEPA/flowsa/blob/master/scripts/writeNAICScrosswalk.py).
 
-
-# Using Flow-By-Activity Datasets
-To use an FBA dataset within a Flow-By-Sector (FBS) method, 
-1. Generate the FBA using the [FBA yaml method file](https://github.com/USEPA/flowsa/tree/master/flowsa/methods/flowbyactivitymethods)
-2. Update the [source catalog](https://github.com/USEPA/flowsa/blob/master/flowsa/data/source_catalog.yaml)
-3. Create an [activity-to-sector crosswalk](https://github.com/USEPA/flowsa/tree/master/flowsa/data/activitytosectormapping)
-4. [Re-generate](https://github.com/USEPA/flowsa/blob/master/scripts/writeNAICScrosswalk.py) the master NAICS crosswalk, if the activity-to-sector crosswalk contains any new unoffical NAICS. 
-
-
-
-# Step-By-Step Guide to Generating a Flow-By-Sector (FBS) Dataset
-
-1. Create a Flow-By-Sector method yaml within the [methods/flowbysectormethods](https://github.com/USEPA/flowsa/tree/master/flowsa/methods/flowbysectormethods) directory
-2. Create an activity set csv file within [flowbysectoractivitysets](https://github.com/USEPA/flowsa/tree/master/flowsa/methods/flowbysectoractivitysets). These activity sets are generally created with method-specific scripts stored in [scripts/FlowBySector_Activity_Sets](https://github.com/USEPA/flowsa/tree/master/scripts/FlowBySector_Activity_Sets).
-3. Identify target sector levels. 
-4. Identify the primary FBA or FBS source data to attribute to target sector levels
-5. Subset the primary data sources to only include the necessary data for the FBS method
-4. Identify the primary FBA and FBS activity sets
-5. Identify the FBA and FBS datasets required to attribute the primary data activity sets to target sector levels
-6. Mapping to [fed elem flow list](https://github.com/USEPA/fedelemflowlist)
-7. Break the primary FBA and/or FBS into activity sets dependent on how one wants to attribute data. Data within an FBA often requires multiple types of attribution. We can attribute data within a single FBS using different attribution methods, attribution sources. 
-
-
-
-Flow-By-Sector datasets are standardized tables generated by attributing Flow-By-Activity data to sectors. 
-The FBS tables contain standard columns as defined in [format specs/FlowBySector.md](https://github.com/USEPA/flowsa/blob/master/format%20specs/FlowBySector.md). 
-FBS datasets can be created from a single FBA or from as many FBAs as are necessary. 
-To create an FBS, identify one or mulitple primary FBAs that contain the primary data to be attributed to sectors. 
-For example in the [Water_national_2015_m1](https://github.com/USEPA/flowsa/blob/master/flowsa/methods/flowbysectormethods/Water_national_2015_m1.yaml) methodology, there is one primary FBA identified to be attributed to sectors, [USGS_NWIS_WU](https://github.com/USEPA/flowsa/blob/master/flowsa/methods/flowbyactivitymethods/USGS_NWIS_WU.yaml).
-This means that in the water method, we want to convert the water withdrawal data and terminology generated by [USGS](https://waterdata.usgs.gov/nwis/wu) to sectors. 
-The USGS water withdrawal data fully represents water withdrawal within the US. 
-On the other hand, in [Land_national_2012](https://github.com/USEPA/flowsa/blob/master/flowsa/methods/flowbysectormethods/Land_national_2012.yaml) there are four primary FBA datasets identified that contain information on how land is used in the US: EIA_CBECS_Land, EIA_MECS_Land, BLM_PLS, USDA_ERS_MLU.
-To fully capture US land use, we need to pull data from four FBAs. 
-
-## Standardizing FBAs prior to attribution
-Before merging FBA and FBS data for attribution, data are automatically standardized:
-1. Sectors
-   2. Converted to same sector year
-2. [Units](https://github.com/USEPA/flowsa/blob/master/flowsa/data/unit_conversion.csv)
-   3. Converted to specific units identified within FLOWSA
-3. Location
-   4. Standardize if datasets have disparate Locations (e.g., national-level vs state-level)
-
-## Target sectors
+### FBS Target Sectors
 The target sectors can be flexible. 
 An FBS can be output with any combination of sector lengths, but there cannot be any duplicate data. 
 FBS datasets cannot contain data for both parent and child sectors. 
@@ -248,7 +262,7 @@ These 7-digit waste management sectors are defined within FLOWSA to represent wa
 An example of a complex FBS target sector schema was created for [BEA_detail_target](https://github.com/USEPA/flowsa/blob/master/flowsa/methods/flowbysectormethods/BEA_detail_target.yaml) to create FBS with sectors that can best be mapped to detail-level BEA codes. 
 ![](user_guide_images/fbs_target_sectors_complex.PNG)
 
-### Activity Set Target Sectors
+#### Activity Set Target Sectors
 In addition to specifying the target output sector levels for the final FBS, it can be necessary to use further disaggregated sector levels for attributing activity sets within an FBS. 
 For example, in the [Water m1 method](https://github.com/USEPA/flowsa/blob/master/flowsa/methods/flowbysectormethods/Water_common.yaml), the target output sector level is "NAICS_6", however, to best attribute livestock water withdrawal to NAICS_6, we want to first use several "NAICS_7" sectors to better represent the drinking rate of animals. 
 
