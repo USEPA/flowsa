@@ -17,6 +17,7 @@ from functools import partial, reduce
 from typing import Literal, List
 import fedelemflowlist
 import pandas as pd
+import numpy as np
 
 import flowsa.exceptions
 from flowsa import settings, metadata, geo, validation, naics, common, \
@@ -412,7 +413,7 @@ class FlowByActivity(_FlowBy):
         if "NAICS" in activity_schema:
             log.info('Activities in %s are NAICS codes.',
                      self.full_name)
-
+            # TODO take a certain approach for tech correlation when NAICS schema
             try:
                 source_year = int(activity_schema[6:10])
             except ValueError:
@@ -475,7 +476,9 @@ class FlowByActivity(_FlowBy):
                     naics_key
                     .query('source_naics in @existing_sectors_list')
                 )
-
+                activity_to_target_naics_crosswalk = (
+                    sectormapping.assign_technological_correlation(
+                        activity_to_target_naics_crosswalk))
                 fba_w_naics = self
                 for direction in ['ProducedBy', 'ConsumedBy']:
                     fba_w_naics = (
@@ -490,6 +493,9 @@ class FlowByActivity(_FlowBy):
                                        'SectorSourceName',
                                        'source_naics'],
                               errors='ignore')
+                    )
+                fba_w_naics['TechnologicalCorrelation'] = (
+                    fba_w_naics[['TechCorr_x', 'TechCorr_y']].apply(np.nanmax, axis=1)
                     )
             else:  # either "flat" or "parent-inComplete"
                 # if sector-like activities are aggregated, then map all
@@ -614,7 +620,9 @@ class FlowByActivity(_FlowBy):
                     .drop(columns=['source_naics', 'target_naics'])
                     .drop_duplicates()
                 )
-
+                activity_to_target_naics_crosswalk = (
+                    sectormapping.assign_technological_correlation(
+                        activity_to_target_naics_crosswalk))
                 fba_w_naics = self.copy()
                 for direction in ['ProducedBy', 'ConsumedBy']:
                     fba_w_naics = (
@@ -642,7 +650,9 @@ class FlowByActivity(_FlowBy):
                     .drop(columns=['source_naics', 'target_naics'])
                     .drop_duplicates()
                 )
-
+                activity_to_target_naics_crosswalk = (
+                    sectormapping.assign_technological_correlation(
+                        activity_to_target_naics_crosswalk))
                 log.info(f"Mapping activities in {self.full_name} to NAICS"
                          f"_{self.config['target_naics_year']}_Code using crosswalk")
                 fba_w_naics = self
@@ -660,6 +670,9 @@ class FlowByActivity(_FlowBy):
                                        'Activity'],
                               errors='ignore')
                     )
+            fba_w_naics['TechnologicalCorrelation'] = (
+                fba_w_naics[['TechCorr_x', 'TechCorr_y']].apply(np.nanmax, axis=1)
+                )
 
         # warn if any activities are not mapped to sectors
         not_mapped = fba_w_naics[fba_w_naics[['SectorProducedBy',

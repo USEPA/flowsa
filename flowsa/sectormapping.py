@@ -57,6 +57,22 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
         return mapping
 
 
+def assign_technological_correlation(mapping):
+    # for each activity, based on the cw, assign a tech correlation score
+    # based on the number of common digits in all mapped sectors
+    # i.e., mapping to more than 1 2-digit code: 5
+    # mapping to more than 1 3-digit code: 5
+    # mapping to more than 1 4-digit code: 4
+    # mapping to more than 1 5-digit code: 3
+    # mapping to more than 1 6-digit code: 2, where the target is 6 digits
+
+    # or replace 6 with N, where n is the target schema
+    # consider what happens for non-naics sectors (e.g. households, gov't)
+    mapping['TechCorr'] = 5
+
+    return mapping
+
+
 def convert_units_to_annual(df):
     """
     Convert data and units to annual flows
