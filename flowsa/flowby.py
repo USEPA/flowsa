@@ -1391,6 +1391,23 @@ class _FlowBy(pd.DataFrame):
                      *[f'_unique_naics_{n}_by_group' for n in range(2, 8)]]
         )
 
+    def assign_temporal_correlation(
+            self: FB,
+            target_year = None,
+            **kwargs
+    ) -> FB:
+
+        fbs = self.copy()
+        if not target_year:
+            target_year = fbs.config['year']
+            # target_year = max(fbs['Year'])
+        if 'TemporalCorrelation' not in fbs:
+            fbs['TemporalCorrelation'] = 1
+        fbs = esupy.dqi.adjust_dqi_scores(fbs, abs(fbs['Year'] - target_year),
+                                         'TemporalCorrelation')
+        fbs['Year'] = target_year
+        return(fbs)
+
     def add_primary_secondary_columns(
         self: FB,
         col_type: Literal['Activity', 'Sector']

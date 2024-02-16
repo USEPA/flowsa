@@ -190,7 +190,7 @@ class FlowBySector(_FlowBy):
 
         fbs.full_name = method
         fbs.config = method_config
-
+        fbs = fbs.assign_temporal_correlation()
         # drop year from LocationSystem for FBS use with USEEIO
         fbs['LocationSystem'] = fbs['LocationSystem'].str.split('_').str[0]
         # aggregate to target geoscale
@@ -206,7 +206,7 @@ class FlowBySector(_FlowBy):
         # set all data quality fields to none until implemented fully
         log.info('Reset all data quality fields to None')
         dq_cols = ['Spread', 'Min', 'Max',
-                   'DataReliability', 'TemporalCorrelation',
+                   'DataReliability', # 'TemporalCorrelation',
                    'GeographicalCorrelation', 'TechnologicalCorrelation',
                    'DataCollection']
         fbs = fbs.assign(**dict.fromkeys(dq_cols, None))
