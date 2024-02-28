@@ -41,7 +41,7 @@ ANNEX_ENERGY_TABLES = ["A-" + str(x) for x in list(range(4,16))]
 DROP_COLS = ["Unnamed: 0"] + list(pd.date_range(
     start="1990", end="2010", freq='Y').year.astype(str))
 
-YEARS = list(pd.date_range(start="2010", end="2021", freq='Y').year.astype(str))
+YEARS = list(pd.date_range(start="2010", end="2023", freq='Y').year.astype(str))
 
 
 def ghg_url_helper(*, build_url, config, **_):
@@ -160,14 +160,22 @@ def ghg_call(*, resp, url, year, config, **_):
     :param config: dictionary, items in FBA method yaml
     :return: pandas dataframe of original source data
     """
-    with zipfile.ZipFile(io.BytesIO(resp.content), "r") as f:
-        frames = []
-        if any(x in url for x in ['annex', 'Annex']):
-            is_annex = True
-            t_tables = config['Annex']
-        else:
-            is_annex = False
-            t_tables = config['Tables']
+    ## Temporary adjustment to read from local dir
+    frames = []
+    with zipfile.ZipFile(externaldatapath / config.get('local_file'), "r") as f:
+        t_tables = {**config['Tables'], **config['Annex']}
+    ## End temp adjustment
+
+    ## temporary comment this out
+    # with zipfile.ZipFile(io.BytesIO(resp.content), "r") as f:
+    #     frames = []
+    #     if any(x in url for x in ['annex', 'Annex']):
+    #         is_annex = True
+    #         t_tables = config['Annex']
+    #     else:
+    #         is_annex = False
+    #         t_tables = config['Tables']
+    ## temporary comment this out ^^
         for chapter, tables in t_tables.items():
             for table in tables:
                 df = None
@@ -177,12 +185,14 @@ def ghg_call(*, resp, url, year, config, **_):
                     continue
 
                 table_name = tables[table].get('table_name', table)
-                if is_annex:
-                    path = config['path']['annex']
-                else:
-                    path = config['path']['base']
-                path = (path.replace('{chapter}', chapter)
-                            .replace('{table_name}', table_name))
+                ## temporary comment this out and replace w/ new path
+                # if is_annex:
+                #     path = config['path']['annex']
+                # else:
+                #     path = config['path']['base']
+                # path = (path.replace('{chapter}', chapter)
+                #             .replace('{table_name}', table_name))
+                path = f'Table {table}.csv'
 
                 # Handle special case of table 3-22 in external data folder
                 if table == "3-22b":
@@ -230,7 +240,7 @@ def ghg_call(*, resp, url, year, config, **_):
                 elif table != '3-22b':
                     # Except for 3-22b already as df, 
                     # Proceed with default case
-                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
+                    df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
                                      thousands=",")
 
                 if table == '3-13':
@@ -817,4 +827,4 @@ if __name__ == "__main__":
     import flowsa
     # fba = flowsa.return_FBA('EPA_GHGI_T_4_101', 2016)
     # df = clean_HFC_fba(fba)
-    fba = flowsa.generateflowbyactivity.main(year=2017, source='EPA_GHGI')
+    fba = flowsa.generateflowbyactivity.main(year=2022, source='EPA_GHGI')
