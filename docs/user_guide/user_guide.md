@@ -1,18 +1,22 @@
 # FLOWSA User-Guide
 
 # User-Guide Contents
-- [FLOWSA Objective](#flowsa-objective)
+- [FLOWSA Overview](#flowsa-overview)
   - [_Sector_ Definition](#_sector_-definition)
-  - [FLOWSA Data Outputs](#flowsa-data-outputs)
+    - [Expanding Sectors to Include Material Flow Tracking](#expanding-sectors-to-include-material-flow-tracking)
+- [FLOWSA Data Outputs](#flowsa-data-outputs)
+  - [Flow-By-Activity Datasets](#flow-by-activity-datasets)
+  - [Flow-By-Sector Datasets](#flow-by-sector-datasets)
+  - [Data Documentation Outputs](#data-documentation-outputs)
+  - [FLOWSA Data Storage and Access](#flowsa-data-storage-and-access)
 - [FLOWSA Organization and Big Picture](#flowsa-organization-and-big-picture)
   - [Naming Schemas](#naming-schemas)
-  - [USEPA Tools for Industrial Ecology](#usepa-tools-for-industrial-ecology)
 - [Generating Flow-By-Activity Datasets](#generating-flow-by-activity-fba-datasets)
   - [Overview of Steps to Generate a Flow-By-Activity Dataset](#overview-of-steps-to-generate-a-flow-by-activity-dataset)
   - [Detailed Steps to Writing an FBA method YAML](#detailed-steps-to-writing-an-fba-method-yaml)
 - [Creating an activity-to-sector mapping file](#mapping-fba-data-to-sectors-via-activity-to-sector-crosswalks)
   - [Re-Generating Master Sector Crosswalks](#re-running-sector-master-crosswalks)
-- [Generating Flow-By-Sector Datasets](Generating Flow-By-Sector Datasets)
+- [Generating Flow-By-Sector Datasets](#generating-flow-by-sector-datasets)
 - [Accessing FLOWSA-Generated Data and Data Storage](#accessing-flowsa-generated-data-and-data-storage)
 - [Data Visualization](#data-visualization)
 - [FLOWSA Git/GitHub Management](#flowsa-gitgithub-management)
@@ -20,37 +24,37 @@
   - [New Release Workflow](#new-release-workflow)
   - [GitHub Actions](#github-actions)
 
-# FLOWSA Objective
+# FLOWSA Overview
 FLOWSA is a Python package designed to streamline attributing environmental, economic, emission, waste, material, and other data to industry and end-use sectors. 
 FLOWSA pulls data from primary environmental and economic sources (generally government or other publicly available sources), that use a variety of terminology and units, and attributes those data to standardized classification and units. 
 Data can be attributed to sectors that produce the data and/or sectors that consume the data. 
 This way, a single row in a dataset captures the generation of, the consumption of, or the direct flow of environmental/economic data between two sectors. 
 For example, we can capture water withdrawals consumed by wheat farming (Sector-Consumed-By) or the movement of water from public supply withdrawals (Sector-Produced-By) to domestic use (Sector-Consumed-By). 
 
-
 ## _Sector_ Definition
-_Sectors_ are standardized codes that classify industries and final end-users.
-To date, sectors are primarily 2-6 digit North American Industry Classification System ([NAICS](https://www.census.gov/naics/)) codes. 
+_Sectors_ are standardized codes that classify industries and final end-users. 
+These classifications are standardized for all data sources, so water withdrawals, greenhouse gas emissions, and employment data are all attributed to the same sectors. 
+To date, sectors defined in FLOWSA are primarily 2-6 digit North American Industry Classification System ([NAICS](https://www.census.gov/naics/)) codes. 
 As some primary sources contain data that are more detailed than the official 6-digit NAICS, we extended the official NAICS, creating unofficial 7-digit sector codes. 
 These 7-digit codes can be aggregated to official NAICS codes. 
 An example of 7-digit sectors can be found in the [crosswalk](https://github.com/USEPA/flowsa/blob/master/flowsa/data/activitytosectormapping/NAICS_Crosswalk_USDA_CoA_Cropland.csv) that maps USDA Census of Agriculture terminology to sector codes.
-NAICS capture economic industries in the U.S., but do not classify non-business end-users that produce and/or consume environmental/economic data, such as U.S. households. 
+NAICS capture economic industries in the U.S., but do not classify non-business end-users that produce and/or consume environmental/economic data, such as U.S. government and households sectors. 
 To include these non-business sectors, we use BEA industry codes to represent [government](https://github.com/USEPA/flowsa/blob/master/flowsa/data/Government_SectorCodes.csv) and [household](https://github.com/USEPA/flowsa/blob/master/flowsa/data/Household_SectorCodes.csv) end-users. 
 
-The most recent version of FLOWSA is designed to attribute primary source data to [NAICS_2012_Codes(https://github.com/USEPA/flowsa/blob/master/flowsa/data/NAICS_2012_Crosswalk.csv) or [NAICS_2017_Codes](https://github.com/USEPA/flowsa/blob/master/flowsa/data/NAICS_2017_Crosswalk.csv. 
+The most recent version of FLOWSA is designed to attribute primary source data to [NAICS_2012_Codes](https://github.com/USEPA/flowsa/blob/master/flowsa/data/NAICS_2012_Crosswalk.csv) or [NAICS_2017_Codes](https://github.com/USEPA/flowsa/blob/master/flowsa/data/NAICS_2017_Crosswalk.csv). 
 However, FLOWSA is designed to allow for additional definitions of sectors. 
 Although there are no current plans to expand sector types, potentially future versions of FLOWSA could be developed to attribute data to International Standard of Industrial Classification (ISIC) codes and/or BEA industry codes. 
 
-### Material Tracking
-FLOWSA also allows users to append material codes to allow material tracking.
-   - See the [FLOWSA FBS datasets](https://github.com/USEPA/HIO/blob/main/flowsa/flowbysectormethods/Waste_national_2018.yaml) developed in the USEPA Hybrid Input-Output (HIO) GitHub repository for example [material](https://github.com/USEPA/HIO/blob/main/data/Materials.csv) flow tracking. 
+### Expanding Sectors to Include Material Flow Tracking
+FLOWSA also allows users to append material codes to enable tracking the generation of, consumption of, or flow of materials between sectors. 
+Examples of [material](https://github.com/USEPA/HIO/blob/main/data/Materials.csv) tracking in FLOWSA can be found in the [FLOWSA FBS datasets](https://github.com/USEPA/HIO/blob/main/flowsa/flowbysectormethods/Waste_national_2018.yaml) developed in the [USEPA Hybrid Input-Output (HIO)](https://github.com/USEPA/HIO) GitHub repository. 
 
 # FLOWSA Data Outputs
 FLOWSA generates two types of datasets: 1) Flow-By-Activity (FBA) and 2) (Flow-By-Sector) (FBS). 
-With each dataset, FLOWSA generates log and metadata files. 
+With each dataset, FLOWSA generates log and metadata files to document how the datasets were created, data validation, and the git version and hashes at the time of data generation. 
 
 ## Flow-By-Activity Datasets
-Flow-By-Activity (FBA) datasets are environmental and other data imported from publicly available sources and formatted into [standardized tables](https://github.com/USEPA/flowsa/blob/master/format%20specs/FlowByActivity.md). 
+Flow-By-Activity (FBA) datasets are environmental and other data imported from government, peer-reviewed, or proprietary sources and formatted into [standardized tables](https://github.com/USEPA/flowsa/blob/master/format%20specs/FlowByActivity.md). 
 These data are largely unchanged from the original data source, except for formatting.
 FBA datasets retain original source terminology and units. 
 The defining columns for an FBA dataset are the "ActivityProducedBy" and "ActivityConsumedBy" columns. 
@@ -66,23 +70,53 @@ FBS datasets can be created from a single FBA, multiple FBAs, or a combination o
 The defining columns for an FBS are the "SectorProducedBy" and "SectorConsumedBy" columns. 
 These columns contain the _sector_ that produces or consumes the environmental/economic data.
 
-## Documentation Outputs
+## Data Documentation Outputs
 In addition to the datasets, FLOWSA also generates:
 1. Log Files: Captures console readouts of the model build. 
 2. Metadata files: Captures the git hash and versions of each primary and attribution FBA dataset used. Provides links to the code within the FLOWSA GitHub repository at the time the datasets were generated.
 
+## FLOWSA Data Storage and Access
+Data generated via FLOWSA are stored in a user's local directory. 
+To check where the files are stored, run the following code in the python console:
+```
+import appdirs
+appdirs.user_data_dir()
+```
+
+Users can access the most recent datasets output from FLOWSA via EPA's Amazon s3 [storage service](https://dmap-data-commons-ord.s3.amazonaws.com/index.html?prefix=flowsa/). 
+These files can be accessed manually or by specifying that FLOWSA should download any missing FBAs when running an FBS method. 
+Any data downloaded from Data Commons should be saved in a user's local directory to allow the FLOWSA package to find the files.
+
 # FLOWSA Organization and Big Picture
-The following schematic captures how the files found within FLOWSA are linked, as well as how additional USEPA industrial ecology modeling tools are used within FLOWSA. This schematic is published in Birney et al. 2022 [https://doi.org/10.3390/app12115742](https://doi.org/10.3390/app12115742).
+The following schematic captures how the files found within FLOWSA are linked, as well as how additional [USEPA industrial ecology modeling tools](https://www.epa.gov/land-research/tools-industrial-ecology-modeling-tiem) are used within FLOWSA. This schematic is published in Birney et al. 2022 [https://doi.org/10.3390/app12115742](https://doi.org/10.3390/app12115742).
 
 <img src="user_guide_images/FLOWSA_schematic.png" width=100%>
 
-## Naming Schemas
-The naming schemas chosen for an FBA are important. 
+## File Naming Schemas
+The naming schemas chosen for an FBA should follow a standard convention of `Author_DatasetAcronym_DataSubset` (e.g. EIA_CBECS_Land).
+Where:
+Author: Dataset author, generally the government publisher rather than an individual's name
+DatasetAcronym: A shorthand version of the dataset (e.g. CBECS for Commercial Buildings Energy Consumptioin Survey)
+DataSupset: (optional) If datasets are split into multiple FBAs, specify what is included in the subset (e.g. Land)
 
-## USEPA Tools for Industrial Ecology
-FLOWSA is one tool within the USEPA's [collection](https://www.epa.gov/land-research/tools-industrial-ecology-modeling-tiem) of open-source tools in the realm of industrial ecology. 
-The FBS files generated within FLOWSA are used as inputs into USEEIO models 
+The name of the FBA is held standard across FBA method yamls and activty-to-sector mapping files.
+On generation, the data year is appended to the FBA parquet file (e.g. EIA_CBECS_Land_2012.parquet)
 
+FBS data files follow a naming schema of `Flow_GeographicScale_year_method` (e.g. Water_national_2015_m1).
+Where:
+Flow: Type of resource or emission (e.g. Water or GHG)
+GeographicScale: Geographic scale of data found in the dataset (e.g. national or state)
+Year: Year the data represents (e.g. 2015 or 2018)
+method: (optional) Version of the method used to generate the data (e.g. m1 or m2 for method1 or method2)
+
+The parquet and log files output by FLOWSA also follow a specific naming convention `Name_version_git-hash.ext` (e.g. GRDREL_national_2017_v0.1_864d573.parquet).
+Where:
+Name: Specific to the file (e.g. GRDREL_national_2017)
+version: Defined by the version of FLOWSA used to generate the file (e.g. v1.0.7)
+git-hash: A 7-digit code defined by the git hash of the final commit when the file is generated
+ext: The file extension such as ".parquet" or ".csv"
+
+Note: Files generated within the same FLOWSA package version may show different git-hash but are generally assumed to be comparable, as individual commits could be minor changes that do not impact the results of other methods.
 
 # Generating Flow-By-Activity (FBA) Datasets
 This section walks through the steps to generate an FBA. 
@@ -90,8 +124,8 @@ The steps are demonstrated by re-creating an existing FLOWSA 2017 FBA, [“USDA_
 
 ## Overview of Steps to Generate a Flow-By-Activity Dataset
 1. Create a YAML method file in the [methods/flowbyactivitymethods](https://github.com/USEPA/flowsa/tree/master/flowsa/methods/flowbyactivitymethods) directory, following the recommended [naming schema](#naming-schemas) and the steps for generating an [FBA yaml](#detailed-steps-to-writing-an-fba-method-yaml).
-2. Determine where the data is accessed, for example the USDA_CoA_Cropland data is pulled from [USDA NASS Quick Stats](https://quickstats.nass.usda.gov/), but data can also be stored and accessed in the external data folder [data/external_data](https://github.com/USEPA/flowsa/tree/master/flowsa/data/external_data)
-3. Create source-specific functions in a data source .py file, hosted in the [data_source_scripts](https://github.com/USEPA/flowsa/tree/master/flowsa/data_source_scripts) directory
+2. Determine where the data is accessed, for example the USDA_CoA_Cropland data is pulled from [USDA NASS Quick Stats](https://quickstats.nass.usda.gov/), but data can also be stored and accessed in the external data folder [data/external_data](https://github.com/USEPA/flowsa/tree/master/flowsa/data/external_data).
+3. Create source-specific functions in a data source .py file, hosted in the [data_source_scripts](https://github.com/USEPA/flowsa/tree/master/flowsa/data_source_scripts) directory.
 
 ## Detailed Steps to Writing an FBA method YAML
 1. The first step is to write instructions for how to access the original source data. All FBA files are housed in the same directory [methods/flowbyactivitymethods](https://github.com/USEPA/flowsa/tree/master/flowsa/methods/flowbyactivitymethods). These instructions are written in a human-readable form (YAML files) and are later read in as a pandas dictionary in python. The YAML for USDA_CoA_Cropland can be found [here](https://github.com/USEPA/flowsa/blob/master/flowsa/methods/flowbyactivitymethods/USDA_CoA_Cropland.yaml), with an explanation of all possible parameters defined in any FBA method yaml found in the [flowbyactivitymethods/README](https://github.com/USEPA/flowsa/blob/master/flowsa/methods/flowbyactivitymethods/README.md).
@@ -307,7 +341,7 @@ An example of recursive attribution is identified in the [Water FBS](https://git
 Sequential attribution is a method of attributing primary FBA source data to sectors by first applying an attribution method with an attribution FBA. Then, after applying the attribution method, applying additional attribution methods with more FBA datasets. 
 An example of sequential attribution can be found in the [Land_state_2012](https://github.com/USEPA/flowsa/blob/master/flowsa/methods/flowbysectormethods/Land_state_2012.yaml) FBS method.
 
-<img src="user_guide_images/fbs_sequential_attribution.png" width=50%>
+<img src="user_guide_images/fbs_sequential_attribution.PNG" width=50%>
 
 FBS method attribution can be applied with combinations of recursive and sequential attribution methods. 
 
@@ -331,16 +365,7 @@ fbs = pd.DataFrame(flowsa.flowbysector.FlowBySector.generateFlowBySector(
 ```
   
 
-# Accessing FLOWSA-Generated Data and Data Storage
-Data generated via FLOWSA are stored in a user's local directory. 
-To check where the files are stored, run the following code in the python console:
-```
-import appdirs
-appdirs.user_data_dir()
-```
-Any data downloaded from [Data Commons](https://dmap-data-commons-ord.s3.amazonaws.com/index.html?prefix=flowsa/) should also be saved in a user's local directory.
 
-Users can access the most recent datasets output from FLOWSA via EPA's Amazon s3 [storage service](https://dmap-data-commons-ord.s3.amazonaws.com/index.html?prefix=flowsa/).
 
 # Data Visualization
 
