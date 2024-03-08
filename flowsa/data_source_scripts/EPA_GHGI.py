@@ -209,12 +209,12 @@ def ghg_call(*, resp, url, year, config, **_):
                         log.error(f"error reading {table}")
                         continue
                 
-                if table in ['3-10', '5-28', 'A-73', 'A-97']:
+                if table in ['3-10', '5-28', 'A-71', 'A-92']:
                     # Skip single row
                     df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
                                      thousands=",", decimal=".")
-                    df = df.rename(columns={'2010a':'2010'})
-                elif table == "3-22":
+                    df = df.rename(columns={'2010a':'2010'})                    ## Check year 2010                                                                                     
+                elif table == "3-24":
                     # Skip first two rows, as usual, but make headers the next 3 rows:
                     df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
                                      header=[0, 1, 2], thousands=",")
@@ -397,7 +397,7 @@ def ghg_parse(*, df_list, year, config, **_):
 
         meta = get_table_meta(source_name, config)
 
-        if table_name in ['3-22']:
+        if table_name in ['3-24']:
             df = df.melt(id_vars=id_vars,
                          var_name=meta.get('melt_var'),
                          value_name="FlowAmount")
@@ -408,7 +408,7 @@ def ghg_parse(*, df_list, year, config, **_):
             df['Unit'] = name_unit['units']
             df['Year'] = year
 
-        elif table_name in ['4-14', '4-33', '4-50', '4-80']:
+        elif table_name in ['4-16', '4-37', '4-57', '4-100']:
             # When Year is the first column in the table, need to make this correction
             df = df.rename(columns={'ActivityProducedBy': 'Year',
                                     'Year': 'ActivityProducedBy'})
@@ -644,7 +644,7 @@ def ghg_parse(*, df_list, year, config, **_):
                 if "Total" == apb_value or "Total " == apb_value:
                     df = df.drop(index)
 
-        elif table_name == "A-73":
+        elif table_name == "A-71":
             fuel_name = ""
             A_79_unit_dict = {'Natural Gas': 'trillion cubic feet',
                               'Electricity': 'million kilowatt-hours'}
@@ -665,25 +665,25 @@ def ghg_parse(*, df_list, year, config, **_):
                     df.loc[index, 'Unit'] = A_79_unit_dict[fuel_name]
 
         else:
-            if table_name in ["4-48"]:
+            if table_name in ["4-55"]:
                 # Assign activity as flow for technosphere flows
                 df.loc[:, 'FlowType'] = 'TECHNOSPHERE_FLOW'
                 df.loc[:, 'FlowName'] = df.loc[:, 'ActivityProducedBy']
 
-            elif table_name in ["4-86", "4-96", "4-100"]:
+            elif table_name in ["4-106", "4-118", "4-122"]:
                 # Table with flow names as Rows
                 df.loc[:, 'FlowName'] = (df.loc[:, 'ActivityProducedBy']
                                          .apply(lambda x: strip_char(x)))
                 df = df[~df['FlowName'].str.contains("Total")]
                 df.loc[:, 'ActivityProducedBy'] = meta.get('activity')
 
-            elif table_name in ["4-33", "4-50", "4-80"]:
+            elif table_name in ["4-37", "4-57", "4-100"]:
                 # Table with units or flows as columns
                 df.loc[:, 'ActivityProducedBy'] = meta.get('activity')
                 df.loc[df['Unit'] == 'MMT CO2 Eq.', 'Unit'] = 'MMT CO2e'
                 df.loc[df['Unit'].str.contains('kt'), 'Unit'] = 'kt'
 
-            elif table_name in ["4-14", "4-102", "A-95"]:
+            elif table_name in ["4-16", "4-124", "A-95"]:
                 # Remove notes from activity names
                 for index, row in df.iterrows():
                     apb_value = strip_char(row["ActivityProducedBy"].split("(")[0])
@@ -705,7 +705,7 @@ def ghg_parse(*, df_list, year, config, **_):
         # Remove commas from numbers again in case any were missed:
         df["FlowAmount"].replace(',', '', regex=True, inplace=True)
         cleaned_list.append(df)
-
+# export to csv and check
     return cleaned_list
 
 
@@ -796,7 +796,7 @@ def split_HFCs_by_type(fba: FlowByActivity, **_) -> FlowByActivity:
         attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
     }
     original_sum = fba.FlowAmount.sum()
-    tbl = fba.config.get('clean_parameter')['flow_fba'] # 4-100
+    tbl = fba.config.get('clean_parameter')['flow_fba'] # 4-100 #Now 4-122
     splits = load_fba_w_standardized_units(datasource=tbl,
                                            year=fba['Year'][0],
                                            download_FBA_if_missing=True)
