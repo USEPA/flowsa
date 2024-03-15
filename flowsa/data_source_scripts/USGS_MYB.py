@@ -2011,7 +2011,9 @@ def usgs_lead_parse(*, df_list, source, year, **_):
     row_to_use = ["Primary lead, refined content, "
                   "domestic ores and base bullion",
                   "Secondary lead, lead content",
-                  "Lead ore and concentrates", "Lead in base bullion",
+                  "Lead ore and concentrates",
+                  "Lead in base bullion",
+                  "Lead in base bullion, lead content",
                   "Base bullion"]
     import_export = ["Exports, lead content:",
                      "Imports for consumption, lead content:"]
@@ -2039,8 +2041,7 @@ def usgs_lead_parse(*, df_list, source, year, **_):
                     data["FlowAmount"] = df.iloc[index]["FlowAmount"]
                 dataframe = pd.concat([dataframe, pd.DataFrame([data])],
                                       ignore_index=True)
-                dataframe = assign_fips_location_system(
-                    dataframe, str(year))
+    dataframe = assign_fips_location_system(dataframe, str(year))
     # standardize activityproducedby naming
     dataframe['ActivityProducedBy'] = np.where(
         dataframe['ActivityProducedBy'] == "Base bullion",
