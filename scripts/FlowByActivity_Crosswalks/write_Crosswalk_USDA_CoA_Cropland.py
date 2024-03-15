@@ -14,8 +14,13 @@ on NAICS definitions from the Census.
 
 """
 import pandas as pd
+from pathlib import Path
+import sys
 from flowsa.settings import datapath
-from scripts.FlowByActivity_Crosswalks.common_scripts import unique_activity_names, order_crosswalk
+
+cw_path = Path(__file__).parents[1]
+sys.path.append(str(cw_path / 'FlowByActivity_Crosswalks'))  # accepts str, not pathlib obj
+from FlowByActivity_Crosswalks.common_scripts import unique_activity_names, order_crosswalk
 
 
 def assign_naics(df):
@@ -147,6 +152,7 @@ def assign_naics(df):
     # coa aggregates to sugarcane farming: 11193
     df.loc[df['Activity'] == 'SUGARCANE, SUGAR', 'Sector'] = '111930A'
     df.loc[df['Activity'] == 'SUGARCANE, SEED', 'Sector'] = '111930B'
+    df.loc[df['Activity'] == 'SUGARCANE, SUGAR & SEED', 'Sector'] = '111930'
 
     # coa aggregates to hay farming: 11194
     df.loc[df['Activity'] == 'HAY & HAYLAGE', 'Sector'] = '11194'
@@ -170,13 +176,20 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'MINT, TEA LEAVES', 'Sector'] = '111998K'
     df.loc[df['Activity'] == 'SWITCHGRASS', 'Sector'] = '111998L'
     df.loc[df['Activity'] == 'FIELD CROPS, OTHER', 'Sector'] = '111998M'
+    df.loc[df['Activity'] == 'HEMP, INDUSTRIAL, CLONES & TRANSPLANTS', 'Sector'] = '111998N'
+    df.loc[df['Activity'] == 'HEMP, INDUSTRIAL, COMPLETE GROWS', 'Sector'] = '111998O'
+    df.loc[df['Activity'] == 'HEMP, INDUSTRIAL, FIBER', 'Sector'] = '111998P'
+    df.loc[df['Activity'] == 'HEMP, INDUSTRIAL, FLORAL', 'Sector'] = '111998Q'
+    df.loc[df['Activity'] == 'HEMP, INDUSTRIAL, GRAIN', 'Sector'] = '111998R'
+    df.loc[df['Activity'] == 'HEMP, INDUSTRIAL, OTHER USAGE', 'Sector'] = '111998S'
+    df.loc[df['Activity'] == 'HEMP, INDUSTRIAL, SEED', 'Sector'] = '111998T'
 
     return df
 
 
 if __name__ == '__main__':
     # select years to pull unique activity names
-    years = ['2012', '2017']
+    years = ['2012', '2017', '2022']
     # datasource
     datasource = 'USDA_CoA_Cropland'
     # df of unique ers activity names
