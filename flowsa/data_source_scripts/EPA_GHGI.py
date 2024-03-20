@@ -194,10 +194,10 @@ def ghg_call(*, resp, url, year, config, **_):
                 #             .replace('{table_name}', table_name))
                 path = f'Table {table}.csv'
 
-                # Handle special case of table 3-22 in external data folder
-                if table == "3-22b":
-                    if str(year) in ['2020']:
-                        # Skip 3-22b for current year (use 3-22 instead)
+                # Handle special case of table 3-24 in external data folder
+                if table == "3-24b":
+                    if str(year) in ['2022']:
+                        # Skip 3-24b for current year (use 3-24 instead)
                         continue
                     else:
                         df = pd.read_csv(externaldatapath / f"GHGI_Table_{table}.csv",
@@ -237,8 +237,8 @@ def ghg_call(*, resp, url, year, config, **_):
                     df.columns = new_headers
                 elif table in ANNEX_ENERGY_TABLES:
                     df = annex_yearly_tables(data, table)
-                elif table != '3-22b':
-                    # Except for 3-22b already as df, 
+                elif table != '3-24b':
+                    # Except for 3-24b already as df, 
                     # Proceed with default case
                     df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
                                      thousands=",")
