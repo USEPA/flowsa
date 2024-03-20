@@ -7,7 +7,7 @@
 !include:GHG_national_m2_common.yaml
 ghgi_year: &ghgi_year 2018
 mecs_year: &mecs_year 2018
-
+coa_year: &coa_year 2017
 
 sources_to_cache:
   Detail_Use_2018:
@@ -245,6 +245,24 @@ source_names:
             geoscale: national
             activity_to_sector_mapping: BEA_2012_Detail
             attribution_method: equal
+
+      cropland: # allocated based on USDA land area harvested
+        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:cropland
+        attribution_source:
+          USDA_CoA_Cropland:
+            !include:GHG_national_m2_common.yaml:attribution_sources:_cropland_allocation:USDA_CoA_Cropland
+            year: *coa_year
+            attribution_source:
+              USDA_CoA_Cropland_NAICS:
+                !include:GHG_national_m2_common.yaml:attribution_sources:_cropland_allocation:USDA_CoA_Cropland:attribution_source:USDA_CoA_Cropland_NAICS
+                year: *coa_year
+
+      pasture: # allocated based on USDA Animal operation land (acres)
+        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:pasture
+        attribution_source:
+          USDA_CoA_Cropland_NAICS:
+            !include:GHG_national_m2_common.yaml:attribution_sources:_animal_land_allocation:USDA_CoA_Cropland_NAICS
+            year: *coa_year
 
   EPA_GHGI_T_2_1: #U.S. GHG emissions
     !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_2_1
