@@ -5,8 +5,8 @@
 
 
 !include:USEEIO_summary_target.yaml
-# year: &ghgi_year 2016
-target_naics_year: 2012
+# year: &ghgi_year 2022
+target_naics_year: 2017
 geoscale: national
 
 mecs_year: &mecs_year 2018
@@ -153,7 +153,7 @@ source_names:
 
 
 ## Fossil Fuels
-  EPA_GHGI_T_3_68: &natgas #CH4 from Natural Gas Systems
+  EPA_GHGI_T_3_73: &natgas #CH4 from Natural Gas Systems
     # year: # override this
     fedefl_mapping: GHGI
     selection_fields:
@@ -165,10 +165,10 @@ source_names:
         - Production
         - Transmission and Storage
     attribution_method: direct
-  EPA_GHGI_T_3_70: *natgas #CO2 from Natural Gas Systems mimics CH4
-  EPA_GHGI_T_3_72: *natgas #N2O from Natural Gas Systems, not used in original method, mimics CH4
+  EPA_GHGI_T_3_75: *natgas #CO2 from Natural Gas Systems mimics CH4
+  EPA_GHGI_T_3_77: *natgas #N2O from Natural Gas Systems, not used in original method, mimics CH4
 
-  EPA_GHGI_T_3_42: &petroleum #CH4 from Petroleum Systems
+  EPA_GHGI_T_3_44: &petroleum #CH4 from Petroleum Systems
     # year: # override this
     fedefl_mapping: GHGI
     selection_fields:
@@ -180,8 +180,8 @@ source_names:
         - Refining
         - Crude Refining
     attribution_method: direct
-  EPA_GHGI_T_3_44: *petroleum #CO2 from Petroleum Systems mimics CH4
-  EPA_GHGI_T_3_46: *petroleum #N2O from Petroleum Systems, not in prior method, mimics CH4
+  EPA_GHGI_T_3_46: *petroleum #CO2 from Petroleum Systems mimics CH4
+  EPA_GHGI_T_3_48: *petroleum #N2O from Petroleum Systems, not in prior method, mimics CH4
 
 ## Agriculture
   EPA_GHGI_T_5_28: #CH4, N2O, CO and NOx from field burning of residues
@@ -573,7 +573,7 @@ source_names:
   EPA_GHGI_T_3_9: *stationary_combustion # N2O emissions from stationary combustion
 
 ## Other sources
-  EPA_GHGI_T_4_46: #CO2 for selected petrochemicals
+  EPA_GHGI_T_4_53: #CO2 for selected petrochemicals
     # year: # override with ghgi_year
     fedefl_mapping: GHGI
     selection_fields:
@@ -658,7 +658,7 @@ source_names:
               SectorProducedBy: {'32411': ''} # purchases of refinery products (324110)
 
 ## Other Emissions
-  EPA_GHGI_T_4_50: # HFCs from HCFC-22 production
+  EPA_GHGI_T_4_57: # HFCs from HCFC-22 production
     # year: # override with ghgi_year
     fedefl_mapping: GHGI
     selection_fields:
@@ -666,18 +666,18 @@ source_names:
       PrimaryActivity: HCFC-22 Production
     attribution_method: direct
 
-  EPA_GHGI_T_4_96: # HFCs and other emissions from electronics manufacture
+  EPA_GHGI_T_4_118: # HFCs and other emissions from electronics manufacture
     # year: # override with ghgi_year
     fedefl_mapping: GHGI
     selection_fields:
       PrimaryActivity: Electronics Production
     attribution_method: direct
 
-  EPA_GHGI_T_4_102: # HFCs and PFCs from ODS Substitutes
+  EPA_GHGI_T_4_124: # HFCs and PFCs from ODS Substitutes
     clean_fba_before_activity_sets: !script_function:EPA_GHGI split_HFCs_by_type
     clean_parameter:
         # Proportions of specific HFCs are assigned based on national total
-        flow_fba: EPA_GHGI_T_4_100
+        flow_fba: EPA_GHGI_T_4_122
     # year: # override with ghgi_year
     fedefl_mapping: GHGI
     activity_sets:
@@ -722,12 +722,12 @@ source_names:
                 '32615': '' # Urethane and other foam (326150)
 
 
-  EPA_GHGI_T_A_97: # HFCs from Transportation
+  EPA_GHGI_T_A_92: # HFCs from Transportation
     # year: # override with ghgi_year
     clean_fba_before_mapping: !script_function:EPA_GHGI split_HFCs_by_type
     clean_parameter:
         # Proportions of specific HFCs are assigned based on national total
-        flow_fba: EPA_GHGI_T_4_100
+        flow_fba: EPA_GHGI_T_4_122
     fedefl_mapping: GHGI
     selection_fields:
       PrimaryActivity:
@@ -743,7 +743,7 @@ source_names:
     attribution_method: direct
 
 
-  EPA_GHGI_T_4_80: # PFCs from aluminum production
+  EPA_GHGI_T_4_100: # PFCs from aluminum production
     # year: # override with ghgi_year
     fedefl_mapping: GHGI
     selection_fields:
@@ -751,7 +751,7 @@ source_names:
     attribution_method: direct
 
 
-  EPA_GHGI_T_4_86: # HFCs, SF6, CO2 from magnesium production
+  EPA_GHGI_T_4_106: # HFCs, SF6, CO2 from magnesium production
     # year: # override with ghgi_year
     fedefl_mapping: GHGI
     selection_fields:
