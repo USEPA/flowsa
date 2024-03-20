@@ -392,7 +392,7 @@ source_names:
     clean_parameter: # Override each year for use in allocate_industrial_combustion
         energy_fba: 'EIA_MECS_Energy'
         year: *mecs_year
-        ghg_fba: 'EPA_GHGI_T_A_7' # 2018 Table
+        ghg_fba: 'EPA_GHGI_T_A_9' # 2018 Table
     activity_sets:
       direct_attribution: #direct allocation
         selection_fields:
@@ -475,7 +475,7 @@ source_names:
     clean_parameter: # Override each year for use in allocate_industrial_combustion
         energy_fba: 'EIA_MECS_Energy'
         year: *mecs_year
-        ghg_fba: 'EPA_GHGI_T_A_7' # 2018 Table
+        ghg_fba: 'EPA_GHGI_T_A_9' # 2018 Table
     fedefl_mapping: GHGI
     activity_sets:
       residential:
