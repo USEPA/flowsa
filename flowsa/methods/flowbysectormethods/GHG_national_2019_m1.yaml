@@ -1,7 +1,7 @@
 # This is a 2019 target year specific implementation of GHG_national_m1
 # This is a Summary level model
 # All parameters add year specific data when needed to implement for 2019
-# GHGI FBA table names match the 2022 GHGI Report
+# GHGI FBA table names match the 2024 GHGI Report
 # MECS year is 2018
 
 !include:GHG_national_m1_common.yaml
