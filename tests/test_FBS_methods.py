@@ -17,7 +17,6 @@ def test_FBS_methods():
                   f"{method_status.get(m).get('Status', 'Unknown')}")
             continue
         elif any(s in m for s in (
-                'GHG_national_2012',
                 'GHG_national_2013',
                 'GHG_national_2014',
                 'GHG_national_2015',
