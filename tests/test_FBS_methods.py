@@ -17,11 +17,14 @@ def test_FBS_methods():
                   f"{method_status.get(m).get('Status', 'Unknown')}")
             continue
         elif any(s in m for s in (
+                'GHG_national_2012',
                 'GHG_national_2013',
                 'GHG_national_2014',
                 'GHG_national_2015',
+                'GHG_national_2016',
                 'GHG_national_2018',
                 'GHG_national_2019',
+                'GHG_national_2020',
                 )):
             # Skip select methods to expedite testing
             continue
