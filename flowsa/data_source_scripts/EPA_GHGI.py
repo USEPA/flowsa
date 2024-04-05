@@ -120,7 +120,8 @@ def series_separate_name_and_units(series, default_flow_name, default_units):
 
 def annex_yearly_tables(data, table=None):
     """Special handling of ANNEX Energy Tables"""
-    df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
+    skiprows=0 if table in ("A-9", "A-10") else 1
+    df = pd.read_csv(data, skiprows=skiprows, encoding="ISO-8859-1",
                      header=[0, 1], thousands=",")
     if table == "A-4": 
         # Table "Energy Consumption Data by Fuel Type (TBtu) and Adjusted 
