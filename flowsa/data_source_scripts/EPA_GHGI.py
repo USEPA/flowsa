@@ -216,24 +216,20 @@ def ghg_call(*, resp, url, year, config, **_):
                                      thousands=",", decimal=".")
                     df = df.rename(columns={'2010a':'2010'})                    ## Check year 2010                                                                                     
                 elif table == "3-24":
-                    # Skip first two rows, as usual, but make headers the next 3 rows:
-                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
-                                     header=[0, 1, 2], thousands=",")
-                    # The next two rows are headers and the third is units:
+                    # Skip first row, but make headers the next 2 rows:
+                    df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
+                                     header=[0, 1], thousands=",")
+                    # Row 0 is header, row 1 is unit
                     new_headers = []
                     for col in df.columns:
-                        # unit = col[2]
                         new_header = 'Unnamed: 0'
                         if 'Unnamed' not in col[0]:
                             if 'Unnamed' not in col[1]:
                                 new_header = f'{col[0]} {col[1]}'
                             else:
                                 new_header = col[0]
-                            if 'Unnamed' not in col[2]:
-                                new_header += f' {col[2]}'
-                            # unit = col[2]
-                        elif 'Unnamed' in col[0] and 'Unnamed' not in col[2]:
-                            new_header = col[2]
+                        else:
+                            new_header = col[1]
                         new_headers.append(new_header)
                     df.columns = new_headers
                 elif table in ANNEX_ENERGY_TABLES:
@@ -557,7 +553,7 @@ def ghg_parse(*, df_list, year, config, **_):
             for index, row in df.iterrows():
                 unit = row["Unit"]
                 if unit.strip() == "MMT  CO2":
-                        df.loc[index, 'Unit'] = "MMT CO2e"
+                    df.loc[index, 'Unit'] = "MMT CO2e"
                 if df.loc[index, 'Unit'] != "MMT CO2e":
                     df = df.drop(index)
                 else:
