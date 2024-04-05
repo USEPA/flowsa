@@ -86,7 +86,9 @@ source_names:
 
       electricity_transmission:
         selection_fields:
-          PrimaryActivity: Electrical Transmission and Distribution #SF6
+          PrimaryActivity:
+            - Electrical Transmission and Distribution #SF6
+            - Electrical Equipment # updated name for this activity in 2024 release
           FlowName: SF6
         attribution_method: direct
 
@@ -277,6 +279,7 @@ source_names:
             Ships and Non-Recreational Boats Residual Fuel Oil: Ships and Non-Recreational Boats
             Medium- and Heavy-Duty Trucks Gasoline: Medium- and Heavy-Duty Trucks
             Medium- and Heavy-Duty Trucks LPG: Medium- and Heavy-Duty Trucks
+            Medium- and Heavy-Duty Trucks Natural Gas: Medium- and Heavy-Duty Trucks
             Light-Duty Trucks LPG: Light-Duty Trucks - Households
             Passenger Cars LPG: Passenger Cars - Households
         attribution_method: direct
