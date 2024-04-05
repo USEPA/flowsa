@@ -297,7 +297,7 @@ def strip_char(text):
     text = text + " "
     notes = ["f, g", " a ", " b ", " c ", " d ", " e ", " f ", " g ",
              " h ", " i ", " j ", " k ", " l ", " b,c ", " h,i ", " f,g ",
-             ")b", ")f", ")k", "b,c", "h,i"]
+             ")a", ")b", ")f", ")k", "b,c", "h,i"]
     for i in notes:
         if i in text:
             text_split = text.split(i)
@@ -352,18 +352,14 @@ def strip_char(text):
                  'Natural gas': 'Natural Gas', # Fix capitalization inconsistency
                  'N2O (Semiconductors)': 'N2O',
                  'HGLb': 'HGL',
-                 'Biofuels-Biodieselh LPG' : 'Biofuels-Biodiesel LPG',
-                 'Biofuels-Ethanolh LPG' : 'Biofuels-Ethanol LPG',
-                 'Commercial Aircraftf Jet Fuel' : 'Commercial Aircraft Jet Fuel',
-                 'Distillate Fuel Oil' : 'Distillate Fuel Oil',
-                 'Electricityk LPG': 'Electricity LPG',
+                 'Biofuels-Biodieselh' : 'Biofuels-Biodiesel',
+                 'Biofuels-Ethanolh' : 'Biofuels-Ethanol',
+                 'Commercial Aircraftf' : 'Commercial Aircraft',
+                 'Electricityk': 'Electricity',
                  'Gasolinea' : 'Gasoline',
                  'International Bunker Fuelse' : 'International Bunker Fuel',
-                 'International Bunker Fuelse Jet Fuel' : 'International Bunker Fuel Jet Fuel',
-                 'International Bunker Fuelse Residual Fuel Oil' : 'International Bunker Fuel Residual Fuel Oil',
                  'Medium- and Heavy-Duty Trucksb' : 'Medium- and Heavy-Duty Trucks',
-                 'Medium- and Heavy-Duty Trucksb LPG' : 'Medium- and Heavy-Duty Trucks LPG',
-                 'Pipelineg Natural Gas' : 'Pipeline Natural Gas',
+                 'Pipelineg' : 'Pipeline',
                  'Recreational Boatsc' :'Recreational Boats',
                  'Construction/Mining Equipmentf Diesel On-Road' : 'Construction/Mining Equipment Diesel On-Road',
                  'Non-Roadc Diesel On-Road' : 'Non-Road Diesel On-Road',
