@@ -681,7 +681,7 @@ def ghg_parse(*, df_list, year, config, **_):
                 df.loc[:, 'FlowType'] = 'TECHNOSPHERE_FLOW'
                 df.loc[:, 'FlowName'] = df.loc[:, 'ActivityProducedBy']
 
-            elif table_name in ["4-106", "4-118", "4-122"]:
+            elif table_name in ["4-100", "4-106", "4-118", "4-122"]:
                 # Table with flow names as Rows
                 df.loc[:, 'FlowName'] = (df.loc[:, 'ActivityProducedBy']
                                          .apply(lambda x: strip_char(x)))
