@@ -352,6 +352,24 @@ def strip_char(text):
                  'Natural gas': 'Natural Gas', # Fix capitalization inconsistency
                  'N2O (Semiconductors)': 'N2O',
                  'HGLb': 'HGL',
+                 'Biofuels-Biodieselh LPG' : 'Biofuels-Biodiesel LPG',
+                 'Biofuels-Ethanolh LPG' : 'Biofuels-Ethanol LPG',
+                 'Commercial Aircraftf Jet Fuel' : 'Commercial Aircraft Jet Fuel',
+                 'Distillate Fuel Oil' : 'Distillate Fuel Oil',
+                 'Electricityk LPG': 'Electricity LPG',
+                 'Gasolinea' : 'Gasoline',
+                 'International Bunker Fuelse' : 'International Bunker Fuel',
+                 'International Bunker Fuelse Jet Fuel' : 'International Bunker Fuel Jet Fuel',
+                 'International Bunker Fuelse Residual Fuel Oil' : 'International Bunker Fuel Residual Fuel Oil',
+                 'Medium- and Heavy-Duty Trucksb' : 'Medium- and Heavy-Duty Trucks',
+                 'Medium- and Heavy-Duty Trucksb LPG' : 'Medium- and Heavy-Duty Trucks LPG',
+                 'Pipelineg Natural Gas' : 'Pipeline Natural Gas',
+                 'Recreational Boatsc' :'Recreational Boats',
+                 'Construction/Mining Equipmentf Diesel On-Road' : 'Construction/Mining Equipment Diesel On-Road',
+                 'Non-Roadc Diesel On-Road' : 'Non-Road Diesel On-Road',
+                 'Construction/Mining Equipmentf Alternative Fuel On-Road' : 'Construction/Mining Equipment Alternative Fuel On-Road',
+                 'Non-Roadc Alternative Fuel On-Road' : 'Non-Road Alternative Fuel On-Road'
+
                  }
     for key in footnotes:
         text = text.replace(key, footnotes[key])
