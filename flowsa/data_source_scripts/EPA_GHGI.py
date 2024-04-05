@@ -361,11 +361,8 @@ def strip_char(text):
                  'Medium- and Heavy-Duty Trucksb' : 'Medium- and Heavy-Duty Trucks',
                  'Pipelineg' : 'Pipeline',
                  'Recreational Boatsc' :'Recreational Boats',
-                 'Construction/Mining Equipmentf Diesel On-Road' : 'Construction/Mining Equipment Diesel On-Road',
-                 'Non-Roadc Diesel On-Road' : 'Non-Road Diesel On-Road',
-                 'Construction/Mining Equipmentf Alternative Fuel On-Road' : 'Construction/Mining Equipment Alternative Fuel On-Road',
-                 'Non-Roadc Alternative Fuel On-Road' : 'Non-Road Alternative Fuel On-Road'
-
+                 'Construction/Mining Equipmentf' : 'Construction/Mining Equipment',
+                 'Non-Roadc' : 'Non-Road',
                  }
     for key in footnotes:
         text = text.replace(key, footnotes[key])
