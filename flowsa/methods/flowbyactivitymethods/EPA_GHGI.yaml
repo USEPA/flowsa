@@ -171,28 +171,28 @@ Tables:
         "compartment": "air"
         "flow": "CO2"
         "desc": "Table 4-16:  CO2 Emissions from Other Process Uses of Carbonates (MMT CO2 Eq.)"
-        "melt_var": "ActivityProducedBy"
+        # "melt_var": "ActivityProducedBy"
       "4-37": # Emissions captured in 2-1
         "class": "Chemicals"
         "compartment": "air"
         "flow": "N2O"
         "activity": "Caprolactam Production"
         "desc": "Table 4-37:  N2O Emissions from Caprolactam Production (MMT CO2 Eq. and kt N2O)"
-        "melt_var": "Unit"
+        # "melt_var": "Unit"
       "4-57":
         "class": "Chemicals"
         "compartment": "air"
         "flow": "HFC-23"
         "activity": "HCFC-22 Production"
         "desc": "Table 4-57: HFC-23 Emissions from HCFC-22 Production (MMT CO2 Eq. and kt HFC-23)"
-        "melt_var": "Unit"
+        # "melt_var": "Unit"
       "4-100":
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
         "activity": "Aluminum Production"
         "desc": "Table 4-100:  PFC Emissions from Aluminum Production (MMT CO2 Eq.)"
-        "melt_var": "FlowName"
+        # "melt_var": "FlowName"
 
       "4-53":
         "class": "Chemicals"

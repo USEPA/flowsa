@@ -408,19 +408,19 @@ def ghg_parse(*, df_list, year, config, **_):
             df['Unit'] = name_unit['units']
             df['Year'] = year
 
-        elif table_name in ['4-16', '4-37', '4-57', '4-100']:
-            # When Year is the first column in the table, need to make this correction
-            df = df.rename(columns={'ActivityProducedBy': 'Year',
-                                    'Year': 'ActivityProducedBy'})
-            # Melt on custom defined variable
-            melt_var = meta.get('melt_var')
-            if melt_var in id_vars:
-                id_vars.remove(melt_var)
-            elif 'ActivityProducedBy' not in df:
-                df["ActivityProducedBy"] = 'None'
-            id_vars.append('Year')
-            df = df.melt(id_vars=id_vars, var_name=melt_var,
-                         value_name="FlowAmount")
+        # elif table_name in ['4-16', '4-37', '4-57', '4-100']:
+        #     # When Year is the first column in the table, need to make this correction
+        #     df = df.rename(columns={'ActivityProducedBy': 'Year',
+        #                             'Year': 'ActivityProducedBy'})
+        #     # Melt on custom defined variable
+        #     melt_var = meta.get('melt_var')
+        #     if melt_var in id_vars:
+        #         id_vars.remove(melt_var)
+        #     elif 'ActivityProducedBy' not in df:
+        #         df["ActivityProducedBy"] = 'None'
+        #     id_vars.append('Year')
+        #     df = df.melt(id_vars=id_vars, var_name=melt_var,
+        #                  value_name="FlowAmount")
 
         elif table_name in ANNEX_ENERGY_TABLES:
             df = df.melt(id_vars=id_vars, var_name="FlowName",
@@ -677,11 +677,11 @@ def ghg_parse(*, df_list, year, config, **_):
                 df = df[~df['FlowName'].str.contains("Total")]
                 df.loc[:, 'ActivityProducedBy'] = meta.get('activity')
 
-            elif table_name in ["4-37", "4-57", "4-100"]:
-                # Table with units or flows as columns
-                df.loc[:, 'ActivityProducedBy'] = meta.get('activity')
-                df.loc[df['Unit'] == 'MMT CO2 Eq.', 'Unit'] = 'MMT CO2e'
-                df.loc[df['Unit'].str.contains('kt'), 'Unit'] = 'kt'
+            # elif table_name in ["4-37", "4-57", "4-100"]:
+            #     # Table with units or flows as columns
+            #     df.loc[:, 'ActivityProducedBy'] = meta.get('activity')
+            #     df.loc[df['Unit'] == 'MMT CO2 Eq.', 'Unit'] = 'MMT CO2e'
+            #     df.loc[df['Unit'].str.contains('kt'), 'Unit'] = 'kt'
 
             elif table_name in ["4-16", "4-124", "A-95"]:
                 # Remove notes from activity names
