@@ -52,7 +52,7 @@ _sources_to_cache:
 source_names:
   EPA_GHGI_T_2_1: #U.S. GHG emissions
     # year: # override this
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     activity_sets:
       direct:
         selection_fields:
@@ -157,7 +157,7 @@ source_names:
 ## Fossil Fuels
   EPA_GHGI_T_3_73: &natgas #CH4 from Natural Gas Systems
     # year: # override this
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     selection_fields:
       PrimaryActivity:
         - Distribution
@@ -172,7 +172,7 @@ source_names:
 
   EPA_GHGI_T_3_44: &petroleum #CH4 from Petroleum Systems
     # year: # override this
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     selection_fields:
       PrimaryActivity:
         - Crude Oil Transportation
@@ -188,7 +188,7 @@ source_names:
 ## Agriculture
   EPA_GHGI_T_5_28: #CH4, N2O, CO and NOx from field burning of residues
     # year: # override this
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     selection_fields:
       PrimaryActivity:
         - Chickpeas
@@ -200,7 +200,7 @@ source_names:
     attribution_method: direct
   EPA_GHGI_T_5_3:  &animals #CH4 from Enteric Fermentation
     # year: # override this
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     selection_fields:
       PrimaryActivity:
         - American Bison
@@ -217,7 +217,7 @@ source_names:
 
   EPA_GHGI_T_5_17: #Direct N2O emissions from agricultural soils
     # year: # override this
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     activity_sets:
       fertilizer_use:
         selection_fields:
@@ -243,7 +243,7 @@ source_names:
 
   EPA_GHGI_T_5_18: #Indirect N2O emissions from agricultural soils
     # year: # override this
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     activity_sets:
       fertilizer_use:
         selection_fields:
@@ -260,7 +260,7 @@ source_names:
 
 ## Mobile Sources
   EPA_GHGI_T_3_13: #CO2 from mobile combustion
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     activity_sets:
       direct_petroleum:
         selection_fields:
@@ -306,7 +306,7 @@ source_names:
               SectorProducedBy: {'32411': ''} # purchases of refinery products (324110)
 
   EPA_GHGI_T_3_14: &mobile #CH4 from mobile combustion
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     activity_sets:
       direct_gasoline: # empty in some years (<0.05 MMT CO2eq)
         selection_fields:
@@ -389,7 +389,7 @@ source_names:
 
 ## Stationary Combustion
   GHGI_CO2_stationary_combustion: # CO2 emissions from stationary combustion
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     # year: # override this
     clean_fba_before_activity_sets: !script_function:EPA_GHGI allocate_industrial_combustion
     clean_parameter: # Override each year for use in allocate_industrial_combustion
@@ -479,7 +479,7 @@ source_names:
         energy_fba: 'EIA_MECS_Energy'
         year: *mecs_year
         ghg_fba: 'EPA_GHGI_T_A_9' # 2018 Table
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     activity_sets:
       residential:
         selection_fields:
@@ -578,7 +578,7 @@ source_names:
 ## Other sources
   EPA_GHGI_T_4_53: #CO2 for selected petrochemicals
     # year: # override with ghgi_year
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     selection_fields:
       PrimaryActivity:
         - Acrylonitrile
@@ -591,7 +591,7 @@ source_names:
 
   GHGI_nonenergy_fossil_fuel_emissions: # Fossil fuel for non-energy uses
     # year: #override with ghgi_year
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     activity_sets:
       coal:
         selection_fields:
@@ -663,7 +663,7 @@ source_names:
 ## Other Emissions
   EPA_GHGI_T_4_57: # HFCs from HCFC-22 production
     # year: # override with ghgi_year
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     selection_fields:
       Unit: MMT CO2e # drop records in kt
       PrimaryActivity: HCFC-22 Production
@@ -671,7 +671,7 @@ source_names:
 
   EPA_GHGI_T_4_118: # HFCs and other emissions from electronics manufacture
     # year: # override with ghgi_year
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     selection_fields:
       PrimaryActivity: Electronics Production
     attribution_method: direct
@@ -682,7 +682,7 @@ source_names:
         # Proportions of specific HFCs are assigned based on national total
         flow_fba: EPA_GHGI_T_4_122
     # year: # override with ghgi_year
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     activity_sets:
       households:
         selection_fields:
@@ -731,7 +731,7 @@ source_names:
     clean_parameter:
         # Proportions of specific HFCs are assigned based on national total
         flow_fba: EPA_GHGI_T_4_122
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     selection_fields:
       PrimaryActivity:
         Mobile AC - Passenger Cars: Passenger Cars - Households
@@ -748,7 +748,7 @@ source_names:
 
   EPA_GHGI_T_4_100: # PFCs from aluminum production
     # year: # override with ghgi_year
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     selection_fields:
       PrimaryActivity: Aluminum Production
     attribution_method: direct
@@ -756,7 +756,7 @@ source_names:
 
   EPA_GHGI_T_4_106: # HFCs, SF6, CO2 from magnesium production
     # year: # override with ghgi_year
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     selection_fields:
       PrimaryActivity: Magnesium Production and Processing
     attribution_method: direct
