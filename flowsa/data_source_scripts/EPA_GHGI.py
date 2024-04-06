@@ -360,6 +360,8 @@ def strip_char(text):
                  'Recreational Boatsc' :'Recreational Boats',
                  'Construction/Mining Equipmentf' : 'Construction/Mining Equipment',
                  'Non-Roadc' : 'Non-Road',
+                 'HFCsa': 'HFCs',
+                 'HFOsb': 'HFOs',
                  }
     for key in footnotes:
         text = text.replace(key, footnotes[key])
