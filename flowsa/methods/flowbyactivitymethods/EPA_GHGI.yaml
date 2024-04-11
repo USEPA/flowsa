@@ -179,31 +179,31 @@ Tables:
         "compartment": "air"
         "flow": "CO2"
         "desc": "Table 4-16:  CO2 Emissions from Other Process Uses of Carbonates (MMT CO2 Eq.)"
-        "melt_var": "ActivityProducedBy"
-        
+         # "melt_var": "ActivityProducedBy"
+
       "4-37": # Emissions captured in 2-1
         "class": "Chemicals"
         "compartment": "air"
         "flow": "N2O"
-        "activity": "Caprolactam Production"
-        "desc": "Table 4-37:  N2O Emissions from Caprolactam Production (MMT CO2 Eq. and kt N2O)"
-        "melt_var": "Unit"
-        
+        "activity": "Caprolactam Production"       
+        "desc": "Table 4-37:  N2O Emissions from Caprolactam Production (MMT CO2 Eq.)"
+        "unit": "MMT CO2e"
+
       "4-57":
         "class": "Chemicals"
         "compartment": "air"
         "flow": "HFC-23"
         "activity": "HCFC-22 Production"
-        "desc": "Table 4-57: HFC-23 Emissions from HCFC-22 Production (MMT CO2 Eq. and kt HFC-23)"
-        "melt_var": "Unit"
-        
+        "desc": "Table 4-57: HFC-23 Emissions from HCFC-22 Production (MMT CO2 Eq.)"
+        "unit": "MMT CO2e"
+
       "4-100":
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
         "activity": "Aluminum Production"
         "desc": "Table 4-100:  PFC Emissions from Aluminum Production (MMT CO2 Eq.)"
-        "melt_var": "FlowName"
+        # "melt_var": "FlowName"
 
       "4-53":
         "class": "Chemicals"
@@ -225,6 +225,7 @@ Tables:
         "flow": "CO2e"
         "activity": "Magnesium Production and Processing"
         "desc": "Table 4-106: SF6, HFC-134a, FK 5-1-12 and CO2 Emissions from Magnesium Production and Processing (MMT CO2 Eq.)"
+        
       "4-118":
         "class": "Chemicals"
         "unit": "MMT CO2e"
@@ -255,6 +256,7 @@ Tables:
         "compartment": "air"
         "flow": "CH4"
         "desc": "Table 5-3:  CH4 Emissions from Enteric Fermentation (MMT CO2 Eq.)"
+        
       "5-6":
         "class": "Chemicals"
         "unit": "MMT CO2e"
@@ -268,6 +270,7 @@ Tables:
         "compartment": "air"
         "flow": "N2O"
         "desc": "Table 5-17:  Direct N2O Emissions from Agricultural Soils by Land Use Type and N Input Type (MMT CO2 Eq.)"
+        
       "5-18":
         "class": "Chemicals"
         "unit": "MMT CO2e"
@@ -315,7 +318,7 @@ Annex:
         "emission_unit": "MMT CO2e"
         "emission_class": "Chemicals"
         "desc": >
-         Table A-5: 2022 Energy Consumption Data and CO2 Emissions from
+         Table A-5 2022 Energy Consumption Data and CO2 Emissions from
           Fossil Fuel Combustion by Fuel Type
         "year": "2022"
         
@@ -327,7 +330,7 @@ Annex:
         "emission_unit": "MMT CO2e"
         "emission_class": "Chemicals"
         "desc": >
-          Table A-6: 2021 Energy Consumption Data and CO2 Emissions from
+          Table A-6 2021 Energy Consumption Data and CO2 Emissions from
           Fossil Fuel Combustion by Fuel Type
         "year": "2021"
       "A-7": # Separate emissions table for each year
@@ -338,7 +341,7 @@ Annex:
         "emission_unit": "MMT CO2e"
         "emission_class": "Chemicals"
         "desc": >
-          Table A-7: 2020 Energy Consumption Data and CO2 Emissions from
+          Table A-7 2020 Energy Consumption Data and CO2 Emissions from
           Fossil Fuel Combustion by Fuel Type
         "year": "2020"
       "A-8": # Separate emissions table for each year
@@ -349,7 +352,7 @@ Annex:
         "emission_unit": "MMT CO2e"
         "emission_class": "Chemicals"
         "desc": >
-          Table A-8: 2019 Energy Consumption Data and CO2 Emissions from
+          Table A-8 2019 Energy Consumption Data and CO2 Emissions from
           Fossil Fuel Combustion by Fuel Type
         "year": "2019"
       "A-9": # Separate emissions table for each year
@@ -360,8 +363,8 @@ Annex:
         "emission_unit": "MMT CO2e"
         "emission_class": "Chemicals"
         "desc": >
-          Table A-9: 2018 Energy Consumption Data and CO2 Emissions from
-          Fossil Fuel Combustion by Fuel Type"
+          Table A-9 2018 Energy Consumption Data and CO2 Emissions from
+          Fossil Fuel Combustion by Fuel Type
         "year": "2018"
       "A-10": # Separate emissions table for each year
         "class": "Energy"
@@ -371,7 +374,7 @@ Annex:
         "emission_unit": "MMT CO2e"
         "emission_class": "Chemicals"
         "desc": >
-          Table A-10: 2017 Energy Consumption Data and CO2 Emissions from
+          Table A-10 2017 Energy Consumption Data and CO2 Emissions from
           Fossil Fuel Combustion by Fuel Type
         "year": "2017"
       "A-11": # Separate emissions table for each year
@@ -382,7 +385,7 @@ Annex:
         "emission_unit": "MMT CO2e"
         "emission_class": "Chemicals"
         "desc": >
-          Table A-11: 2016 Energy Consumption Data and CO2 Emissions from
+          Table A-11 2016 Energy Consumption Data and CO2 Emissions from
           Fossil Fuel Combustion by Fuel Type
         "year": "2016"
       "A-12": # Separate emissions table for each year
@@ -393,8 +396,8 @@ Annex:
         "emission_unit": "MMT CO2e"
         "emission_class": "Chemicals"
         "desc": >
-          Table A-12: 2015 Energy Consumption Data and CO2 Emissions from "
-          Fossil Fuel Combustion by Fuel Type"
+          Table A-12 2015 Energy Consumption Data and CO2 Emissions from 
+          Fossil Fuel Combustion by Fuel Type
         "year": "2015"
       
       #"A-11": # Separate emissions table for each year
