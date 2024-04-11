@@ -115,7 +115,7 @@ Tables:
         "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "CO2"
-        "desc": "CO2 Emissions from Wood Consumption by End-Use Sector (MMT CO2 Eq.)"
+        "desc": "Table 3-120: CO2 Emissions from Wood Consumption by End-Use Sector (MMT CO2 Eq.)"
 
 # Petroleum Systems
       "3-44":
@@ -303,7 +303,7 @@ Annex:
         "emission_unit": "MMT CO2e"
         "emission_class": "Chemicals"
         "desc": >
-          2022 Energy Consumption Data and CO2 Emissions from
+          Table A-5: 2022 Energy Consumption Data and CO2 Emissions from
           Fossil Fuel Combustion by Fuel Type
         "year": "2022"
       "A-6": # Separate emissions table for each year
@@ -314,7 +314,7 @@ Annex:
         "emission_unit": "MMT CO2e"
         "emission_class": "Chemicals"
         "desc": >
-          2021 Energy Consumption Data and CO2 Emissions from
+          Table A-6: 2021 Energy Consumption Data and CO2 Emissions from
           Fossil Fuel Combustion by Fuel Type
         "year": "2021"
       "A-7": # Separate emissions table for each year
@@ -325,7 +325,7 @@ Annex:
         "emission_unit": "MMT CO2e"
         "emission_class": "Chemicals"
         "desc": >
-          2020 Energy Consumption Data and CO2 Emissions from
+          Table A-7: 2020 Energy Consumption Data and CO2 Emissions from
           Fossil Fuel Combustion by Fuel Type
         "year": "2020"
       "A-8": # Separate emissions table for each year
@@ -336,7 +336,7 @@ Annex:
         "emission_unit": "MMT CO2e"
         "emission_class": "Chemicals"
         "desc": >
-          2019 Energy Consumption Data and CO2 Emissions from
+          Table A-8: 2019 Energy Consumption Data and CO2 Emissions from
           Fossil Fuel Combustion by Fuel Type
         "year": "2019"
       "A-9": # Separate emissions table for each year
@@ -347,7 +347,7 @@ Annex:
         "emission_unit": "MMT CO2e"
         "emission_class": "Chemicals"
         "desc": >
-          2018 Energy Consumption Data and CO2 Emissions from
+          Table A-9: 2018 Energy Consumption Data and CO2 Emissions from
           Fossil Fuel Combustion by Fuel Type"
         "year": "2018"
       "A-10": # Separate emissions table for each year
@@ -358,7 +358,7 @@ Annex:
         "emission_unit": "MMT CO2e"
         "emission_class": "Chemicals"
         "desc": >
-          2017 Energy Consumption Data and CO2 Emissions from
+          Table A-10: 2017 Energy Consumption Data and CO2 Emissions from
           Fossil Fuel Combustion by Fuel Type
         "year": "2017"
       "A-11": # Separate emissions table for each year
@@ -369,7 +369,7 @@ Annex:
         "emission_unit": "MMT CO2e"
         "emission_class": "Chemicals"
         "desc": >
-          2016 Energy Consumption Data and CO2 Emissions from
+          Table A-11: 2016 Energy Consumption Data and CO2 Emissions from
           Fossil Fuel Combustion by Fuel Type
         "year": "2016"
       "A-12": # Separate emissions table for each year
@@ -380,8 +380,8 @@ Annex:
         "emission_unit": "MMT CO2e"
         "emission_class": "Chemicals"
         "desc": >
-          2015 Energy Consumption Data and CO2 Emissions from "
-          Fossil Fuel Combustion by Fuel Type"
+          Table A-12: 2015 Energy Consumption Data and CO2 Emissions from 
+          Fossil Fuel Combustion by Fuel Type
         "year": "2015"
       
       #"A-11": # Separate emissions table for each year
@@ -445,7 +445,7 @@ Annex:
         "class": "Energy"
         "unit": "million gallons"
         "activity": "Fuel Consumption"
-        "desc": "Fuel Consumption by Fuel and Vehicle Type (million gallons unless otherwise specified)"
+        "desc": "Table A-71: Fuel Consumption by Fuel and Vehicle Type (million gallons unless otherwise specified)"
 
       #"A-70": # Not a primary emissions datasource
       #  "class": "Chemicals"
@@ -471,4 +471,4 @@ Annex:
         "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "HFCs"
-        "desc": "HFC Emissions from Transportation Sources (MMT CO2 Eq.)"
+        "desc": "Table A-92: HFC Emissions from Transportation Sources (MMT CO2 Eq.)"
