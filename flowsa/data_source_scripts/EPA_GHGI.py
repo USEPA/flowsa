@@ -120,7 +120,8 @@ def series_separate_name_and_units(series, default_flow_name, default_units):
 
 def annex_yearly_tables(data, table=None):
     """Special handling of ANNEX Energy Tables"""
-    df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
+    skiprows=0 if table in ("A-9", "A-10") else 1
+    df = pd.read_csv(data, skiprows=skiprows, encoding="ISO-8859-1",
                      header=[0, 1], thousands=",")
     if table == "A-4": 
         # Table "Energy Consumption Data by Fuel Type (TBtu) and Adjusted 
@@ -215,24 +216,20 @@ def ghg_call(*, resp, url, year, config, **_):
                                      thousands=",", decimal=".")
                     df = df.rename(columns={'2010a':'2010'})                    ## Check year 2010                                                                                     
                 elif table == "3-24":
-                    # Skip first two rows, as usual, but make headers the next 3 rows:
-                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
-                                     header=[0, 1, 2], thousands=",")
-                    # The next two rows are headers and the third is units:
+                    # Skip first row, but make headers the next 2 rows:
+                    df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
+                                     header=[0, 1], thousands=",")
+                    # Row 0 is header, row 1 is unit
                     new_headers = []
                     for col in df.columns:
-                        # unit = col[2]
                         new_header = 'Unnamed: 0'
                         if 'Unnamed' not in col[0]:
                             if 'Unnamed' not in col[1]:
                                 new_header = f'{col[0]} {col[1]}'
                             else:
                                 new_header = col[0]
-                            if 'Unnamed' not in col[2]:
-                                new_header += f' {col[2]}'
-                            # unit = col[2]
-                        elif 'Unnamed' in col[0] and 'Unnamed' not in col[2]:
-                            new_header = col[2]
+                        else:
+                            new_header = col[1]
                         new_headers.append(new_header)
                     df.columns = new_headers
                 elif table in ANNEX_ENERGY_TABLES:
@@ -297,7 +294,7 @@ def strip_char(text):
     text = text + " "
     notes = ["f, g", " a ", " b ", " c ", " d ", " e ", " f ", " g ",
              " h ", " i ", " j ", " k ", " l ", " b,c ", " h,i ", " f,g ",
-             ")b", ")f", ")k", "b,c", "h,i"]
+             ")a", ")b", ")f", ")k", "b,c", "h,i"]
     for i in notes:
         if i in text:
             text_split = text.split(i)
@@ -352,24 +349,19 @@ def strip_char(text):
                  'Natural gas': 'Natural Gas', # Fix capitalization inconsistency
                  'N2O (Semiconductors)': 'N2O',
                  'HGLb': 'HGL',
-                 'Biofuels-Biodieselh LPG' : 'Biofuels-Biodiesel LPG',
-                 'Biofuels-Ethanolh LPG' : 'Biofuels-Ethanol LPG',
-                 'Commercial Aircraftf Jet Fuel' : 'Commercial Aircraft Jet Fuel',
-                 'Distillate Fuel Oil' : 'Distillate Fuel Oil',
-                 'Electricityk LPG': 'Electricity LPG',
+                 'Biofuels-Biodieselh' : 'Biofuels-Biodiesel',
+                 'Biofuels-Ethanolh' : 'Biofuels-Ethanol',
+                 'Commercial Aircraftf' : 'Commercial Aircraft',
+                 'Electricityk': 'Electricity',
                  'Gasolinea' : 'Gasoline',
                  'International Bunker Fuelse' : 'International Bunker Fuel',
-                 'International Bunker Fuelse Jet Fuel' : 'International Bunker Fuel Jet Fuel',
-                 'International Bunker Fuelse Residual Fuel Oil' : 'International Bunker Fuel Residual Fuel Oil',
                  'Medium- and Heavy-Duty Trucksb' : 'Medium- and Heavy-Duty Trucks',
-                 'Medium- and Heavy-Duty Trucksb LPG' : 'Medium- and Heavy-Duty Trucks LPG',
-                 'Pipelineg Natural Gas' : 'Pipeline Natural Gas',
+                 'Pipelineg' : 'Pipeline',
                  'Recreational Boatsc' :'Recreational Boats',
-                 'Construction/Mining Equipmentf Diesel On-Road' : 'Construction/Mining Equipment Diesel On-Road',
-                 'Non-Roadc Diesel On-Road' : 'Non-Road Diesel On-Road',
-                 'Construction/Mining Equipmentf Alternative Fuel On-Road' : 'Construction/Mining Equipment Alternative Fuel On-Road',
-                 'Non-Roadc Alternative Fuel On-Road' : 'Non-Road Alternative Fuel On-Road'
-
+                 'Construction/Mining Equipmentf' : 'Construction/Mining Equipment',
+                 'Non-Roadc' : 'Non-Road',
+                 'HFCsa': 'HFCs',
+                 'HFOsb': 'HFOs',
                  }
     for key in footnotes:
         text = text.replace(key, footnotes[key])
@@ -426,19 +418,19 @@ def ghg_parse(*, df_list, year, config, **_):
             df['Unit'] = name_unit['units']
             df['Year'] = year
 
-        elif table_name in ['4-16', '4-37', '4-57', '4-100']:
-            # When Year is the first column in the table, need to make this correction
-            df = df.rename(columns={'ActivityProducedBy': 'Year',
-                                    'Year': 'ActivityProducedBy'})
-            # Melt on custom defined variable
-            melt_var = meta.get('melt_var')
-            if melt_var in id_vars:
-                id_vars.remove(melt_var)
-            elif 'ActivityProducedBy' not in df:
-                df["ActivityProducedBy"] = 'None'
-            id_vars.append('Year')
-            df = df.melt(id_vars=id_vars, var_name=melt_var,
-                         value_name="FlowAmount")
+        # elif table_name in ['4-16', '4-37', '4-57', '4-100']:
+        #     # When Year is the first column in the table, need to make this correction
+        #     df = df.rename(columns={'ActivityProducedBy': 'Year',
+        #                             'Year': 'ActivityProducedBy'})
+        #     # Melt on custom defined variable
+        #     melt_var = meta.get('melt_var')
+        #     if melt_var in id_vars:
+        #         id_vars.remove(melt_var)
+        #     elif 'ActivityProducedBy' not in df:
+        #         df["ActivityProducedBy"] = 'None'
+        #     id_vars.append('Year')
+        #     df = df.melt(id_vars=id_vars, var_name=melt_var,
+        #                  value_name="FlowAmount")
 
         elif table_name in ANNEX_ENERGY_TABLES:
             df = df.melt(id_vars=id_vars, var_name="FlowName",
@@ -563,7 +555,7 @@ def ghg_parse(*, df_list, year, config, **_):
             for index, row in df.iterrows():
                 unit = row["Unit"]
                 if unit.strip() == "MMT  CO2":
-                        df.loc[index, 'Unit'] = "MMT CO2e"
+                    df.loc[index, 'Unit'] = "MMT CO2e"
                 if df.loc[index, 'Unit'] != "MMT CO2e":
                     df = df.drop(index)
                 else:
@@ -688,18 +680,18 @@ def ghg_parse(*, df_list, year, config, **_):
                 df.loc[:, 'FlowType'] = 'TECHNOSPHERE_FLOW'
                 df.loc[:, 'FlowName'] = df.loc[:, 'ActivityProducedBy']
 
-            elif table_name in ["4-106", "4-118", "4-122"]:
+            elif table_name in ["4-100", "4-106", "4-118", "4-122"]:
                 # Table with flow names as Rows
                 df.loc[:, 'FlowName'] = (df.loc[:, 'ActivityProducedBy']
                                          .apply(lambda x: strip_char(x)))
                 df = df[~df['FlowName'].str.contains("Total")]
                 df.loc[:, 'ActivityProducedBy'] = meta.get('activity')
 
-            elif table_name in ["4-37", "4-57", "4-100"]:
-                # Table with units or flows as columns
-                df.loc[:, 'ActivityProducedBy'] = meta.get('activity')
-                df.loc[df['Unit'] == 'MMT CO2 Eq.', 'Unit'] = 'MMT CO2e'
-                df.loc[df['Unit'].str.contains('kt'), 'Unit'] = 'kt'
+            # elif table_name in ["4-37", "4-57", "4-100"]:
+            #     # Table with units or flows as columns
+            #     df.loc[:, 'ActivityProducedBy'] = meta.get('activity')
+            #     df.loc[df['Unit'] == 'MMT CO2 Eq.', 'Unit'] = 'MMT CO2e'
+            #     df.loc[df['Unit'].str.contains('kt'), 'Unit'] = 'kt'
 
             elif table_name in ["4-16", "4-124", "A-95"]:
                 # Remove notes from activity names

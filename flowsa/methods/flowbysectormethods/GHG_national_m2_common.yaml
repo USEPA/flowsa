@@ -502,7 +502,7 @@ source_names:
 ## For tables requiring direct attribution, reattribute the original GHGI
   EPA_GHGI_T_2_1: #U.S. GHG emissions
     # year: # override this
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     activity_sets:
       direct:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:direct
@@ -549,7 +549,7 @@ source_names:
 
 ## Mobile Sources
   EPA_GHGI_T_3_13: #CO2 from mobile combustion
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     activity_sets:
       direct_petroleum:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_13:activity_sets:direct_petroleum
@@ -557,7 +557,7 @@ source_names:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_13:activity_sets:direct_ng
 
   EPA_GHGI_T_3_14: &mobile #CH4 from mobile combustion
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     activity_sets:
       direct_gasoline: # empty in some years (<0.05 MMT CO2eq)
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:direct_gasoline
@@ -569,13 +569,13 @@ source_names:
 
 ## Stationary Combustion
   GHGI_CO2_stationary_combustion: # CO2 emissions from stationary combustion
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     activity_sets:
       direct_attribution: #direct allocation
         !include:GHG_national_m1_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:direct_attribution
 
   EPA_GHGI_T_3_8:  &stationary_combustion # CH4 emissions from stationary combustion
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     activity_sets:
       residential:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:residential
@@ -587,7 +587,7 @@ source_names:
     !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_53
 
   GHGI_nonenergy_fossil_fuel_emissions: # Fossil fuel for non-energy uses
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     activity_sets:
       coal:
         !include:GHG_national_m1_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:coal

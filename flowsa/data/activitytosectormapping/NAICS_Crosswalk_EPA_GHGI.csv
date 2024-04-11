@@ -34,6 +34,7 @@ EPA_GHGI,N2O from Product Uses,NAICS_2012_Code,623,,,EPA_GHGI_T_2_1
 EPA_GHGI,"Caprolactam, Glyoxal, and Glyoxylic Acid Production",NAICS_2012_Code,32519,,325190,EPA_GHGI_T_2_1
 EPA_GHGI,Electronics Industry,NAICS_2012_Code,334413,,"334413, name change from Semiconductor Manufacture",EPA_GHGI_T_2_1
 EPA_GHGI,Electrical Transmission and Distribution,NAICS_2012_Code,2211,,221100,EPA_GHGI_T_2_1
+EPA_GHGI,Electrical Equipment,NAICS_2012_Code,2211,,new activity,EPA_GHGI_T_2_1
 EPA_GHGI,Electric Power,NAICS_2012_Code,2211,,"Commodity: 221100 (or I: 221100, S00101, S00202)",EPA_GHGI_T_2_1
 EPA_GHGI,Electric Power,NAICS_2012_Code,S00101,,,EPA_GHGI_T_2_1
 EPA_GHGI,Electric Power,NAICS_2012_Code,S00202,,,EPA_GHGI_T_2_1
