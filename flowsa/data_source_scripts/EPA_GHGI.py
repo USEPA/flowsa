@@ -628,6 +628,7 @@ def ghg_parse(*, df_list, year, config, **_):
             apbe_value = ""
             flow_name_list = ["Explorationb", "Production", "Processing",
                               "Transmission and Storage", "Distribution",
+                              "Post-Meter",
                               "Crude Oil Transportation", "Refining",
                               "Exploration", "Mobile AC",
                               "Refrigerated Transport",

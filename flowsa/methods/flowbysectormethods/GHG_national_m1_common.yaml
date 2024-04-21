@@ -161,7 +161,7 @@ source_names:
     selection_fields:
       PrimaryActivity:
         - Distribution
-        - Distribution - Post-Meter
+        - Post-Meter
         - Exploration
         - Processing
         - Production
