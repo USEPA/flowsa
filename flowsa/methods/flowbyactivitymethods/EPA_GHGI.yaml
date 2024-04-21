@@ -30,13 +30,15 @@ years:
 
 
 # Special table lists
-multi_chem_names: ["2-1", "3-116", "4-53", "5-6", "5-28"] # Dropped "ES-4"
+# Flows as group headers
+multi_chem_names: ["2-1", "3-116", "4-53", "5-6", "5-28"]
 source_No_activity: ["3-24", "3-24b"]
 # Handle tables with 1 parent level category
-source_activity_1: ["3-7", "3-8", "3-9", "5-17", "5-18"] ## Dropped "3-10", "A-70", "A-71"] 
+source_activity_1: ["3-7", "3-8", "3-9", "5-17", "5-18"]
 source_activity_1_fuel: ["3-13", "3-14", "3-15"]
 # Tables with sub categories
 source_activity_2: ["3-44", "3-73", "A-92"]
+rows_as_flows: ["4-61", "4-62", "4-100", "4-106", "4-118", "4-122"]
 
 Tables:
   "Ch 2 - Trends":
@@ -207,6 +209,20 @@ Tables:
         "unit": "kt"
         "desc": "Table 4-55:  Production of Selected Petrochemicals (kt)"
 
+      "4-61":
+        "class": "Chemicals"
+        "unit": "MMT CO2e"
+        "compartment": "air"
+        "activity": "Fluorochemical Production"
+        "desc": "Table 4-61:  Emissions of HFCs, PFCs, SF6, and NF3 from production of Fluorochemicals Other Than HCFC-22 (MMT CO2 Eq.)"
+
+      "4-62":
+        "class": "Chemicals"
+        "unit": "MT"
+        "compartment": "air"
+        "activity": "Fluorochemical Production"
+        "desc": "Table 4-62:  Emissions of HFCs, PFCs, SF6, and NF3 from production of Fluorochemicals Other Than HCFC-22 (Metric Tons)"
+
       "4-106":
         "class": "Chemicals"
         "unit": "MMT CO2e"
@@ -235,6 +251,12 @@ Tables:
         "compartment": "air"
         "flow": "HFCs and PFCs"
         "desc": "Table 4-124:  Emissions of HFCs and PFCs from ODS Substitutes (MMT CO2 Eq.) by Sector"
+
+      "4-132":
+        "class": "Chemicals"
+        "unit": "MMT CO2e"
+        "compartment": "air"
+        "desc": "Table 4-132: SF6 and PFC Emissions from Other Product Use (MMT CO2 Eq.)"
 
   "Ch 5 - Agriculture":
       "5-3":
@@ -270,16 +292,6 @@ Tables:
         "flow": "CO2e"
         "desc": "Table 5-28: CH4 and N2O Emissions from Field Burning of Agricultural Residues (MMT CO2 Eq.)"
 
-## NEED TO DROP ES-4
-  #"Executive Summary":
-   #   "ES-4":  # Not currently used
-    #    "class": "Chemicals"
-     #   "unit": "MMT CO2e"
-      #  "compartment": "air"
-       # "flow": "CO2e"
-        #"desc": >
-         #   Table ES-4: U.S. Greenhouse Gas Emissions and Removals (Net Flux)
-          #  from Land Use, Land-Use Change, and Forestry (MMT CO2 Eq.)
 
 Annex:
   "Annex 2":

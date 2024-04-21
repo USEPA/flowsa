@@ -516,6 +516,7 @@ def ghg_parse(*, df_list, year, config, **_):
         source_activity_1 = config.get('source_activity_1')
         source_activity_1_fuel = config.get('source_activity_1_fuel')
         source_activity_2 = config.get('source_activity_2')
+        rows_as_flows = config.get('rows_as_flows')
 
         if table_name in multi_chem_names:
             bool_apb = False
@@ -684,7 +685,20 @@ def ghg_parse(*, df_list, year, config, **_):
                 df.loc[:, 'FlowType'] = 'TECHNOSPHERE_FLOW'
                 df.loc[:, 'FlowName'] = df.loc[:, 'ActivityProducedBy']
 
-            elif table_name in ["4-100", "4-106", "4-118", "4-122"]:
+            elif table_name in ["4-132"]:
+                df = df.iloc[::-1] # reverse the order for assigning APB
+                for index, row in df.iterrows():
+                    apb_value = strip_char(row["ActivityProducedBy"])
+                    if apb_value.startswith('Total'):
+                        # set the header
+                        apbe_value = apb_value.replace('Total ','')
+                        df = df.drop(index)
+                    else:
+                        df.loc[index, 'ActivityProducedBy'] = apbe_value
+                        df.loc[index, 'FlowName'] = apb_value
+                df = df.iloc[::-1] # revert the order
+
+            elif table_name in rows_as_flows:
                 # Table with flow names as Rows
                 df.loc[:, 'FlowName'] = (df.loc[:, 'ActivityProducedBy']
                                          .apply(lambda x: strip_char(x)))
