@@ -598,6 +598,7 @@ def ghg_parse(*, df_list, year, config, **_):
                 "Alternative Fuel On-Road", "Non-Road",
                 "Gasoline On-Road", "Distillate Fuel Oil",
                 "Biofuels-Ethanol", "Biofuels-Biodiesel",
+                "International Bunker Fuels",
                 ]
             if table_name in source_activity_1:
                 activity_subtotal = activity_subtotal_sector
