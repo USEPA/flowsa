@@ -596,8 +596,17 @@ source_names:
   EPA_GHGI_T_4_57: # HFCs from HCFC-22 production
     !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_57
 
+  EPA_GHGI_T_4_61: # Fluorochemical production (in CO2e)
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_61
+
+  EPA_GHGI_T_4_62: # Fluorochemical production (in MT)
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_62
+
   EPA_GHGI_T_4_118: # HFCs and other emissions from electronics manufacture
     !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_118
+
+  EPA_GHGI_T_4_132: # SF6 and PFCs from Other Product Use
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_132
 
   EPA_GHGI_T_4_124: # HFCs and PFCs from ODS Substitutes
     !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_124

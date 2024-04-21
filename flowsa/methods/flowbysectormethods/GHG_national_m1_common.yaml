@@ -665,8 +665,24 @@ source_names:
     # year: # override with ghgi_year
     fedefl_mapping: GHGI_AR5_100
     selection_fields:
-      Unit: MMT CO2e # drop records in kt
       PrimaryActivity: HCFC-22 Production
+    attribution_method: direct
+
+  EPA_GHGI_T_4_61: # Fluorochemical production (in CO2e)
+    # year: # override with ghgi_year
+    fedefl_mapping: GHGI_AR5_100
+    selection_fields:
+      PrimaryActivity: Fluorochemical Production
+      FlowName: ["Other PFCs", "Other HFCs"]
+    attribution_method: direct
+
+  EPA_GHGI_T_4_62: # Fluorochemical production (in MT)
+    # year: # override with ghgi_year
+    fedefl_mapping: GHGI_AR5_100
+    selection_fields:
+      PrimaryActivity: Fluorochemical Production
+    exclusion_fields:
+      FlowName: ["Other PFCs", "Other HFCs"]
     attribution_method: direct
 
   EPA_GHGI_T_4_118: # HFCs and other emissions from electronics manufacture
@@ -674,6 +690,11 @@ source_names:
     fedefl_mapping: GHGI_AR5_100
     selection_fields:
       PrimaryActivity: Electronics Production
+    attribution_method: direct
+
+  EPA_GHGI_T_4_132: # SF6 and PFCs from Other Product Use
+    # year: # override with ghgi_year
+    fedefl_mapping: GHGI_AR5_100
     attribution_method: direct
 
   EPA_GHGI_T_4_124: # HFCs and PFCs from ODS Substitutes
