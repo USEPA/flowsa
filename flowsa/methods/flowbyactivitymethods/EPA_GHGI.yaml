@@ -145,13 +145,13 @@ Tables:
         "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "CH4"
-        "desc": "Table 3-73:  CH4 Emissions from Natural Gas Systems (MMT CO2 Eq.)a"
+        "desc": "Table 3-73:  CH4 Emissions from Natural Gas Systems (MMT CO2 Eq.)"
       "3-75":
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "CO2"
-        "desc": "Table 3-75:  Non-combustion CO2 Emissions from Natural Gas Systems (MMT)"
+        "desc": "Table 3-75:  CO2 Emissions from Natural Gas Systems (MMT)"
       "3-77":
         "class": "Chemicals"
         "unit": "MT CO2e"
@@ -237,20 +237,21 @@ Tables:
         "flow": "CO2e"
         "activity": "Electronics Production"
         "desc": "Table 4-118:  PFC, HFC, SF6, NF3, and N2O Emissions from Electronics Manufacture (MMT CO2 Eq.)"
+
       "4-122":  # Used to speciate HFC emissions in 4-124
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "CO2e"
         "activity": "ODS Substitute"
-        "desc": "Table 4-122:  Emissions of HFCs and PFCs from ODS Substitutes (MMT CO2 Eq.)"
+        "desc": "Table 4-122:  Emissions of HFCs, PFCs, and CO2 from ODS Substitutes (MMT CO2 Eq.)"
 
       "4-124":
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "HFCs and PFCs"
-        "desc": "Table 4-124:  Emissions of HFCs and PFCs from ODS Substitutes (MMT CO2 Eq.) by Sector"
+        "desc": "Table 4-124:  Emissions of HFCs, PFCs, and CO2 from ODS Substitutes (MMT CO2 Eq.) by Sector"
 
       "4-132":
         "class": "Chemicals"
@@ -277,7 +278,7 @@ Tables:
         "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "N2O"
-        "desc": "Table 5-17:  Direct N2O Emissions from Agricultural Soils by Land Use Type and N Input Type (MMT CO2 Eq.)"
+        "desc": "Table 5-17:  Direct N2O Emissions from Agricultural Soils by Land Use Type and Nitrogen Input Type (MMT CO2 Eq.)"
       "5-18":
         "class": "Chemicals"
         "unit": "MMT CO2e"
