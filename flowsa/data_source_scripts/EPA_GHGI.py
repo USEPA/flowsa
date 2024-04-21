@@ -465,22 +465,26 @@ def ghg_parse(*, df_list, year, config, **_):
             df = df.melt(id_vars=id_vars, var_name="Year",
                          value_name="FlowAmount")
 
-        # Dropping all rows with value "+": represents non-zero value
-        df["FlowAmount"].replace("\+", np.nan, inplace=True, regex=True)
-        # Dropping all rows with value "NE"
-        df["FlowAmount"].replace(" NE ", np.nan, inplace=True)
-        df["FlowAmount"].replace("NE", np.nan, inplace=True)
-        # Convert all empty cells to nan cells
-        df["FlowAmount"].replace("", np.nan, inplace=True)
-        # Table 3-10 has some NO (Not Occuring) values, dropping these.
-        df["FlowAmount"].replace(" NO ", np.nan, inplace=True)
-        df["FlowAmount"].replace("NO", np.nan, inplace=True)
-        # Table A-118 has some IE values, dropping these.
-        df["FlowAmount"].replace("IE", np.nan, inplace=True)
-        df["FlowAmount"].replace(r'NO ', np.nan, inplace=True)
-
-        # Drop any nan rows
-        df.dropna(subset=['FlowAmount'], inplace=True)
+        # set suppressed values to 0 but mark as suppressed
+        # otherwise set non-numeric to nan
+        try:
+            df = (df.assign(
+                    Suppressed = np.where(df.FlowAmount.str.strip() == "+", "+",
+                                          np.nan),
+                    FlowAmount = pd.Series(
+                        np.where(df.FlowAmount.str.strip() == "+", 0,
+                                 df.FlowAmount.str.replace(',',''))))
+                )
+            df = (df.assign(
+                    FlowAmount = np.where(pd.to_numeric(
+                        df.FlowAmount, errors='coerce').isnull(),
+                                          np.nan, pd.to_numeric(
+                                              df.FlowAmount, errors='coerce')))
+                .dropna(subset='FlowAmount')
+                )
+        except AttributeError:
+            # if no string in FlowAmount, then proceed
+            df = df.dropna(subset='FlowAmount')
 
         if table_name not in ANNEX_ENERGY_TABLES:
             if 'Unit' not in df:
