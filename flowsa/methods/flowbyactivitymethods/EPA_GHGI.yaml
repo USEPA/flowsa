@@ -30,7 +30,7 @@ years:
 
 
 # Special table lists
-multi_chem_names: ["2-1", "4-53", "5-6", "5-28"] # Dropped "ES-4"
+multi_chem_names: ["2-1", "3-116", "4-53", "5-6", "5-28"] # Dropped "ES-4"
 source_No_activity: ["3-24", "3-24b"]
 # Handle tables with 1 parent level category
 source_activity_1: ["3-7", "3-8", "3-9", "5-17", "5-18"] ## Dropped "3-10", "A-70", "A-71"] 
