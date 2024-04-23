@@ -1,0 +1,10 @@
+industry_spec:
+  default: NAICS_6
+target_naics_year: 2017
+geoscale: national
+
+source_names:
+  BLS_QCEW: !include:Employment_common.yaml:bls_load_and_clean_national
+    year: 2022
+    activity_sets:
+      qcew: !include:Employment_common.yaml:bls_allocation
