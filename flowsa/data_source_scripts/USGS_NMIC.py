@@ -70,8 +70,9 @@ def usgs_nmic_parse(*, df_list, year, config, **_):
         parsed_list.append(df)
     df = pd.concat(parsed_list, ignore_index=True)
 
-    df = assign_fips_location_system(df, year)
+    df = assign_fips_location_system(df, 2024)
     # hard code data
+    df['Year'] = df['Year'].astype(str)
     df['SourceName'] = 'USGS_NMIC'
     df['FlowType'] = 'ELEMENTARY_FLOW'
     # Add tmp DQ scores
@@ -84,6 +85,6 @@ def usgs_nmic_parse(*, df_list, year, config, **_):
 
 if __name__ == "__main__":
     import flowsa
-    year = 2020
+    year = '2012-2022'
     flowsa.generateflowbyactivity.main(source='USGS_NMIC', year=year)
     fba = flowsa.getFlowByActivity('USGS_NMIC', year=2020)

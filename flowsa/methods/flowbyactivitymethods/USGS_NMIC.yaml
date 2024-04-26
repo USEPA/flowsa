@@ -8,6 +8,7 @@ url:
 url_replace_fxn: !script_function:USGS_NMIC usgs_nmic_url_build
 call_response_fxn: !script_function:USGS_NMIC usgs_nmic_call
 parse_response_fxn: !script_function:USGS_NMIC usgs_nmic_parse
+call_all_years: True
 years:
   - 2014
   - 2015
