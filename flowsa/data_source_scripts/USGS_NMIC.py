@@ -84,4 +84,6 @@ def usgs_nmic_parse(*, df_list, year, config, **_):
 
 if __name__ == "__main__":
     import flowsa
-    flowsa.generateflowbyactivity.main(source='USGS_NMIC', year=2020)
+    year = 2020
+    flowsa.generateflowbyactivity.main(source='USGS_NMIC', year=year)
+    fba = flowsa.getFlowByActivity('USGS_NMIC', year=2020)
