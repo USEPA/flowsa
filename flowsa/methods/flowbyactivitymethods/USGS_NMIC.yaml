@@ -1,0 +1,26 @@
+author: US Geological Survey
+source_name: "National Minerals Information Center: Historical Statistics for Mineral and Material Commodities in the United States"
+source_url: https://www.usgs.gov/centers/national-minerals-information-center/historical-statistics-mineral-and-material-commodities
+format: xlsx
+url:
+  # base_url: https://www.usgs.gov/media/files/__FILE__
+  base_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/files/__FILE__
+url_replace_fxn: !script_function:USGS_NMIC usgs_nmic_url_build
+call_response_fxn: !script_function:USGS_NMIC usgs_nmic_call
+parse_response_fxn: !script_function:USGS_NMIC usgs_nmic_parse
+years:
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  - 2018
+  - 2019
+  - 2020
+  - 2021
+  - 2022
+
+minerals:
+  Aluminum:
+    file: 'ds140-aluminum-2021.xlsx'
+    unit: metric tons aluminum
+
