@@ -33,7 +33,7 @@ def eia_mer_url_helper(*, build_url, config, **_):
     return urls
 
 
-def eia_mer_call(*, resp, **_):
+def eia_mer_call(*, resp, config, **_):
     """
     Convert response for calling url to pandas dataframe, begin
     parsing df into FBA format
@@ -42,53 +42,37 @@ def eia_mer_call(*, resp, **_):
     """
     with io.StringIO(resp.text) as fp:
         df = pd.read_csv(fp, encoding="ISO-8859-1")
+    df['Tbl'] = resp.url.split("tbl=",1)[1]
     return df
 
 
-def decide_flow_name(desc):
+def parse_tables(desc):
     """
-    Based on the provided description, determine the FlowName.
-    :param desc: str, row description
-    :return: str, flowname for row
+    Based on description field of {Tbl}: {description}
+    returns tuple of (FlowName, ActivityProducedBy, ActivityConsumedBy)
     """
-    if 'Production' in desc:
-        return 'Production'
-    if 'Consumed' in desc:
-        return 'Consumed'
-    if 'Sales' in desc:
-        return 'Sales'
-    if 'Losses' in desc:
-        return 'Losses'
-    return 'None'
+    tbl, d = desc.split(':')
+    if tbl == 'T01.02':
+        # desc = 'T01.02: Biomass Energy Production'
+        flow = d.split('Production')[0].strip()
+        return (flow, d.strip(), None)
+    elif tbl == 'T01.03':
+        # desc = 'T01.03: Petroleum Consumption (Excluding Biofuels)'
+        flow = d.replace(' Consumption' ,'').strip()
+        return (flow, None, d.strip())
+    elif tbl == 'T01.04A':
+        # desc = 'T01.04A: Petroleum Products, Excluding Biofuels, Imports'
+        flow = d.split('Imports')[0].strip().rstrip(',')
+        return (flow, None, d.strip())
+    elif tbl == 'T02.02':
+        # desc = 'T02.02: Total Energy Consumed by the Residential Sector'
+        flow = d.split('Consumed')[0].strip()
+        return (flow, None, 'Residential Sector')
+    else:
+        return (None, None, None)
 
 
-def decide_produced(desc):
-    """
-    Based on the provided description, determine the ActivityProducedBy.
-    :param desc: str, description for row
-    :return: str, ActivityProducedBy cell value
-    """
-    if 'Production' in desc:
-        return desc.split('Production')[0].strip()
-    return 'None'
-
-
-def decide_consumed(desc):
-    """
-    Based on the provided description, determine the ActivityConsumedBy.
-    :param desc: str, description cell
-    :return: str, ActivityConsumedBy value
-    """
-    if 'Consumed' in desc:
-        return desc.split('Consumed')[0].strip()
-    if 'Sales' in desc:
-        return desc.split('Sales')[0].strip()
-    if 'Losses' in desc:
-        return desc.split('Losses')[0].strip()
-    return 'None'
-
-
-def eia_mer_parse(*, df_list, year, **_):
+def eia_mer_parse(*, df_list, year, config, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
@@ -98,59 +82,43 @@ def eia_mer_parse(*, df_list, year, **_):
         specifications
     """
     df = pd.concat(df_list, sort=False)
-    # Filter only the rows we want, YYYYMM field beginning with 201,
-    # for 2010's.
-    # For doing year-by-year based on args['year']
-    min_year = int(year + '00')
-    max_year = int(str(int(year) + 1) + '00')
-    df = df[df['YYYYMM'] > min_year]
-    df = df[df['YYYYMM'] < max_year]
 
-    output = pd.DataFrame()
-    sums_key_map = {}
-    sums = []
-    for index, row in df.iterrows():
-        # Parse out the year value from the YYYYMM field.
-        year = str(row['YYYYMM'])[:4]
-        name = row['MSN']
-        key = (name, year)
+    ## get month = 13 for annual total
+    df = (df
+          .query(f'YYYYMM == {year}13')
+          .reset_index(drop=True)
+          .assign(Description = lambda x: x['Tbl'] + ': ' + x['Description'])
+          )
+    data = df.Description.apply(parse_tables)
 
-        if not sums_key_map.get(key, False):
-            flow_name = decide_flow_name(row['Description'])
-            act_prod_by = decide_produced(row['Description'])
-            act_cons_by = decide_consumed(row['Description'])
-            temp_row = {'Description': row['Description'], 'Unit': row['Unit'],
-                        'FlowName': flow_name,
-                        'ActivityProducedBy': act_prod_by,
-                        'ActivityConsumedBy': act_cons_by,
-                        'FlowAmount': 0, 'FlowType': 'None', 'Year': year}
-            sums.append(temp_row)
-            sums_key_map[key] = len(sums) - 1
+    df['Value'] = df['Value'].replace('Not Available', 0)
+    df = (df
+          .assign(Year = year)
+          .assign(FlowName = pd.Series(y[0] for y in data))
+          .assign(ActivityProducedBy = pd.Series(y[1] for y in data))
+          .assign(ActivityConsumedBy = pd.Series(y[2] for y in data))
+          .assign(FlowAmount = lambda x: x['Value'].astype(float))
+          .drop(columns=['Tbl', 'Value', 'Column_Order', 'YYYYMM'])
+          )
 
-        try:
-            index = sums_key_map[key]
-            sums[index]['FlowAmount'] += float(row['Value'])
-        except ValueError:
-            pass
-
-    output = pd.DataFrame(sums)
-
-    output = assign_fips_location_system(output, year)
-
+    df = assign_fips_location_system(df, year)
     # hard code data
-    output['Class'] = 'Energy'
-    output['SourceName'] = 'EIA_MER'
-    output['Location'] = '00000'
+    df['Class'] = 'Energy'
+    df['SourceName'] = 'EIA_MER'
+    df['Location'] = '00000'
+    df['FlowType'] = 'TECHNOSPHERE_FLOW'
     # Fill in the rest of the Flow by fields so they show
     # "None" instead of nan.
-    output['Compartment'] = 'None'
-    output['MeasureofSpread'] = 'None'
-    output['DistributionType'] = 'None'
+    df['Compartment'] = 'None'
+    df['MeasureofSpread'] = 'None'
+    df['DistributionType'] = 'None'
     # Add DQ scores
-    output['DataReliability'] = 5  # tmp
-    output['DataCollection'] = 5  # tmp
-    # sort df
-    output = output.sort_values(['Location', 'FlowName'])
-    # reset index
-    output.reset_index(drop=True, inplace=True)
-    return output
+    df['DataReliability'] = 5  # tmp
+    df['DataCollection'] = 5  # tmp
+
+    return df
+
+if __name__ == "__main__":
+    import flowsa
+    flowsa.generateflowbyactivity.main(source='EIA_MER', year=2020)
+    fba = flowsa.getFlowByActivity('EIA_MER', 2020)

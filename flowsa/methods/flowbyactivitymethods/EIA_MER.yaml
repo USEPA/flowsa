@@ -11,8 +11,11 @@ url_replace_fxn: !script_function:EIA_MER eia_mer_url_helper
 call_response_fxn: !script_function:EIA_MER eia_mer_call
 parse_response_fxn: !script_function:EIA_MER eia_mer_parse
 tbls:
-- T01.02
-- T02.02
+- T01.02  # Primary energy production by source
+- T01.03  # Primary energy consumption by source
+- T01.04A # Primary energy imports by source
+- T02.02  # Residential sector energy consumption
+call_all_years: True
 years:
 - 2010
 - 2011
@@ -25,3 +28,6 @@ years:
 - 2018
 - 2019
 - 2020
+- 2021
+- 2022
+- 2023
