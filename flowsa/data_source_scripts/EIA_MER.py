@@ -87,9 +87,10 @@ def eia_mer_parse(*, df_list, year, config, **_):
     df = (df
           .query(f'YYYYMM == {year}13')
           .reset_index(drop=True)
-          .assign(Description = lambda x: x['Tbl'] + ': ' + x['Description'])
+          .assign(detail = lambda x: x['Tbl'] + ': ' + x['Description'])
+          .assign(Description = lambda x: x['Tbl'])
           )
-    data = df.Description.apply(parse_tables)
+    data = df.detail.apply(parse_tables)
 
     df['Value'] = df['Value'].replace('Not Available', 0)
     df = (df
@@ -106,7 +107,7 @@ def eia_mer_parse(*, df_list, year, config, **_):
     df['Class'] = 'Energy'
     df['SourceName'] = 'EIA_MER'
     df['Location'] = '00000'
-    df['FlowType'] = 'TECHNOSPHERE_FLOW'
+    df['FlowType'] = 'ELEMENTARY_FLOW'
     # Fill in the rest of the Flow by fields so they show
     # "None" instead of nan.
     df['Compartment'] = 'None'
