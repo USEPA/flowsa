@@ -185,33 +185,33 @@ source_names:
   "EPA_GHGI_T_4_62": # Fluorochemical production (in MT)
     !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_62
     year: *ghgi_year
-  "EPA_GHGI_T_4_118": # HFCs and other emissions from electronics manufacture
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_118
+  "EPA_GHGI_T_4_121": # HFCs and other emissions from electronics manufacture
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_121
     year: *ghgi_year
-  "EPA_GHGI_T_4_132": # SF6 and PFCs from Other Product Use
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_132
+  "EPA_GHGI_T_4_135": # SF6 and PFCs from Other Product Use
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_135
     year: *ghgi_year
-  "EPA_GHGI_T_4_124": # HFCs and PFCs from ODS Substitutes
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_124
+  "EPA_GHGI_T_4_127": # HFCs and PFCs from ODS Substitutes
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_127
     year: *ghgi_year
     activity_sets: # Update BEA year for some activity_sets
-      !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_124:activity_sets
+      !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_127:activity_sets
       refrigerants:
-        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_124:activity_sets:refrigerants
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_127:activity_sets:refrigerants
         attribution_source:
           Detail_Use_2015:
             selection_fields:
               SectorProducedBy: {'333415': ''} # Air conditioning equipment
 
       air_conditioning:
-        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_124:activity_sets:air_conditioning
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_127:activity_sets:air_conditioning
         attribution_source:
           Detail_Use_2015:
             selection_fields:
               SectorProducedBy: {'333415': ''} # Air conditioning equipment
 
       foams:
-        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_124:activity_sets:foams
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_127:activity_sets:foams
         attribution_source:
           Detail_Use_2015:
             selection_fields:
@@ -223,11 +223,11 @@ source_names:
   "EPA_GHGI_T_A_92": # HFCs from Transportation
     !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_A_92
     year: *ghgi_year
-  "EPA_GHGI_T_4_100": # PFCs from aluminum production
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_100
+  "EPA_GHGI_T_4_103": # PFCs from aluminum production
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_103
     year: *ghgi_year
-  "EPA_GHGI_T_4_106": # HFCs, SF6, CO2 from magnesium production
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_106
+  "EPA_GHGI_T_4_109": # HFCs, SF6, CO2 from magnesium production
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_109
     year: *ghgi_year
   "EPA_GHGI_T_3_24b": #Fossil fuel for non-energy uses
     !include:GHG_national_m1_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions

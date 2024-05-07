@@ -405,20 +405,6 @@ def ghg_parse(*, df_list, year, config, **_):
             df['Unit'] = name_unit['units']
             df['Year'] = year
 
-        # elif table_name in ['4-16', '4-37', '4-57', '4-100']:
-        #     # When Year is the first column in the table, need to make this correction
-        #     df = df.rename(columns={'ActivityProducedBy': 'Year',
-        #                             'Year': 'ActivityProducedBy'})
-        #     # Melt on custom defined variable
-        #     melt_var = meta.get('melt_var')
-        #     if melt_var in id_vars:
-        #         id_vars.remove(melt_var)
-        #     elif 'ActivityProducedBy' not in df:
-        #         df["ActivityProducedBy"] = 'None'
-        #     id_vars.append('Year')
-        #     df = df.melt(id_vars=id_vars, var_name=melt_var,
-        #                  value_name="FlowAmount")
-
         elif table_name in ANNEX_ENERGY_TABLES:
             df = df.melt(id_vars=id_vars, var_name="FlowName",
                          value_name="FlowAmount")
@@ -674,7 +660,7 @@ def ghg_parse(*, df_list, year, config, **_):
                 df.loc[:, 'FlowType'] = 'TECHNOSPHERE_FLOW'
                 df.loc[:, 'FlowName'] = df.loc[:, 'ActivityProducedBy']
 
-            elif table_name in ["4-132"]:
+            elif table_name in ["4-135"]:
                 df = df.iloc[::-1] # reverse the order for assigning APB
                 for index, row in df.iterrows():
                     apb_value = strip_char(row["ActivityProducedBy"])
@@ -694,13 +680,7 @@ def ghg_parse(*, df_list, year, config, **_):
                 df = df[~df['FlowName'].str.contains("Total")]
                 df.loc[:, 'ActivityProducedBy'] = meta.get('activity')
 
-            # elif table_name in ["4-37", "4-57", "4-100"]:
-            #     # Table with units or flows as columns
-            #     df.loc[:, 'ActivityProducedBy'] = meta.get('activity')
-            #     df.loc[df['Unit'] == 'MMT CO2 Eq.', 'Unit'] = 'MMT CO2e'
-            #     df.loc[df['Unit'].str.contains('kt'), 'Unit'] = 'kt'
-
-            elif table_name in ["4-16", "4-124", "A-95"]:
+            elif table_name in ["4-16", "4-127", "A-95"]:
                 # Remove notes from activity names
                 for index, row in df.iterrows():
                     apb_value = strip_char(row["ActivityProducedBy"].split("(")[0])
@@ -806,14 +786,14 @@ def allocate_industrial_combustion(fba: FlowByActivity, **_) -> FlowByActivity:
 
 
 def split_HFCs_by_type(fba: FlowByActivity, **_) -> FlowByActivity:
-    """Speciates HFCs and PFCs for all activities based on T_4_100.
+    """Speciates HFCs and PFCs for all activities based on T_4_125.
     clean_fba_before_mapping_df_fxn"""
 
     attributes_to_save = {
         attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
     }
     original_sum = fba.FlowAmount.sum()
-    tbl = fba.config.get('clean_parameter')['flow_fba'] # 4-100 #Now 4-122
+    tbl = fba.config.get('clean_parameter')['flow_fba'] # 4-125
     splits = load_fba_w_standardized_units(datasource=tbl,
                                            year=fba['Year'][0],
                                            download_FBA_if_missing=True)

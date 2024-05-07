@@ -685,23 +685,23 @@ source_names:
       FlowName: ["Other PFCs", "Other HFCs"]
     attribution_method: direct
 
-  EPA_GHGI_T_4_118: # HFCs and other emissions from electronics manufacture
+  EPA_GHGI_T_4_121: # HFCs and other emissions from electronics manufacture
     # year: # override with ghgi_year
     fedefl_mapping: GHGI_AR5_100
     selection_fields:
       PrimaryActivity: Electronics Production
     attribution_method: direct
 
-  EPA_GHGI_T_4_132: # SF6 and PFCs from Other Product Use
+  EPA_GHGI_T_4_135: # SF6 and PFCs from Other Product Use
     # year: # override with ghgi_year
     fedefl_mapping: GHGI_AR5_100
     attribution_method: direct
 
-  EPA_GHGI_T_4_124: # HFCs and PFCs from ODS Substitutes
+  EPA_GHGI_T_4_127: # HFCs and PFCs from ODS Substitutes
     clean_fba_before_activity_sets: !script_function:EPA_GHGI split_HFCs_by_type
     clean_parameter:
         # Proportions of specific HFCs are assigned based on national total
-        flow_fba: EPA_GHGI_T_4_122
+        flow_fba: EPA_GHGI_T_4_125
     # year: # override with ghgi_year
     fedefl_mapping: GHGI_AR5_100
     activity_sets:
@@ -751,7 +751,7 @@ source_names:
     clean_fba_before_mapping: !script_function:EPA_GHGI split_HFCs_by_type
     clean_parameter:
         # Proportions of specific HFCs are assigned based on national total
-        flow_fba: EPA_GHGI_T_4_122
+        flow_fba: EPA_GHGI_T_4_125
     fedefl_mapping: GHGI_AR5_100
     selection_fields:
       PrimaryActivity:
@@ -767,7 +767,7 @@ source_names:
     attribution_method: direct
 
 
-  EPA_GHGI_T_4_100: # PFCs from aluminum production
+  EPA_GHGI_T_4_103: # PFCs from aluminum production
     # year: # override with ghgi_year
     fedefl_mapping: GHGI_AR5_100
     selection_fields:
@@ -775,7 +775,7 @@ source_names:
     attribution_method: direct
 
 
-  EPA_GHGI_T_4_106: # HFCs, SF6, CO2 from magnesium production
+  EPA_GHGI_T_4_109: # HFCs, SF6, CO2 from magnesium production
     # year: # override with ghgi_year
     fedefl_mapping: GHGI_AR5_100
     selection_fields:

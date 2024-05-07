@@ -38,7 +38,7 @@ source_activity_1: ["3-7", "3-8", "3-9", "5-17", "5-18"]
 source_activity_1_fuel: ["3-13", "3-14", "3-15"]
 # Tables with sub categories
 source_activity_2: ["3-44", "3-73", "A-92"]
-rows_as_flows: ["4-61", "4-62", "4-100", "4-106", "4-118", "4-122"]
+rows_as_flows: ["4-61", "4-62", "4-103", "4-109", "4-121", "4-125"]
 
 Tables:
   "Ch 2 - Trends in Greenhouse Gas Emissions and Removals":
@@ -173,7 +173,7 @@ Tables:
         "compartment": "air"
         "flow": "CO2"
         "desc": "Table 4-16:  CO2 Emissions from Other Process Uses of Carbonates (MMT CO2 Eq.)"
-        # "melt_var": "ActivityProducedBy"
+
       "4-37": # Emissions captured in 2-1
         "class": "Chemicals"
         "compartment": "air"
@@ -188,13 +188,13 @@ Tables:
         "activity": "HCFC-22 Production"
         "desc": "Table 4-57: HFC-23 Emissions from HCFC-22 Production (MMT CO2 Eq.)"
         "unit": "MMT CO2e"
-      "4-100":
+
+      "4-103":
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
         "activity": "Aluminum Production"
-        "desc": "Table 4-100:  PFC Emissions from Aluminum Production (MMT CO2 Eq.)"
-        # "melt_var": "FlowName"
+        "desc": "Table 4-103:  PFC Emissions from Aluminum Production (MMT CO2 Eq.)"
 
       "4-53":
         "class": "Chemicals"
@@ -223,41 +223,41 @@ Tables:
         "activity": "Fluorochemical Production"
         "desc": "Table 4-62:  Emissions of HFCs, PFCs, SF6, and NF3 from production of Fluorochemicals Other Than HCFC-22 (Metric Tons)"
 
-      "4-106":
+      "4-109":
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "CO2e"
         "activity": "Magnesium Production and Processing"
-        "desc": "Table 4-106: SF6, HFC-134a, FK 5-1-12 and CO2 Emissions from Magnesium Production and Processing (MMT CO2 Eq.)"
-      "4-118":
+        "desc": "Table 4-109: SF6, HFC-134a, FK 5-1-12 and CO2 Emissions from Magnesium Production and Processing (MMT CO2 Eq.)"
+      "4-121":
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "CO2e"
         "activity": "Electronics Production"
-        "desc": "Table 4-118:  PFC, HFC, SF6, NF3, and N2O Emissions from Electronics Manufacture (MMT CO2 Eq.)"
+        "desc": "Table 4-121:  PFC, HFC, SF6, NF3, and N2O Emissions from Electronics Manufacture (MMT CO2 Eq.)"
 
-      "4-122":  # Used to speciate HFC emissions in 4-124
+      "4-125": # Used to speciate HFC emissions in 4-127
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "CO2e"
         "activity": "ODS Substitute"
-        "desc": "Table 4-122:  Emissions of HFCs, PFCs, and CO2 from ODS Substitutes (MMT CO2 Eq.)"
+        "desc": "Table 4-125:  Emissions of HFCs, PFCs, and CO2 from ODS Substitutes (MMT CO2 Eq.)"
 
-      "4-124":
+      "4-127":
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "HFCs and PFCs"
-        "desc": "Table 4-124:  Emissions of HFCs, PFCs, and CO2 from ODS Substitutes (MMT CO2 Eq.) by Sector"
+        "desc": "Table 4-127:  Emissions of HFCs, PFCs, and CO2 from ODS Substitutes (MMT CO2 Eq.) by Sector"
 
-      "4-132":
+      "4-135":
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
-        "desc": "Table 4-132: SF6 and PFC Emissions from Other Product Use (MMT CO2 Eq.)"
+        "desc": "Table 4-135: SF6 and PFC Emissions from Other Product Use (MMT CO2 Eq.)"
 
   "Ch 5 - Agriculture":
       "5-3":
@@ -396,62 +396,7 @@ Annex:
           Table A-12: 2015 Energy Consumption Data and CO2 Emissions from 
           Fossil Fuel Combustion by Fuel Type
         "year": "2015"
-      
-      #"A-11": # Separate emissions table for each year
-       # "class": "Energy"
-        #"unit": "TBtu"
-        #"emission_compartment": "air"
-        #"emission": "CO2"
-        #"emission_unit": "MMT CO2e"
-        #"emission_class": "Chemicals"
-        #"desc": >
-         # 2014 Energy Consumption Data and CO2 Emissions from "
-          #Fossil Fuel Combustion by Fuel Type"
-        #"year": "2014"
-      #"A-12": # Separate emissions table for each year
-       # "class": "Energy"
-        #"unit": "TBtu"
-        #"emission_compartment": "air"
-        #"emission": "CO2"
-        #"emission_unit": "MMT CO2e"
-        #"emission_class": "Chemicals"
-        #"desc": >
-         # 2013 Energy Consumption Data and CO2 Emissions from
-          #Fossil Fuel Combustion by Fuel Type
-        #"year": "2013"
-     # "A-13": # Separate emissions table for each year
-      #  "class": "Energy"
-       # "unit": "TBtu"
-        #"emission_compartment": "air"
-        #"emission": "CO2"
-        #"emission_unit": "MMT CO2e"
-        #"emission_class": "Chemicals"
-        #"desc": >
-         # 2012 Energy Consumption Data and CO2 Emissions from
-          #Fossil Fuel Combustion by Fuel Type
-        #"year": "2012"
-      #"A-14": # Separate emissions table for each year
-      #  "class": "Energy"
-      #  "unit": "TBtu"
-      #  "emission_compartment": "air"
-      #  "emission": "CO2"
-      #  "emission_unit": "MMT CO2e"
-      #  "emission_class": "Chemicals"
-      #  "desc": >
-      #    2011 Energy Consumption Data and CO2 Emissions from
-      #   Fossil Fuel Combustion by Fuel Type
-      #  "year": "2011"
-      #"A-15": # Separate emissions table for each year
-      #  "class": "Energy"
-      #  "unit": "TBtu"
-      #  "emission_compartment": "air"
-      #  "emission": "CO2"
-      #  "emission_unit": "MMT CO2e"
-      #  "emission_class": "Chemicals"
-      #  "desc": >
-      #    2010 Energy Consumption Data and CO2 Emissions from
-      #    Fossil Fuel Combustion by Fuel Type
-      #  "year": "2010"
+
 
   "Annex 3":
       "A-71": # Allocation datasource
