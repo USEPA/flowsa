@@ -4,13 +4,13 @@ source_url: https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissio
 bib_id: EPA_GHGI
 format: csv
 url:
-  base_url: https://www.epa.gov/system/files/other-files/2022-05/Main%20Chapter.zip
+  base_url: https://www.epa.gov/system/files/other-files/2024-05/main-text.zip
   annex_url: https://www.epa.gov/system/files/other-files/2022-06/Annex.zip
 path:
-  base: "Chapter Tables/{chapter}/Table {table_name}.csv"
+  base: "Table {table_name}.csv"
   annex: "Annex/{chapter}/Table {table_name}.csv"
-local_file: "DraftGHGI-90-22_CSVs.zip"
-# url_replace_fxn: !script_function:EPA_GHGI ghg_url_helper
+# local_file: "DraftGHGI-90-22_CSVs.zip"
+url_replace_fxn: !script_function:EPA_GHGI ghg_url_helper
 call_response_fxn: !script_function:EPA_GHGI ghg_call
 parse_response_fxn: !script_function:EPA_GHGI ghg_parse
 years:
@@ -41,7 +41,7 @@ source_activity_2: ["3-44", "3-73", "A-92"]
 rows_as_flows: ["4-61", "4-62", "4-100", "4-106", "4-118", "4-122"]
 
 Tables:
-  "Ch 2 - Trends":
+  "Ch 2 - Trends in Greenhouse Gas Emissions and Removals":
       "2-1":
         "class": "Chemicals"
         "unit": "MMT CO2e"
