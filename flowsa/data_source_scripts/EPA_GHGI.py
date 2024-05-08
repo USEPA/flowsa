@@ -331,6 +331,7 @@ def strip_char(text):
                  'Totali': 'Total',
                  'Othersa': 'Others',
                  'N?O': 'N2O',
+                 'Distillate Fuel Oil (Diesel)': 'Distillate Fuel Oil',
                  'Distillate Fuel Oil (Diesel': 'Distillate Fuel Oil',
                  'Natural gas': 'Natural Gas', # Fix capitalization inconsistency
                  'N2O (Semiconductors)': 'N2O',
@@ -569,16 +570,15 @@ def ghg_parse(*, df_list, year, config, **_):
                 "Fuel Type/Vehicle Type", "Diesel On-Road",
                 "Alternative Fuel On-Road", "Non-Road",
                 "Gasoline On-Road", "Distillate Fuel Oil",
-                "Biofuels-Ethanol", "Biofuels-Biodiesel",
-                "International Bunker Fuels",
                 ]
             if table_name in source_activity_1:
                 activity_subtotal = activity_subtotal_sector
             else:
                 activity_subtotal = activity_subtotal_fuel
+            after_Total = False
             for index, row in df.iterrows():
                 apb_value = strip_char(row["ActivityProducedBy"])
-                if apb_value in activity_subtotal:
+                if apb_value in activity_subtotal or after_Total:
                     # set the header
                     apbe_value = apb_value
                     df.loc[index, 'ActivityProducedBy'
@@ -595,6 +595,7 @@ def ghg_parse(*, df_list, year, config, **_):
                                ] = f"{apb_txt} {apbe_value}"
                 if apb_value.startswith("Total"):
                     df = df.drop(index)
+                    after_Total = True
 
         elif table_name in source_activity_2:
             bool_apb = False
