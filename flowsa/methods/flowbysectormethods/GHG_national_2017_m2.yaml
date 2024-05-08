@@ -402,11 +402,11 @@ source_names:
 
   EPA_GHGI_T_4_63: # Fluorochemical production (in CO2e)
     !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_63
-    year: 2018 # temporary
+    year: *ghgi_year
 
   EPA_GHGI_T_4_64: # Fluorochemical production (in MT)
     !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_64
-    year: 2018 # temporary
+    year: *ghgi_year
 
   EPA_GHGI_T_4_121: # HFCs and other emissions from electronics manufacture
     !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_121
@@ -414,7 +414,7 @@ source_names:
 
   EPA_GHGI_T_4_135: # SF6 and PFCs from Other Product Use
     !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_135
-    year: 2018 # temporary
+    year: *ghgi_year
 
   EPA_GHGI_T_4_127: # HFCs and PFCs from ODS Substitutes
     !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_127
