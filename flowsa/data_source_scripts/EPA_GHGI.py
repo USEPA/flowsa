@@ -197,11 +197,10 @@ def ghg_call(*, resp, url, year, config, **_):
                             log.error(f"error reading {table}")
                             continue
 
-                    if table in ['3-10', '5-28', 'A-71', 'A-92']:
-                        # Skip single row
-                        df=pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
+                    if table in ['4-121']:
+                        # Skip two rows
+                        df=pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
                                          thousands=",", decimal=".")
-                        df=df.rename(columns={'2010a': '2010'})  # Check year 2010
                     elif table == "3-24":
                         # Skip first row, but make headers the next 2 rows:
                         df=pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
@@ -239,7 +238,7 @@ def ghg_call(*, resp, url, year, config, **_):
                         df["SourceName"]=f"EPA_GHGI_T_{table.replace('-', '_')}"
                         frames.append(df)
                     else:
-                        log.warning(f"Error in generating {table}")
+                        log.warning(f"Error accessing {table}")
         return frames
 
 
@@ -700,9 +699,12 @@ def ghg_parse(*, df_list, year, config, **_):
 
         df = df.loc[:, ~df.columns.duplicated()]
         # Remove commas from numbers again in case any were missed:
-        df["FlowAmount"].replace(',', '', regex=True, inplace=True)
-        cleaned_list.append(df)
-# export to csv and check
+        df["FlowAmount"] = df["FlowAmount"].replace(',', '', regex=True)
+        if len(df) == 0:
+            log.warning(f"Error processing {table_name}")
+        else:
+            cleaned_list.append(df)
+
     return cleaned_list
 
 

@@ -576,7 +576,7 @@ source_names:
   EPA_GHGI_T_3_9: *stationary_combustion # N2O emissions from stationary combustion
 
 ## Other sources
-  EPA_GHGI_T_4_53: #CO2 for selected petrochemicals
+  EPA_GHGI_T_4_55: #CO2 for selected petrochemicals
     # year: # override with ghgi_year
     fedefl_mapping: GHGI_AR5_100
     selection_fields:
@@ -661,14 +661,14 @@ source_names:
               SectorProducedBy: {'32411': ''} # purchases of refinery products (324110)
 
 ## Other Emissions
-  EPA_GHGI_T_4_57: # HFCs from HCFC-22 production
+  EPA_GHGI_T_4_59: # HFCs from HCFC-22 production
     # year: # override with ghgi_year
     fedefl_mapping: GHGI_AR5_100
     selection_fields:
       PrimaryActivity: HCFC-22 Production
     attribution_method: direct
 
-  EPA_GHGI_T_4_61: # Fluorochemical production (in CO2e)
+  EPA_GHGI_T_4_63: # Fluorochemical production (in CO2e)
     # year: # override with ghgi_year
     fedefl_mapping: GHGI_AR5_100
     selection_fields:
@@ -676,7 +676,7 @@ source_names:
       FlowName: ["Other PFCs", "Other HFCs"]
     attribution_method: direct
 
-  EPA_GHGI_T_4_62: # Fluorochemical production (in MT)
+  EPA_GHGI_T_4_64: # Fluorochemical production (in MT)
     # year: # override with ghgi_year
     fedefl_mapping: GHGI_AR5_100
     selection_fields:

@@ -389,8 +389,8 @@ source_names:
     year: *ghgi_year
 
 ## Other sources
-  EPA_GHGI_T_4_53: #CO2 for selected petrochemicals
-    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_53
+  EPA_GHGI_T_4_55: #CO2 for selected petrochemicals
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_55
     year: *ghgi_year
 
   EPA_GHGI_T_3_24b: # Fossil fuel for non-energy uses
@@ -398,16 +398,16 @@ source_names:
     year: *ghgi_year
 
 ## Other Emissions
-  EPA_GHGI_T_4_57: # HFCs from HCFC-22 production
-    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_57
+  EPA_GHGI_T_4_59: # HFCs from HCFC-22 production
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_59
     year: *ghgi_year
 
-  EPA_GHGI_T_4_61: # Fluorochemical production (in CO2e)
-    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_61
+  EPA_GHGI_T_4_63: # Fluorochemical production (in CO2e)
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_63
     year: *ghgi_year
 
-  EPA_GHGI_T_4_62: # Fluorochemical production (in MT)
-    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_62
+  EPA_GHGI_T_4_64: # Fluorochemical production (in MT)
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_64
     year: *ghgi_year
 
   EPA_GHGI_T_4_121: # HFCs and other emissions from electronics manufacture
