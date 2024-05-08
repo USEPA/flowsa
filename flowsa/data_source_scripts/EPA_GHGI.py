@@ -7,6 +7,7 @@ https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks
 """
 
 import io
+import re
 import zipfile
 import numpy as np
 import pandas as pd
@@ -334,7 +335,6 @@ def strip_char(text):
                  'Distillate Fuel Oil (Diesel)': 'Distillate Fuel Oil',
                  'Distillate Fuel Oil (Diesel': 'Distillate Fuel Oil',
                  'Natural gas': 'Natural Gas', # Fix capitalization inconsistency
-                 'N2O (Semiconductors)': 'N2O',
                  'HGLb': 'HGL',
                  'Biofuels-Biodieselh' : 'Biofuels-Biodiesel',
                  'Biofuels-Ethanolh' : 'Biofuels-Ethanol',
@@ -660,7 +660,7 @@ def ghg_parse(*, df_list, year, config, **_):
                 df.loc[:, 'FlowType'] = 'TECHNOSPHERE_FLOW'
                 df.loc[:, 'FlowName'] = df.loc[:, 'ActivityProducedBy']
 
-            elif table_name in ["4-135"]:
+            elif table_name in ["4-121", "4-135"]:
                 df = df.iloc[::-1] # reverse the order for assigning APB
                 for index, row in df.iterrows():
                     apb_value = strip_char(row["ActivityProducedBy"])
@@ -669,8 +669,13 @@ def ghg_parse(*, df_list, year, config, **_):
                         apbe_value = apb_value.replace('Total ','')
                         df = df.drop(index)
                     else:
-                        df.loc[index, 'ActivityProducedBy'] = apbe_value
-                        df.loc[index, 'FlowName'] = apb_value
+                        if apbe_value == 'N2O':
+                            df.loc[index, 'ActivityProducedBy'] = (
+                                re.findall(r'\(.*?\)', apb_value)[0][1:-1])
+                            df.loc[index, 'FlowName'] = 'N2O'
+                        else:
+                            df.loc[index, 'ActivityProducedBy'] = apbe_value
+                            df.loc[index, 'FlowName'] = apb_value
                 df = df.iloc[::-1] # revert the order
 
             elif table_name in rows_as_flows:

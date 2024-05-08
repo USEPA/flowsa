@@ -689,7 +689,11 @@ source_names:
     # year: # override with ghgi_year
     fedefl_mapping: GHGI_AR5_100
     selection_fields:
-      PrimaryActivity: Electronics Production
+      PrimaryActivity:
+        - Electronics Industry
+        - Semiconductors
+        - PV
+        - MEMS
     attribution_method: direct
 
   EPA_GHGI_T_4_135: # SF6 and PFCs from Other Product Use

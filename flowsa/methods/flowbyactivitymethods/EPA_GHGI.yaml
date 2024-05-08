@@ -38,7 +38,7 @@ source_activity_1: ["3-7", "3-8", "3-9", "5-17", "5-18"]
 source_activity_1_fuel: ["3-13", "3-14", "3-15"]
 # Tables with sub categories
 source_activity_2: ["3-44", "3-73", "A-92"]
-rows_as_flows: ["4-63", "4-64", "4-103", "4-109", "4-121", "4-125"]
+rows_as_flows: ["4-63", "4-64", "4-103", "4-109", "4-125"]
 
 Tables:
   "Ch 2 - Trends in Greenhouse Gas Emissions and Removals":
@@ -236,7 +236,6 @@ Tables:
         "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "CO2e"
-        "activity": "Electronics Production"
         "desc": "Table 4-121:  PFC, HFC, SF6, NF3, and N2O Emissions from Electronics Manufacture (MMT CO2 Eq.)"
 
       "4-125": # Used to speciate HFC emissions in 4-127
