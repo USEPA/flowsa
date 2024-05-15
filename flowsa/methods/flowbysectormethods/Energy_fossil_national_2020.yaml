@@ -10,9 +10,7 @@ geoscale: national
 
 source_names:
   EIA_MER:
-    # fedefl_mapping: EIA_MER # don't map here but rather map after converting
-    # to physical units
-    standardize_units: False
+    fedefl_mapping: EIA_MER
     activity_sets:
       fossil:
         selection_fields:
@@ -22,24 +20,4 @@ source_names:
             - Crude Oil Production
             - Natural Gas (Dry) Production
             - Natural Gas Plant Liquids Production
-        attribute:
-          ## multiplication is used here (after EIA_MER invert_heat_content)
-          # because it enables the use of attribute_on, a tag not yet available
-          # in division.
-          - attribution_method: multiplication
-            attribution_source:
-              EIA_MER:
-                clean_fba_w_sec: !script_function:EIA_MER invert_heat_content
-                selection_fields:
-                  Description:
-                    - TA2     # Heat content of Petroleum production, imports, exports
-                    - TA4     # Heat content of Natural gas
-                    - TA5     # Heat content of Coal and Coal coke
-                  ActivityProducedBy:
-                    - Coal Production
-                    - Crude Oil Production
-                    - Natural Gas Production, Dry # Note slight syntax change
-                    - Natural Gas Plant Liquids Production
-            attribute_on: [Flowable]
-          - attribution_method: direct
-            clean_fba_after_attribution: !script_function:EIA_MER map_energy_flows
+        attribution_method: direct
