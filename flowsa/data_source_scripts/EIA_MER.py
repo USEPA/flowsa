@@ -10,6 +10,7 @@ Last updated: September 8, 2020
 """
 
 import io
+import re
 import pandas as pd
 from flowsa.flowbyfunctions import assign_fips_location_system
 
@@ -68,6 +69,15 @@ def parse_tables(desc):
         # desc = 'T02.02: Total Energy Consumed by the Residential Sector'
         flow = d.split('Consumed')[0].strip()
         return (flow, None, 'Residential Sector')
+    elif tbl in ('TA2', 'TA4', 'TA5'):
+        # desc = 'TA2: Crude Oil Production Heat Content'
+        sec = d.split('Heat Content')[0].strip()
+        flow = re.split('Production|Imports|Exports|Consumption', sec)[0].strip()
+        # ^^ extract just the fuel name
+        if ',' in sec:
+            flow = f'{flow}, {sec.split(", ")[1].strip()}'
+        ## ^^ if there is a comma, grab the item after and append to the flow
+        return (flow, sec, None)
     else:
         return (None, None, None)
 
@@ -99,6 +109,7 @@ def eia_mer_parse(*, df_list, year, config, **_):
           .assign(ActivityProducedBy = pd.Series(y[1] for y in data))
           .assign(ActivityConsumedBy = pd.Series(y[2] for y in data))
           .assign(FlowAmount = lambda x: x['Value'].astype(float))
+          .assign(Unit = lambda x: x['Unit'].str.replace(' per ', ' / '))
           .drop(columns=['Tbl', 'Value', 'Column_Order', 'YYYYMM'])
           )
 

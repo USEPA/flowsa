@@ -17,6 +17,9 @@ tbls:
 - T01.03  # Primary energy consumption by source
 - T01.04A # Primary energy imports by source
 - T02.02  # Residential sector energy consumption
+- TA2     # Heat content of Petroleum production, imports, exports
+- TA4     # Heat content of Natural gas
+- TA5     # Heat content of Coal and Coal coke
 call_all_years: True
 years:
 - 2010
