@@ -1,6 +1,8 @@
 # Method for fossil energy extraction 
 
-!include:USEEIOv2_detail_target.yaml
+industry_spec:
+  default: NAICS_6
+  NAICS_5: ['2121']
 year: &year 2020
 target_naics_year: 2017
 geoscale: national
