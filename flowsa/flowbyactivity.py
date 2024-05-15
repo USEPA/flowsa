@@ -823,7 +823,10 @@ class FlowByActivity(_FlowBy):
         else:
             mapped = self.rename(columns={'FlowName': 'Flowable',
                                           'Compartment': 'Context'})
-        return (mapped.standardize_units())
+        if self.config.get('standardize_units', True):
+            mapped = mapped.standardize_units()
+
+        return mapped
 
     def convert_activity_to_emissions(
         self: 'FlowByActivity'
