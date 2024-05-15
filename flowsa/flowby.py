@@ -1257,6 +1257,7 @@ class _FlowBy(pd.DataFrame):
             else:
                 log.info(f"Units reset to"
                          f" {fb[rate].drop_duplicates().tolist()}")
+                fb['Unit'] = fb[rate] # updates when Unit_other is rate
 
         return (
             fb
