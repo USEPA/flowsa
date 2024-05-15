@@ -12,7 +12,10 @@ Last updated: September 8, 2020
 import io
 import re
 import pandas as pd
+import numpy as np
+from esupy.mapping import apply_flow_mapping
 from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.flowbyactivity import FlowByActivity
 
 
 def eia_mer_url_helper(*, build_url, config, **_):
@@ -56,6 +59,8 @@ def parse_tables(desc):
     if tbl == 'T01.02':
         # desc = 'T01.02: Biomass Energy Production'
         flow = d.split('Production')[0].strip()
+        flow = flow.replace(' (', ', ').rstrip(')')
+        # ^^ remove parenthesis and replace with comma for consistency
         return (flow, d.strip(), None)
     elif tbl == 'T01.03':
         # desc = 'T01.03: Petroleum Consumption (Excluding Biofuels)'
@@ -129,6 +134,45 @@ def eia_mer_parse(*, df_list, year, config, **_):
     df['DataCollection'] = 5  # tmp
 
     return df
+
+
+def invert_heat_content(
+        fba: FlowByActivity, **_
+    ) -> FlowByActivity:
+    """Convert units for the heat content values to align with those in the fba,
+    invert these values to use attribution_method: multiplication instead of
+    attribution_method: division. clean_fba_w_sec fxn"""
+    units = fba.Unit.str.split('/')
+    # convert million btu to quadrilliion btu and invert
+    fba['FlowAmount'] = np.where(fba['Unit'].str.startswith('Million Btu'),
+                                 (1 / fba['FlowAmount']) * 1e9,
+                                 fba['FlowAmount'])
+    # convert btu to quadrilliion btu and invert
+    fba['FlowAmount'] = np.where(fba['Unit'].str.startswith('Btu'),
+                                 (1 / fba['FlowAmount']) * 1e15,
+                                 fba['FlowAmount'])
+
+    fba['Unit'] = pd.Series(f'{y[1].strip()}/{y[0].strip()}' for y in units)
+
+    fba['Unit'] = np.where(fba['Unit'].str.endswith('Million Btu'),
+                           fba['Unit'].str.replace('Million Btu',
+                                                   'Quadrillion Btu'),
+                           fba['Unit'])
+    fba['Unit'] = np.where(fba['Unit'].str.endswith('/Btu'),
+                           fba['Unit'].str.replace('/Btu',
+                                                   '/Quadrillion Btu'),
+                           fba['Unit'])
+    return fba
+
+
+def map_energy_flows(
+        fba: FlowByActivity, **_
+    ) -> FlowByActivity:
+    """Maps energy flows to the FEDEFL after attribution.
+    clean_fba_after_attribution fxn"""
+    fba = apply_flow_mapping(fba, 'EIA_MER', 'ELEMENTARY_FLOW',
+                             ignore_source_name=True)
+    return fba
 
 if __name__ == "__main__":
     import flowsa
