@@ -50,6 +50,8 @@ def usgs_nmic_call(*, resp, url, year, config, **_):
     inv = {v['file']: k for k,v in config['minerals'].items()}
     material = inv.get(url.rsplit('/', 1)[-1], 'ERROR')
     df = df_load.assign(material = material)
+    
+    df.drop(df.columns[df.columns.str.contains('unnamed',case = False)],axis = 1, inplace = True)
 
     return df
 
@@ -64,7 +66,15 @@ def usgs_nmic_parse(*, df_list, year, config, **_):
     """
     parsed_list = []
     for df in df_list:
-
+        
+        df= df.melt( id_vars=['Year','material'], var_name= 'ActivityProducedBy', value_name='FlowAmount', ignore_index= False)
+        df= df.rename(columns={'material':'FlowName'})     
+        df = (df
+              .assign(ActivityProducedBy = lambda x: x['ActivityProducedBy'].str.strip())
+              .assign(ActivityProducedBy = lambda x: x['ActivityProducedBy'] + ', '+ x['FlowName'])
+             # [~df.ActivityProducedBy.str.contains('$')]
+              )
+                
         ## format the dfs
 
         parsed_list.append(df)
@@ -75,6 +85,7 @@ def usgs_nmic_parse(*, df_list, year, config, **_):
     df['Year'] = df['Year'].astype(str)
     df['SourceName'] = 'USGS_NMIC'
     df['FlowType'] = 'ELEMENTARY_FLOW'
+    df['Unit'] = 'MT'
     # Add tmp DQ scores
     df['DataReliability'] = 5
     df['DataCollection'] = 5
@@ -87,4 +98,5 @@ if __name__ == "__main__":
     import flowsa
     year = '2012-2022'
     flowsa.generateflowbyactivity.main(source='USGS_NMIC', year=year)
-    fba = flowsa.getFlowByActivity('USGS_NMIC', year=2020)
+    fba = flowsa.getFlowByActivity('USGS_NMIC', year=2015)
+    
