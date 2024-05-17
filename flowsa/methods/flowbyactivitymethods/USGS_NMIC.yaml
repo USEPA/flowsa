@@ -10,6 +10,8 @@ call_response_fxn: !script_function:USGS_NMIC usgs_nmic_call
 parse_response_fxn: !script_function:USGS_NMIC usgs_nmic_parse
 call_all_years: True
 years:
+  - 2012
+  - 2013
   - 2014
   - 2015
   - 2016
@@ -24,4 +26,22 @@ minerals:
   Aluminum:
     file: 'ds140-aluminum-2021.xlsx'
     unit: metric tons aluminum
+    
+  Copper:
+    file: 'ds140-copper-2018.xlsx'
+    unit: metric tons copper
+    
+  Iron Ore:
+    file: 'ds140-iron-ore-2019.xlsx'
+    unit: metric tons iron ore
 
+  Lead:
+    file: 'ds140-lead-2019.xlsx'
+    unit: metric tons lead
+
+  Zinc:
+    file: 'ds140-zinc-2021.xlsx'
+    unit: metric tons zinc
+
+   
+ 
