@@ -72,10 +72,10 @@ def usgs_nmic_parse(*, df_list, year, config, **_):
         df = (df
               .assign(ActivityProducedBy = lambda x: x['ActivityProducedBy'].str.strip())
               .assign(ActivityProducedBy = lambda x: x['ActivityProducedBy'] + ', '+ x['FlowName'])
-             # [~df.ActivityProducedBy.str.contains('$')]
+              .query('~ActivityProducedBy.str.contains("\(")')
+              ## ^^ remove activities with parenthesis in name (to drop prices)
+              ## and other non-mass units
               )
-                
-        ## format the dfs
 
         parsed_list.append(df)
     df = pd.concat(parsed_list, ignore_index=True)
@@ -85,6 +85,7 @@ def usgs_nmic_parse(*, df_list, year, config, **_):
     df['Year'] = df['Year'].astype(str)
     df['SourceName'] = 'USGS_NMIC'
     df['FlowType'] = 'ELEMENTARY_FLOW'
+    df['Location'] = '00000'
     df['Unit'] = 'MT'
     # Add tmp DQ scores
     df['DataReliability'] = 5
