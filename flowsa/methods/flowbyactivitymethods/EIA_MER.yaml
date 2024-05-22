@@ -16,6 +16,7 @@ tbls:
 - T01.02  # Primary energy production by source
 - T01.03  # Primary energy consumption by source
 - T01.04A # Primary energy imports by source
+- T01.04B # Primary energy exports by source
 - T02.02  # Residential sector energy consumption
 - TA2     # Heat content of Petroleum production, imports, exports
 - TA4     # Heat content of Natural gas

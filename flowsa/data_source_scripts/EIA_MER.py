@@ -70,6 +70,10 @@ def parse_tables(desc):
         # desc = 'T01.04A: Petroleum Products, Excluding Biofuels, Imports'
         flow = d.split('Imports')[0].strip().rstrip(',')
         return (flow, None, d.strip())
+    elif tbl == 'T01.04B':
+        # desc = 'T01.04B: Coal Coke Exports'
+        flow = d.split('Exports')[0].strip().rstrip(',')
+        return (flow, d.strip(), None)
     elif tbl == 'T02.02':
         # desc = 'T02.02: Total Energy Consumed by the Residential Sector'
         flow = d.split('Consumed')[0].strip()
@@ -123,7 +127,11 @@ def eia_mer_parse(*, df_list, year, config, **_):
     df['Class'] = 'Energy'
     df['SourceName'] = 'EIA_MER'
     df['Location'] = '00000'
-    df['FlowType'] = 'ELEMENTARY_FLOW'
+
+    df['FlowType'] = np.where(df['Description'].isin(['T01.02']),
+                              'ELEMENTARY_FLOW',
+                              'TECHNOSPHERE_FLOW')
+
     # Fill in the rest of the Flow by fields so they show
     # "None" instead of nan.
     df['Compartment'] = 'None'
