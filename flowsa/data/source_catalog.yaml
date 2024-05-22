@@ -378,3 +378,9 @@ USGS_MYB_Copper:
     - Geological
   activity_schema: None
   sector_hierarchy:
+USGS_NMIC:
+  data_format: FBA
+  class:
+    - Chemicals
+  activity_schema: None
+  sector_hierarchy: "flat"
