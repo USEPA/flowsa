@@ -21,10 +21,10 @@ CSV manually added to flowsa
 
 ---
 The Detail_Use_SUT_2017 was pulled from
-USEEIOR's Detail_Use_SUT_2017_17sch.rda on 3/21/2024.
+USEEIOR's Detail_Use_SUT_2017_17sch.rda on 5/23/2024.
 
 The original file is found here:
-https://github.com/USEPA/useeior/blob/d6a8d0768c44fda6a431a458ab42b45edba8ef4c/data/Detail_Use_SUT_2017_17sch.rda
+https://github.com/USEPA/useeior/blob/b7e7fad2a563affc777ece97cc6dab472c749004/data/Detail_Use_SUT_2017_17sch.rda
 
 csv obtained by running the following code in Rstudio:
 use2017 <- get('Detail_Use_SUT_2017_17sch')
@@ -48,10 +48,10 @@ CSV manually added to flowsa
 
 ---
 The Detail_Supply_2017 was pulled from
-USEEIOR's Detail_Supply_2017_17sch.rda on 3/21/2024.
+USEEIOR's Detail_Supply_2017_17sch.rda on 5/23/2024.
 
 The original file is found here:
-https://github.com/USEPA/useeior/blob/d6a8d0768c44fda6a431a458ab42b45edba8ef4c/data/Detail_Supply_2017_17sch.rda
+https://github.com/USEPA/useeior/blob/b7e7fad2a563affc777ece97cc6dab472c749004/data/Detail_Supply_2017_17sch.rda
 
 csv obtained by running the following code in Rstudio:
 supply2017 <- get('Detail_Supply_2017_17sch')
@@ -61,11 +61,11 @@ The metadata file 'BEA_Detail_Supply_2017_17sch_metadata.json' was manually copi
 ---
 
 ---
-The BEA_Summary_Supply and BEA_Summary_Supply  csvs was pulled from
-useeior @d6a8d0768c44fda6a431a458ab42b45edba8ef4c using this code
+The BEA_Summary_Supply and BEA_Summary_Use_SUT csvs was pulled from
+useeior @a1edfcc254575e4ce6c4c23a12bd6140388d1d0d using this code
 
 load_all()
-for (y in 2017:2022) {
+for (y in 2012:2022) {
 
   name <- paste0('Summary_Supply_', y, '_17sch')
   S <- get(name)
@@ -78,17 +78,17 @@ for (y in 2017:2022) {
 }
 
 The original files are found here:
-https://github.com/USEPA/useeior/tree/d6a8d0768c44fda6a431a458ab42b45edba8ef4c/data
+https://github.com/USEPA/useeior/tree/a1edfcc254575e4ce6c4c23a12bd6140388d1d0d/data
 
 The metadata were manually copied from useeior/extdata/metadata
 ---
 
 ---
 The BEA_Detail_GrossOutput was pulled from
-USEEIOR's Detail_GrossOutput_IO_17sch.rda on 3/21/2024.
+USEEIOR's Detail_GrossOutput_IO_17sch.rda on 5/23/2024.
 
 The original file is found here:
-https://github.com/USEPA/useeior/blob/d6a8d0768c44fda6a431a458ab42b45edba8ef4c/data/Detail_GrossOutput_IO_17sch.rda
+https://github.com/USEPA/useeior/blob/a1edfcc254575e4ce6c4c23a12bd6140388d1d0d/data/Detail_GrossOutput_IO_17sch.rda
 
 csv obtained by running the following code in Rstudio:
 bea <- get('Detail_GrossOutput_IO_17sch')
