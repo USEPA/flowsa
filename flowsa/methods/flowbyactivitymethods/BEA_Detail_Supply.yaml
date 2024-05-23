@@ -1,7 +1,7 @@
 author: U.S. Bureau of Economic Analysis
 source_name: Detail Supply
 source_url: 'https://www.bea.gov/industry/input-output-accounts-data#supplemental-estimate-tables'
-original_data_download_date: '2024-03-21'
+original_data_download_date: '2024-05-23'
 bib_id: BEA_Detail_Supply
 format: csv
 url: None
