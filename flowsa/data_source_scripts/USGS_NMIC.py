@@ -71,10 +71,14 @@ def usgs_nmic_parse(*, df_list, year, config, **_):
         df= df.rename(columns={'material':'FlowName'})     
         df = (df
               .assign(ActivityProducedBy = lambda x: x['ActivityProducedBy'].str.strip())
-              .assign(ActivityProducedBy = lambda x: x['ActivityProducedBy'] + ', '+ x['FlowName'])
+              .assign(ActivityProducedBy = lambda x: x['ActivityProducedBy'] + ', '+ x['FlowName'])  
+              .assign( FlowAmount = np.where(df.FlowAmount.isin([ "W"]), 0, df.FlowAmount)) #Convert 'Withdrawn' flow values to 0 MT
+              #.assign( FlowAmount = np.where(df.FlowAmount.isin(["\("]), 0, df.FlowAmount)) #Convert footnote (2) 'Less than half unit' value to 0
               .query('~ActivityProducedBy.str.contains("\(")')
+            
               ## ^^ remove activities with parenthesis in name (to drop prices)
               ## and other non-mass units
+                                  
               )
 
         parsed_list.append(df)
