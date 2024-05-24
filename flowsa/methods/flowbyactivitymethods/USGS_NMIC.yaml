@@ -25,295 +25,222 @@ years:
 minerals:
   Aluminum:
     file: 'ds140-aluminum-2021.xlsx'
-    unit: metric tons aluminum
     
   Copper:
     file: 'ds140-copper-2018.xlsx'
-    unit: metric tons copper
     
   Iron Ore:
     file: 'ds140-iron-ore-2019.xlsx'
-    unit: metric tons iron ore
 
   Lead:
     file: 'ds140-lead-2019.xlsx'
-    unit: metric tons lead
 
   Zinc:
     file: 'ds140-zinc-2021.xlsx'
-    unit: metric tons zinc
 
   Antimony:
     file: 'ds140-antimony-2019.xlsx' #Convert W to str
-    unit: metric tons antimony
 
   Arsenic:
     file: 'ds140-arsenic-2022.xlsx'
-    unit: metric tons arsenic
 
   Asbestos:
     file: 'ds140-asbestos-2022.xlsx'
-    unit: metric tons asbestos
    
   Barite:
     file: 'ds140-barite-2021.xlsx'
-    unit: metric tons barite
 
   Bauxite and alumina:
     file: 'ds140-bauxite-alumina-2019.xlsx'
-    unit: metric tons bauxite and alumina
 
   Beryllium:
     file: 'ds140-beryllium-2021.xlsx'
-    unit: metric tons beryllium
 
   Bismuth:
     file: 'ds140-bismuth-2022.xlsx'
-    unit: metric tons bismuth
 
   Boron:
     file: 'ds140-boron-2022.xlsx'
-    unit: metric tons boron
     
 #  Bromine:  #Source file and name incorrect ##Link incorrect
 #    file: 'ds140-bromine-2022.xlsx'
-    unit: metric tons bromine
     
   Cadmium:
     file: 'ds140-cadmium-2021.xlsx'
-    unit: metric tons cadmium
 
 #  Cesium:
 #    file: 'ds140-2017-cesiu.xlsx' #Spelling mistake
-    unit: metric tons cesium
 
   Chromium:
     file: 'ds140-chromium-2022.xlsx'
-    unit: metric tons chromium
 
   Cobalt:
     file: 'ds140-cobalt-2019.xlsx'
-    unit: metric tons cobalt
 
   Copper:
     file: 'ds140-copper-2018.xlsx'
-    unit: metric tons copper
-    
     
   Diatomite:
     file: 'ds140-diatomite-2022.xlsx'
-    unit: metric tons diatomite
 
   Feldspar:
     file: 'ds140-feldspar-2019.xlsx'
-    unit: metric tons diatomite
 
   Fluorspar:
     file: 'ds140-fluorspar-2019.xlsx'
-    unit: metric tons fluorspar
 
   Gallium:
     file: 'ds140-gallium-2021.xlsx'
-    unit: metric tons gallium
 
   Germanium:
     file: 'ds140-germanum-2022.xlsx'  #Spelling mistake
-    unit: metric tons germanium
 
   Gold:
     file: 'ds140-gold-2022.xlsx'
-    unit: metric tons gold
 
   Graphite:
     file: 'ds140-graphite-2022.xlsx'
-    unit: metric tons graphite
     
   Gypsum:
     file: 'ds140-gypsum-2022.xlsx'
-    unit: metric tons gypsum
 
   Hafnium:
     file: 'ds140-hafnium-2019_0.xlsx'
-    unit: metric tons hafnium
 
   Helium:
     file: 'ds140-helium-2022.xlsx'
-    unit: metric tons helium
 
   Indium:
     file: 'ds140-indium-2022.xlsx'
-    unit: metric tons indium
 
   Iodine:
     file: 'ds140-iodine-2022.xlsx'
-    unit: metric tons iodine
 
   Kyanite:
     file: 'ds140-kyanite-2022.xlsx'
-    unit: metric tons indium
     
   Lime:
     file: 'ds140-lime-2022.xlsx'
-    unit: metric tons lime
     
   Lithium:
     file: 'ds140-lithium-2021.xlsx'
-    unit: metric tons lithium
 
   Magnesium metal:
     file: 'ds140-magnesium-metal-2021.xlsx'
-    unit: metric tons magnesium
 
   Manganese:
     file: 'ds140-manganese-2022.xlsx'
-    unit: metric tons manganese
      
 #  Mercury:  #Has less than 0.5 units, need to fix
 #    file: 'ds140-mercury-2022.xlsx'
-    unit: metric tons mercury
     
   Molybdenum:
     file: 'ds140-molybdenum-2022.xlsx'
-    unit: metric tons molybdenum
 
   Nickel:
     file: 'ds140-nickel-2018_1.xlsx'
-    unit: metric tons mercury
 
   Niobium:
     file: 'ds140-niobium-2021.xlsx'
-    unit: metric tons niobium
 
   Perlite:
     file: 'ds140-perlite-2022.xlsx'
-    unit: metric tons perlite
 
   Phosphate rock:
     file: 'ds140-phosphate-2022.xlsx'
-    unit: metric tons phosphate
 
   Platinum-group metals:
     file: 'ds140-platinum-2022.xlsx'
-    unit: metric tons platinum
 
   Potash:
     file: 'ds140-potash-2022.xlsx'
-    unit: metric tons potash
 
   Pumice and pumicite:
     file: 'ds140-pumice-2022.xlsx'
-    unit: metric tons pumice
 
   Rare earths:
     file: 'ds140-rare-earths-2019.xlsx'
-    unit: metric tons rare earths
 
   Rhenium:
     file: 'ds140-rhenium-2022.xlsx'
-    unit: metric tons rhenium
 
 #  Salt:  #Link
 #    file: 'ds140-salt-2017.xlsx'
-    unit: metric tons salt
 
   Sand and gravel_construction:
     file: 'ds140-sand-gravel-construction-2019.xlsx'
-    unit: metric tons sand and gravel
    
   Selenium:
     file: 'ds140-selenium-2019.xlsx'
-    unit: metric tons selenium
 
   Silicon:
     file: 'ds140-silicon-2022.xlsx'
-    unit: metric tons silicon
 
   Silver:
     file: 'ds140-silver-2021.xlsx'
-    unit: metric tons silver
 
   Soda ash:
     file: 'ds140-soda-ash-2021.xlsx'
-    unit: metric tons soda ash
   
 #  Sodium sulfate: #Link
 #    file: 'ds140-nasul.xlsx'
-    unit: metric tons sodium sulfate
 
   Stone crushed:
     file: 'ds140-stone-crushed-2019.xlsx'
-    unit: metric tons silver
 
   Strontium:
     file: 'ds140-strontium-2022.xlsx'
-    unit: metric tons silver
 
   Sulfur:
     file: 'ds140-sulfur-2022.xlsx'
-    unit: metric tons sulfur
 
   Talc and pyrophyllite:
     file: 'ds140-talc-2022.xlsx'
-    unit: metric tons talc
 
   Tantalum:
     file: 'ds140-tantalum-2019.xlsx'
-    unit: metric tons tantalum
 
   Tellurium:
     file: 'ds140-tellurium-2019.xlsx'
-    unit: metric tons tellurium
 
 #  Thallium:   #Link
 #    file: 'ds140-2017-thall.xlsx'
-    unit: metric tons thallium
 
   Thorium:
     file: 'ds140-thorium-2020.xlsx'
-    unit: metric tons thorium
 
   Tin:
     file: 'ds140-tin-2019.xlsx'
-    unit: metric tons tin
 
   Titanium dioxide pigments:
     file: 'ds140-titanium-pigments-2019.xlsx'
-    unit: metric tons titanium
 
   Titanium metal:
     file: 'ds140-titanium-metal-2019.xlsx'
-    unit: metric tons titanium
 
   Titanium minerals:
     file: 'ds140-titanium-minerals-2019.xlsx'
-    unit: metric tons titanium
-
    
   Tungsten:
     file: 'ds140-tungsten-2019.xlsx'
-    unit: metric tons tungsten  
     
   Vanadium:
     file: 'ds140-vanadium-2022.xlsx'
-    unit: metric tons vanadium  
     
   Vermiculite:
     file: 'ds140-vermiculite-2022.xlsx'
-    unit: metric tons vanadium  
 
 #  Wollastonite: #link
 #    file: 'ds140-2018-wolla.xlsx'
-    unit: metric tons wollastonite  
 
 #  Wood: #link
 #    file: 'ds140-wood.xlsx'
-    unit: metric tons wood  
-
 
   Zirconium:  #Name incorrect
     file: 'ds140-zirconium-2019_0.xlsx'
-    unit: metric tons zirconium  
-    
-    
      
-###  Currently excluded from the list: Rare earths, Quartz(industrial) peat,  organics(non renewable),  nitrogen,  magnesium compounds, iron oxide pigments, iron and steel slag, eron and steel scrap, iron and steel, gemstones, garnet (industrial), diamond (industrial), coal combustion products, clay, cement, agriculture and fishries, abrasives, abrasives
+###  Currently excluded from the list: Rare earths, Quartz(industrial) peat, 
+# organics(non renewable),  nitrogen,  magnesium compounds, iron oxide pigments,
+# iron and steel slag, eron and steel scrap, iron and steel, gemstones,
+# garnet (industrial), diamond (industrial), coal combustion products, clay, cement,
+# agriculture and fishries, abrasives, abrasives
