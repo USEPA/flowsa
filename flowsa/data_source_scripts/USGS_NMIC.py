@@ -11,6 +11,7 @@ import io
 import pandas as pd
 import numpy as np
 from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.flowsa_log import log
 
 
 def usgs_nmic_url_build(*, build_url, config, **_):
@@ -48,11 +49,11 @@ def usgs_nmic_call(*, resp, url, year, config, **_):
                             )
     # assign mineral name to df based on file specified in yaml
     inv = {v['file']: k for k,v in config['minerals'].items()}
-    material = inv.get(url.rsplit('/', 1)[-1], 'ERROR')
+    material = inv.get(url.rsplit('/', 1)[-1], 'ERROR').replace('_', ' ')
     df = df_load.assign(material = material)
-    
-    df.drop(df.columns[df.columns.str.contains('unnamed',case = False)],axis = 1, inplace = True)
-
+    df = df.drop(df.columns[df.columns.str.contains('unnamed',case = False)],axis = 1)
+    if len(df) == 0:
+        log.warning(f'{material} data is missing')
     return df
 
 
@@ -66,7 +67,7 @@ def usgs_nmic_parse(*, df_list, year, config, **_):
     """
     parsed_list = []
     for df in df_list:
-        
+        material = df['material'][0]
         df= df.melt( id_vars=['Year','material'], var_name= 'ActivityProducedBy', value_name='FlowAmount', ignore_index= False)
         df= df.rename(columns={'material':'FlowName'})     
         df = (df
@@ -80,7 +81,8 @@ def usgs_nmic_parse(*, df_list, year, config, **_):
               ## and other non-mass units
                                   
               )
-
+        if len(df) == 0:
+            log.warning(f'{material} data is missing')
         parsed_list.append(df)
     df = pd.concat(parsed_list, ignore_index=True)
 
@@ -103,5 +105,7 @@ if __name__ == "__main__":
     import flowsa
     year = '2012-2022'
     flowsa.generateflowbyactivity.main(source='USGS_NMIC', year=year)
-    fba = flowsa.getFlowByActivity('USGS_NMIC', year=2015)
-    
+    fba = pd.DataFrame()
+    for y in range(2012, 2023):
+        fba = pd.concat([fba, flowsa.getFlowByActivity('USGS_NMIC', year=y)],
+                        ignore_index=True)
