@@ -19,7 +19,7 @@ sources_to_cache:
         year: *ghgi_year
         attribution_source:
           BEA_Detail_Use_SUT:
-              !include:Detail_Use_SUT.yaml:source_names:BEA_Summary_Use_SUT:attribution_sources:BEA_Detail_Use_SUT
+              !include:Detail_Use_SUT.yaml:source_names:BEA_Summary_Use_SUT:attribution_source:BEA_Detail_Use_SUT
               year: 2012
 
   Detail_Supply_2014:
@@ -31,7 +31,7 @@ sources_to_cache:
         year: *ghgi_year
         attribution_source:
           BEA_Detail_Supply:
-              !include:Detail_Supply.yaml:source_names:BEA_Summary_Supply:attribution_sources:BEA_Detail_Supply
+              !include:Detail_Supply.yaml:source_names:BEA_Summary_Supply:attribution_source:BEA_Detail_Supply
               year: 2012
 
 source_names:
