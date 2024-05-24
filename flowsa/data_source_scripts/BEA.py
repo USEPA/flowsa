@@ -33,7 +33,7 @@ def bea_parse(*, source, year, **_):
     elif 'Supply' in source:
         filename = f'{source}_{year}_17sch'
     else: # GrossOutput_IO
-        filename = f'{source}_17sch' if int(year) >= 2017 else source
+        filename = f'{source}_17sch'
 
     df = pd.read_csv(externaldatapath / f"{filename}.csv")
 
