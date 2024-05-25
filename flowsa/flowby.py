@@ -48,6 +48,9 @@ def get_flowby_from_config(
 
     external_data_path = config.get('external_data_path')
 
+    # Enable use of source_name in FBS config for duplicate FBAs
+    name = config.get('source_name', name)
+
     if config.get('data_format') == 'FBA':
         return FlowByActivity.return_FBA(
             full_name=name,

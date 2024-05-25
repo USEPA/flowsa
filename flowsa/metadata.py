@@ -182,15 +182,17 @@ def return_fbs_method_data(source_name, config):
     for k, v in fb.items():
         if process_primary_source(k, v, meta):
             continue
+        # Enable use of source_name in FBS config for duplicate FBAs
+        source_name = v.get('source_name', k)
 
-        cat = (get_catalog_info(k).get('data_format', v.get('data_format', ''))
+        cat = (get_catalog_info(source_name).get('data_format', v.get('data_format', ''))
                .replace('FBS', 'FlowBySector')
                .replace('FBA', 'FlowByActivity'))
 
         # append source and year
         year = v.get('year', config.get('year'))
         meta['primary_source_meta'][k] = getMetadata(
-            k, year=year, category=cat)
+            source_name, year=year, category=cat)
 
         # create dictionary of allocation datasets for different activities
         activities = v.get('activity_sets')

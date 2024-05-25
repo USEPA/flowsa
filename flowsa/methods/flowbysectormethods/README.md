@@ -131,7 +131,10 @@ All sources are treated recursively. That is, there can be an unlimited number
 of embedded sources. The source parameters below can be applied to sources at
 any level, and are inherited from higher-level sources.
 
-- _source_names_: The name of the dataset (FBA or FBS) to serve as primary data
+- _source_names_: The name of the dataset (FBA or FBS) to serve as primary data, assigned as the key for the dictionary.
+- _source_name_: (optional), when the same FBA is used twice, but of different years,
+  and so duplicate keys can not be used, `source_name` can be used to assign the name of the
+  primary dataset in place of the key.
 - _year_: year of dataset (`2015`)
 - _geoscale_: level of geographic aggregation in output parquet
   (`national`, `state`, or `county`).
