@@ -2,13 +2,14 @@
 
 industry_spec:
   default: NAICS_6
-year: &year 2018
+year: &year 2019
 target_naics_year: 2017
 geoscale: national
 
 
 source_names:
   USGS_NMIC:
+    source_name: USGS_NMIC
     # fedefl_mapping: USGS_NMIC
     keep_unmapped_flows: True
     activity_sets:
@@ -16,8 +17,19 @@ source_names:
         selection_fields:
           ActivityProducedBy:
             - Primary production, Aluminum
-            - Primary production, Copper
-            - Primary production, Lead
             - Primary production, Zinc
+            - Primary production, Lead
             - Production, Iron Ore
+        attribution_method: direct
+
+  USGS_NMIC_2018:
+    source_name: USGS_NMIC
+    year: 2018 # These datasets last appear in 2018
+    # fedefl_mapping: USGS_NMIC
+    keep_unmapped_flows: True
+    activity_sets:
+      minerals:
+        selection_fields:
+          ActivityProducedBy:
+            - Primary production, Copper
         attribution_method: direct

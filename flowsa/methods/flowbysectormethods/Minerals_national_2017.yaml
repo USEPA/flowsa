@@ -2,7 +2,7 @@
 
 industry_spec:
   default: NAICS_6
-year: &year 2018
+year: &year 2017
 target_naics_year: 2017
 geoscale: national
 
