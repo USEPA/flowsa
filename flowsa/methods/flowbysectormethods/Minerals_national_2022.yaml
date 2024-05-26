@@ -11,7 +11,7 @@ source_names:
   USGS_NMIC_2018:
     source_name: USGS_NMIC
     year: 2018 # These datasets last appear in 2018
-    # fedefl_mapping: USGS_NMIC
+    fedefl_mapping: USGS_NMIC
     keep_unmapped_flows: True
     activity_sets:
       minerals:
@@ -23,7 +23,7 @@ source_names:
   USGS_NMIC_2019:
     source_name: USGS_NMIC
     year: 2019 # These datasets last appear in 2019
-    # fedefl_mapping: USGS_NMIC
+    fedefl_mapping: USGS_NMIC
     keep_unmapped_flows: True
     activity_sets:
       minerals:
@@ -36,7 +36,7 @@ source_names:
   USGS_NMIC_2021:
     source_name: USGS_NMIC
     year: 2021 # These datasets last appear in 2021
-    # fedefl_mapping: USGS_NMIC
+    fedefl_mapping: USGS_NMIC
     keep_unmapped_flows: True
     activity_sets:
       minerals:

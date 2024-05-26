@@ -9,7 +9,7 @@ geoscale: national
 
 source_names:
   USGS_NMIC:
-    # fedefl_mapping: USGS_NMIC
+    fedefl_mapping: USGS_NMIC
     keep_unmapped_flows: True
     activity_sets:
       minerals:
