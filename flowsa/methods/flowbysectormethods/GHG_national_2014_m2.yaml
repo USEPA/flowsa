@@ -11,20 +11,28 @@ coa_year: &coa_year 2012
 
 sources_to_cache:
   Detail_Use_2014:
-    !include:Detail_Use.yaml
+    !include:Detail_Use_SUT.yaml
     year: *ghgi_year
     source_names:
-      BEA_Summary_Use_PRO_BeforeRedef:
-        !include:Detail_Use.yaml:source_names:BEA_Summary_Use_PRO_BeforeRedef
+      BEA_Summary_Use_SUT:
+        !include:Detail_Use_SUT.yaml:source_names:BEA_Summary_Use_SUT
         year: *ghgi_year
+        attribution_source:
+          BEA_Detail_Use_SUT:
+              !include:Detail_Use_SUT.yaml:source_names:BEA_Summary_Use_SUT:attribution_source:BEA_Detail_Use_SUT
+              year: 2012
 
-  Detail_Make_2014:
-    !include:Detail_Make.yaml
+  Detail_Supply_2014:
+    !include:Detail_Supply.yaml
     year: *ghgi_year
     source_names:
-      BEA_Summary_Make_BeforeRedef:
-        !include:Detail_Make.yaml:source_names:BEA_Summary_Make_BeforeRedef
+      BEA_Summary_Supply:
+        !include:Detail_Supply.yaml:source_names:BEA_Summary_Supply
         year: *ghgi_year
+        attribution_source:
+          BEA_Detail_Supply:
+              !include:Detail_Supply.yaml:source_names:BEA_Summary_Supply:attribution_source:BEA_Detail_Supply
+              year: 2012
 
 source_names:
   GHG_national_2014_m1: # National Summary model
@@ -170,7 +178,7 @@ source_names:
       electric_power:
         !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:electric_power
         attribution_source:
-          Detail_Make_2014:
+          Detail_Supply_2014:
             selection_fields:
               SectorConsumedBy: {'2211': ''} # Electricity
 
@@ -275,7 +283,7 @@ source_names:
           BEA_Detail_GrossOutput_IO:
             year: *ghgi_year
             geoscale: national
-            activity_to_sector_mapping: BEA_2012_Detail
+            activity_to_sector_mapping: BEA_2017_Detail
             attribution_method: equal
 
       cropland: # allocated based on USDA land area harvested

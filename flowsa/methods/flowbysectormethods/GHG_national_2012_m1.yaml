@@ -16,13 +16,14 @@ _industrial_allocation_dict: &industrial_dict
 _attribution_sources:
   BEA: &bea # 2012 Make and Use tables
     year: 2012
-    activity_to_sector_mapping: BEA_2012_Detail
+    activity_to_sector_mapping: BEA_2017_Detail
     exclusion_fields:
       # Drop irrelevant final demand and total sectors
       ActivityConsumedBy: ['F03000', 'F04000', 'F05000', 'F02E00',
                            'F06E00', 'F07E00', 'F10E00', 'F02R00',
-                           'T001', 'T004', 'T007']
-      ActivityProducedBy: ['T007']
+                           'T001', 'T004', 'T007', 'T019']
+      ActivityProducedBy: ['T007', 'T013', 'T015', 'T016', 'TOP',
+                           'MCIF']
     attribution_method: equal
 
 source_names:
@@ -34,7 +35,7 @@ source_names:
       electric_power:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:electric_power
         attribution_source:
-          BEA_Detail_Make_BeforeRedef:
+          BEA_Detail_Supply:
             <<: *bea
             selection_fields:
               ActivityConsumedBy: {'221100': ''} # Electricity
@@ -42,7 +43,7 @@ source_names:
       liming:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:liming
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'327400': ''} # Lime
@@ -50,7 +51,7 @@ source_names:
       urea:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:urea
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'325310': ''} # Fertilizers
@@ -58,7 +59,7 @@ source_names:
       urea_fertilizer:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:urea_fertilizer
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'325310': ''} # Fertilizers
@@ -66,7 +67,7 @@ source_names:
       carbonate_use:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:carbonate_use
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'325180': ''} # Other Basic Inorganic Chemicals
@@ -74,7 +75,7 @@ source_names:
       nitrous_oxide_use:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:nitrous_oxide_use
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'325120': ''} # Industrial gases
@@ -121,7 +122,7 @@ source_names:
       petroleum_fuels:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_13:activity_sets:petroleum_fuels
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'324110': ''} # purchases of refinery products
@@ -134,7 +135,7 @@ source_names:
       petroleum_fuels_diesel:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:petroleum_fuels_diesel
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'324110': ''} # purchases of refinery products
@@ -142,7 +143,7 @@ source_names:
       petroleum_fuels_gasoline:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:petroleum_fuels_gasoline
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'324110': ''} # purchases of refinery products
@@ -150,7 +151,7 @@ source_names:
       construction_and_mining:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:construction_and_mining
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'333120': ''} # purchases of construction/mining equipment
@@ -158,7 +159,7 @@ source_names:
       farm_non_road:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:farm_non_road
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'333111': ''} # purchases of farm machinery
@@ -166,7 +167,7 @@ source_names:
       other_non_road:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:other_non_road
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'324110': ''} # purchases of refinery products
@@ -174,7 +175,7 @@ source_names:
       alt_fuel_on_road:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:alt_fuel_on_road
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'221200': ''} # purchases of natural gas
@@ -207,7 +208,7 @@ source_names:
       refrigerants:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_127:activity_sets:refrigerants
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'333415': ''} # Air conditioning equipment
@@ -215,7 +216,7 @@ source_names:
       air_conditioning:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_127:activity_sets:air_conditioning
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'333415': ''} # Air conditioning equipment
@@ -223,7 +224,7 @@ source_names:
       foams:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_127:activity_sets:foams
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy:
@@ -260,7 +261,7 @@ source_names:
       transportation_lubricants:
         !include:GHG_national_m1_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:transportation_lubricants
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'324110': ''} # use of petroleum products
@@ -277,7 +278,7 @@ source_names:
       non_manufacturing_coal:
         !include:GHG_national_m1_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:non_manufacturing_coal
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'212100': ''} # purchases of coal
@@ -285,7 +286,7 @@ source_names:
       non_manufacturing_natural_gas:
         !include:GHG_national_m1_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:non_manufacturing_natural_gas
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'221200': ''} # purchases of natural gas
@@ -306,7 +307,7 @@ source_names:
       petroleum:
         !include:GHG_national_m1_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:petroleum
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'324110': ''} # purchases of refinery products
@@ -321,7 +322,7 @@ source_names:
       electric_power:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:electric_power
         attribution_source:
-          BEA_Detail_Make_BeforeRedef:
+          BEA_Detail_Supply:
             <<: *bea
             selection_fields:
               ActivityConsumedBy: {'221100': ''}  # Electricity
@@ -329,7 +330,7 @@ source_names:
       fuel_oil:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:fuel_oil
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'324110': ''}  # purchases of refinery products
@@ -337,7 +338,7 @@ source_names:
       natural_gas_nonmanufacturing:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:natural_gas_nonmanufacturing
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'221200': ''}  # purchases of natural gas
@@ -345,7 +346,7 @@ source_names:
       coal_nonmanufacturing:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:coal_nonmanufacturing
         attribution_source:
-          BEA_Detail_Use_PRO_BeforeRedef:
+          BEA_Detail_Use_SUT:
             <<: *bea
             selection_fields:
               ActivityProducedBy: {'212100': ''}  # purchases of coal
