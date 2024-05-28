@@ -685,7 +685,7 @@ def ghg_parse(*, df_list, year, config, **_):
                 df = df[~df['FlowName'].str.contains("Total")]
                 df.loc[:, 'ActivityProducedBy'] = meta.get('activity')
 
-            elif table_name in ["4-16", "4-127", "A-95"]:
+            elif table_name in ["4-16", "4-127"]:
                 # Remove notes from activity names
                 for index, row in df.iterrows():
                     apb_value = strip_char(row["ActivityProducedBy"].split("(")[0])

@@ -296,18 +296,6 @@ Tables:
 
 Annex:
   "Annex 2":
-      # "A-4": # Not currently used #DROP
-      #   "class": "Energy"
-      #   "unit": "TBtu"
-      #   "emission_compartment": "air"
-      #   "emission": "CO2"
-      #   "emission_unit": "MMT CO2e"
-      #   "emission_class": "Chemicals"
-      #   "desc": >
-      #     2020 Energy Consumption Data by Fuel Type (TBtu)
-      #     and Adjusted Energy Consumption Data
-      #   "year": "2020"
-      
       "A-5": # Separate emissions table for each year
         "class": "Energy"
         "unit": "TBtu"
@@ -399,32 +387,13 @@ Annex:
 
 
   "Annex 3":
-      "A-71": # Allocation datasource
+      "A-71": # Allocation datasource ## WILL UPDATE TO A-68
         "class": "Energy"
         "unit": "million gallons"
         "activity": "Fuel Consumption"
         "desc": "Table A-71: Fuel Consumption by Fuel and Vehicle Type (million gallons unless otherwise specified)"
 
-      #"A-70": # Not a primary emissions datasource
-      #  "class": "Chemicals"
-      #  "unit": "kt"
-      #  "compartment": "air"
-      #  "flow": "NOx"
-      #  "desc": "NOx Emissions from Stationary Combustion (kt)"
-      #"A-71": # Not a primary emissions datasource
-      #  "class": "Chemicals"
-      #  "unit": "kt"
-      #  "compartment": "air"
-      #  "flow": "CO"
-      #  "desc": "CO Emissions from Stationary Combustion (kt)"
-      #"A-95": # Not a primary emissions datasource
-      #  "class": "Chemicals"
-      #  "unit": "kt"
-      #  "compartment": "air"
-      #  "flow": "NMVOC"
-      #  "desc": "NMVOCs Emissions from Mobile Combustion (kt)"
-
-      "A-92":
+      "A-92": ## WILL UPDATE TO A-89
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
