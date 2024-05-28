@@ -300,7 +300,7 @@ source_names:
           BEA_Detail_GrossOutput_IO:
             year: *ghgi_year
             geoscale: national
-            activity_to_sector_mapping: BEA_2012_Detail
+            activity_to_sector_mapping: BEA_2017_Detail
             attribution_method: equal
 
       cropland: # allocated based on USDA land area harvested
