@@ -315,3 +315,9 @@ def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
     )
 
     return aggregated
+
+
+if __name__ == "__main__":
+    import flowsa
+    flowsa.generateflowbyactivity.main(source='BLS_QCEW', year=2022)
+    fba = flowsa.getFlowByActivity('BLS_QCEW', year=2022)
