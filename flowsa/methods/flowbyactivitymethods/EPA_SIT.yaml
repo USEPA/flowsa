@@ -6,7 +6,7 @@ bib_id: EPA_SIT
 format: xlsm  # macro-enabled spreadsheet
 url: None
 parse_response_fxn: !script_function:EPA_SIT epa_sit_parse
-state_list: ['ME', 'CT', 'VT']
+state_list: ['ME', 'VT']
 years:
 - 2019
 - 2018
