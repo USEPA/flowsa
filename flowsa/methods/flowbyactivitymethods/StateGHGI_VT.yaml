@@ -61,4 +61,8 @@ table_dict:
         sheetname: 'Sheet1'
         header: 27
         nrows: 3
-        SIT_APB_proxy: ['Landfills', 'Waste Combustion']
+        SIT_APB_proxy:
+          - 'Waste, Emissions from Landfills, Total CH4 Emissions'
+          - 'Waste, Emissions from Waste Combustion, CH4'
+          - 'Waste, Emissions from Waste Combustion, CO2'
+          - 'Waste, Emissions from Waste Combustion, N2O'
