@@ -178,7 +178,7 @@ EIA_MER:
   class:
   - Energy
   activity_schema: None
-  sector_hierarchy: "parent-completeChild"
+  sector_hierarchy: "flat"
 EIA_SEDS:
   data_format: FBA
   class:
