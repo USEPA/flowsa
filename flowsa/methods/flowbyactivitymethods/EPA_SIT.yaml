@@ -8,6 +8,8 @@ url: None
 parse_response_fxn: !script_function:EPA_SIT epa_sit_parse
 state_list: ['ME', 'VT']
 years:
+- 2021
+- 2020
 - 2019
 - 2018
 - 2017
@@ -134,7 +136,7 @@ files:
         
             'Agriculture':
                 sheetname: Agriculture
-                header: 26
+                header: 27
                 nrows: 12
                 unit: MMT
                 headers:
@@ -146,7 +148,7 @@ files:
             'Agricultural Soil Management':
                 sheetname: Agriculture
                 tablename: Agricultural Soil Management
-                header: 41
+                header: 42
                 nrows: 13
                 unit: MT
                 flow: N2O

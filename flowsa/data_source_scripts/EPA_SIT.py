@@ -42,6 +42,7 @@ def epa_sit_parse(*, source, year, config, **_):
         
             # for each sheet in the Excel file containing data...
             for sheet, sheet_dict in file_dict.items():
+                # log.info(f'processing SIT: {sheet}')
                 sheetname = sheet_dict.get('sheetname', sheet)
                 tablename = sheet_dict.get('tablename')
                 if tablename:
@@ -228,6 +229,6 @@ def clean_up_state_data(fba: FlowByActivity, **_):
 
 if __name__ == '__main__':
     import flowsa
-    for y in range(2012, 2020):
+    for y in range(2012, 2021):
         flowsa.generateflowbyactivity.main(source='EPA_SIT', year=y)
         fba = flowsa.flowbyactivity.getFlowByActivity('EPA_SIT', y)
