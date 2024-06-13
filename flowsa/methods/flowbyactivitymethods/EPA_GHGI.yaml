@@ -5,10 +5,10 @@ bib_id: EPA_GHGI
 format: csv
 url:
   base_url: https://www.epa.gov/system/files/other-files/2024-05/main-text.zip
-  annex_url: https://www.epa.gov/system/files/other-files/2022-06/Annex.zip
+  annex_url: https://www.epa.gov/system/files/other-files/2024-06/2024-annex-tables.zip
 path:
   base: "Table {table_name}.csv"
-  annex: "Annex/{chapter}/Table {table_name}.csv"
+  annex: "2024 {annex} Tables/Table {table_name}.csv"
 # local_file: "DraftGHGI-90-22_CSVs.zip"
 url_replace_fxn: !script_function:EPA_GHGI ghg_url_helper
 call_response_fxn: !script_function:EPA_GHGI ghg_call
@@ -37,7 +37,7 @@ source_No_activity: ["3-24", "3-24b"]
 source_activity_1: ["3-7", "3-8", "3-9", "5-17", "5-18"]
 source_activity_1_fuel: ["3-13", "3-14", "3-15"]
 # Tables with sub categories
-source_activity_2: ["3-44", "3-73", "A-92"]
+source_activity_2: ["3-44", "3-73", "A-89"]
 rows_as_flows: ["4-63", "4-64", "4-103", "4-109", "4-125"]
 
 Tables:
@@ -387,15 +387,15 @@ Annex:
 
 
   "Annex 3":
-      "A-71": # Allocation datasource ## WILL UPDATE TO A-68
+      "A-68": # Allocation datasource
         "class": "Energy"
         "unit": "million gallons"
         "activity": "Fuel Consumption"
-        "desc": "Table A-71: Fuel Consumption by Fuel and Vehicle Type (million gallons unless otherwise specified)"
+        "desc": "Table A-68: Fuel Consumption by Fuel and Vehicle Type (million gallons unless otherwise specified)"
 
-      "A-92": ## WILL UPDATE TO A-89
+      "A-89":
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "HFCs"
-        "desc": "Table A-92: HFC Emissions from Transportation Sources (MMT CO2 Eq.)"
+        "desc": "Table A-89: HFC Emissions from Transportation Sources (MMT CO2 Eq.)"

@@ -167,14 +167,14 @@ def ghg_call(*, resp, url, year, config, **_):
         if any(x in url for x in ['annex', 'Annex']):
             opath = config['path']['annex']
             t_tables = config['Annex']
+            annex = True
         else:
             opath = config['path']['base']
             t_tables = config['Tables']
+            annex = False
         for chapter, tables in t_tables.items():
-            # Access chapter specific zip files within the main zip
-            chapter_name = f'{chapter.rsplit(" - ")[1]}.zip'
-            zfiledata = io.BytesIO(f.read(chapter_name))
-            with zipfile.ZipFile(zfiledata) as f2:
+            if annex:
+            # Annex tables are in separate folders
                 for table in tables:
                     df = None
                     tbl_year = tables[table].get('year')
@@ -182,56 +182,19 @@ def ghg_call(*, resp, url, year, config, **_):
                         # Skip tables when the year does not align with target year
                         continue
                     table_name = tables[table].get('table_name', table)
-                    path = opath.replace('{table_name}', table_name)
-                    # Handle special case of table 3-24 in external data folder
-                    if table == "3-24b":
-                        if str(year) in ['2022']:
-                            # Skip 3-24b for current year (use 3-24 instead)
-                            continue
-                        else:
-                            df=pd.read_csv(externaldatapath / f"GHGI_Table_{table}.csv",
-                                             skiprows=2, encoding="ISO-8859-1", thousands=",")
-                    else:
-                        try:
-                            data=f2.open(path)
-                        except KeyError:
-                            log.error(f"error reading {table}")
-                            continue
-
-                    if table in ['4-121']:
-                        # Skip two rows
-                        df=pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
-                                         thousands=",", decimal=".")
-                    elif table == "3-24":
-                        # Skip first row, but make headers the next 2 rows:
-                        df=pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
-                                         header=[0, 1], thousands=",")
-                        # Row 0 is header, row 1 is unit
-                        new_headers=[]
-                        for col in df.columns:
-                            new_header='Unnamed: 0'
-                            if 'Unnamed' not in col[0]:
-                                if 'Unnamed' not in col[1]:
-                                    new_header=f'{col[0]} {col[1]}'
-                                else:
-                                    new_header=col[0]
-                            else:
-                                new_header=col[1]
-                            new_headers.append(new_header)
-                        df.columns=new_headers
-                    elif table in ANNEX_ENERGY_TABLES:
+                    path = (opath.replace('{table_name}', table_name)
+                                 .replace('{annex}', chapter))
+                    try:
+                        data=f.open(path)
+                    except KeyError:
+                        log.error(f"error reading {table}")
+                        continue
+                    if table in ANNEX_ENERGY_TABLES:
                         df=annex_yearly_tables(data, table)
-                    elif table != '3-24b':
-                        # Except for 3-24b already as df,
-                        # Proceed with default case
+                    else:
                         df=pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
-                                         thousands=",")
-
-                    if table == '3-13':
-                        # remove notes from column headers in some years
-                        cols=[c[:4] for c in list(df.columns[1:])]
-                        df=df.rename(columns=dict(zip(df.columns[1:], cols)))
-
+                                       thousands=",")
+                
                     if df is not None and len(df.columns) > 1:
                         years=YEARS.copy()
                         years.remove(str(year))
@@ -239,7 +202,76 @@ def ghg_call(*, resp, url, year, config, **_):
                         df["SourceName"]=f"EPA_GHGI_T_{table.replace('-', '_')}"
                         frames.append(df)
                     else:
-                        log.warning(f"Error accessing {table}")
+                        log.warning(f"Error accessing {table}")                
+            
+            else:
+            # Access chapter specific zip files within the main zip
+                chapter_name = f'{chapter.rsplit(" - ")[1]}.zip'
+                zfiledata = io.BytesIO(f.read(chapter_name))
+                with zipfile.ZipFile(zfiledata) as f2:
+                    for table in tables:
+                        df = None
+                        tbl_year = tables[table].get('year')
+                        if tbl_year is not None and tbl_year != year:
+                            # Skip tables when the year does not align with target year
+                            continue
+                        table_name = tables[table].get('table_name', table)
+                        path = opath.replace('{table_name}', table_name)
+                        # Handle special case of table 3-24 in external data folder
+                        if table == "3-24b":
+                            if str(year) in ['2022']:
+                                # Skip 3-24b for current year (use 3-24 instead)
+                                continue
+                            else:
+                                df=pd.read_csv(externaldatapath / f"GHGI_Table_{table}.csv",
+                                                 skiprows=2, encoding="ISO-8859-1", thousands=",")
+                        else:
+                            try:
+                                data=f2.open(path)
+                            except KeyError:
+                                log.error(f"error reading {table}")
+                                continue
+    
+                        if table in ['4-121']:
+                            # Skip two rows
+                            df=pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
+                                             thousands=",", decimal=".")
+                        elif table == "3-24":
+                            # Skip first row, but make headers the next 2 rows:
+                            df=pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
+                                             header=[0, 1], thousands=",")
+                            # Row 0 is header, row 1 is unit
+                            new_headers=[]
+                            for col in df.columns:
+                                new_header='Unnamed: 0'
+                                if 'Unnamed' not in col[0]:
+                                    if 'Unnamed' not in col[1]:
+                                        new_header=f'{col[0]} {col[1]}'
+                                    else:
+                                        new_header=col[0]
+                                else:
+                                    new_header=col[1]
+                                new_headers.append(new_header)
+                            df.columns=new_headers
+                        elif table != '3-24b':
+                            # Except for 3-24b already as df,
+                            # Proceed with default case
+                            df=pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
+                                             thousands=",")
+    
+                        if table == '3-13':
+                            # remove notes from column headers in some years
+                            cols=[c[:4] for c in list(df.columns[1:])]
+                            df=df.rename(columns=dict(zip(df.columns[1:], cols)))
+    
+                        if df is not None and len(df.columns) > 1:
+                            years=YEARS.copy()
+                            years.remove(str(year))
+                            df=df.drop(columns=(DROP_COLS + years), errors='ignore')
+                            df["SourceName"]=f"EPA_GHGI_T_{table.replace('-', '_')}"
+                            frames.append(df)
+                        else:
+                            log.warning(f"Error accessing {table}")
         return frames
 
 
@@ -634,7 +666,7 @@ def ghg_parse(*, df_list, year, config, **_):
                 if "Total" == apb_value or "Total " == apb_value:
                     df = df.drop(index)
 
-        elif table_name == "A-71":
+        elif table_name == "A-68":
             fuel_name = ""
             A_79_unit_dict = {'Natural Gas': 'trillion cubic feet',
                               'Electricity': 'million kilowatt-hours'}
@@ -766,7 +798,7 @@ def allocate_industrial_combustion(fba: FlowByActivity, **_) -> FlowByActivity:
     """
     Split industrial combustion emissions into two buckets to be further allocated.
 
-    clean_fba_df_fxn. Calculate the percentage of fuel consumption captured in
+    clean_fba_before_activity_sets. Calculate the percentage of fuel consumption captured in
     EIA MECS relative to EPA GHGI. Create new activities to distinguish those
     which use EIA MECS as allocation source and those that use alternate source.
     """
@@ -832,4 +864,5 @@ if __name__ == "__main__":
     import flowsa
     # fba = flowsa.return_FBA('EPA_GHGI_T_4_101', 2016)
     # df = clean_HFC_fba(fba)
-    fba = flowsa.generateflowbyactivity.main(year=2022, source='EPA_GHGI')
+    flowsa.generateflowbyactivity.main(year=2022, source='EPA_GHGI')
+    fba = flowsa.getFlowByActivity('EPA_GHGI_T_2_1', 2022)
