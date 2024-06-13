@@ -121,8 +121,7 @@ def series_separate_name_and_units(series, default_flow_name, default_units):
 
 def annex_yearly_tables(data, table=None):
     """Special handling of ANNEX Energy Tables"""
-    skiprows=0 if table in ("A-9", "A-10") else 1
-    df = pd.read_csv(data, skiprows=skiprows, encoding="ISO-8859-1",
+    df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
                      header=[0, 1], thousands=",")
     if table == "A-4": 
         # Table "Energy Consumption Data by Fuel Type (TBtu) and Adjusted 
@@ -131,6 +130,7 @@ def annex_yearly_tables(data, table=None):
         df = df.drop([0])
     header_name = ""
     newcols = []  # empty list to have new column names
+    dropcols = []
     for i in range(len(df.columns)):
         fuel_type = str(df.iloc[0, i])
         for abbrev, full_name in SECTOR_DICT.items():
@@ -138,6 +138,10 @@ def annex_yearly_tables(data, table=None):
         fuel_type = fuel_type.strip()
 
         col_name = df.columns[i][1]
+        if df.iloc[:, i].isnull().all():
+            # skip over mis aligned columns
+            dropcols.append(i)
+            continue
         if "Unnamed" in col_name:
             column_name = header_name
         elif col_name in ANNEX_HEADERS.keys():
@@ -145,6 +149,7 @@ def annex_yearly_tables(data, table=None):
             header_name = ANNEX_HEADERS[col_name]
 
         newcols.append(f"{column_name} - {fuel_type}")
+    df = df.drop(columns=df.columns[dropcols])
     df.columns = newcols  # assign column names
     df = df.iloc[1:, :]  # exclude first row
     df.dropna(how='all', inplace=True)
@@ -864,5 +869,6 @@ if __name__ == "__main__":
     import flowsa
     # fba = flowsa.return_FBA('EPA_GHGI_T_4_101', 2016)
     # df = clean_HFC_fba(fba)
-    flowsa.generateflowbyactivity.main(year=2022, source='EPA_GHGI')
-    fba = flowsa.getFlowByActivity('EPA_GHGI_T_2_1', 2022)
+    for y in range(2012, 2023):
+        flowsa.generateflowbyactivity.main(year=y, source='EPA_GHGI')
+        # fba = flowsa.getFlowByActivity('EPA_GHGI_T_2_1', 2022)
