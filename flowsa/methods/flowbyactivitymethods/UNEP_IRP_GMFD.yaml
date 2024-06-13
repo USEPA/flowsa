@@ -1,5 +1,5 @@
 author: UN Environment Programme
-source_name: 'Inventory of US Greenhouse Gas Emissions and Sinks: 1990-2020'
+source_name: 'Global Material Flows Database'
 source_url: https://www.resourcepanel.org/global-material-flows-database
 #bib_id: UNEP_IRP_GMFD
 format: csv
@@ -26,5 +26,3 @@ years:
 - 2022
 - 2023
 - 2024
-
-
