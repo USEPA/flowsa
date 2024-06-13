@@ -1,8 +1,8 @@
-# Method for Material Footprint, Domestic Extraction based on UNEP Global
+# Method for Raw Material Extraction (Domestic) based on UNEP Global
 # Material Flpws Database
 
 !include:USEEIO_summary_target.yaml
-year: 2023
+year: 2022
 target_naics_year: 2017
 geoscale: national
 
