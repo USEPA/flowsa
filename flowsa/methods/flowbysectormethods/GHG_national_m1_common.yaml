@@ -750,7 +750,7 @@ source_names:
                 '32615': '' # Urethane and other foam (326150)
 
 
-  EPA_GHGI_T_A_92: # HFCs from Transportation
+  EPA_GHGI_T_A_89: # HFCs from Transportation
     # year: # override with ghgi_year
     clean_fba_before_mapping: !script_function:EPA_GHGI split_HFCs_by_type
     clean_parameter:

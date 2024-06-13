@@ -195,8 +195,8 @@ source_names:
             !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_127:activity_sets:foams:attribution_source:Detail_Use_YEAR
 
 
-  "EPA_GHGI_T_A_92": # HFCs from Transportation
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_A_92
+  "EPA_GHGI_T_A_89": # HFCs from Transportation
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_A_89
     year: *ghgi_year
   "EPA_GHGI_T_4_103": # PFCs from aluminum production
     !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_103

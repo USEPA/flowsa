@@ -232,8 +232,8 @@ source_names:
                 '326150': '' # Urethane and other foam
 
 
-  "EPA_GHGI_T_A_92": # HFCs from Transportation
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_A_92
+  "EPA_GHGI_T_A_89": # HFCs from Transportation
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_A_89
     year: *ghgi_year
   "EPA_GHGI_T_4_103": # PFCs from aluminum production
     !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_103
