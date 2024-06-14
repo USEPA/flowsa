@@ -302,6 +302,12 @@ stateio:
     - Money
   activity_schema: BEA_2012_Summary_Code
   sector_hierarchy: "flat"
+UNEP_IRP_GMFD:
+  data_format: FBA
+  class:
+    - Chemicals
+  activity_schema: None
+  sector_hierarchy: "flat"
 USDA_CoA_Cropland:
   data_format: FBA
   class:
