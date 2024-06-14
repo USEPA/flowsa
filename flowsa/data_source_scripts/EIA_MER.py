@@ -91,7 +91,7 @@ def parse_tables(desc):
         return (None, None, None)
 
 
-def eia_mer_parse(*, df_list, year, config, **_):
+def eia_mer_parse(*, df_list, config, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
@@ -104,7 +104,8 @@ def eia_mer_parse(*, df_list, year, config, **_):
 
     ## get month = 13 for annual total
     df = (df
-          .query(f'YYYYMM == {year}13')
+          .assign(YYYYMM = lambda x: x['YYYYMM'].astype(str))
+          .query('YYYYMM.str.endswith("13")')
           .reset_index(drop=True)
           .assign(detail = lambda x: x['Tbl'] + ': ' + x['Description'])
           .assign(Description = lambda x: x['Tbl'])
@@ -112,8 +113,9 @@ def eia_mer_parse(*, df_list, year, config, **_):
     data = df.detail.apply(parse_tables)
 
     df['Value'] = df['Value'].replace('Not Available', 0)
+    df['Value'] = df['Value'].replace('Not Applicable', 0)
     df = (df
-          .assign(Year = year)
+          .assign(Year = lambda x: x['YYYYMM'].str[:4])
           .assign(FlowName = pd.Series(y[0] for y in data))
           .assign(ActivityProducedBy = pd.Series(y[1] for y in data))
           .assign(ActivityConsumedBy = pd.Series(y[2] for y in data))
@@ -122,7 +124,7 @@ def eia_mer_parse(*, df_list, year, config, **_):
           .drop(columns=['Tbl', 'Value', 'Column_Order', 'YYYYMM'])
           )
 
-    df = assign_fips_location_system(df, year)
+    df = assign_fips_location_system(df, 2024)
     # hard code data
     df['Class'] = 'Energy'
     df['SourceName'] = 'EIA_MER'
@@ -184,5 +186,5 @@ def map_energy_flows(
 
 if __name__ == "__main__":
     import flowsa
-    flowsa.generateflowbyactivity.main(source='EIA_MER', year=2020)
+    flowsa.generateflowbyactivity.main(source='EIA_MER', year='2012-2023')
     fba = flowsa.getFlowByActivity('EIA_MER', 2020)
