@@ -9,3 +9,4 @@ external_data.yaml
 *.cache
 **/data/fbs_diff/*
 flowby-old.py
+.spyproject*
