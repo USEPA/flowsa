@@ -50,7 +50,7 @@ def return_pkg_version():
         # set path to flowsa repository, necessary if running method files
         # outside the flowsa repo
         tags = subprocess.check_output(
-            ["git", "describe", "--tags", "--always"],
+            ["git", "describe", "--tags", "--always", "--match", "v[0-9]*"],
             cwd=MODULEPATH).decode().strip()
         pkg_version = tags.split("-", 1)[0].replace('v', "")
     except subprocess.CalledProcessError:

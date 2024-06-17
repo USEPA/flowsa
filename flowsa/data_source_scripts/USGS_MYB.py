@@ -2011,36 +2011,33 @@ def usgs_lead_parse(*, df_list, source, year, **_):
     row_to_use = ["Primary lead, refined content, "
                   "domestic ores and base bullion",
                   "Secondary lead, lead content",
-                  "Lead ore and concentrates", "Lead in base bullion",
+                  "Lead ore and concentrates",
+                  "Lead in base bullion",
+                  "Lead in base bullion, lead content",
                   "Base bullion"]
-    import_export = ["Exports, lead content:",
-                     "Imports for consumption, lead content:"]
     dataframe = pd.DataFrame()
     product = "production"
     for df in df_list:
         for index, row in df.iterrows():
-            if df.iloc[index]["Production"].strip() in import_export:
-                if df.iloc[index]["Production"].strip() == \
-                        "Exports, lead content:":
-                    product = "exports"
-                elif df.iloc[index]["Production"].strip() == \
-                        "Imports for consumption, lead content:":
-                    product = "imports"
-            if df.iloc[index]["Production"].strip() in row_to_use:
+            activity = df.iloc[index]["Production"].strip()
+            if activity == "Exports, lead content:":
+                product = "exports"
+            elif activity == "Imports for consumption, lead content:":
+                product = "imports"
+            if activity in row_to_use:
                 data = usgs_myb_static_variables()
                 data["SourceName"] = source
                 data["Year"] = str(year)
                 data["Unit"] = "Metric Tons"
                 data['FlowName'] = name + " " + product
-                data["ActivityProducedBy"] = df.iloc[index]["Production"]
+                data["ActivityProducedBy"] = activity
                 if str(df.iloc[index]["FlowAmount"]) == "--":
                     data["FlowAmount"] = 0
                 else:
                     data["FlowAmount"] = df.iloc[index]["FlowAmount"]
                 dataframe = pd.concat([dataframe, pd.DataFrame([data])],
                                       ignore_index=True)
-                dataframe = assign_fips_location_system(
-                    dataframe, str(year))
+    dataframe = assign_fips_location_system(dataframe, str(year))
     # standardize activityproducedby naming
     dataframe['ActivityProducedBy'] = np.where(
         dataframe['ActivityProducedBy'] == "Base bullion",

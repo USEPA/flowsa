@@ -27,13 +27,13 @@ def bea_parse(*, source, year, **_):
     if 'Make' in source:
         filename = source.replace('_Make_', f'_Make_{year}_')
     elif 'Use_SUT' in source:
-        filename = f'{source}_{year}'
+        filename = f'{source}_{year}_17sch'
     elif 'Use' in source:
         filename = source.replace('_Use_', f'_Use_{year}_')
     elif 'Supply' in source:
-        filename = f'{source}_{year}'
-    else:
-        filename = source
+        filename = f'{source}_{year}_17sch'
+    else: # GrossOutput_IO
+        filename = f'{source}_17sch'
 
     df = pd.read_csv(externaldatapath / f"{filename}.csv")
 

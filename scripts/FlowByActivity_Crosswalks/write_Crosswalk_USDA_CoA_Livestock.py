@@ -14,8 +14,13 @@ NAICS8 are based on NAICS definitions from the Census.
 """
 
 import pandas as pd
+from pathlib import Path
+import sys
 from flowsa.settings import datapath
-from scripts.FlowByActivity_Crosswalks.common_scripts import unique_activity_names, order_crosswalk
+
+cw_path = Path(__file__).parents[1]
+sys.path.append(str(cw_path / 'FlowByActivity_Crosswalks'))  # accepts str, not pathlib obj
+from FlowByActivity_Crosswalks.common_scripts import unique_activity_names, order_crosswalk
 
 
 def assign_naics(df):
@@ -73,7 +78,9 @@ def assign_naics(df):
     df.loc[df['Activity'] == 'SHEEP & GOATS TOTALS', 'Sector'] = '1124'
 
     # sheep farming: 11241
-    df.loc[df['Activity'] == 'SHEEP, INCL LAMBS', 'Sector'] = '11241'
+    df.loc[df['Activity'] == 'SHEEP, INCL LAMBS', 'Sector'] = '112410A'
+    df.loc[df['Activity'] == 'SHEEP, INCL LAMBS, HAIR SHEEP OR WOOL-HAIR CROSSES',
+           'Sector'] = '112410B'
 
     # goat farming: 11242
     df.loc[df['Activity'] == 'GOATS', 'Sector'] = '11242'
@@ -110,7 +117,7 @@ def assign_naics(df):
 
 if __name__ == '__main__':
     # select years to pull unique activity names
-    years = ['2012', '2017']
+    years = ['2012', '2017', '2022']
     # datasource
     datasource = 'USDA_CoA_Livestock'
     # df of unique ers activity names
