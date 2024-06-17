@@ -220,18 +220,27 @@ def main(**kwargs):
         log.warning(f'Years not listed in FBA method yaml: {years_list}, '
                     f'data might not exist')
 
+    if config.get('call_all_years'):
+        urls = assemble_urls_for_query(source=source, year=None, config=config)
+        df_list = call_urls(url_list=urls, source=source, year=None, config=config)
+        dfs = parse_data(df_list=df_list, source=source, year=None, config=config)
+        call_all_years = True
+    else:
+        call_all_years = False
     for p_year in year_iter:
         year = str(p_year)
-        # replace parts of urls with specific instructions from source.py
-        urls = assemble_urls_for_query(source=source, year=year, config=config)
-        # create a list with data from all source urls
-        df_list = call_urls(url_list=urls,
-                            source=source, year=year, config=config)
-        # concat the dataframes and parse data with specific
-        # instructions from source.py
-        log.info("Concat dataframe list and parse data")
-        dfs = parse_data(df_list=df_list,
-                         source=source, year=year, config=config)
+        if not call_all_years:
+            # replace parts of urls with specific instructions from source.py
+            urls = assemble_urls_for_query(source=source,
+                                           year=year, config=config)
+            # create a list with data from all source urls
+            df_list = call_urls(url_list=urls,
+                                source=source, year=year, config=config)
+            # concat the dataframes and parse data with specific
+            # instructions from source.py
+            log.info("Concat dataframe list and parse data")
+            dfs = parse_data(df_list=df_list, source=source,
+                             year=year, config=config)
         if isinstance(dfs, list):
             for frame in dfs:
                 if not len(frame.index) == 0:
@@ -243,6 +252,11 @@ def main(**kwargs):
                     process_data_frame(df=frame,
                                        source=source_name, year=year,
                                        config=config)
+        elif call_all_years:
+            process_data_frame(
+                df=dfs.query('Year == @year').reset_index(drop=True),
+                source=source, year=year, config=config)
+
         else:
             process_data_frame(df=dfs, source=source, year=year, config=config)
 

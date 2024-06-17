@@ -10,6 +10,6 @@ external_data.yaml
 **/data/fbs_diff/*
 flowby-old.py
 flowsa/methods/flowbysectormethods/archive*
-.spyproject*
 flowsa/data/external_data/SIT_data/*
 flowsa/data/external_data/StateGHGI_data/*
+.spyproject*
