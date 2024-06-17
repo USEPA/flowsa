@@ -1,6 +1,7 @@
 author: Bureau of Land Management
 source_name: Public Land Statistics
 source_url: https://www.blm.gov/about/data/public-land-statistics
+source_publication_date: {'2007': '2008', '2011': '2012', '2012': '2013'}
 bib_id: BLM_PLS
 api_name: BLM_PLS
 format: pfd
@@ -12,10 +13,8 @@ call_response_fxn: !script_function:BLM_PLS blm_pls_call
 parse_response_fxn: !script_function:BLM_PLS blm_pls_parse
 years:
 - 2007
-#- 2010
 - 2011
 - 2012
-#- 2015
 file_name:
   '2007': pls07.pdf
   '2010': pls10.pdf

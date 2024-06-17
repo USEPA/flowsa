@@ -21,7 +21,9 @@ source_names:
       employment_attribution:
         !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:employment_attribution
         attribution_method: proportional
-        attribution_source: Employment_state_2015
+        attribution_source:
+          Employment_state_2015:
+            data_format: FBS
       cropland_attribution:
         !include:Water_common.yaml:source_names:USGS_NWIS_WU:activity_sets:cropland_attribution
         attribution_method: proportional

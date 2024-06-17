@@ -70,12 +70,14 @@ _proportional_attribution_ method can be applied using
           - attribution_method: proportional
             attribution_source:
               Employment_national_2012:
+                data_format: FBS
                 geoscale: national
           - attribution_method: proportional
             attribute_on: ['PrimarySector']
             fill_columns: Location
             attribution_source:
               Employment_state_2012:
+                data_format: FBS
                 geoscale: state
 
 ```
@@ -186,12 +188,13 @@ Some functions allow for extra named parameters.
   mapping file, if not provided will use the source name
 - _apply_urban_rural_: (bool) Assign flow quantities as urban or rural based on
   population density by FIPS.
-- _fedefl_mapping_: name of mapping file in FEDEFL. If not
-  supplied will use the source name
+- _fedefl_mapping_: name of mapping file to use in FEDEFL.
 - _mfl_mapping_: name of mapping file for Material Flow List. Should not be
   used if fedefl_mapping is used
 - _keep_unmapped_rows_: (bool) default is False, if True will maintain any
   flows not found in mapping files.
+- _standardize_units_: (bool) default is True, if True will standardize fba
+units to SI using [unit_conversion.csv](../../data/unit_conversion.csv).
 - _attribute_on_: (list) specify which columns in the primary dataset 
   should be used for attribution. See REI_waste_national_2012.yaml for an 
   example. 

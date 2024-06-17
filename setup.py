@@ -6,13 +6,13 @@ from setuptools import setup, find_packages
 
 setup(
     name='flowsa',
-    version='2.0.1',
+    version='2.0.2',
     packages=find_packages(),
     package_dir={'flowsa': 'flowsa'},
     include_package_data=True,
     python_requires=">=3.9",
     install_requires=[
-        'fedelemflowlist @ git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List.git#egg=fedelemflowlist',
+        'fedelemflowlist @ git+https://github.com/USEPA/fedelemflowlist.git#egg=fedelemflowlist',
         'esupy @ git+https://github.com/USEPA/esupy.git#egg=esupy',
         'StEWI @ git+https://github.com/USEPA/standardizedinventories.git#egg=StEWI',
         'appdirs>=1.4.3',

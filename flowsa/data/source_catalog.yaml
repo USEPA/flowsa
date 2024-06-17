@@ -94,7 +94,9 @@ BLS_QCEW:
                     2018: NAICS_2017_Code,
                     2019: NAICS_2017_Code,
                     2020: NAICS_2017_Code,
-                    2021: NAICS_2017_Code}
+                    2021: NAICS_2017_Code,
+                    2022: NAICS_2017_Code,
+                    }
   sector_hierarchy: "parent-completeChild"
 BTS_Airlines:
   data_format: FBA
@@ -176,23 +178,13 @@ EIA_MER:
   class:
   - Energy
   activity_schema: None
-  sector_hierarchy: "parent-completeChild"
+  sector_hierarchy: "flat"
 EIA_SEDS:
   data_format: FBA
   class:
     - Energy
     - Other
   sector_hierarchy: "flat"
-Employment_national:
-  data_format: FBS
-  class: Employment
-  activity_schema: NAICS_2012_Code
-  sector_hierarchy: "parent-completeChild"
-Employment_state:
-  data_format: FBS
-  class: Employment
-  activity_schema: NAICS_2012_Code
-  sector_hierarchy: "parent-completeChild"
 EPA_CDDPath:
   data_format: FBA
   class:
@@ -309,6 +301,12 @@ stateio:
   class:
     - Money
   activity_schema: BEA_2012_Summary_Code
+  sector_hierarchy: "flat"
+UNEP_IRP_GMFD:
+  data_format: FBA
+  class:
+    - Chemicals
+  activity_schema: None
   sector_hierarchy: "flat"
 USDA_CoA_Cropland:
   data_format: FBA

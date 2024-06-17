@@ -80,6 +80,7 @@ class FlowByActivity(_FlowBy):
         cls,
         full_name: str,
         year: int = None,
+        git_version: str = None,
         config: dict = None,
         download_ok: bool = settings.DEFAULT_DOWNLOAD_IF_MISSING,
         **kwargs
@@ -99,8 +100,16 @@ class FlowByActivity(_FlowBy):
         if year is None and isinstance(config, dict):
             year = config.get('year')
 
+        # set metaname
+        if year is None:
+            meta_name = full_name
+        else:
+            meta_name = f'{full_name}_{year}'
+        if git_version is not None:
+            meta_name = f'{meta_name}_{git_version}'
+
         file_metadata = metadata.set_fb_meta(
-            full_name if year is None else f'{full_name}_{year}',
+            meta_name,
             'FlowByActivity'
         )
         flowby_generator = partial(
@@ -680,9 +689,16 @@ class FlowByActivity(_FlowBy):
             external_config_path: str = None,
             download_sources_ok: bool = True,
             skip_select_by: bool = False,
+            retain_activity_columns: bool = False,
             ) -> 'FlowBySector':
 
         from flowsa.flowbysector import FlowBySector
+
+        # drop the activity columns in the FBS unless method yaml specifies
+        # to keep them
+        drop_cols = ['ActivityProducedBy', 'ActivityConsumedBy']
+        if retain_activity_columns:
+            drop_cols = []
 
         if 'activity_sets' in self.config:
             try:
@@ -691,7 +707,8 @@ class FlowByActivity(_FlowBy):
                         fba.prepare_fbs(
                             external_config_path=external_config_path,
                             download_sources_ok=download_sources_ok,
-                            skip_select_by=True)
+                            skip_select_by=True,
+                            retain_activity_columns=retain_activity_columns)
                         for fba in (
                             self
                             .select_by_fields()
@@ -718,7 +735,7 @@ class FlowByActivity(_FlowBy):
             .convert_to_geoscale()
             .attribute_flows_to_sectors(external_config_path=external_config_path,
                                         download_sources_ok=download_sources_ok)  # recursive call to prepare_fbs
-            .drop(columns=['ActivityProducedBy', 'ActivityConsumedBy'])
+            .drop(columns=drop_cols)
             .aggregate_flowby()
             .function_socket('clean_fbs_after_aggregation')
         )
@@ -806,7 +823,10 @@ class FlowByActivity(_FlowBy):
         else:
             mapped = self.rename(columns={'FlowName': 'Flowable',
                                           'Compartment': 'Context'})
-        return (mapped.standardize_units())
+        if self.config.get('standardize_units', True):
+            mapped = mapped.standardize_units()
+
+        return mapped
 
     def convert_activity_to_emissions(
         self: 'FlowByActivity'
@@ -866,8 +886,9 @@ class _FBASeries(pd.Series):
 
 
 def getFlowByActivity(
-        datasource,
-        year,
+        datasource: str,
+        year: int,
+        git_version: str = None,
         flowclass=None,
         geographic_level=None,
         download_FBA_if_missing=DEFAULT_DOWNLOAD_IF_MISSING
@@ -888,6 +909,7 @@ def getFlowByActivity(
         full_name=datasource,
         config={},
         year=int(year),
+        git_version=git_version,
         download_ok=download_FBA_if_missing
     )
 

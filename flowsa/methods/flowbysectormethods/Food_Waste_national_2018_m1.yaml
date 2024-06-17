@@ -47,7 +47,9 @@ source_names:
 #        employment data (SectorConsumedBy), only attribute the waste
 #        generation activities (SectorProducedBy)
         attribute_on: [PrimarySector]
-        attribution_source: Employment_national_2018
+        attribution_source:
+          Employment_national_2018:
+            data_format: FBS
       establishments:
         primary_action_type: Produced
         selection_fields:
@@ -110,4 +112,6 @@ source_names:
         attribution_method: proportional
         # do not want to attribute the waste management pathways using employment data (SectorProducedBy)
         attribute_on: ['PrimarySector']  # In this case, only SectorConsumedBy
-        attribution_source: Employment_national_2018
+        attribution_source:
+          Employment_national_2018:
+            data_format: FBS

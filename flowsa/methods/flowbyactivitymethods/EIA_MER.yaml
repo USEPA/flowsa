@@ -1,6 +1,7 @@
 author: US Energy Information Administration
 source_name: Monthly Energy Review
 source_url: https://www.eia.gov/totalenergy/data/monthly/
+source_publication_date: ''
 bib_id: EIA_MER
 api_name: EIA_MER
 format: pdf
@@ -10,8 +11,17 @@ url_replace_fxn: !script_function:EIA_MER eia_mer_url_helper
 call_response_fxn: !script_function:EIA_MER eia_mer_call
 parse_response_fxn: !script_function:EIA_MER eia_mer_parse
 tbls:
-- T01.02
-- T02.02
+## These tables also available via the API call see the `MSN` field returned
+# in the csv for the codes to use
+- T01.02  # Primary energy production by source
+- T01.03  # Primary energy consumption by source
+- T01.04A # Primary energy imports by source
+- T01.04B # Primary energy exports by source
+- T02.02  # Residential sector energy consumption
+- TA2     # Heat content of Petroleum production, imports, exports
+- TA4     # Heat content of Natural gas
+- TA5     # Heat content of Coal and Coal coke
+call_all_years: True
 years:
 - 2010
 - 2011
@@ -24,3 +34,6 @@ years:
 - 2018
 - 2019
 - 2020
+- 2021
+- 2022
+- 2023
