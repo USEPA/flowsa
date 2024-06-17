@@ -1,0 +1,28 @@
+author: UN Environment Programme
+source_name: 'Global Material Flows Database'
+source_url: https://www.resourcepanel.org/global-material-flows-database
+#bib_id: UNEP_IRP_GMFD
+format: csv
+url:
+    base_url:  https://unep-irp.fineprint.global/mfa13/export
+
+call_response_fxn: !script_function:UNEP_IRP_GMFD unep_mfa_call
+parse_response_fxn: !script_function:UNEP_IRP_GMFD unep_mfa_parse
+call_all_years: True
+
+years:
+- 2010
+- 2011
+- 2012
+- 2013
+- 2014
+- 2015
+- 2016
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024

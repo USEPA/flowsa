@@ -1,0 +1,28 @@
+# Method for Raw Material Extraction (Domestic) based on UNEP Global
+# Material Flpws Database
+
+!include:USEEIO_summary_target.yaml
+year: 2016
+target_naics_year: 2017
+geoscale: national
+
+source_names:
+  UNEP_IRP_GMFD:
+    # fedefl_mapping:
+    activity_sets:
+      direct:
+        selection_fields:
+          ActivityProducedBy:
+            - Coal, Domestic Extraction
+            - Crop Residues, Domestic Extraction
+            - Crops, Domestic Extraction
+            - Ferrous ores, Domestic Extraction
+            - Grazed biomass and fodder crops, Domestic Extraction
+            - Natural Gas, Domestic Extraction
+            - Non-ferrous ores, Domestic Extraction
+            - Non-metallic minerals - construction dominant, Domestic Extraction
+            - Non-metallic minerals - industrial or agricultural dominant, Domestic Extraction
+            - Petroleum, Domestic Extraction
+            - Wild catch and harvest, Domestic Extraction
+            - Wood, Domestic Extraction
+        attribution_method: direct
