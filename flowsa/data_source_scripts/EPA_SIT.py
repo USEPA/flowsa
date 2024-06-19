@@ -24,22 +24,21 @@ def epa_sit_parse(*, source, year, config, **_):
     df0 = pd.DataFrame()   
 
     # for each state listed in the method file...
-    for state in config['state_list']:
+    for state, schema in config['state_list'].items():
         if not Path.is_dir(externaldatapath / f"SIT_data/{state}/"):
             log.warning(f"Skipping {state}, data not found")
             continue
         log.info(f'Parsing data for {state}...')
         
         # for each Excel data file listed in the .yaml...
-        for file in config['files']:
+        for file, file_dict in config['files'].get(schema, {}).items():
             log.info(f'Loading data from {file}...')
             filepath = externaldatapath / f"SIT_data/{state}/{file}"
             # dictionary containing Excel sheet-specific information
-            file_dict = config['files'][file]['file_dict']
-    
+
             if not Path.exists(filepath):
                 raise FileNotFoundError(f'SIT file not found in {filepath}')
-        
+
             # for each sheet in the Excel file containing data...
             for sheet, sheet_dict in file_dict.items():
                 # log.info(f'processing SIT: {sheet}')
@@ -100,11 +99,10 @@ def epa_sit_parse(*, source, year, config, **_):
                             f'{sheetandtable}, {active_header}, '
                             f'{active_subheader}, {subsubheader}')
         
-                # drop all columns except the desired emissions year and the
-                # emissions activity source
-                df = df.filter([year, 'ActivityProducedBy', 'FlowName'])
-                # rename columns
-                df = df.rename(columns={year: 'FlowAmount'})
+                df = df.melt(id_vars=[c for c in ('ActivityProducedBy', 'FlowName')
+                                      if c in df.columns],
+                             var_name= 'Year', value_name='FlowAmount')
+                df = df[pd.to_numeric(df['Year'], errors='coerce').notnull()]
                 # add sheet-specific hardcoded data
                 if 'subgroup' not in sheet_dict:
                     df['FlowName'] = sheet_dict.get('flow')
@@ -120,7 +118,6 @@ def epa_sit_parse(*, source, year, config, **_):
     df0['SourceName'] = source
     df0['FlowType'] = "ELEMENTARY_FLOW"
     df0['Compartment'] = 'air'
-    df0['Year'] = year
     df0['DataReliability'] = 5
     df0['DataCollection'] = 5
 
@@ -229,6 +226,5 @@ def clean_up_state_data(fba: FlowByActivity, **_):
 
 if __name__ == '__main__':
     import flowsa
-    for y in range(2012, 2021):
-        flowsa.generateflowbyactivity.main(source='EPA_SIT', year=y)
-        fba = flowsa.flowbyactivity.getFlowByActivity('EPA_SIT', y)
+    flowsa.generateflowbyactivity.main(source='EPA_SIT', year='2012-2020')
+    fba = flowsa.flowbyactivity.getFlowByActivity('EPA_SIT', 2019)
