@@ -46,7 +46,9 @@ years:
 
 files:
   2019:
-    'Synthesis Tool.xlsm':
+    GWP: AR4
+    workbooks:
+      'Synthesis Tool.xlsm':
         'Fossil Fuel Combustion':
             sheetname: 'CO2FFC'
             nrows: 33
@@ -230,7 +232,7 @@ files:
             subgroup: 'activitybyflow'
 
     
-    'Stationary Combustion Module.xlsm':
+      'Stationary Combustion Module.xlsm':
         'Stationary Combustion CH4':
             sheetname: Summary CH4
             header: 4
@@ -258,11 +260,13 @@ files:
                 - TOTAL
 
   2021:
-    'Synthesis Tool.xlsm':
+    GWP: AR5
+    workbooks:
+      'Synthesis Tool.xlsm':
         'Fossil Fuel Combustion':
             sheetname: 'CO2FFC'
             nrows: 33
-            unit: MMTCO2e
+            unit: MMTCO2e (AR5-100)
             flow: CO2
             headers:
                 - Residential
@@ -279,7 +283,7 @@ files:
             header: 56
             nrows: 23
             flow: CH4
-            unit: MTCO2e
+            unit: MTCO2e (AR5-100)
             headers:
                 - Gasoline Highway
                 - Diesel Highway
@@ -293,7 +297,7 @@ files:
             header: 84
             nrows: 23
             flow: N2O
-            unit: MTCO2e
+            unit: MTCO2e (AR5-100)
             headers:
                 - Gasoline Highway
                 - Diesel Highway
@@ -306,7 +310,7 @@ files:
             sheetname: Coal
             header: 3
             nrows: 6
-            unit: MTCO2e
+            unit: MTCO2e (AR5-100)
             flow: CH4
             headers:
                 - Coal Mining
@@ -335,7 +339,7 @@ files:
         'Industrial Processes':
             sheetname: IP
             nrows: 23
-            unit: MTCO2e
+            unit: MTCO2e (AR5-100)
             headers:
                 - Carbon Dioxide Emissions
                 - Nitrous Oxide Emissions
@@ -376,7 +380,7 @@ files:
             sheetname: Forest Management
             header: 8
             nrows: 38
-            unit: MMTCO2e
+            unit: MMTCO2e (AR5-100)
             flow: CO2e
             headers:
                 - Forest Carbon Flux
@@ -406,7 +410,7 @@ files:
             tablename: Emissions from Landfills
             header: 13
             nrows: 9
-            unit: MTCO2e
+            unit: MTCO2e (AR5-100)
             flow: CH4
             headers:
                 - Potential CH4
@@ -420,7 +424,7 @@ files:
             tablename: Emissions from Waste Combustion
             header: 25
             nrows: 7
-            unit: MTCO2e
+            unit: MTCO2e (AR5-100)
             headers:
                 - CO2
                 - N2O
@@ -431,7 +435,7 @@ files:
         'Wastewater':
             header: 3
             nrows: 10
-            unit: MMTCO2e
+            unit: MMTCO2e (AR5-100)
             headers:
                 - Municipal CH4
                 - Municipal N2O
@@ -442,12 +446,12 @@ files:
             subgroup: 'activitybyflow'
 
     
-    'Stationary Combustion Module.xlsm':
+      'Stationary Combustion Module.xlsm':
         'Stationary Combustion CH4':
             sheetname: Summary CH4
             header: 4
             nrows: 30
-            unit: MMTCO2e
+            unit: MMTCO2e (AR5-100)
             flow: CH4
             headers:
                 - Residential
@@ -460,7 +464,7 @@ files:
             sheetname: Summary N2O
             header: 4
             nrows: 30
-            unit: MMTCO2e
+            unit: MMTCO2e (AR5-100)
             flow: N2O
             headers:
                 - Residential

@@ -29,9 +29,9 @@ def epa_sit_parse(*, source, year, config, **_):
             log.warning(f"Skipping {state}, data not found")
             continue
         log.info(f'Parsing data for {state}...')
-        
+        schema_dict = config['files'].get(schema, {})
         # for each Excel data file listed in the .yaml...
-        for file, file_dict in config['files'].get(schema, {}).items():
+        for file, file_dict in schema_dict['workbooks'].items():
             log.info(f'Loading data from {file}...')
             filepath = externaldatapath / f"SIT_data/{state}/{file}"
             # dictionary containing Excel sheet-specific information
