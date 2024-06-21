@@ -7,8 +7,11 @@ format: xlsm  # macro-enabled spreadsheet
 url: None
 parse_response_fxn: !script_function:EPA_SIT epa_sit_parse
 state_list: # SIT version for each state
-  ME: 2021 # Version 2024.1
-  VT: 2019 # 2017 data but aligns with the 2019 schema
+  ME:
+    schema: 2021 # Version 2024.1
+    GWP: AR6-100
+  VT:
+    schema: 2019 # 2017 data but aligns with the 2019 schema
 call_all_years: True
 years:
 - 2021
@@ -46,7 +49,7 @@ years:
 
 files:
   2019:
-    GWP: AR4
+    GWP: AR4-100
     workbooks:
       'Synthesis Tool.xlsm':
         'Fossil Fuel Combustion':
@@ -260,7 +263,7 @@ files:
                 - TOTAL
 
   2021:
-    GWP: AR5
+    GWP: AR5-100
     workbooks:
       'Synthesis Tool.xlsm':
         'Fossil Fuel Combustion':

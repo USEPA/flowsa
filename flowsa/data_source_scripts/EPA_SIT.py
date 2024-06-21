@@ -24,12 +24,12 @@ def epa_sit_parse(*, source, year, config, **_):
     df0 = pd.DataFrame()   
 
     # for each state listed in the method file...
-    for state, schema in config['state_list'].items():
+    for state, state_dict in config['state_list'].items():
         if not Path.is_dir(externaldatapath / f"SIT_data/{state}/"):
             log.warning(f"Skipping {state}, data not found")
             continue
         log.info(f'Parsing data for {state}...')
-        schema_dict = config['files'].get(schema, {})
+        schema_dict = config['files'].get(state_dict['schema'], {})
         # for each Excel data file listed in the .yaml...
         for file, file_dict in schema_dict['workbooks'].items():
             log.info(f'Loading data from {file}...')
@@ -109,7 +109,11 @@ def epa_sit_parse(*, source, year, config, **_):
                 df['Unit'] = sheet_dict.get('unit')
                 df['Description'] = sheet
                 df['State'] = state
-        
+
+                # If required, adjust the units based on the GWP factors used by the state
+                if state_dict.get('GWP', schema_dict['GWP']) != schema_dict['GWP']:
+                    df['Unit'] = df['Unit'].str.replace(schema_dict['GWP'],
+                                                        state_dict['GWP'])
                 # concatenate dataframe from each sheet with existing master dataframe
                 df0 = pd.concat([df0, df])
 
