@@ -124,6 +124,30 @@ Census_CBP:
     - Other
   activity_schema: NAICS_2012_Code
   sector_hierarchy: "parent-completeChild"
+Census_DP03_5yr:
+  data_format: FBA
+  class:
+    - Other
+  activity_schema: None
+  #sector_hierarchy:
+Census_DP04_5yr:
+  data_format: FBA
+  class:
+    - Other
+  activity_schema: None
+  #sector_hierarchy:
+Census_DP05_5yr:
+  data_format: FBA
+  class:
+    - Other
+  activity_schema: None
+  #sector_hierarchy:
+Census_S1501_5yr:
+  data_format: FBA
+  class:
+    - Other
+  activity_schema: None
+  #sector_hierarchy:
 Census_PEP_Population:
   data_format: FBA
   class: Other

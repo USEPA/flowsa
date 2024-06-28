@@ -1,0 +1,34 @@
+author: US Census Bureau
+source_name: American Community Survey DP05 5-Year
+source_url: https://www.census.gov/programs-surveys/acs.html
+bib_id: Census_ACS
+api_name: Census
+api_key_required: true
+format: json
+url:
+  base_url: http://api.census.gov/data/
+  api_path: __year__/acs/acs5/profile?
+  url_params:
+    get: group(DP05) 
+    for: county:*    # retrieves all census tract data for state XX
+    key: __apiKey__     # make the __apiKey__ part of the url and substitute in individual api key
+  key_param: key
+url_replace_fxn: !script_function:Census_DP05_5yr DP05_5yr_URL_helper
+call_response_fxn: !script_function:Census_DP05_5yr DP05_5yr_call
+parse_response_fxn: !script_function:Census_DP05_5yr DP05_5yr_parse
+years:
+- 2010
+- 2011
+- 2012
+- 2013
+- 2014
+- 2015
+- 2016
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+
+# https://api.census.gov/data/2021/acs/acs5/profile?get=group(DP05)&for=county:*&key=
