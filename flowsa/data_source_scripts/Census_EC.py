@@ -101,6 +101,7 @@ def census_EC_parse(*, df_list, year, **_):
     df['Location'] = np.where(df['Location'] == 'US', US_FIPS,
                               df['Location'].str.pad(5, side='right', fillchar='0'))
 
+    ## TODO consider adding the distribution data
 
     # add location system based on year of data
     df = assign_fips_location_system(df, year)
