@@ -6,6 +6,7 @@
 
 import json
 import pandas as pd
+import numpy as np
 from flowsa.location import get_state_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
 
@@ -59,10 +60,39 @@ def bea_pce_parse(*, df_list, year, **_):
     """
     # Concat dataframes
     df = pd.concat(df_list, ignore_index=True)
-    
+
+    df = (df.
+          rename(columns={'GeoFips': 'Location',
+                          'TimePeriod': 'Year',
+                          'CL_UNIT': 'Unit',
+                          'Description': 'ActivityConsumedBy',
+                          'Code': 'Description',
+                          })
+          .assign(FlowAmount = lambda x: x['DataValue'].astype(float))
+          .assign(FlowName = 'Personal consumption expenditures')
+          .drop(columns=['UNIT_MULT', 'GeoName', 'DataValue'], errors='ignore')
+          )
+
+    df['Unit'] = np.where(df['Description'].str.startswith('SAPCE2'),
+                          'Dollars / p', df['Unit'])
+
+    # add location system based on year of data
+    df = assign_fips_location_system(df, year)
+    # add hard code data
+    df['SourceName'] = 'BEA_PCE'
+    df['Class'] = 'Money'
+    # Add tmp DQ scores
+    df['DataReliability'] = 5
+    df['DataCollection'] = 5
+    df['Compartment'] = None
+    df['FlowType'] = "ELEMENTARY_FLOW"
+
     return df
 
 if __name__ == "__main__":
     import flowsa
     flowsa.generateflowbyactivity.main(source='BEA_PCE', year='2020-2021')
-    fba = flowsa.getFlowByActivity('BEA_PCE', 2020)
+    fba = pd.DataFrame()
+    for y in range(2020, 2022):
+        fba = pd.concat([fba, flowsa.getFlowByActivity('BEA_PCE', y)],
+                        ignore_index=True)

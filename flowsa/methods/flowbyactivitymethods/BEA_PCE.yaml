@@ -23,12 +23,12 @@ call_response_fxn: !script_function:BEA_PCE bea_pce_call
 parse_response_fxn: !script_function:BEA_PCE bea_pce_parse
 
 tables:
-- SAPCE1
-- SAPCE2
-- SAPCE3
-- SAPCE4
+- SAPCE1 # Personal consumption expenditures by major type of product
+- SAPCE2 # Per capita personal consumption expenditures by major type of product
+- SAPCE3 # Personal consumption expenditures by type of product
+- SAPCE4 # Personal consumption expenditures by function
 
-years:
+years: # 1997 - 2022
 - 2012
 - 2013
 - 2014
