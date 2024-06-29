@@ -13,9 +13,9 @@ url:
     for: county:*  # retrieves all county data
     key: __apiKey__     # make the __apiKey__ part of the url and substitute in individual api key
   key_param: key
-url_replace_fxn: !script_function:Census_DP03_5yr DP03_5yr_URL_helper
-call_response_fxn: !script_function:Census_DP03_5yr DP03_5yr_call
-parse_response_fxn: !script_function:Census_DP03_5yr DP03_5yr_parse
+url_replace_fxn: !script_function:Census_ACS DP_URL_helper
+call_response_fxn: !script_function:Census_ACS DP_call
+parse_response_fxn: !script_function:Census_ACS DP03_5yr_parse
 years:
 - 2010
 - 2011
