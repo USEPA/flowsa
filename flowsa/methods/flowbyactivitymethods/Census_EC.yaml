@@ -29,28 +29,28 @@ datasets:
       # Subject Series - Miscellaneous Subjects: Receipts by Class of Customer for Selected Industries for the U.S.: 2012
       - EC1256SXSB3 # Administrative and Support and Waste Management and Remediation Services
 
-  ecnbasic:
-    '2012':
-      # Administrative and Support and Waste Management and Remediation Services: Geographic Area Series: Summary Statistics for the U.S., States, Metro Areas, Counties, and Places
-      - EC1256A1
+  # ecnbasic:
+  #   '2012':
+  #     # Administrative and Support and Waste Management and Remediation Services: Geographic Area Series: Summary Statistics for the U.S., States, Metro Areas, Counties, and Places
+  #     - EC1256A1
   # ecnlines:
   #   '2012':
   #     # Administrative and Support and Waste Management and Remediation Services: Subject Series - Product Lines: Product Lines Statistics by Industry for the U.S. and States
   #     - EC1256SLLS1
-  ecnexpsvc:
-    '2012':
-      # Administrative and Support and Waste Management and Remediation Services: Subject Series - Miscellaneous Subjects: Exported Services for Selected Industries for the U.S. and States
-      - EC1256SXSB1
-  ecncomp:
-    '2012':
-      # All sectors: Core Business Statistics Series: Comparative Statistics for the U.S. and the States (2007 NAICS Basis): 2012 and 2007
-      - EC1200CCOMP1
-  ecnfran:
-    '2012':
-      # Economic Census: Core Business Statistics Series, 2012: Franchise Status for Selected Industries and States: 2012
-      - EC1200CFRA1
+  # ecnexpsvc:
+  #   '2012':
+  #     # Administrative and Support and Waste Management and Remediation Services: Subject Series - Miscellaneous Subjects: Exported Services for Selected Industries for the U.S. and States
+  #     - EC1256SXSB1
+  # ecncomp:
+  #   '2012':
+  #     # All sectors: Core Business Statistics Series: Comparative Statistics for the U.S. and the States (2007 NAICS Basis): 2012 and 2007
+  #     - EC1200CCOMP1
+  # ecnfran:
+  #   '2012':
+  #     # Economic Census: Core Business Statistics Series, 2012: Franchise Status for Selected Industries and States: 2012
+  #     - EC1200CFRA1
 
 years:
-# - 2012
+- 2012
 - 2017
 

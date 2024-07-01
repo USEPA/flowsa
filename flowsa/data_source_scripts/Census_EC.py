@@ -67,41 +67,47 @@ def census_EC_parse(*, df_list, year, **_):
     :return: df, parsed and partially formatted to
         flowbyactivity specifications
     """
-    if (year == '2012'):
-        print('WARNING: Not yet functioning for 2012 data')
     # concat dataframes
     df = pd.concat(df_list, sort=False)
 
+    if(year == '2017'):
+        df = (df
+              .query('TAXSTAT_LABEL == "All establishments"')
+              .query('TYPOP_LABEL == "All establishments"')
+              )
+        class_label = 'CLASSCUST_LABEL'
+    else:
+        class_label = 'CLASSCUST_TTL'
+
     df = (df
-          .query('TAXSTAT_LABEL == "All establishments"')
-          .query('TYPOP_LABEL == "All establishments"')
-          .filter([f'NAICS{year}', 'CLASSCUST_LABEL', 'ESTAB', 'RCPTOT',
-                   'GEO_ID', 'YEAR', 'Description'])
+          .filter([f'NAICS{year}', class_label, 'ESTAB', 'RCPTOT',
+                   'GEO_ID', 'RCPTOT_DIST', 'YEAR', 'Description'])
           .rename(columns={f'NAICS{year}': 'ActivityProducedBy',
-                           'CLASSCUST_LABEL': 'ActivityConsumedBy',
+                           f'{class_label}': 'ActivityConsumedBy',
                            'ESTAB': 'Number of establishments',
                            'RCPTOT': 'Sales, value of shipments, or revenue',
+                           'RCPTOT_DIST': 'Distribution of sales, value of shipments, or revenue',
                            'YEAR': 'Year'})
           .assign(Location = lambda x: x['GEO_ID'].str[-2:])
           .melt(id_vars=['ActivityProducedBy', 'ActivityConsumedBy',
                          'Location', 'Year', 'Description'],
                 value_vars=['Number of establishments',
-                            'Sales, value of shipments, or revenue'],
+                            'Sales, value of shipments, or revenue',
+                            'Distribution of sales, value of shipments, or revenue'],
                 value_name='FlowAmount',
                 var_name='FlowName')
           .assign(FlowAmount = lambda x: x['FlowAmount'].astype(float))
           )
-    df['Unit'] = np.where(df['FlowName'] == 'Number of establishments',
-                          'count', 'USD')
-    df['Class'] = np.where(df['FlowName'] == 'Number of establishments',
-                          'Other', 'Money')
+    conditions = [df['FlowName'] == 'Number of establishments',
+                  df['FlowName'] == 'Sales, value of shipments, or revenue',
+                  df['FlowName'] == 'Distribution of sales, value of shipments, or revenue']
+    df['Unit'] = np.select(conditions, ['count', 'USD', 'percent'])
+    df['Class'] = np.select(conditions, ['Other', 'Money', 'Money'])
     df['FlowAmount'] = np.where(df['FlowName'] == 'Sales, value of shipments, or revenue',
                                 df['FlowAmount'] * 1000,
                                 df['FlowAmount'])
     df['Location'] = np.where(df['Location'] == 'US', US_FIPS,
                               df['Location'].str.pad(5, side='right', fillchar='0'))
-
-    ## TODO consider adding the distribution data
 
     # add location system based on year of data
     df = assign_fips_location_system(df, year)
