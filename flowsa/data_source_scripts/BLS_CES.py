@@ -6,7 +6,6 @@ Pulls Consumer Expenditure Survey data from  Bureau of Labor Statistics.
 """
 
 import json
-import io
 import pandas as pd
 import numpy as np
 import itertools as it
@@ -15,9 +14,6 @@ from esupy.remote import make_url_request
 from flowsa.common import load_env_file_key
 from flowsa.location import US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
-from flowsa.flowbyactivity import FlowByActivity
-from flowsa.flowsa_log import log
-from flowsa.naics import industry_spec_key
 from flowsa.settings import externaldatapath
 
 

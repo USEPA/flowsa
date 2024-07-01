@@ -7,8 +7,7 @@ api_name: BLS
 api_key_required: true
 format: json
 base_url: https://api.bls.gov/publicAPI/v2/timeseries/data/
-# url_replace_fxn: !script_function:BLS_CES bls_ces_URL_helper
-# call_response_fxn: !script_function:BLS_CES bls_ces_call
+
 parse_response_fxn: !script_function:BLS_CES bls_ces_parse
 call_all_years: True
 
