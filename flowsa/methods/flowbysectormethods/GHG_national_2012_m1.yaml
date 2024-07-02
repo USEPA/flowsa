@@ -11,7 +11,7 @@ mecs_year: &mecs_year 2014
 _industrial_allocation_dict: &industrial_dict
     energy_fba: 'EIA_MECS_Energy'
     year: *mecs_year
-    ghg_fba: 'EPA_GHGI_T_A_11' # 2014 Table
+    ghg_fba: 'EPA_GHGI_T_A_11' # 2014 Table from 2022 GHGI release
 
 _attribution_sources:
   BEA: &bea # 2012 Make and Use tables
@@ -42,11 +42,7 @@ source_names:
 
       liming:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:liming
-        attribution_source:
-          BEA_Detail_Use_SUT:
-            <<: *bea
-            selection_fields:
-              ActivityProducedBy: {'327400': ''} # Lime
+        attribution_method: direct
 
       urea:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:urea
