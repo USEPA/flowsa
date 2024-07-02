@@ -22,8 +22,8 @@ def test_get_flows_by_sector():
     flowsa.flowbysector.getFlowBySector('TRI_DMR_state_2017',
                                         download_FBAs_if_missing=True)
 
-    flowsa.flowbysector.getFlowBySector('GHG_national_2016_m1',
-                                        download_FBAs_if_missing=True)
+    # flowsa.flowbysector.getFlowBySector('GHG_national_2019_m1',
+    #                                     download_FBAs_if_missing=True)
 
     flowsa.flowbysector.getFlowBySector('CNHW_national_2018',
                                         download_FBAs_if_missing=True,
