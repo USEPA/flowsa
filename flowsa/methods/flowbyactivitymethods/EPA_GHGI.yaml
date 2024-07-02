@@ -41,7 +41,7 @@ source_activity_2: ["3-44", "3-73", "A-89"]
 rows_as_flows: ["4-63", "4-64", "4-103", "4-109", "4-125"]
 
 Tables:
-  "Ch 2 - Trends in Greenhouse Gas Emissions and Removals":
+  "Chapter 2 - Trends in Greenhouse Gas Emissions and Removals":
       "2-1":
         "class": "Chemicals"
         "unit": "MMT CO2e"
@@ -49,7 +49,7 @@ Tables:
         "flow": "CO2e"
         "desc": "Table 2-1:  Recent Trends in U.S. Greenhouse Gas Emissions and Sinks (MMT CO2 Eq.)"
 
-  "Ch 3 - Energy":
+  "Chapter 3 - Energy":
       "3-7":
         "class": "Chemicals"
         "unit": "MMT CO2e"
@@ -166,7 +166,7 @@ Tables:
         "compartment": "air"
         "desc": "Table 3-116:  CO2, CH4, and N2O Emissions from International Bunker Fuels (MMT CO2 Eq.)"
 
-  "Ch 4 - Industrial Processes":
+  "Chapter 4 - Industrial Processes and Product Use":
       "4-16": # Emissions captured in 2-1
         "class": "Chemicals"
         "unit": "MMT CO2e"
@@ -259,7 +259,7 @@ Tables:
         "compartment": "air"
         "desc": "Table 4-135: SF6 and PFC Emissions from Other Product Use (MMT CO2 Eq.)"
 
-  "Ch 5 - Agriculture":
+  "Chapter 5 - Agriculture":
       "5-3":
         "class": "Chemicals"
         "unit": "MMT CO2e"
