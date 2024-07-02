@@ -15,7 +15,7 @@ url:
   key_param: key
 url_replace_fxn: !script_function:Census_ACS DP_URL_helper
 call_response_fxn: !script_function:Census_ACS DP_call
-parse_response_fxn: !script_function:Census_ACS DP04_5yr_parse
+parse_response_fxn: !script_function:Census_ACS DP_5yr_parse
 years:
 - 2010
 - 2011
@@ -31,4 +31,12 @@ years:
 - 2021
 - 2022
 
-# https://api.census.gov/data/2021/acs/acs5/profile?get=group(DP04)&for=county:*&key=
+variables:
+  DP04_0046PE:
+    name: Owner-occupied housing
+    unit: '% of homes'
+    years: '2015-2022'
+  DP04_0045PE:
+    name: Owner-occupied housing
+    unit: '% of homes'
+    years: '2010-2014'

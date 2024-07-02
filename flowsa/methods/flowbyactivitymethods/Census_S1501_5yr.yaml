@@ -10,7 +10,7 @@ url:
   api_path: __year__/acs/acs5/subject?
   url_params:
     get: Educational%20Attainment,group(S1501) 
-    for: county:*    # retrieves all census tract data for state XX
+    for: county:*  # retrieves all county data
     key: __apiKey__     # make the __apiKey__ part of the url and substitute in individual api key
   key_param: key
 url_replace_fxn: !script_function:Census_ACS DP_URL_helper
@@ -31,4 +31,20 @@ years:
 - 2021
 - 2022
 
-# https://api.census.gov/data/2022/acs/acs5/subject?get=Educational%20Attainment,group(S1501)&for=county:*&key=
+variables:
+  S1501_C02_014E:
+    name: High School Degree
+    unit: '% of people'
+    years: '2015-2022'
+  S1501_C02_015E:
+    name: Bachelors Degree
+    unit: '% of people'
+    years: '2015-2022'
+  S1501_C01_014E:
+    name: High School Degree
+    unit: '% of people'
+    years: '2010-2014'
+  S1501_C01_015E:
+    name: Bachelors Degree
+    unit: '% of people'
+    years: '2010-2014'

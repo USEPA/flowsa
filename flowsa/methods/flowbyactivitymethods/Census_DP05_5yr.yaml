@@ -10,12 +10,12 @@ url:
   api_path: __year__/acs/acs5/profile?
   url_params:
     get: group(DP05) 
-    for: county:*    # retrieves all census tract data for state XX
+    for: county:*  # retrieves all county data
     key: __apiKey__     # make the __apiKey__ part of the url and substitute in individual api key
   key_param: key
 url_replace_fxn: !script_function:Census_ACS DP_URL_helper
 call_response_fxn: !script_function:Census_ACS DP_call
-parse_response_fxn: !script_function:Census_ACS DP05_5yr_parse
+parse_response_fxn: !script_function:Census_ACS DP_5yr_parse
 years:
 - 2010
 - 2011
@@ -31,4 +31,7 @@ years:
 - 2021
 - 2022
 
-# https://api.census.gov/data/2021/acs/acs5/profile?get=group(DP05)&for=county:*&key=
+variables:
+  DP05_0001E:
+    name: Total Population
+    unit: '# of people'
