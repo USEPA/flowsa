@@ -7,7 +7,7 @@
 
 !include:USEEIOv2_detail_target.yaml
 # year: &ghgi_year 2019
-target_naics_year: 2012
+target_naics_year: 2017
 geoscale: national
 
 attribution_sources:
@@ -415,8 +415,8 @@ source_names:
       petroleum_neu: # consumed petroleum products
         selection_fields:
           MetaSources:
-            - 'EPA_GHGI_T_3_22.petroleum_neu'
-            - 'EPA_GHGI_T_3_22b.petroleum_neu'
+            - 'EPA_GHGI_T_3_24.petroleum_neu'
+            - 'EPA_GHGI_T_3_24b.petroleum_neu'
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -436,8 +436,8 @@ source_names:
       natural_gas_neu: # consumed nat gas to chemical plants
         selection_fields:
           MetaSources:
-            - 'EPA_GHGI_T_3_22.natural_gas_neu'
-            - 'EPA_GHGI_T_3_22b.natural_gas_neu'
+            - 'EPA_GHGI_T_3_24.natural_gas_neu'
+            - 'EPA_GHGI_T_3_24b.natural_gas_neu'
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -454,8 +454,8 @@ source_names:
       transportation_lubricants:
         selection_fields:
           MetaSources:
-            - 'EPA_GHGI_T_3_22.transportation_lubricants'
-            - 'EPA_GHGI_T_3_22b.transportation_lubricants'
+            - 'EPA_GHGI_T_3_24.transportation_lubricants'
+            - 'EPA_GHGI_T_3_24b.transportation_lubricants'
         attribution_method: proportional
         attribution_source:
           Detail_Use_YEAR: ## Update year
@@ -465,7 +465,7 @@ source_names:
 
       refrigerants:
         selection_fields:
-          MetaSources: 'EPA_GHGI_T_4_102.refrigerants'
+          MetaSources: 'EPA_GHGI_T_4_127.refrigerants'
         attribution_method: proportional
         attribution_source:
           Detail_Use_YEAR: ## Update year
@@ -474,7 +474,7 @@ source_names:
 
       air_conditioning:
         selection_fields:
-          MetaSources: 'EPA_GHGI_T_4_102.air_conditioning'
+          MetaSources: 'EPA_GHGI_T_4_127.air_conditioning'
         attribution_method: proportional
         attribution_source:
           Detail_Use_YEAR: ## Update year
@@ -483,7 +483,7 @@ source_names:
 
       foams:
         selection_fields:
-          MetaSources: 'EPA_GHGI_T_4_102.foams'
+          MetaSources: 'EPA_GHGI_T_4_127.foams'
         attribution_method: proportional
         attribution_source:
           Detail_Use_YEAR: ## Update year
@@ -495,19 +495,19 @@ source_names:
 
       magnesium:
         selection_fields:
-          MetaSources: 'EPA_GHGI_T_4_86'
+          MetaSources: 'EPA_GHGI_T_4_109'
         attribution_method: proportional
         attribution_source:
           BEA_Detail_GrossOutput_IO:
             # year: *ghgi_year
             geoscale: national
-            activity_to_sector_mapping: BEA_2012_Detail
+            activity_to_sector_mapping: BEA_2017_Detail
             attribution_method: equal
 
 ## For tables requiring direct attribution, reattribute the original GHGI
   EPA_GHGI_T_2_1: #U.S. GHG emissions
     # year: # override this
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     activity_sets:
       direct:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_2_1:activity_sets:direct
@@ -530,19 +530,19 @@ source_names:
 
 
 ## Fossil Fuels
-  EPA_GHGI_T_3_68: #CH4 from Natural Gas Systems
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_68
-  EPA_GHGI_T_3_70: #CO2 from Natural Gas Systems mimics CH4
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_70
-  EPA_GHGI_T_3_72: #N2O from Natural Gas Systems, not used in original method, mimics CH4
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_72
+  EPA_GHGI_T_3_73: #CH4 from Natural Gas Systems
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_73
+  EPA_GHGI_T_3_75: #CO2 from Natural Gas Systems mimics CH4
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_75
+  EPA_GHGI_T_3_77: #N2O from Natural Gas Systems, not used in original method, mimics CH4
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_77
 
-  EPA_GHGI_T_3_42: #CH4 from Petroleum Systems
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_42
-  EPA_GHGI_T_3_44: #CO2 from Petroleum Systems mimics CH4
+  EPA_GHGI_T_3_44: #CH4 from Petroleum Systems
     !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_44
-  EPA_GHGI_T_3_46: #N2O from Petroleum Systems, not in prior method, mimics CH4
+  EPA_GHGI_T_3_46: #CO2 from Petroleum Systems mimics CH4
     !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_46
+  EPA_GHGI_T_3_48: #N2O from Petroleum Systems, not in prior method, mimics CH4
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_48
 
 ## Agriculture
   EPA_GHGI_T_5_28: #CH4, N2O, CO and NOx from field burning of residues
@@ -554,7 +554,7 @@ source_names:
 
 ## Mobile Sources
   EPA_GHGI_T_3_13: #CO2 from mobile combustion
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     activity_sets:
       direct_petroleum:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_13:activity_sets:direct_petroleum
@@ -562,7 +562,7 @@ source_names:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_13:activity_sets:direct_ng
 
   EPA_GHGI_T_3_14: &mobile #CH4 from mobile combustion
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     activity_sets:
       direct_gasoline: # empty in some years (<0.05 MMT CO2eq)
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_14:activity_sets:direct_gasoline
@@ -574,13 +574,13 @@ source_names:
 
 ## Stationary Combustion
   GHGI_CO2_stationary_combustion: # CO2 emissions from stationary combustion
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     activity_sets:
       direct_attribution: #direct allocation
         !include:GHG_national_m1_common.yaml:source_names:GHGI_CO2_stationary_combustion:activity_sets:direct_attribution
 
   EPA_GHGI_T_3_8:  &stationary_combustion # CH4 emissions from stationary combustion
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     activity_sets:
       residential:
         !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_8:activity_sets:residential
@@ -588,30 +588,39 @@ source_names:
   EPA_GHGI_T_3_9: *stationary_combustion # N2O emissions from stationary combustion
 
 ## Other sources
-  EPA_GHGI_T_4_46: #CO2 for selected petrochemicals
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_46
+  EPA_GHGI_T_4_55: #CO2 for selected petrochemicals
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_55
 
   GHGI_nonenergy_fossil_fuel_emissions: # Fossil fuel for non-energy uses
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     activity_sets:
       coal:
         !include:GHG_national_m1_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions:activity_sets:coal
 
 ## Other Emissions
-  EPA_GHGI_T_4_50: # HFCs from HCFC-22 production
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_50
+  EPA_GHGI_T_4_59: # HFCs from HCFC-22 production
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_59
 
-  EPA_GHGI_T_4_96: # HFCs and other emissions from electronics manufacture
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_96
+  EPA_GHGI_T_4_63: # Fluorochemical production (in CO2e)
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_63
 
-  EPA_GHGI_T_4_102: # HFCs and PFCs from ODS Substitutes
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_102
+  EPA_GHGI_T_4_64: # Fluorochemical production (in MT)
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_64
+
+  EPA_GHGI_T_4_121: # HFCs and other emissions from electronics manufacture
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_121
+
+  EPA_GHGI_T_4_135: # SF6 and PFCs from Other Product Use
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_135
+
+  EPA_GHGI_T_4_127: # HFCs and PFCs from ODS Substitutes
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_127
     activity_sets:
       households:
-        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_102:activity_sets:households
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_127:activity_sets:households
 
-  EPA_GHGI_T_A_97: # HFCs from Transportation
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_A_97
+  EPA_GHGI_T_A_89: # HFCs from Transportation
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_A_89
 
-  EPA_GHGI_T_4_80: # PFCs from aluminum production
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_80
+  EPA_GHGI_T_4_103: # PFCs from aluminum production
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_103

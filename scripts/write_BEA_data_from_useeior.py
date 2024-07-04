@@ -21,16 +21,16 @@ CSV manually added to flowsa
 
 ---
 The Detail_Use_SUT_2017 was pulled from
-USEEIOR's Detail_Use_SUT_2017.rda on 10/12/2023.
+USEEIOR's Detail_Use_SUT_2017_17sch.rda on 5/23/2024.
 
 The original file is found here:
-https://github.com/USEPA/useeior/blob/e02d979f099bbd60625e9c31099f89c111f2d654/data/Detail_Use_SUT_2017.rda
+https://github.com/USEPA/useeior/blob/b7e7fad2a563affc777ece97cc6dab472c749004/data/Detail_Use_SUT_2017_17sch.rda
 
 csv obtained by running the following code in Rstudio:
-use2017 <- get('Detail_Use_SUT_2017')
-write.csv(use2017, file='BEA_Detail_Use_SUT_2017.csv')
+use2017 <- get('Detail_Use_SUT_2017_17sch')
+write.csv(use2017, file='BEA_Detail_Use_SUT_2017_17sch.csv')
 CSV manually added to flowsa
-The metadata file 'BEA_Detail_Use_SUT_2017_metadata.json' was manually copied from useeior/extdata/metadata
+The metadata file 'BEA_Detail_Use_SUT_2017_17sch_metadata.json' was manually copied from useeior/extdata/metadata
 
 ---
 
@@ -48,51 +48,51 @@ CSV manually added to flowsa
 
 ---
 The Detail_Supply_2017 was pulled from
-USEEIOR's Detail_Supply_2017.rda on 10/12/2023.
+USEEIOR's Detail_Supply_2017_17sch.rda on 5/23/2024.
 
 The original file is found here:
-https://github.com/USEPA/useeior/blob/e02d979f099bbd60625e9c31099f89c111f2d654/data/Detail_Supply_2017.rda
+https://github.com/USEPA/useeior/blob/b7e7fad2a563affc777ece97cc6dab472c749004/data/Detail_Supply_2017_17sch.rda
 
 csv obtained by running the following code in Rstudio:
-supply2017 <- get('Detail_Supply_2017')
-write.csv(supply2017, file='BEA_Detail_Supply_2017.csv')
+supply2017 <- get('Detail_Supply_2017_17sch')
+write.csv(supply2017, file='BEA_Detail_Supply_2017_17sch.csv')
 CSV manually added to flowsa
-The metadata file 'BEA_Detail_Supply_2017_metadata.json' was manually copied from useeior/extdata/metadata
+The metadata file 'BEA_Detail_Supply_2017_17sch_metadata.json' was manually copied from useeior/extdata/metadata
 ---
 
 ---
-The BEA_Summary_Supply and BEA_Summary_Supply  csvs was pulled from
-useeior @a89af7c5adff70ea743e4aab783cfa924a53c0bd using this code
+The BEA_Summary_Supply and BEA_Summary_Use_SUT csvs was pulled from
+useeior @a1edfcc254575e4ce6c4c23a12bd6140388d1d0d using this code
 
 load_all()
-for (y in 2017:2022) {
+for (y in 2012:2022) {
 
-  name <- paste0('Summary_Supply_',y)
+  name <- paste0('Summary_Supply_', y, '_17sch')
   S <- get(name)
-  write.csv(S,paste0("BEA_",name,".csv"))
+  write.csv(S,paste0("BEA_",name, ".csv"))
 
- # name <- paste0('Summary_Use_SUT_',y)
-#  S <- get(name)
- # write.csv(S,paste0("BEA_",name,".csv"))
+  name <- paste0('Summary_Use_SUT_', y, '_17sch')
+  S <- get(name)
+  write.csv(S,paste0("BEA_",name, ".csv"))
 
 }
 
 The original files are found here:
-https://github.com/USEPA/useeior/blob/a89af7c5adff70ea743e4aab783cfa924a53c0bd/data/
+https://github.com/USEPA/useeior/tree/a1edfcc254575e4ce6c4c23a12bd6140388d1d0d/data
 
 The metadata were manually copied from useeior/extdata/metadata
 ---
 
 ---
 The BEA_Detail_GrossOutput was pulled from
-USEEIOR's Detail_GrossOutput_IO.rda on 09/06/2023.
+USEEIOR's Detail_GrossOutput_IO_17sch.rda on 5/23/2024.
 
 The original file is found here:
-https://github.com/USEPA/useeior/blob/master/data/Detail_GrossOutput_IO.rda
+https://github.com/USEPA/useeior/blob/a1edfcc254575e4ce6c4c23a12bd6140388d1d0d/data/Detail_GrossOutput_IO_17sch.rda
 
 csv obtained by running the following code in Rstudio:
-bea <- get('Detail_GrossOutput_IO')
-write.csv(bea, file='BEA_Detail_GrossOutput_IO.csv')
+bea <- get('Detail_GrossOutput_IO_17sch')
+write.csv(bea, file='BEA_Detail_GrossOutput_IO_17sch.csv')
 
 CSV manually added to flowsa
 
