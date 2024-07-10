@@ -80,17 +80,18 @@ def census_EC_parse(*, df_list, year, **_):
         class_label = 'CLASSCUST_TTL'
 
     df = (df
-          .filter([f'NAICS{year}', class_label, 'ESTAB', 'RCPTOT',
+          .filter([f'NAICS{year}', class_label, 'ESTAB', 'RCPTOT', 'RCPTOT_F',
                    'GEO_ID', 'RCPTOT_DIST', 'YEAR', 'Description'])
           .rename(columns={f'NAICS{year}': 'ActivityProducedBy',
                            f'{class_label}': 'ActivityConsumedBy',
                            'ESTAB': 'Number of establishments',
                            'RCPTOT': 'Sales, value of shipments, or revenue',
                            'RCPTOT_DIST': 'Distribution of sales, value of shipments, or revenue',
+                           'RCPTOT_F': 'Note',
                            'YEAR': 'Year'})
           .assign(Location = lambda x: x['GEO_ID'].str[-2:])
           .melt(id_vars=['ActivityProducedBy', 'ActivityConsumedBy',
-                         'Location', 'Year', 'Description'],
+                         'Location', 'Year', 'Description', 'Note',],
                 value_vars=['Number of establishments',
                             'Sales, value of shipments, or revenue',
                             'Distribution of sales, value of shipments, or revenue'],
@@ -98,6 +99,15 @@ def census_EC_parse(*, df_list, year, **_):
                 var_name='FlowName')
           .assign(FlowAmount = lambda x: x['FlowAmount'].astype(float))
           )
+
+    # Updated suppressed data field
+    df = (df.assign(
+        Suppressed = np.where(df.Note.isin(["D"]),
+                              df.Note, np.nan),
+        FlowAmount = np.where(df.Note.isin(["D"]),
+                              0, df.FlowAmount))
+            .drop(columns='Note'))
+
     conditions = [df['FlowName'] == 'Number of establishments',
                   df['FlowName'] == 'Sales, value of shipments, or revenue',
                   df['FlowName'] == 'Distribution of sales, value of shipments, or revenue']
