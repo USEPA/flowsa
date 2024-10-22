@@ -23,6 +23,7 @@ url_replace_fxn: name of the source specific function that replaces the dynamic 
 call_response_fxn: name of the source specific function that specifies how data should be loaded
 parse_response_fxn: name of the source specific function that parses and formats the dataframe
 call_all_years: bool, allows the passing of a year range to generateflowbyactivity.main() while only calling and parsing the url a single time
+time_delay: int (in seconds), allows pausing between requests
 years: 
     #years of data as separate lines like - 2015
 

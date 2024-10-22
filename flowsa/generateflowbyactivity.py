@@ -11,6 +11,7 @@ EX: --year 2015 --source USGS_NWIS_WU
 import argparse
 import pandas as pd
 from urllib import parse
+import time
 import flowsa
 from esupy.processed_data_mgmt import write_df_to_file
 from esupy.remote import make_url_request
@@ -102,6 +103,7 @@ def call_urls(*, url_list, source, year, config):
     # identify if url request requires cookies set
     set_cookies = config.get('allow_http_request_cookies')
     confirm_gdrive = config.get('confirm_gdrive')
+    pause = config.get('time_delay', 0) # in seconds
 
     # create dataframes list by iterating through url list
     data_frames_list = []
@@ -123,6 +125,7 @@ def call_urls(*, url_list, source, year, config):
                 data_frames_list.append(df)
             elif isinstance(df, list):
                 data_frames_list.extend(df)
+            time.sleep(pause)
 
     return data_frames_list
 
