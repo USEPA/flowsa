@@ -65,7 +65,7 @@ def bea_pce_parse(*, df_list, year, **_):
           rename(columns={'GeoFips': 'Location',
                           'TimePeriod': 'Year',
                           'CL_UNIT': 'Unit',
-                          'Description': 'ActivityConsumedBy',
+                          'Description': 'ActivityProducedBy',
                           'Code': 'Description',
                           })
           .assign(FlowAmount = lambda x: x['DataValue'].astype(float))
@@ -91,8 +91,8 @@ def bea_pce_parse(*, df_list, year, **_):
 
 if __name__ == "__main__":
     import flowsa
-    flowsa.generateflowbyactivity.main(source='BEA_PCE', year='2020-2021')
+    flowsa.generateflowbyactivity.main(source='BEA_PCE', year=2023)
     fba = pd.DataFrame()
-    for y in range(2020, 2022):
+    for y in range(2023, 2024):
         fba = pd.concat([fba, flowsa.getFlowByActivity('BEA_PCE', y)],
                         ignore_index=True)

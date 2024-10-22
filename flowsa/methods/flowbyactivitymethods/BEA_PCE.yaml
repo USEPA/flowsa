@@ -21,6 +21,9 @@ url:
 url_replace_fxn: !script_function:BEA_PCE bea_pce_url_helper
 call_response_fxn: !script_function:BEA_PCE bea_pce_call
 parse_response_fxn: !script_function:BEA_PCE bea_pce_parse
+time_delay: 1 # pause 1 second between requests
+## BEA limits to 100 requests per minute / 100 MB data per minute
+## before setting a time-out period of one hour.
 
 tables:
 - SAPCE1 # Personal consumption expenditures by major type of product
@@ -28,7 +31,7 @@ tables:
 - SAPCE3 # Personal consumption expenditures by type of product
 - SAPCE4 # Personal consumption expenditures by function
 
-years: # 1997 - 2022
+years: # 1997 - 2023
 - 2012
 - 2013
 - 2014
@@ -40,3 +43,4 @@ years: # 1997 - 2022
 - 2020
 - 2021
 - 2022
+- 2023
