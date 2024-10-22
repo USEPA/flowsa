@@ -10,7 +10,7 @@ url:
   base_url: https://www2.census.gov/programs-surveys/sas/tables/time-series/sas-latest/sas-22.xlsx
 sheets:
   # Table1
-  Table3: Estimated Expense for Employer Firms
+  Table 3: Estimated Expense for Employer Firms
 call_response_fxn: !script_function:Census_SAS census_sas_call
 parse_response_fxn: !script_function:Census_SAS census_sas_parse
 call_all_years: True

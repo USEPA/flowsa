@@ -86,7 +86,7 @@ def census_sas_parse(*, df_list, year, **_):
     # millions of dollars
     df['FlowAmount'] = df['FlowAmount'].astype(float) * 1000000
     df['Spread'] = pd.to_numeric(df['Spread'], errors='coerce')
-    df['MeasureofSpread'] = 'RSD'
+    df['MeasureofSpread'] = 'Coefficient of Variation'
     df['Unit'] = 'USD'
     df['FlowType'] = "ELEMENTARY_FLOW"
     df['Compartment'] = None
