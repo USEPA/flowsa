@@ -2,18 +2,15 @@
 # !/usr/bin/env python3
 # coding=utf-8
 """
-Pulls Consumer Expenditure Survey data from  Bureau of Labor Statistics.
+Pulls Consumer Expenditure Survey data from Bureau of Labor Statistics.
 """
 
 import json
 import pandas as pd
-import numpy as np
 import itertools as it
 from collections import OrderedDict
 from esupy.remote import make_url_request
 from flowsa.common import load_env_file_key
-from flowsa.location import US_FIPS
-from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.settings import externaldatapath
 
 
@@ -21,7 +18,7 @@ def read_ces_item_codes():
     # https://download.bls.gov/pub/time.series/cx/cx.item
     df = pd.read_csv(externaldatapath / 'ces_items.csv')
     df = df.query('selectable == "T"')
-
+    #TODO: add units directly to this file?
     return df
 
 
@@ -50,7 +47,6 @@ def bls_ces_call(config, year):
         data = json.dumps({"seriesid": short_series,
                            "startyear":2004, "endyear":2022,
                            "registrationkey": api_key})
-    
         
         response = make_url_request(url=config['base_url'],
                                     method='POST',
@@ -79,22 +75,44 @@ def bls_ces_parse(*, df_list, config, year, **_):
     # Concat dataframes
     df = pd.concat(df_list, sort=False)
     series_df = read_ces_item_codes()
+    substrs = config['series']['demographics']
+    def extract_substring(s):
+        start_index = 3  # Starting from the 4th letter (index 3)
+        end_index = min(s.find(end) for end in substrs if end in s)
+        # ^ Ending before demographics substring
+        return s[start_index:end_index]
+
     df = (df
           .assign(region = lambda x: x['series'].str[-3:].str[:2]) # 16th and 17th
-          .assign(code = lambda x: x['series'].str[:11].str[-8:])
+          .assign(code = lambda x: x['series'].apply(extract_substring))
           .merge(series_df
                  .filter(['item_code', 'item_text'])
                  .rename(columns={'item_code':'code'}),
                  how='left', on='code')
+          .assign(value = lambda x: x['value'].replace('-', 0).astype(float))
           .rename(columns={'year':'Year',
-                           'value':'FlowAmount'})
-          .drop(columns=['period', 'periodName', 'latest'])
+                           'value':'FlowAmount',
+                           'item_text':'FlowName',
+                           'series':'Description',
+                           'region':'Location'})
+          .drop(columns=['period', 'periodName', 'latest', 'code', 'footnotes'])
           )
-                 
+
+    # hard code data for flowsa format
+    df['LocationSystem'] = 'BLS Regions'
+    df['Unit'] = 'USD' # needs further revisions for some flows
+    df['FlowType'] = 'TECHNOSPHERE_FLOW'
+    df['Class'] ='Money'
+    df['ActivityConsumedBy'] = 'Households'
+    df['SourceName'] = 'BLS_CES'
+    # Add tmp DQ scores
+    df['DataReliability'] = 5
+    df['DataCollection'] = 5
+    df['Compartment'] = None
 
     return df
 
 if __name__ == "__main__":
     import flowsa
-    flowsa.generateflowbyactivity.main(source='BLS_CES', year='2004-2022')
-    fba = flowsa.getFlowByActivity('BLS_CES', year=2020)
+    flowsa.generateflowbyactivity.main(source='BLS_CES', year='2017-2019')
+    fba = flowsa.getFlowByActivity('BLS_CES', year=2017)
