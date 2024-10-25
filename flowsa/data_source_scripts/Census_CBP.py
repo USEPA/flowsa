@@ -151,7 +151,8 @@ def census_cbp_parse(*, df_list, year, **_):
         value_name="Note")
     df2['FlowName'] = df2['FlowName_F'].str.replace('_F', '')
     df2 = df2.drop(columns=['FlowName_F'])
-    df = pd.merge(df1, df2, on=["Location", "ActivityProducedBy", "Year", "Description", "FlowName"])
+    df = pd.merge(df1, df2, on=["Location", "ActivityProducedBy", "Year",
+                                "Description", "FlowName"])
     # Assign supprssed column
     df = (df.assign(
         Suppressed = np.where(df.Note.isnull(),
@@ -165,12 +166,15 @@ def census_cbp_parse(*, df_list, year, **_):
                                          'EMP': 'Number of employees',
                                          'PAYANN': 'Annual payroll'})
 
-    # specify unit based on flowname
-    df['Unit'] = np.where(df["FlowName"] == 'Annual payroll', "USD", "p")
-    # Payroll in units of thousand USD
-    df['FlowAmount'] = np.where(df["FlowName"] == 'Annual payroll',
-                                df['FlowAmount'] * 1000,
-                                df['FlowAmount'])
+    # specify unit based on flowname, payroll in units of thousdand USD
+    df = (df.
+          assign(Unit = lambda x: np.where(x['FlowName'] == 'Annual payroll',
+                                           'USD', 'p'))
+          .assign(FlowAmount = lambda x: np.where(x['FlowName'] == 'Annual payroll',
+                                                  x['FlowAmount'].astype(float) * 1000,
+                                                  x['FlowAmount']))
+          )
+
     # specify class
     df.loc[df['FlowName'] == 'Number of employees', 'Class'] = 'Employment'
     df.loc[df['FlowName'] == 'Number of establishments', 'Class'] = 'Other'
