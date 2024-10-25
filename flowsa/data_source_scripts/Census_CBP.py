@@ -82,10 +82,10 @@ def Census_CBP_URL_helper(*, build_url, year, **_):
             url = build_url
             url = url.replace("__stateFIPS__", state)
             # specified NAICS code year depends on year of data
-            if year in ['2017', '2018', '2019', '2020']:
-                url = url.replace("__NAICS__", "NAICS2017")
-            elif year in ['2012', '2013', '2014', '2015', '2016']:
+            if year in ['2012', '2013', '2014', '2015', '2016']:
                 url = url.replace("__NAICS__", "NAICS2012")
+            else:
+                url = url.replace("__NAICS__", "NAICS2017")
             url = url.replace("__countyFIPS__", "*")
             urls_census.append(url)
 
@@ -136,15 +136,35 @@ def census_cbp_parse(*, df_list, year, **_):
         df['Description'] = 'NAICS2017'
     # drop all sectors record
     df = df[df['ActivityProducedBy'] != "00"]
-    # rename columns
-    df = df.rename(columns={'ESTAB': 'Number of establishments',
-                            'EMP': 'Number of employees',
-                            'PAYANN': 'Annual payroll'})
-    # use "melt" fxn to convert colummns into rows
-    df = df.melt(
+
+    # use "melt" fxn to convert colummns into rows, also keep Flags and merge
+    # them back in
+    df1 = df.melt(
         id_vars=["Location", "ActivityProducedBy", "Year", "Description"],
+        value_vars=['ESTAB', 'EMP', 'PAYANN'],
         var_name="FlowName",
         value_name="FlowAmount")
+    df2 = df.melt(
+        id_vars=["Location", "ActivityProducedBy", "Year", "Description"],
+        value_vars=['ESTAB_F', 'EMP_F', 'PAYANN_F'],
+        var_name="FlowName_F",
+        value_name="Note")
+    df2['FlowName'] = df2['FlowName_F'].str.replace('_F', '')
+    df2 = df2.drop(columns=['FlowName_F'])
+    df = pd.merge(df1, df2, on=["Location", "ActivityProducedBy", "Year", "Description", "FlowName"])
+    # Assign supprssed column
+    df = (df.assign(
+        Suppressed = np.where(df.Note.isnull(),
+                              np.nan, df.Note),
+        # FlowAmount = np.where(df.Note.isnull()),
+        #                       0, df.FlowAmount)
+        )
+            .drop(columns='Note'))
+
+    df['FlowName'] = df['FlowName'].map({'ESTAB': 'Number of establishments',
+                                         'EMP': 'Number of employees',
+                                         'PAYANN': 'Annual payroll'})
+
     # specify unit based on flowname
     df['Unit'] = np.where(df["FlowName"] == 'Annual payroll', "USD", "p")
     # Payroll in units of thousand USD
@@ -164,3 +184,8 @@ def census_cbp_parse(*, df_list, year, **_):
     df['DataCollection'] = 5
     df['Compartment'] = None
     return df
+
+if __name__ == "__main__":
+    import flowsa
+    flowsa.generateflowbyactivity.main(source='Census_CBP', year='2016-2018')
+    fba = flowsa.getFlowByActivity('Census_CBP', 2017)
