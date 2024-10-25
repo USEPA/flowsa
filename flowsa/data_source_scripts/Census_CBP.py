@@ -122,20 +122,14 @@ def census_cbp_parse(*, df_list, year, **_):
     df.loc[df['county'] == '999', 'county'] = '000'
     # Make FIPS as a combo of state and county codes
     df['Location'] = df['state'] + df['county']
-    # now drop them
-    df = df.drop(columns=['state', 'county'])
-    # rename NAICS column and add NAICS year as description
-    if 'NAICS2007' in df.columns:
-        df = df.rename(columns={"NAICS2007": "ActivityProducedBy"})
-        df['Description'] = 'NAICS2007'
-    if 'NAICS2012' in df.columns:
-        df = df.rename(columns={"NAICS2012": "ActivityProducedBy"})
-        df['Description'] = 'NAICS2012'
-    if 'NAICS2017' in df.columns:
-        df = df.rename(columns={"NAICS2017": "ActivityProducedBy"})
-        df['Description'] = 'NAICS2017'
-    # drop all sectors record
-    df = df[df['ActivityProducedBy'] != "00"]
+
+    naics_col = [c for c in df.columns if c.startswith('NAICS')][0]
+    df = (df
+          .drop(columns=['state', 'county'])
+          .rename(columns={naics_col: 'ActivityProducedBy'})
+          .assign(Description = naics_col)
+          .query('ActivityProducedBy != "00"')
+          )
 
     # use "melt" fxn to convert colummns into rows, also keep Flags and merge
     # them back in
@@ -153,7 +147,7 @@ def census_cbp_parse(*, df_list, year, **_):
     df2 = df2.drop(columns=['FlowName_F'])
     df = pd.merge(df1, df2, on=["Location", "ActivityProducedBy", "Year",
                                 "Description", "FlowName"])
-    # Assign supprssed column
+    # Assign suppressed column
     df = (df.assign(
         Suppressed = np.where(df.Note.isnull(),
                               np.nan, df.Note),
@@ -161,24 +155,24 @@ def census_cbp_parse(*, df_list, year, **_):
         #                       0, df.FlowAmount)
         )
             .drop(columns='Note'))
-
-    df['FlowName'] = df['FlowName'].map({'ESTAB': 'Number of establishments',
-                                         'EMP': 'Number of employees',
-                                         'PAYANN': 'Annual payroll'})
-
     # specify unit based on flowname, payroll in units of thousdand USD
-    df = (df.
-          assign(Unit = lambda x: np.where(x['FlowName'] == 'Annual payroll',
+    df = (df
+          .assign(Unit = lambda x: np.where(x['FlowName'] == 'PAYANN',
                                            'USD', 'p'))
-          .assign(FlowAmount = lambda x: np.where(x['FlowName'] == 'Annual payroll',
+          .assign(FlowAmount = lambda x: np.where(x['FlowName'] == 'PAYANN',
                                                   x['FlowAmount'].astype(float) * 1000,
                                                   x['FlowAmount']))
+          .assign(FlowName = lambda x: x['FlowName'].map(
+              {'ESTAB': 'Number of establishments',
+               'EMP': 'Number of employees',
+               'PAYANN': 'Annual payroll'}))
           )
 
     # specify class
-    df.loc[df['FlowName'] == 'Number of employees', 'Class'] = 'Employment'
-    df.loc[df['FlowName'] == 'Number of establishments', 'Class'] = 'Other'
-    df.loc[df['FlowName'] == 'Annual payroll', 'Class'] = 'Money'
+    df['Class'] = np.select([df['FlowName'] == 'Number of employees',
+                             df['FlowName'] == 'Number of establishments',
+                             df['FlowName'] == 'Annual payroll'],
+                            ['Employment', 'Other', 'Money'])
     # add location system based on year of data
     df = assign_fips_location_system(df, year)
     # hard code data
