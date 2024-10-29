@@ -128,6 +128,7 @@ def census_cbp_parse(*, df_list, year, **_):
           .drop(columns=['state', 'county'])
           .rename(columns={naics_col: 'ActivityProducedBy'})
           .assign(Description = naics_col)
+          .assign(ActivityProducedBy = lambda x: x['ActivityProducedBy'].str.strip())
           .query('ActivityProducedBy != "00"')
           )
 
