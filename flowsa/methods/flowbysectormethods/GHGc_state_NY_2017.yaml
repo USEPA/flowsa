@@ -1,0 +1,20 @@
+# Method for state GHG emissions sourced from EPA state inventories 
+# with custom data for Maine from the New York State Inventory
+!include:USEEIO_summary_target.yaml
+year: &ghg_year 2017
+geoscale: state
+
+source_names:
+  # U.S. national GHG emissions by state
+  GHG_state_2017_m1:
+    year: *ghg_year
+    data_format: FBS
+    exclusion_fields:
+        Location:
+          - '36000' # NY
+
+  # State Inventory Tool GHG emissions by state - not used for NY
+
+  # New York GHG emissions data
+  StateGHGI_NY: 
+    !include:GHG_state_supplemental_2017.yaml:source_names:StateGHGI_NY
