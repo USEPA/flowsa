@@ -145,32 +145,32 @@ source_names:
     activity_sets:
       direct:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/StateGHGI_NY_asets.csv direct
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv direct
         attribution_method: direct
 
       # EMISSIONS FROM COMMERCIAL COAL
       commercial_coal:
         !include:GHG_state_SIT_2018.yaml:source_names:EPA_SIT:activity_sets:commercial_coal
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/StateGHGI_NY_asets.csv commercial_coal
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv commercial_coal
 
       # EMISSIONS FROM COMMERCIAL NATURAL GAS
       commercial_gas:
         !include:GHG_state_SIT_2018.yaml:source_names:EPA_SIT:activity_sets:commercial_gas
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/StateGHGI_NY_asets.csv commercial_gas
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv commercial_gas
 
       # EMISSIONS FROM COMMERCIAL PETROLEUM
       commercial_petroleum:
         !include:GHG_state_SIT_2018.yaml:source_names:EPA_SIT:activity_sets:commercial_petroleum
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/StateGHGI_NY_asets.csv commercial_petroleum
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv commercial_petroleum
 
       # EMISSIONS FROM COMMERCIAL WOOD COMBUSTION
       commercial_wood:
         !include:GHG_state_SIT_2018.yaml:source_names:EPA_SIT:activity_sets:commercial_wood
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/StateGHGI_NY_asets.csv commercial_wood
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv commercial_wood
 
       # CH4 and N2O EMISSIONS FROM CONSTRUCTION EQUIPMENT
       construction_equipment:
@@ -181,36 +181,36 @@ source_names:
       farm_equipment:
         !include:GHG_state_SIT_2018.yaml:source_names:EPA_SIT:activity_sets:farm_equipment
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/StateGHGI_NY_asets.csv farm_equipment
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv farm_equipment
 
       # EMISSIONS FROM INDUSTRIAL COAL
       industrial_coal:
         !include:GHG_state_SIT_2018.yaml:source_names:EPA_SIT:activity_sets:industrial_coal
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/StateGHGI_NY_asets.csv industrial_coal
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_coal
 
       # EMISSIONS FROM INDUSTRIAL NATURAL GAS 
       industrial_gas:
         !include:GHG_state_SIT_2018.yaml:source_names:EPA_SIT:activity_sets:industrial_gas
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/StateGHGI_NY_asets.csv industrial_gas
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_gas
 
       # EMISSIONS FROM INDUSTRIAL PETROLEUM
       industrial_petroleum:
         !include:GHG_state_SIT_2018.yaml:source_names:EPA_SIT:activity_sets:industrial_petroleum
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/StateGHGI_NY_asets.csv industrial_petroleum
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_petroleum
 
       # EMISSIONS FROM INDUSTRIAL WOOD COMBUSTION
       industrial_wood:
         !include:GHG_state_SIT_2018.yaml:source_names:EPA_SIT:activity_sets:industrial_wood
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/StateGHGI_NY_asets.csv industrial_wood
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_wood
 
       # EMISSIONS FROM NON-ENERGY USE INDUSTRIAL COAL 
       industrial_neu_coal:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/StateGHGI_NY_asets.csv industrial_neu_coal
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_neu_coal
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -223,7 +223,7 @@ source_names:
       # EMISSIONS FROM NON-ENERGY USE INDUSTRIAL GAS
       industrial_neu_gas:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/StateGHGI_NY_asets.csv industrial_neu_gas
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_neu_gas
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -236,7 +236,7 @@ source_names:
       # EMISSIONS FROM NON-ENERGY USE INDUSTRIAL DISTILLATE FUEL OIL
       industrial_neu_fueloil:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/StateGHGI_NY_asets.csv industrial_neu_fueloil
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_neu_fueloil
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -249,7 +249,7 @@ source_names:
       # EMISSIONS FROM NON-ENERGY USE INDUSTRIAL HYDROCARBON GAS LIQUIDS
       industrial_neu_hgl:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/StateGHGI_NY_asets.csv industrial_neu_hgl
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_neu_hgl
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -262,7 +262,7 @@ source_names:
       # EMISSIONS FROM NON-ENERGY USE INDUSTRIAL COKE
       industrial_neu_coke:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/StateGHGI_NY_asets.csv industrial_neu_coke
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_neu_coke
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -275,7 +275,7 @@ source_names:
       # EMISSIONS FROM NON-ENERGY USE INDUSTRIAL OTHER FOSSIL FUELS
       industrial_neu_other:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/StateGHGI_NY_asets.csv industrial_neu_other
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_neu_other
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -288,7 +288,7 @@ source_names:
       # N2O EMISSIONS FROM INDUSTRIAL PRODUCT USE
       industrial_pu_no2:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/StateGHGI_NY_asets.csv industrial_pu_no2
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_pu_no2
         attribution_method: proportional
         attribution_source:
           Detail_Use_2018:
@@ -300,16 +300,16 @@ source_names:
       mobile_combustion:
         !include:GHG_state_SIT_2018.yaml:source_names:EPA_SIT:activity_sets:mobile_combustion
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/StateGHGI_NY_asets.csv mobile_combustion
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv mobile_combustion
 
       # EMISSIONS FROM TRANSPORTATION OTHER FOSSIL FUELS
       transportation_other:
         !include:GHG_state_SIT_2018.yaml:source_names:EPA_SIT:activity_sets:transportation_other
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/StateGHGI_NY_asets.csv transportation_other
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv transportation_other
 
       # EMISSIONS FROM TRANSPORTATION PETROLEUM
       transportation_petroleum:
         !include:GHG_state_SIT_2018.yaml:source_names:EPA_SIT:activity_sets:transportation_petroleum
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/StateGHGI_NY_asets.csv transportation_petroleum
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv transportation_petroleum

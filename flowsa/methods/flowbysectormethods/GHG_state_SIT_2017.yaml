@@ -71,14 +71,14 @@ source_names:
               - 'MEMS'
               - 'PV'
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/EPA_SIT_asets.csv direct
+          PrimaryActivity: !from_index:EPA_SIT_asets.csv direct
         attribution_method: direct
 
       # EMISSIONS FROM UREA FERTILIZATION AND LIMING
       # allocated between crops and animals based on USDA land area
       ag:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/EPA_SIT_asets.csv ag
+          PrimaryActivity: !from_index:EPA_SIT_asets.csv ag
         attribution_method: proportional
         attribution_source:
           USDA_CoA_Cropland_NAICS:
@@ -91,7 +91,7 @@ source_names:
       # EMISSIONS FROM COMMERCIAL COAL
       commercial_coal:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/EPA_SIT_asets.csv commercial_coal
+          PrimaryActivity: !from_index:EPA_SIT_asets.csv commercial_coal
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_SUT:
@@ -102,7 +102,7 @@ source_names:
       # EMISSIONS FROM COMMERCIAL NATURAL GAS
       commercial_gas:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/EPA_SIT_asets.csv commercial_gas
+          PrimaryActivity: !from_index:EPA_SIT_asets.csv commercial_gas
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_SUT:
@@ -113,7 +113,7 @@ source_names:
       # EMISSIONS FROM COMMERCIAL OTHER FOSSIL FUELS
       commercial_other:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/EPA_SIT_asets.csv commercial_other
+          PrimaryActivity: !from_index:EPA_SIT_asets.csv commercial_other
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_SUT:
@@ -124,7 +124,7 @@ source_names:
       # EMISSIONS FROM COMMERCIAL WOOD COMBUSTION
       commercial_wood:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/EPA_SIT_asets.csv commercial_wood
+          PrimaryActivity: !from_index:EPA_SIT_asets.csv commercial_wood
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_SUT:
@@ -135,7 +135,7 @@ source_names:
       # EMISSIONS FROM COMMERCIAL PETROLEUM
       commercial_petroleum:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/EPA_SIT_asets.csv commercial_petroleum
+          PrimaryActivity: !from_index:EPA_SIT_asets.csv commercial_petroleum
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_SUT:
@@ -146,7 +146,7 @@ source_names:
       # CH4 and N2O EMISSIONS FROM CONSTRUCTION EQUIPMENT
       construction_equipment:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/EPA_SIT_asets.csv construction_equipment
+          PrimaryActivity: !from_index:EPA_SIT_asets.csv construction_equipment
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_SUT:
@@ -158,7 +158,7 @@ source_names:
       # allocated between crops and animals based on equipment use
       farm_equipment:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/EPA_SIT_asets.csv farm_equipment
+          PrimaryActivity: !from_index:EPA_SIT_asets.csv farm_equipment
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_SUT:
@@ -170,7 +170,7 @@ source_names:
       # EMISSIONS FROM INDUSTRIAL COAL
       industrial_coal:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/EPA_SIT_asets.csv industrial_coal
+          PrimaryActivity: !from_index:EPA_SIT_asets.csv industrial_coal
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -184,7 +184,7 @@ source_names:
       # EMISSIONS FROM INDUSTRIAL NATURAL GAS 
       industrial_gas:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/EPA_SIT_asets.csv industrial_gas
+          PrimaryActivity: !from_index:EPA_SIT_asets.csv industrial_gas
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -196,7 +196,7 @@ source_names:
       # EMISSIONS FROM INDUSTRIAL OTHER FOSSIL FUELS
       industrial_other:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/EPA_SIT_asets.csv industrial_other
+          PrimaryActivity: !from_index:EPA_SIT_asets.csv industrial_other
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -208,7 +208,7 @@ source_names:
       # EMISSIONS FROM INDUSTRIAL WOOD COMBUSTION
       industrial_wood:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/EPA_SIT_asets.csv industrial_wood
+          PrimaryActivity: !from_index:EPA_SIT_asets.csv industrial_wood
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_SUT:
@@ -219,7 +219,7 @@ source_names:
       # EMISSIONS FROM INDUSTRIAL PETROLEUM ALLOCATION METHOD
       industrial_petroleum:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/EPA_SIT_asets.csv industrial_petroleum
+          PrimaryActivity: !from_index:EPA_SIT_asets.csv industrial_petroleum
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -233,7 +233,7 @@ source_names:
       # EMISSIONS FROM TRANSPORTATION OTHER FOSSIL FUELS
       transportation_other:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/EPA_SIT_asets.csv transportation_other
+          PrimaryActivity: !from_index:EPA_SIT_asets.csv transportation_other
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_SUT:
@@ -244,7 +244,7 @@ source_names:
       # EMISSIONS FROM TRANSPORTATION PETROLEUM
       transportation_petroleum:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/EPA_SIT_asets.csv transportation_petroleum
+          PrimaryActivity: !from_index:EPA_SIT_asets.csv transportation_petroleum
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_SUT:
@@ -255,7 +255,7 @@ source_names:
       # CH4 and N2O EMISSIONS FROM MOBILE SOURCES (excl. construction and farm equipment)
       mobile_combustion:
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/EPA_SIT_asets.csv mobile_combustion
+          PrimaryActivity: !from_index:EPA_SIT_asets.csv mobile_combustion
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_SUT:
@@ -270,7 +270,7 @@ source_names:
             # Proportions of specific HFCs are assigned based on national total
             flow_fba: EPA_GHGI_T_4_100
         selection_fields:
-          PrimaryActivity: !from_index:flowbysectoractivitysets/EPA_SIT_asets.csv ods_substitutes
+          PrimaryActivity: !from_index:EPA_SIT_asets.csv ods_substitutes
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_SUT:
