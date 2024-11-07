@@ -31,11 +31,6 @@ StateGHGI_ME:
     Status: Private data
     Type: FileNotFoundError
 
-StateGHGI_NY:
-    Active: True
-    Status: Private data
-    Type: FileNotFoundError
-
 StateGHGI_VT:
     Active: True
     Status: Private data
@@ -54,3 +49,24 @@ CAP_HAP_Nonroad_2014:
 CAP_HAP_national_2014_m1:
     Active: True
     Status: Issue with CAP_HAP_Nonroad_2014 prevents method completion
+
+## CBEI models; StateGHGI year mismatch
+GHGc_state_ME_2020:
+    Active: True
+    Status: Year mismatch with GHGI
+
+GHGc_state_NY_2020:
+    Active: True
+    Status: Year mismatch with GHGI
+
+GHGc_state_VT_2020:
+    Active: True
+    Status: Year mismatch with GHGI
+
+GHG_state_supplemental_2020:
+    Active: True
+    Status: Year mismatch with GHGI
+
+GHG_state_SIT_2020:
+    Active: True
+    Status: Year mismatch with GHGI
