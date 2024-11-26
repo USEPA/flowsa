@@ -75,6 +75,11 @@ def bls_ces_parse(*, df_list, config, year, **_):
     # Concat dataframes
     df = pd.concat(df_list, sort=False)
     series_df = read_ces_item_codes()
+    # assign units using subcategory_code
+    series_df['Unit'] = 'USD'  # default value as USD
+    series_df.loc[series_df.subcategory_code.isin(['CONSUNIT', 'TITLECU']), 'Unit'] = "Thousand p"
+    series_df.loc[(series_df.subcategory_code == 'TITLECU') & (series_df.item_code.isin(['INCBFTAX', 'INCAFTAX'])), 'Unit'] = "Thousand USD"
+    series_df.loc[series_df.subcategory_code == 'TITLEPD', 'Unit'] = "Percent"
     substrs = config['series']['demographics']
     def extract_substring(s):
         start_index = 3  # Starting from the 4th letter (index 3)
@@ -86,7 +91,7 @@ def bls_ces_parse(*, df_list, config, year, **_):
           .assign(region = lambda x: x['series'].str[-3:].str[:2]) # 16th and 17th
           .assign(code = lambda x: x['series'].apply(extract_substring))
           .merge(series_df
-                 .filter(['item_code', 'item_text'])
+                 .filter(['item_code', 'item_text', 'Unit'])
                  .rename(columns={'item_code':'code'}),
                  how='left', on='code')
           .assign(value = lambda x: x['value'].replace('-', 0).astype(float))
@@ -100,9 +105,9 @@ def bls_ces_parse(*, df_list, config, year, **_):
 
     # hard code data for flowsa format
     df['LocationSystem'] = 'BLS Regions'
-    df['Unit'] = 'USD' # needs further revisions for some flows
     df['FlowType'] = 'TECHNOSPHERE_FLOW'
     df['Class'] ='Money'
+    df.loc[~df.Unit.str.contains('USD'), 'Class'] = "Other"
     df['ActivityConsumedBy'] = 'Households'
     df['SourceName'] = 'BLS_CES'
     # Add tmp DQ scores
