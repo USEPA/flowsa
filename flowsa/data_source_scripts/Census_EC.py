@@ -111,7 +111,7 @@ def census_EC_parse(*, df_list, year, **_):
     conditions = [df['FlowName'] == 'Number of establishments',
                   df['FlowName'] == 'Sales, value of shipments, or revenue',
                   df['FlowName'] == 'Distribution of sales, value of shipments, or revenue']
-    df['Unit'] = np.select(conditions, ['count', 'USD', 'percent'])
+    df['Unit'] = np.select(conditions, ['p', 'USD', 'Percent'])
     df['Class'] = np.select(conditions, ['Other', 'Money', 'Money'])
     df['FlowAmount'] = np.where(df['FlowName'] == 'Sales, value of shipments, or revenue',
                                 df['FlowAmount'] * 1000,
