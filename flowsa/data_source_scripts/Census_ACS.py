@@ -112,10 +112,18 @@ def DP_5yr_parse(*, df_list, config, year, **_):
     # concat dataframes
     df = pd.concat(df_list2, sort=False)
 
+    # modify units
+    df["Unit"] = (df['Unit']
+                  .str.split(' ').str[0]
+                  .replace("#", "p")
+                  .replace("%", "Percent")
+                  )
+
     # hard code data for flowsa format
     df = assign_fips_location_system(df, year)
     df['FlowType'] = 'TECHNOSPHERE_FLOW'
     df['Class'] ='Other'
+    df.loc[df.Unit=='USD', 'Class'] = 'Money'
     df['Year'] = year
     df['ActivityProducedBy'] = 'Households'
     df['SourceName'] = 'Census_ACS'
