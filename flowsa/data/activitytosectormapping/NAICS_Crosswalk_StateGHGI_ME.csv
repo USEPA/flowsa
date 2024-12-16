@@ -1,0 +1,59 @@
+ActivitySourceName,Activity,SectorSourceName,Sector,SectorType,activity_set,Notes
+StateGHGI_ME,"Commercial, Ethanol Combustion",NAICS_2012_Code,2213,,commercial_ethanol,"water, sewage and other systems"
+StateGHGI_ME,"Commercial, Ethanol Combustion",NAICS_2012_Code,42,,commercial_ethanol,wholesale trade
+StateGHGI_ME,"Commercial, Ethanol Combustion",NAICS_2012_Code,44,,commercial_ethanol,retail trade
+StateGHGI_ME,"Commercial, Ethanol Combustion",NAICS_2012_Code,45,,commercial_ethanol,retail trade
+StateGHGI_ME,"Commercial, Ethanol Combustion",NAICS_2012_Code,493,,commercial_ethanol,warehousing and storage
+StateGHGI_ME,"Commercial, Ethanol Combustion",NAICS_2012_Code,51,,commercial_ethanol,information
+StateGHGI_ME,"Commercial, Ethanol Combustion",NAICS_2012_Code,52,,commercial_ethanol,finance and insurance
+StateGHGI_ME,"Commercial, Ethanol Combustion",NAICS_2012_Code,53,,commercial_ethanol,real estate and rential and leasing
+StateGHGI_ME,"Commercial, Ethanol Combustion",NAICS_2012_Code,54,,commercial_ethanol,"professional, scientific, and technical services"
+StateGHGI_ME,"Commercial, Ethanol Combustion",NAICS_2012_Code,55,,commercial_ethanol,management of companies and enterprises
+StateGHGI_ME,"Commercial, Ethanol Combustion",NAICS_2012_Code,56,,commercial_ethanol,administrative support and waste management and remediation services
+StateGHGI_ME,"Commercial, Ethanol Combustion",NAICS_2012_Code,61,,commercial_ethanol,educational services
+StateGHGI_ME,"Commercial, Ethanol Combustion",NAICS_2012_Code,62,,commercial_ethanol,health care and social assistance
+StateGHGI_ME,"Commercial, Ethanol Combustion",NAICS_2012_Code,71,,commercial_ethanol,"arts, entertainment, and recreation"
+StateGHGI_ME,"Commercial, Ethanol Combustion",NAICS_2012_Code,72,,commercial_ethanol,accommodation and food services
+StateGHGI_ME,"Commercial, Ethanol Combustion",NAICS_2012_Code,81,,commercial_ethanol,other services (except public administration)
+StateGHGI_ME,"Commercial, Wood and Wood Residuals",NAICS_2012_Code,2213,,commercial_wood,"water, sewage and other systems"
+StateGHGI_ME,"Commercial, Wood and Wood Residuals",NAICS_2012_Code,42,,commercial_wood,wholesale trade
+StateGHGI_ME,"Commercial, Wood and Wood Residuals",NAICS_2012_Code,44,,commercial_wood,retail trade
+StateGHGI_ME,"Commercial, Wood and Wood Residuals",NAICS_2012_Code,45,,commercial_wood,retail trade
+StateGHGI_ME,"Commercial, Wood and Wood Residuals",NAICS_2012_Code,493,,commercial_wood,warehousing and storage
+StateGHGI_ME,"Commercial, Wood and Wood Residuals",NAICS_2012_Code,51,,commercial_wood,information
+StateGHGI_ME,"Commercial, Wood and Wood Residuals",NAICS_2012_Code,52,,commercial_wood,finance and insurance
+StateGHGI_ME,"Commercial, Wood and Wood Residuals",NAICS_2012_Code,53,,commercial_wood,real estate and rential and leasing
+StateGHGI_ME,"Commercial, Wood and Wood Residuals",NAICS_2012_Code,54,,commercial_wood,"professional, scientific, and technical services"
+StateGHGI_ME,"Commercial, Wood and Wood Residuals",NAICS_2012_Code,55,,commercial_wood,management of companies and enterprises
+StateGHGI_ME,"Commercial, Wood and Wood Residuals",NAICS_2012_Code,56,,commercial_wood,administrative support and waste management and remediation services
+StateGHGI_ME,"Commercial, Wood and Wood Residuals",NAICS_2012_Code,61,,commercial_wood,educational services
+StateGHGI_ME,"Commercial, Wood and Wood Residuals",NAICS_2012_Code,62,,commercial_wood,health care and social assistance
+StateGHGI_ME,"Commercial, Wood and Wood Residuals",NAICS_2012_Code,71,,commercial_wood,"arts, entertainment, and recreation"
+StateGHGI_ME,"Commercial, Wood and Wood Residuals",NAICS_2012_Code,72,,commercial_wood,accommodation and food services
+StateGHGI_ME,"Commercial, Wood and Wood Residuals",NAICS_2012_Code,81,,commercial_wood,other services (except public administration)
+StateGHGI_ME,"Electric power, Wood and Wood Residuals",NAICS_2012_Code,2211,,direct,"electric power generation, transmission, and distribution"
+StateGHGI_ME,"Industrial, Ethanol Combustion",NAICS_2012_Code,11,,industrial_ethanol,"agriculture, forestry, fishing and hunting"
+StateGHGI_ME,"Industrial, Ethanol Combustion",NAICS_2012_Code,21,,industrial_ethanol,"mining, quarrying, and oil and gas extraction"
+StateGHGI_ME,"Industrial, Ethanol Combustion",NAICS_2012_Code,23,,industrial_ethanol,construction
+StateGHGI_ME,"Industrial, Ethanol Combustion",NAICS_2012_Code,31,,industrial_ethanol,manufacturing
+StateGHGI_ME,"Industrial, Ethanol Combustion",NAICS_2012_Code,32,,industrial_ethanol,manufacturing
+StateGHGI_ME,"Industrial, Ethanol Combustion",NAICS_2012_Code,33,,industrial_ethanol,manufacturing
+StateGHGI_ME,"Industrial, Wood and Wood Residuals",NAICS_2012_Code,11,,industrial_wood,"agriculture, forestry, fishing and hunting"
+StateGHGI_ME,"Industrial, Wood and Wood Residuals",NAICS_2012_Code,21,,industrial_wood,"mining, quarrying, and oil and gas extraction"
+StateGHGI_ME,"Industrial, Wood and Wood Residuals",NAICS_2012_Code,23,,industrial_wood,construction
+StateGHGI_ME,"Industrial, Wood and Wood Residuals",NAICS_2012_Code,31,,industrial_wood,manufacturing
+StateGHGI_ME,"Industrial, Wood and Wood Residuals",NAICS_2012_Code,32,,industrial_wood,manufacturing
+StateGHGI_ME,"Industrial, Wood and Wood Residuals",NAICS_2012_Code,33,,industrial_wood,manufacturing
+StateGHGI_ME,"LFGTE projects, Solid Waste Management",NAICS_2012_Code,562213,,direct,solid waste combustors and incinerators
+StateGHGI_ME,"Landfill off-gassing, Solid Waste Management",NAICS_2012_Code,562212,,direct,solid waste landfill
+StateGHGI_ME,"MSW combusted, Solid Waste Management",NAICS_2012_Code,562213,,direct,solid waste combustors and incinerators
+StateGHGI_ME,"Methane flared, Solid Waste Management",NAICS_2012_Code,562212,,direct,solid waste landfill
+StateGHGI_ME,"Residential, Wood and Wood Residuals",NAICS_2012_Code,F010,,direct,personal consumption
+StateGHGI_ME,"Transportation, Biodiesel Combustion",NAICS_2012_Code,48,,transportation_biodiesel,transportation and warehousing
+StateGHGI_ME,"Transportation, Biodiesel Combustion",NAICS_2012_Code,491,,transportation_biodiesel,postal service
+StateGHGI_ME,"Transportation, Biodiesel Combustion",NAICS_2012_Code,492,,transportation_biodiesel,couriers and messengers
+StateGHGI_ME,"Transportation, Biodiesel Combustion",NAICS_2012_Code,F010,,transportation_biodiesel,personal consumption
+StateGHGI_ME,"Transportation, Ethanol Combustion",NAICS_2012_Code,48,,transportation_ethanol,transportation and warehousing
+StateGHGI_ME,"Transportation, Ethanol Combustion",NAICS_2012_Code,491,,transportation_ethanol,postal service
+StateGHGI_ME,"Transportation, Ethanol Combustion",NAICS_2012_Code,492,,transportation_ethanol,couriers and messengers
+StateGHGI_ME,"Transportation, Ethanol Combustion",NAICS_2012_Code,F010,,transportation_ethanol,personal consumption

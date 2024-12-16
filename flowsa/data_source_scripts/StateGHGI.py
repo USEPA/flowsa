@@ -7,6 +7,7 @@ Loads state specific GHGI data to supplement EPA State Inventory Tool (SIT).
 
 import pandas as pd
 import os
+from io import BytesIO
 
 import flowsa.flowbyactivity
 from flowsa.settings import externaldatapath
@@ -136,18 +137,13 @@ def VT_supplementary_parse(*, source, year, config, **_):
 
     return df0
 
-def NY_customized_parse(*, source, year, config, **_):
-        
-    filename = config['filename']
-    
-    filepath = f"{data_path}/{filename}"
-
-    if not os.path.exists(filepath):
-        raise FileNotFoundError(f'{filename} file not found in {filepath}')
-    log.info(f'Loading data from file {filename}...')
-    
+def NY_call(*, resp, year, **_):
     # read in data from Excel sheet
-    df = pd.read_csv(filepath)
+    df = pd.read_csv(BytesIO(resp.content))
+    return df
+
+def NY_customized_parse(df_list, source, year, config, **_):
+    df = pd.concat(df_list, ignore_index=True)
     
     # make sure the 'year' column is a string
     df['year'] = df['year'].astype(str)
@@ -173,55 +169,48 @@ def NY_customized_parse(*, source, year, config, **_):
     # drop all other columns
     df = df.filter(['ActivityProducedBy', 'FlowAmount', 'FlowName'])  
     
-    # disaggregate HFC and PFC emissions
-    # dictionary of activities where GHG emissions need to be disaggregated
-    activity_dict = config['disagg_activity_dict']
-    # for all activities included in the dictionary...
-    for activity_name, activity_properties in activity_dict.items():
-        for flow_group, flow_properties in activity_properties.items():
-            # name of table to be used for proportional split
-            table_name = flow_properties.get('table')
-            # load percentages to be used for proportional split
-            splits = load_fba_w_standardized_units(datasource=table_name, year=year)
-            # there are certain circumstances where one or more rows need to be 
-            # excluded from the table
-            drop_rows = flow_properties.get('drop_rows')
-            if drop_rows is not None:
-                splits = splits[~splits['FlowName'].isin(drop_rows)]
-            splits['pct'] = splits['FlowAmount'] / splits['FlowAmount'].sum()
-            splits = splits[['FlowName', 'pct']]
-            # split fba dataframe to include only those items matching the activity and flow type
-            mask = (df['ActivityProducedBy'] == activity_name) & (df['FlowName'] == flow_group)
-            df_activity = df[mask]
-            df_main = df[~mask]
-            # apply proportional split to activity data
-            speciated_df = df_activity.apply(lambda x: [p * x['FlowAmount'] for p in splits['pct']],
-                            axis=1, result_type='expand')
-            speciated_df.columns = splits['FlowName']
-            speciated_df = pd.concat([df_activity, speciated_df], axis=1)
-            speciated_df = speciated_df.melt(id_vars=['ActivityProducedBy', 'FlowAmount', 'FlowName'],
-                                             var_name='Flow')
-            speciated_df['FlowName'] = speciated_df['Flow']
-            speciated_df['FlowAmount'] = speciated_df['value']
-            speciated_df.drop(columns=['Flow', 'value'], inplace=True)
-            # merge split dataframes back together
-            df = pd.concat([df_main, speciated_df], axis=0, join='inner')
+    # # disaggregate HFC and PFC emissions
+    # # dictionary of activities where GHG emissions need to be disaggregated
+    # activity_dict = config['disagg_activity_dict']
+    # # for all activities included in the dictionary...
+    # for activity_name, activity_properties in activity_dict.items():
+    #     for flow_group, flow_properties in activity_properties.items():
+    #         # name of table to be used for proportional split
+    #         table_name = flow_properties.get('table')
+    #         # load percentages to be used for proportional split
+    #         splits = load_fba_w_standardized_units(datasource=table_name, year=year)
+    #         # there are certain circumstances where one or more rows need to be 
+    #         # excluded from the table
+    #         drop_rows = flow_properties.get('drop_rows')
+    #         if drop_rows is not None:
+    #             splits = splits[~splits['FlowName'].isin(drop_rows)]
+    #         splits['pct'] = splits['FlowAmount'] / splits['FlowAmount'].sum()
+    #         splits = splits[['FlowName', 'pct']]
+    #         # split fba dataframe to include only those items matching the activity and flow type
+    #         mask = (df['ActivityProducedBy'] == activity_name) & (df['FlowName'] == flow_group)
+    #         df_activity = df[mask]
+    #         df_main = df[~mask]
+    #         # apply proportional split to activity data
+    #         speciated_df = df_activity.apply(lambda x: [p * x['FlowAmount'] for p in splits['pct']],
+    #                         axis=1, result_type='expand')
+    #         speciated_df.columns = splits['FlowName']
+    #         speciated_df = pd.concat([df_activity, speciated_df], axis=1)
+    #         speciated_df = speciated_df.melt(id_vars=['ActivityProducedBy', 'FlowAmount', 'FlowName'],
+    #                                          var_name='Flow')
+    #         speciated_df['FlowName'] = speciated_df['Flow']
+    #         speciated_df['FlowAmount'] = speciated_df['value']
+    #         speciated_df.drop(columns=['Flow', 'value'], inplace=True)
+    #         # merge split dataframes back together
+    #         df = pd.concat([df_main, speciated_df], axis=0, join='inner')
     
-    # calculate mass of emission from CO2e
-    AR5GWP20 = config['AR5GWP20']
-    AR5GWP20 = pd.DataFrame(list(AR5GWP20.items()), columns = ['FlowName', 'GWP'])
-    df = pd.merge(df, AR5GWP20, on='FlowName')
-    df['FlowAmount'] = df['FlowAmount'] / df['GWP']
-    df = df.drop(columns = ['GWP'])
-       
     # add hardcoded data
-    df['Description'] = 'New York customized inventory'
+    df['Description'] = 'New York GHGI'
     df['Class'] = 'Chemicals'
     df['SourceName'] = source
     df['FlowType'] = 'ELEMENTARY_FLOW'
     df['Compartment'] = 'air'
     df['Year'] = year
-    df['Unit'] = 'MT'
+    df['Unit'] = 'MT CO2e (AR5-20)'
     df['DataReliability'] = 5
     df['DataCollection'] = 5
 
@@ -248,8 +237,9 @@ def VT_remove_dupicate_activities(df_subset):
 
     return df_subset
 
-
+#%%
 if __name__ == '__main__':
     import flowsa
-    flowsa.generateflowbyactivity.main(source='StateGHGI_ME', year='2019')
-    fba = flowsa.flowbyactivity.getFlowByActivity('StateGHGI_ME', '2019')
+    for y in range(2019, 2020):
+        flowsa.generateflowbyactivity.main(source='StateGHGI_NY', year=y)
+        fba = flowsa.flowbyactivity.getFlowByActivity('StateGHGI_NY', y)

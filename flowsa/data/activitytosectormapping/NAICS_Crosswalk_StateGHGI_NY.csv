@@ -1,0 +1,349 @@
+ActivitySourceName,Activity,SectorSourceName,Sector,SectorType,activity_set,Notes,SIT_mapping
+StateGHGI_NY,"Agriculture, AFOLU, Livestock, Animal Feeding, Not Applicable, Not Applicable",NAICS_2012_Code,112,,direct,animal production and aquaculture,"Agriculture, Enteric Fermentation"
+StateGHGI_NY,"Agriculture, AFOLU, Livestock, Manure Management, Not Applicable, Not Applicable",NAICS_2012_Code,112,,direct,animal production and aquaculture,"Agriculture, Manure Management"
+StateGHGI_NY,"Agriculture, AFOLU, Soil Management, Liming, Not Applicable, Not Applicable",NAICS_2012_Code,1151,,direct,support activities for crop production,"Agriculture, Liming"
+StateGHGI_NY,"Agriculture, AFOLU, Soil Management, Soil Nitrogen Management, Not Applicable, Not Applicable",NAICS_2012_Code,1151,,direct,support activities for crop production,NO CLEAR MAPPING
+StateGHGI_NY,"Agriculture, AFOLU, Soil Management, Urea Application, Not Applicable, Not Applicable",NAICS_2012_Code,1151,,direct,support activities for crop production,"Agriculture, Urea Fertilization"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Coal",NAICS_2012_Code,2213,,commercial_coal,"water, sewage and other systems","CO2FFC, Commercial, Coal"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Coal",NAICS_2012_Code,42,,commercial_coal,wholesale trade,"CO2FFC, Commercial, Coal"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Coal",NAICS_2012_Code,44,,commercial_coal,retail trade,"CO2FFC, Commercial, Coal"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Coal",NAICS_2012_Code,45,,commercial_coal,retail trade,"CO2FFC, Commercial, Coal"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Coal",NAICS_2012_Code,493,,commercial_coal,warehousing and storage,"CO2FFC, Commercial, Coal"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Coal",NAICS_2012_Code,51,,commercial_coal,information,"CO2FFC, Commercial, Coal"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Coal",NAICS_2012_Code,52,,commercial_coal,finance and insurance,"CO2FFC, Commercial, Coal"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Coal",NAICS_2012_Code,53,,commercial_coal,real estate and rential and leasing,"CO2FFC, Commercial, Coal"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Coal",NAICS_2012_Code,54,,commercial_coal,"professional, scientific, and technical services","CO2FFC, Commercial, Coal"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Coal",NAICS_2012_Code,55,,commercial_coal,management of companies and enterprises,"CO2FFC, Commercial, Coal"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Coal",NAICS_2012_Code,56,,commercial_coal,administrative support and waste management and remediation services,"CO2FFC, Commercial, Coal"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Coal",NAICS_2012_Code,61,,commercial_coal,educational services,"CO2FFC, Commercial, Coal"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Coal",NAICS_2012_Code,62,,commercial_coal,health care and social assistance,"CO2FFC, Commercial, Coal"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Coal",NAICS_2012_Code,71,,commercial_coal,"arts, entertainment, and recreation","CO2FFC, Commercial, Coal"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Coal",NAICS_2012_Code,72,,commercial_coal,accommodation and food services,"CO2FFC, Commercial, Coal"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Coal",NAICS_2012_Code,81,,commercial_coal,other services (except public administration),"CO2FFC, Commercial, Coal"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Distillate Fuel",NAICS_2012_Code,2213,,commercial_petroleum,"water, sewage and other systems","CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Distillate Fuel",NAICS_2012_Code,42,,commercial_petroleum,wholesale trade,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Distillate Fuel",NAICS_2012_Code,44,,commercial_petroleum,retail trade,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Distillate Fuel",NAICS_2012_Code,45,,commercial_petroleum,retail trade,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Distillate Fuel",NAICS_2012_Code,493,,commercial_petroleum,warehousing and storage,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Distillate Fuel",NAICS_2012_Code,51,,commercial_petroleum,information,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Distillate Fuel",NAICS_2012_Code,52,,commercial_petroleum,finance and insurance,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Distillate Fuel",NAICS_2012_Code,53,,commercial_petroleum,real estate and rential and leasing,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Distillate Fuel",NAICS_2012_Code,54,,commercial_petroleum,"professional, scientific, and technical services","CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Distillate Fuel",NAICS_2012_Code,55,,commercial_petroleum,management of companies and enterprises,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Distillate Fuel",NAICS_2012_Code,56,,commercial_petroleum,administrative support and waste management and remediation services,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Distillate Fuel",NAICS_2012_Code,61,,commercial_petroleum,educational services,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Distillate Fuel",NAICS_2012_Code,62,,commercial_petroleum,health care and social assistance,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Distillate Fuel",NAICS_2012_Code,71,,commercial_petroleum,"arts, entertainment, and recreation","CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Distillate Fuel",NAICS_2012_Code,72,,commercial_petroleum,accommodation and food services,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Distillate Fuel",NAICS_2012_Code,81,,commercial_petroleum,other services (except public administration),"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Kerosene",NAICS_2012_Code,2213,,commercial_petroleum,"water, sewage and other systems","CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Kerosene",NAICS_2012_Code,42,,commercial_petroleum,wholesale trade,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Kerosene",NAICS_2012_Code,44,,commercial_petroleum,retail trade,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Kerosene",NAICS_2012_Code,45,,commercial_petroleum,retail trade,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Kerosene",NAICS_2012_Code,493,,commercial_petroleum,warehousing and storage,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Kerosene",NAICS_2012_Code,51,,commercial_petroleum,information,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Kerosene",NAICS_2012_Code,52,,commercial_petroleum,finance and insurance,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Kerosene",NAICS_2012_Code,53,,commercial_petroleum,real estate and rential and leasing,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Kerosene",NAICS_2012_Code,54,,commercial_petroleum,"professional, scientific, and technical services","CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Kerosene",NAICS_2012_Code,55,,commercial_petroleum,management of companies and enterprises,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Kerosene",NAICS_2012_Code,56,,commercial_petroleum,administrative support and waste management and remediation services,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Kerosene",NAICS_2012_Code,61,,commercial_petroleum,educational services,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Kerosene",NAICS_2012_Code,62,,commercial_petroleum,health care and social assistance,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Kerosene",NAICS_2012_Code,71,,commercial_petroleum,"arts, entertainment, and recreation","CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Kerosene",NAICS_2012_Code,72,,commercial_petroleum,accommodation and food services,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Kerosene",NAICS_2012_Code,81,,commercial_petroleum,other services (except public administration),"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, LPG",NAICS_2012_Code,2213,,commercial_petroleum,"water, sewage and other systems","CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, LPG",NAICS_2012_Code,42,,commercial_petroleum,wholesale trade,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, LPG",NAICS_2012_Code,44,,commercial_petroleum,retail trade,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, LPG",NAICS_2012_Code,45,,commercial_petroleum,retail trade,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, LPG",NAICS_2012_Code,493,,commercial_petroleum,warehousing and storage,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, LPG",NAICS_2012_Code,51,,commercial_petroleum,information,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, LPG",NAICS_2012_Code,52,,commercial_petroleum,finance and insurance,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, LPG",NAICS_2012_Code,53,,commercial_petroleum,real estate and rential and leasing,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, LPG",NAICS_2012_Code,54,,commercial_petroleum,"professional, scientific, and technical services","CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, LPG",NAICS_2012_Code,55,,commercial_petroleum,management of companies and enterprises,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, LPG",NAICS_2012_Code,56,,commercial_petroleum,administrative support and waste management and remediation services,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, LPG",NAICS_2012_Code,61,,commercial_petroleum,educational services,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, LPG",NAICS_2012_Code,62,,commercial_petroleum,health care and social assistance,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, LPG",NAICS_2012_Code,71,,commercial_petroleum,"arts, entertainment, and recreation","CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, LPG",NAICS_2012_Code,72,,commercial_petroleum,accommodation and food services,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, LPG",NAICS_2012_Code,81,,commercial_petroleum,other services (except public administration),"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Natural Gas",NAICS_2012_Code,2213,,commercial_gas,"water, sewage and other systems","CO2FFC, Commercial, Natural Gas"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Natural Gas",NAICS_2012_Code,42,,commercial_gas,wholesale trade,"CO2FFC, Commercial, Natural Gas"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Natural Gas",NAICS_2012_Code,44,,commercial_gas,retail trade,"CO2FFC, Commercial, Natural Gas"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Natural Gas",NAICS_2012_Code,45,,commercial_gas,retail trade,"CO2FFC, Commercial, Natural Gas"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Natural Gas",NAICS_2012_Code,493,,commercial_gas,warehousing and storage,"CO2FFC, Commercial, Natural Gas"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Natural Gas",NAICS_2012_Code,51,,commercial_gas,information,"CO2FFC, Commercial, Natural Gas"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Natural Gas",NAICS_2012_Code,52,,commercial_gas,finance and insurance,"CO2FFC, Commercial, Natural Gas"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Natural Gas",NAICS_2012_Code,53,,commercial_gas,real estate and rential and leasing,"CO2FFC, Commercial, Natural Gas"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Natural Gas",NAICS_2012_Code,54,,commercial_gas,"professional, scientific, and technical services","CO2FFC, Commercial, Natural Gas"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Natural Gas",NAICS_2012_Code,55,,commercial_gas,management of companies and enterprises,"CO2FFC, Commercial, Natural Gas"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Natural Gas",NAICS_2012_Code,56,,commercial_gas,administrative support and waste management and remediation services,"CO2FFC, Commercial, Natural Gas"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Natural Gas",NAICS_2012_Code,61,,commercial_gas,educational services,"CO2FFC, Commercial, Natural Gas"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Natural Gas",NAICS_2012_Code,62,,commercial_gas,health care and social assistance,"CO2FFC, Commercial, Natural Gas"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Natural Gas",NAICS_2012_Code,71,,commercial_gas,"arts, entertainment, and recreation","CO2FFC, Commercial, Natural Gas"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Natural Gas",NAICS_2012_Code,72,,commercial_gas,accommodation and food services,"CO2FFC, Commercial, Natural Gas"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Natural Gas",NAICS_2012_Code,81,,commercial_gas,other services (except public administration),"CO2FFC, Commercial, Natural Gas"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Residual Fuel",NAICS_2012_Code,2213,,commercial_petroleum,"water, sewage and other systems","CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Residual Fuel",NAICS_2012_Code,42,,commercial_petroleum,wholesale trade,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Residual Fuel",NAICS_2012_Code,44,,commercial_petroleum,retail trade,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Residual Fuel",NAICS_2012_Code,45,,commercial_petroleum,retail trade,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Residual Fuel",NAICS_2012_Code,493,,commercial_petroleum,warehousing and storage,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Residual Fuel",NAICS_2012_Code,51,,commercial_petroleum,information,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Residual Fuel",NAICS_2012_Code,52,,commercial_petroleum,finance and insurance,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Residual Fuel",NAICS_2012_Code,53,,commercial_petroleum,real estate and rential and leasing,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Residual Fuel",NAICS_2012_Code,54,,commercial_petroleum,"professional, scientific, and technical services","CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Residual Fuel",NAICS_2012_Code,55,,commercial_petroleum,management of companies and enterprises,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Residual Fuel",NAICS_2012_Code,56,,commercial_petroleum,administrative support and waste management and remediation services,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Residual Fuel",NAICS_2012_Code,61,,commercial_petroleum,educational services,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Residual Fuel",NAICS_2012_Code,62,,commercial_petroleum,health care and social assistance,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Residual Fuel",NAICS_2012_Code,71,,commercial_petroleum,"arts, entertainment, and recreation","CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Residual Fuel",NAICS_2012_Code,72,,commercial_petroleum,accommodation and food services,"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Residual Fuel",NAICS_2012_Code,81,,commercial_petroleum,other services (except public administration),"CO2FFC, Commercial, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Wood",NAICS_2012_Code,2213,,commercial_wood,"water, sewage and other systems","Summary CH4, Commercial, Wood"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Wood",NAICS_2012_Code,42,,commercial_wood,wholesale trade,"Summary CH4, Commercial, Wood"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Wood",NAICS_2012_Code,44,,commercial_wood,retail trade,"Summary CH4, Commercial, Wood"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Wood",NAICS_2012_Code,45,,commercial_wood,retail trade,"Summary CH4, Commercial, Wood"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Wood",NAICS_2012_Code,493,,commercial_wood,warehousing and storage,"Summary CH4, Commercial, Wood"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Wood",NAICS_2012_Code,51,,commercial_wood,information,"Summary CH4, Commercial, Wood"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Wood",NAICS_2012_Code,52,,commercial_wood,finance and insurance,"Summary CH4, Commercial, Wood"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Wood",NAICS_2012_Code,53,,commercial_wood,real estate and rential and leasing,"Summary CH4, Commercial, Wood"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Wood",NAICS_2012_Code,54,,commercial_wood,"professional, scientific, and technical services","Summary CH4, Commercial, Wood"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Wood",NAICS_2012_Code,55,,commercial_wood,management of companies and enterprises,"Summary CH4, Commercial, Wood"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Wood",NAICS_2012_Code,56,,commercial_wood,administrative support and waste management and remediation services,"Summary CH4, Commercial, Wood"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Wood",NAICS_2012_Code,61,,commercial_wood,educational services,"Summary CH4, Commercial, Wood"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Wood",NAICS_2012_Code,62,,commercial_wood,health care and social assistance,"Summary CH4, Commercial, Wood"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Wood",NAICS_2012_Code,71,,commercial_wood,"arts, entertainment, and recreation","Summary CH4, Commercial, Wood"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Wood",NAICS_2012_Code,72,,commercial_wood,accommodation and food services,"Summary CH4, Commercial, Wood"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Commercial, Not Applicable, Wood",NAICS_2012_Code,81,,commercial_wood,other services (except public administration),"Summary CH4, Commercial, Wood"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Residential, Not Applicable, Coal",NAICS_2012_Code,F010,,direct,personal consumption,"CO2FFC, Residential, Coal"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Residential, Not Applicable, Distillate Fuel",NAICS_2012_Code,F010,,direct,personal consumption,"CO2FFC, Residential, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Residential, Not Applicable, Kerosene",NAICS_2012_Code,F010,,direct,personal consumption,"CO2FFC, Residential, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Residential, Not Applicable, LPG",NAICS_2012_Code,F010,,direct,personal consumption,"CO2FFC, Residential, Petroleum"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Residential, Not Applicable, Natural Gas",NAICS_2012_Code,F010,,direct,personal consumption,"CO2FFC, Residential, Natural Gas"
+StateGHGI_NY,"Buildings, Energy, Fuel Combustion, Residential, Not Applicable, Wood",NAICS_2012_Code,F010,,direct,personal consumption,"Summary CH4, Residential, Wood"
+StateGHGI_NY,"Buildings, IPPU, Product Use, ODS Substitutes, Building HVAC, Not Applicable",NAICS_2012_Code,3251,,direct,basic chemical manufacturing,"IP, ODS Substitutes"
+StateGHGI_NY,"Buildings, IPPU, Product Use, ODS Substitutes, Building Refrigeration, Not Applicable",NAICS_2012_Code,3251,,direct,basic chemical manufacturing,"IP, ODS Substitutes"
+StateGHGI_NY,"Buildings, IPPU, Product Use, ODS Substitutes, Industrial, Not Applicable",NAICS_2012_Code,3251,,direct,basic chemical manufacturing,"IP, ODS Substitutes"
+StateGHGI_NY,"Buildings, IPPU, Product Use, ODS Substitutes, Other Building Appliances, Not Applicable",NAICS_2012_Code,3251,,direct,basic chemical manufacturing,"IP, ODS Substitutes"
+StateGHGI_NY,"Buildings, IPPU, Product Use, ODS Substitutes, Other, Not Applicable",NAICS_2012_Code,3251,,direct,basic chemical manufacturing,"IP, ODS Substitutes"
+StateGHGI_NY,"Electricity, Energy, Electricity Transmission, Electricity Transmission, Not Applicable, Not Applicable",NAICS_2012_Code,22112,,direct,transmission and distribution,"IP, Electric Power Transmission and Distribution Systems"
+StateGHGI_NY,"Electricity, Energy, Fuel Combustion, Electricity, Not Applicable, Coal",NAICS_2012_Code,2211,,direct,"electric power generation, transmission, and distribution","CO2FFC, Electric Utilities, Coal"
+StateGHGI_NY,"Electricity, Energy, Fuel Combustion, Electricity, Not Applicable, Distillate Fuel",NAICS_2012_Code,2211,,direct,"electric power generation, transmission, and distribution","CO2FFC, Electric Utilities, Petroleum"
+StateGHGI_NY,"Electricity, Energy, Fuel Combustion, Electricity, Not Applicable, Natural Gas",NAICS_2012_Code,2211,,direct,"electric power generation, transmission, and distribution","CO2FFC, Electric Utilities, Natural Gas"
+StateGHGI_NY,"Electricity, Energy, Fuel Combustion, Electricity, Not Applicable, Petroleum Coke",NAICS_2012_Code,2211,,direct,"electric power generation, transmission, and distribution","CO2FFC, Electric Utilities, Petroleum"
+StateGHGI_NY,"Electricity, Energy, Fuel Combustion, Electricity, Not Applicable, Residual Fuel",NAICS_2012_Code,2211,,direct,"electric power generation, transmission, and distribution","CO2FFC, Electric Utilities, Petroleum"
+StateGHGI_NY,"Electricity, Energy, Fuel Combustion, Electricity, Not Applicable, Wood",NAICS_2012_Code,2211,,direct,"electric power generation, transmission, and distribution","Summary CH4, Electric Power, Wood"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Coal - Coking",NAICS_2012_Code,11,,industrial_coal,"agriculture, forestry, fishing and hunting","CO2FFC, Industrial, Coal"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Coal - Coking",NAICS_2012_Code,21,,industrial_coal,"mining, quarrying, and oil and gas extraction","CO2FFC, Industrial, Coal"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Coal - Coking",NAICS_2012_Code,23,,industrial_coal,construction,"CO2FFC, Industrial, Coal"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Coal - Coking",NAICS_2012_Code,31,,industrial_coal,manufacturing,"CO2FFC, Industrial, Coal"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Coal - Coking",NAICS_2012_Code,32,,industrial_coal,manufacturing,"CO2FFC, Industrial, Coal"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Coal - Coking",NAICS_2012_Code,33,,industrial_coal,manufacturing,"CO2FFC, Industrial, Coal"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Coal - Other",NAICS_2012_Code,11,,industrial_coal,"agriculture, forestry, fishing and hunting","CO2FFC, Industrial, Coal"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Coal - Other",NAICS_2012_Code,21,,industrial_coal,"mining, quarrying, and oil and gas extraction","CO2FFC, Industrial, Coal"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Coal - Other",NAICS_2012_Code,23,,industrial_coal,construction,"CO2FFC, Industrial, Coal"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Coal - Other",NAICS_2012_Code,31,,industrial_coal,manufacturing,"CO2FFC, Industrial, Coal"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Coal - Other",NAICS_2012_Code,32,,industrial_coal,manufacturing,"CO2FFC, Industrial, Coal"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Coal - Other",NAICS_2012_Code,33,,industrial_coal,manufacturing,"CO2FFC, Industrial, Coal"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Distillate Fuel",NAICS_2012_Code,11,,industrial_petroleum,"agriculture, forestry, fishing and hunting","CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Distillate Fuel",NAICS_2012_Code,21,,industrial_petroleum,"mining, quarrying, and oil and gas extraction","CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Distillate Fuel",NAICS_2012_Code,23,,industrial_petroleum,construction,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Distillate Fuel",NAICS_2012_Code,31,,industrial_petroleum,manufacturing,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Distillate Fuel",NAICS_2012_Code,32,,industrial_petroleum,manufacturing,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Distillate Fuel",NAICS_2012_Code,33,,industrial_petroleum,manufacturing,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Kerosene",NAICS_2012_Code,11,,industrial_petroleum,"agriculture, forestry, fishing and hunting","CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Kerosene",NAICS_2012_Code,21,,industrial_petroleum,"mining, quarrying, and oil and gas extraction","CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Kerosene",NAICS_2012_Code,23,,industrial_petroleum,construction,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Kerosene",NAICS_2012_Code,31,,industrial_petroleum,manufacturing,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Kerosene",NAICS_2012_Code,32,,industrial_petroleum,manufacturing,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Kerosene",NAICS_2012_Code,33,,industrial_petroleum,manufacturing,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, LPG",NAICS_2012_Code,11,,industrial_petroleum,"agriculture, forestry, fishing and hunting","CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, LPG",NAICS_2012_Code,21,,industrial_petroleum,"mining, quarrying, and oil and gas extraction","CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, LPG",NAICS_2012_Code,23,,industrial_petroleum,construction,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, LPG",NAICS_2012_Code,31,,industrial_petroleum,manufacturing,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, LPG",NAICS_2012_Code,32,,industrial_petroleum,manufacturing,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, LPG",NAICS_2012_Code,33,,industrial_petroleum,manufacturing,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Natural Gas",NAICS_2012_Code,11,,industrial_gas,"agriculture, forestry, fishing and hunting","CO2FFC, Industrial, Natural Gas"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Natural Gas",NAICS_2012_Code,21,,industrial_gas,"mining, quarrying, and oil and gas extraction","CO2FFC, Industrial, Natural Gas"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Natural Gas",NAICS_2012_Code,23,,industrial_gas,construction,"CO2FFC, Industrial, Natural Gas"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Natural Gas",NAICS_2012_Code,31,,industrial_gas,manufacturing,"CO2FFC, Industrial, Natural Gas"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Natural Gas",NAICS_2012_Code,32,,industrial_gas,manufacturing,"CO2FFC, Industrial, Natural Gas"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Natural Gas",NAICS_2012_Code,33,,industrial_gas,manufacturing,"CO2FFC, Industrial, Natural Gas"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Petroleum Coke",NAICS_2012_Code,11,,industrial_petroleum,"agriculture, forestry, fishing and hunting","CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Petroleum Coke",NAICS_2012_Code,21,,industrial_petroleum,"mining, quarrying, and oil and gas extraction","CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Petroleum Coke",NAICS_2012_Code,23,,industrial_petroleum,construction,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Petroleum Coke",NAICS_2012_Code,31,,industrial_petroleum,manufacturing,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Petroleum Coke",NAICS_2012_Code,32,,industrial_petroleum,manufacturing,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Petroleum Coke",NAICS_2012_Code,33,,industrial_petroleum,manufacturing,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Residual Fuel",NAICS_2012_Code,11,,industrial_petroleum,"agriculture, forestry, fishing and hunting","CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Residual Fuel",NAICS_2012_Code,21,,industrial_petroleum,"mining, quarrying, and oil and gas extraction","CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Residual Fuel",NAICS_2012_Code,23,,industrial_petroleum,construction,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Residual Fuel",NAICS_2012_Code,31,,industrial_petroleum,manufacturing,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Residual Fuel",NAICS_2012_Code,32,,industrial_petroleum,manufacturing,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Residual Fuel",NAICS_2012_Code,33,,industrial_petroleum,manufacturing,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Special Naphthas",NAICS_2012_Code,11,,industrial_petroleum,"agriculture, forestry, fishing and hunting","CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Special Naphthas",NAICS_2012_Code,21,,industrial_petroleum,"mining, quarrying, and oil and gas extraction","CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Special Naphthas",NAICS_2012_Code,23,,industrial_petroleum,construction,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Special Naphthas",NAICS_2012_Code,31,,industrial_petroleum,manufacturing,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Special Naphthas",NAICS_2012_Code,32,,industrial_petroleum,manufacturing,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Special Naphthas",NAICS_2012_Code,33,,industrial_petroleum,manufacturing,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Waxes",NAICS_2012_Code,11,,industrial_petroleum,"agriculture, forestry, fishing and hunting","CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Waxes",NAICS_2012_Code,21,,industrial_petroleum,"mining, quarrying, and oil and gas extraction","CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Waxes",NAICS_2012_Code,23,,industrial_petroleum,construction,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Waxes",NAICS_2012_Code,31,,industrial_petroleum,manufacturing,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Waxes",NAICS_2012_Code,32,,industrial_petroleum,manufacturing,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Waxes",NAICS_2012_Code,33,,industrial_petroleum,manufacturing,"CO2FFC, Industrial, Petroleum"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Wood",NAICS_2012_Code,11,,industrial_wood,"agriculture, forestry, fishing and hunting","Summary CH4, Industrial, Wood"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Wood",NAICS_2012_Code,21,,industrial_wood,"mining, quarrying, and oil and gas extraction","Summary CH4, Industrial, Wood"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Wood",NAICS_2012_Code,23,,industrial_wood,construction,"Summary CH4, Industrial, Wood"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Wood",NAICS_2012_Code,31,,industrial_wood,manufacturing,"Summary CH4, Industrial, Wood"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Wood",NAICS_2012_Code,32,,industrial_wood,manufacturing,"Summary CH4, Industrial, Wood"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Wood",NAICS_2012_Code,33,,industrial_wood,manufacturing,"Summary CH4, Industrial, Wood"
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Asphalt and Road Oil",NAICS_2012_Code,11,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Asphalt and Road Oil",NAICS_2012_Code,21,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Asphalt and Road Oil",NAICS_2012_Code,23,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Asphalt and Road Oil",NAICS_2012_Code,31,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Asphalt and Road Oil",NAICS_2012_Code,32,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Asphalt and Road Oil",NAICS_2012_Code,33,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Lubricants",NAICS_2012_Code,11,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Lubricants",NAICS_2012_Code,21,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Lubricants",NAICS_2012_Code,23,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Lubricants",NAICS_2012_Code,31,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Lubricants",NAICS_2012_Code,32,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Lubricants",NAICS_2012_Code,33,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Lubricants (Transportation)",NAICS_2012_Code,11,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Lubricants (Transportation)",NAICS_2012_Code,21,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Lubricants (Transportation)",NAICS_2012_Code,23,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Lubricants (Transportation)",NAICS_2012_Code,31,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Lubricants (Transportation)",NAICS_2012_Code,32,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Lubricants (Transportation)",NAICS_2012_Code,33,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Miscellaneous Petroleum Products",NAICS_2012_Code,11,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Miscellaneous Petroleum Products",NAICS_2012_Code,21,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Miscellaneous Petroleum Products",NAICS_2012_Code,23,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Miscellaneous Petroleum Products",NAICS_2012_Code,31,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Miscellaneous Petroleum Products",NAICS_2012_Code,32,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Industrial, Not Applicable, Miscellaneous Petroleum Products",NAICS_2012_Code,33,,,,
+StateGHGI_NY,"Industry, Energy, Fuel Combustion, Transportation, Nonroad - Pipelines, Natural Gas",NAICS_2012_Code,4862,,direct,pipeline transportation of natural gas,"Gas and Oil, Natural Gas, Transmission"
+StateGHGI_NY,"Industry, Energy, Fugitive Emissions, Oil and Gas Systems, Not Applicable, All",NAICS_2012_Code,2212,,direct,assumes natural gas fugitives,
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Asphalt and Road Oil",NAICS_2012_Code,31,,industrial_neu_other,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Asphalt and Road Oil",NAICS_2012_Code,32,,industrial_neu_other,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Asphalt and Road Oil",NAICS_2012_Code,33,,industrial_neu_other,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Coal - Coking",NAICS_2012_Code,31,,industrial_neu_coal,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Coal - Coking",NAICS_2012_Code,32,,industrial_neu_coal,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Coal - Coking",NAICS_2012_Code,33,,industrial_neu_coal,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Coal - Other",NAICS_2012_Code,31,,industrial_neu_coal,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Coal - Other",NAICS_2012_Code,32,,industrial_neu_coal,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Coal - Other",NAICS_2012_Code,33,,industrial_neu_coal,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Distillate Fuel",NAICS_2012_Code,31,,industrial_neu_fueloil,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Distillate Fuel",NAICS_2012_Code,32,,industrial_neu_fueloil,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Distillate Fuel",NAICS_2012_Code,33,,industrial_neu_fueloil,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Kerosene",NAICS_2012_Code,31,,,,
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Kerosene",NAICS_2012_Code,32,,,,
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Kerosene",NAICS_2012_Code,33,,,,
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, LPG",NAICS_2012_Code,31,,industrial_neu_hgl,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, LPG",NAICS_2012_Code,32,,industrial_neu_hgl,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, LPG",NAICS_2012_Code,33,,industrial_neu_hgl,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Lubricants",NAICS_2012_Code,31,,industrial_neu_other,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Lubricants",NAICS_2012_Code,32,,industrial_neu_other,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Lubricants",NAICS_2012_Code,33,,industrial_neu_other,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Lubricants (Transportation)",NAICS_2012_Code,31,,industrial_neu_other,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Lubricants (Transportation)",NAICS_2012_Code,32,,industrial_neu_other,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Lubricants (Transportation)",NAICS_2012_Code,33,,industrial_neu_other,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Miscellaneous Petroleum Products",NAICS_2012_Code,31,,industrial_neu_other,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Miscellaneous Petroleum Products",NAICS_2012_Code,32,,industrial_neu_other,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Miscellaneous Petroleum Products",NAICS_2012_Code,33,,industrial_neu_other,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Natural Gas",NAICS_2012_Code,31,,industrial_neu_gas,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Natural Gas",NAICS_2012_Code,32,,industrial_neu_gas,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Natural Gas",NAICS_2012_Code,33,,industrial_neu_gas,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Petroleum Coke",NAICS_2012_Code,31,,industrial_neu_coke,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Petroleum Coke",NAICS_2012_Code,32,,industrial_neu_coke,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Petroleum Coke",NAICS_2012_Code,33,,industrial_neu_coke,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Residual Fuel",NAICS_2012_Code,31,,,,
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Residual Fuel",NAICS_2012_Code,32,,,,
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Residual Fuel",NAICS_2012_Code,33,,,,
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Special Naphthas",NAICS_2012_Code,31,,industrial_neu_other,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Special Naphthas",NAICS_2012_Code,32,,industrial_neu_other,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Special Naphthas",NAICS_2012_Code,33,,industrial_neu_other,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Waxes",NAICS_2012_Code,31,,industrial_neu_other,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Waxes",NAICS_2012_Code,32,,industrial_neu_other,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Waxes",NAICS_2012_Code,33,,industrial_neu_other,manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Wood",NAICS_2012_Code,31,,,,
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Wood",NAICS_2012_Code,32,,,,
+StateGHGI_NY,"Industry, Energy, Other Fossil Fuel Use, Industrial, Not Applicable, Wood",NAICS_2012_Code,33,,,,
+StateGHGI_NY,"Industry, IPPU, Electronics Industry, Semiconductor Manufacturing, Not Applicable, Not Applicable",NAICS_2012_Code,3332,,direct,industrial machinery manufacturing,"IP, Semiconductor Manufacturing"
+StateGHGI_NY,"Industry, IPPU, Metals, Aluminum, Not Applicable, Not Applicable",NAICS_2012_Code,3313,,direct,alumina and aluminum production and processing,"IP, Aluminum Production, CO2"
+StateGHGI_NY,"Industry, IPPU, Metals, Ferroalloys, Not Applicable, Not Applicable",NAICS_2012_Code,3311,,direct,iron and steel mills and ferroalloy manufacturing,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, IPPU, Metals, Iron and Steel, Not Applicable, Not Applicable",NAICS_2012_Code,3311,,direct,iron and steel mills and ferroalloy manufacturing,"IP, Iron & Steel Production"
+StateGHGI_NY,"Industry, IPPU, Metals, Lead, Not Applicable, Not Applicable",NAICS_2012_Code,3314,,direct,nonferrous metal (except aluminum) production and processing),NO CLEAR MAPPING
+StateGHGI_NY,"Industry, IPPU, Minerals, Cement, Not Applicable, Not Applicable",NAICS_2012_Code,3273,,direct,cement and concrete product manufacturing,"IP, Cement Manufacture"
+StateGHGI_NY,"Industry, IPPU, Minerals, Other Process Uses of Carbonates, Not Applicable, Not Applicable",NAICS_2012_Code,3274,,direct,lime and gypsum product manufacturing,"IP, Limestone and Dolomite Use"
+StateGHGI_NY,"Industry, IPPU, Minerals, Soda Ash, Not Applicable, Not Applicable",NAICS_2012_Code,3251,,direct,basic chemical manufacturing,"IP, Soda Ash"
+StateGHGI_NY,"Industry, IPPU, Product Use, Nitrous Oxide, Not Applicable, Not Applicable",NAICS_2012_Code,621,,industrial_pu_no2,ambulatory health care services,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, IPPU, Product Use, Nitrous Oxide, Not Applicable, Not Applicable",NAICS_2012_Code,622,,industrial_pu_no2,hospitals,NO CLEAR MAPPING
+StateGHGI_NY,"Industry, IPPU, Product Use, Nitrous Oxide, Not Applicable, Not Applicable",NAICS_2012_Code,623,,industrial_pu_no2,nursing and residential care facilities,NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Military, Distillate Fuel",NAICS_2012_Code,9281,,mobile_combustion,national security and international affairs,NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Military, Residual Fuel",NAICS_2012_Code,9281,,mobile_combustion,national security and international affairs,NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Agricultural, Gasoline",NAICS_2012_Code,11,,farm_equipment,"agriculture, forestry, fishing and hunting","Mobile Combustion, Non-Highway, Farm Equipment"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Aviation, Aviation Gasoline",NAICS_2012_Code,481,,mobile_combustion,air transportation,"Mobile Combustion, Non-Highway, Aircraft"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Aviation, Aviation Gasoline",NAICS_2012_Code,487,,mobile_combustion,scenic and sightseeing transportation,"Mobile Combustion, Non-Highway, Aircraft"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Aviation, Aviation Gasoline",NAICS_2012_Code,488,,mobile_combustion,support activities for transportation,"Mobile Combustion, Non-Highway, Aircraft"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Aviation, Aviation Gasoline",NAICS_2012_Code,9221,,mobile_combustion,"justice, public order, and safety activities","Mobile Combustion, Non-Highway, Aircraft"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Aviation, Aviation Gasoline",NAICS_2012_Code,928,,mobile_combustion,national security and international affairs,"Mobile Combustion, Non-Highway, Aircraft"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Aviation, Aviation Gasoline",NAICS_2012_Code,F010,,mobile_combustion,personal consumption,"Mobile Combustion, Non-Highway, Aircraft"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Aviation, Jet Fuel",NAICS_2012_Code,481,,mobile_combustion,air transportation,"Mobile Combustion, Non-Highway, Aircraft"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Aviation, Jet Fuel",NAICS_2012_Code,487,,mobile_combustion,scenic and sightseeing transportation,"Mobile Combustion, Non-Highway, Aircraft"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Aviation, Jet Fuel",NAICS_2012_Code,488,,mobile_combustion,support activities for transportation,"Mobile Combustion, Non-Highway, Aircraft"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Aviation, Jet Fuel",NAICS_2012_Code,9221,,mobile_combustion,"justice, public order, and safety activities","Mobile Combustion, Non-Highway, Aircraft"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Aviation, Jet Fuel",NAICS_2012_Code,928,,mobile_combustion,national security and international affairs,"Mobile Combustion, Non-Highway, Aircraft"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Aviation, Jet Fuel",NAICS_2012_Code,F010,,mobile_combustion,personal consumption,"Mobile Combustion, Non-Highway, Aircraft"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Construction, Gasoline",NAICS_2012_Code,23,,construction_equipment,construction,"Mobile Combustion, Non-Highway, Construction Equipment"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Industrial/Commercial, Gasoline",NAICS_2012_Code,92613,,mobile_combustion,"regulation and administration of communications, electric, gas, and other utilities",NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Industrial/Commercial, Gasoline",NAICS_2012_Code,9221,,mobile_combustion,"justice, public order, and safety activities",NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Industrial/Commercial, Gasoline",NAICS_2012_Code,928,,mobile_combustion,national security and international affairs,NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Industrial/Commercial, Gasoline",NAICS_2012_Code,F010,,mobile_combustion,personal consumption,NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Lawn and Garden, Gasoline",NAICS_2012_Code,92613,,mobile_combustion,"regulation and administration of communications, electric, gas, and other utilities",NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Lawn and Garden, Gasoline",NAICS_2012_Code,9221,,mobile_combustion,"justice, public order, and safety activities",NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Lawn and Garden, Gasoline",NAICS_2012_Code,928,,mobile_combustion,national security and international affairs,NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Lawn and Garden, Gasoline",NAICS_2012_Code,F010,,mobile_combustion,personal consumption,NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Marine/Boating, Gasoline",NAICS_2012_Code,483,,mobile_combustion,water transportation,"Mobile Combustion, Non-Highway, Boats"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Marine/Boating, Gasoline",NAICS_2012_Code,487,,mobile_combustion,scenic and sightseeing transportation,"Mobile Combustion, Non-Highway, Boats"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Marine/Boating, Gasoline",NAICS_2012_Code,488,,mobile_combustion,support activities for transportation,"Mobile Combustion, Non-Highway, Boats"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Marine/Boating, Gasoline",NAICS_2012_Code,9221,,mobile_combustion,"justice, public order, and safety activities","Mobile Combustion, Non-Highway, Boats"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Marine/Boating, Gasoline",NAICS_2012_Code,928,,mobile_combustion,national security and international affairs,"Mobile Combustion, Non-Highway, Boats"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Marine/Boating, Gasoline",NAICS_2012_Code,F010,,mobile_combustion,personal consumption,"Mobile Combustion, Non-Highway, Boats"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Miscellaneous/Unclassified, Gasoline",NAICS_2012_Code,92613,,mobile_combustion,"regulation and administration of communications, electric, gas, and other utilities",NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Miscellaneous/Unclassified, Gasoline",NAICS_2012_Code,9221,,mobile_combustion,"justice, public order, and safety activities",NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Miscellaneous/Unclassified, Gasoline",NAICS_2012_Code,928,,mobile_combustion,national security and international affairs,NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Miscellaneous/Unclassified, Gasoline",NAICS_2012_Code,F010,,mobile_combustion,personal consumption,NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Other, Diesel",NAICS_2012_Code,92613,,mobile_combustion,"regulation and administration of communications, electric, gas, and other utilities",NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Other, Diesel",NAICS_2012_Code,9221,,mobile_combustion,"justice, public order, and safety activities",NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Other, Diesel",NAICS_2012_Code,928,,mobile_combustion,national security and international affairs,NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Other, Diesel",NAICS_2012_Code,F010,,mobile_combustion,personal consumption,NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Public Nonhighway, Gasoline",NAICS_2012_Code,92613,,mobile_combustion,"regulation and administration of communications, electric, gas, and other utilities",NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Public Nonhighway, Gasoline",NAICS_2012_Code,9221,,mobile_combustion,"justice, public order, and safety activities",NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Public Nonhighway, Gasoline",NAICS_2012_Code,928,,mobile_combustion,national security and international affairs,NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Public Nonhighway, Gasoline",NAICS_2012_Code,F010,,mobile_combustion,personal consumption,NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Railroad, Distillate Fuel",NAICS_2012_Code,482,,mobile_combustion,rail transportation,"Mobile Combustion, Non-Highway, Locomotives"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Railroad, Distillate Fuel",NAICS_2012_Code,485,,mobile_combustion,transit and ground passenger transportation,"Mobile Combustion, Non-Highway, Locomotives"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Railroad, Distillate Fuel",NAICS_2012_Code,487,,mobile_combustion,scenic and sightseeing transportation,"Mobile Combustion, Non-Highway, Locomotives"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Railroad, Distillate Fuel",NAICS_2012_Code,488,,mobile_combustion,support activities for transportation,"Mobile Combustion, Non-Highway, Locomotives"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Nonroad - Recreational Vehicle, Gasoline",NAICS_2012_Code,F010,,direct,personal consumption,NO CLEAR MAPPING
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Road, CNG",NAICS_2012_Code,48,,transportation_other,transportation and warehousing,"CO2FFC, Transportation, Other"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Road, CNG",NAICS_2012_Code,491,,transportation_other,postal service,"CO2FFC, Transportation, Other"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Road, CNG",NAICS_2012_Code,492,,transportation_other,couriers and messengers,"CO2FFC, Transportation, Other"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Road, CNG",NAICS_2012_Code,F010,,transportation_other,personal consumption,"CO2FFC, Transportation, Other"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Road, Gasoline",NAICS_2012_Code,48,,transportation_petroleum,transportation and warehousing,"CO2FFC, Transportation, Petroleum"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Road, Gasoline",NAICS_2012_Code,491,,transportation_petroleum,postal service,"CO2FFC, Transportation, Petroleum"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Road, Gasoline",NAICS_2012_Code,492,,transportation_petroleum,couriers and messengers,"CO2FFC, Transportation, Petroleum"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Road, Gasoline",NAICS_2012_Code,F010,,transportation_petroleum,personal consumption,"CO2FFC, Transportation, Petroleum"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Road, Diesel",NAICS_2012_Code,48,,transportation_petroleum,transportation and warehousing,"CO2FFC, Transportation, Petroleum"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Road, Diesel",NAICS_2012_Code,491,,transportation_petroleum,postal service,"CO2FFC, Transportation, Petroleum"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Road, Diesel",NAICS_2012_Code,492,,transportation_petroleum,couriers and messengers,"CO2FFC, Transportation, Petroleum"
+StateGHGI_NY,"Transportation, Energy, Fuel Combustion, Transportation, Road, Diesel",NAICS_2012_Code,F010,,transportation_petroleum,personal consumption,"CO2FFC, Transportation, Petroleum"
+StateGHGI_NY,"Transportation, IPPU, Product Use, ODS Substitutes, Transportation HVAC, Not Applicable",NAICS_2012_Code,3251,,direct,basic chemical manufacturing,"IP, ODS Substitutes"
+StateGHGI_NY,"Transportation, IPPU, Product Use, ODS Substitutes, Transportation Refrigeration, Not Applicable",NAICS_2012_Code,3251,,direct,basic chemical manufacturing,"IP, ODS Substitutes"
+StateGHGI_NY,"Waste, Waste, Solid Waste Management, In-State Solid Waste Disposal, Not Applicable, Not Applicable",NAICS_2012_Code,562212,,direct,solid waste landfill,"Waste, Emissions from Landfills, Potential CH4, MSW Generation"
+StateGHGI_NY,"Waste, Waste, Waste Combustion, In-State Waste Combustion, Not Applicable, Not Applicable",NAICS_2012_Code,562213,,direct,solid waste combustors and incinerators,"Waste, Emissions from Waste Combustion, CH4"
+StateGHGI_NY,"Waste, Waste, Wastewater, Centralized Wastewater, Not Applicable, Not Applicable",NAICS_2012_Code,22132,,,,
+StateGHGI_NY,"Waste, Waste, Wastewater, Septic Systems, Not Applicable, Not Applicable",NAICS_2012_Code,562991,,,,

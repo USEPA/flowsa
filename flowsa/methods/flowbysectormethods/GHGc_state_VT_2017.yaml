@@ -1,0 +1,25 @@
+# Method for state GHG emissions sourced from EPA state inventories 
+# with custom data for VT from EPA's SIT and the VT State Inventory
+!include:USEEIO_summary_target.yaml
+year: &ghg_year 2017
+geoscale: state
+
+source_names:
+  # U.S. national GHG emissions by state
+  GHG_state_2017_m1:
+    year: *ghg_year
+    data_format: FBS
+    exclusion_fields:
+        Location:
+          - '50000' # VT
+
+  # State Inventory Tool GHG emissions by state
+  EPA_SIT:
+    !include:GHG_state_SIT_2017.yaml:source_names:EPA_SIT
+    clean_fba_before_activity_sets: !script_function:EPA_SIT clean_up_state_data
+    # list of selected states for which to use SIT data rather than state GHG inventory data
+    state_list: ['VT']
+
+  # Vermont supplementary GHG emissions
+  StateGHGI_VT:
+    !include:GHG_state_supplemental_2017.yaml:source_names:StateGHGI_VT

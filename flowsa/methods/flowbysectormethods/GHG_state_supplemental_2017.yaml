@@ -1,0 +1,319 @@
+## Supplementary GHG data for select states
+## This method is not typically intended to be run on its own
+
+!include:USEEIO_summary_target.yaml
+year: &ghg_year 2017
+mecs_year: &mecs_year 2018
+geoscale: state
+
+_attribution_sources:
+  EIA_MECS_Energy: &mecs_energy
+    year: *mecs_year
+    geoscale: national
+    selection_fields: &mecs_energy_default_selection
+      Class: Energy # or Other (for non-energy use)
+      Unit: Trillion Btu
+      # FlowName: Coal # override this
+      Location: '00000'
+      Description:
+        - Table 2.2 # applies to Class Other
+        - Table 3.2 # applies to Class Energy
+    exclusion_fields:
+      ActivityConsumedBy: '31-33'
+    estimate_suppressed: !script_function:EIA_MECS estimate_suppressed_mecs_energy
+
+  BEA: &bea # 2017 Make and Use tables
+    year: 2017
+    geoscale: national
+    activity_to_sector_mapping: BEA_2017_Detail
+    exclusion_fields:
+      # Drop irrelevant final demand and total sectors
+      ActivityConsumedBy: ['F03000', 'F04000', 'F05000', 'F02E00',
+                           'F06E00', 'F07E00', 'F10E00', 'F02R00',
+                           'T001', 'T004', 'T007', 'T019']
+      ActivityProducedBy: ['T007', 'T013', 'T015', 'T016', 'TOP',
+                           'MCIF']
+    attribution_method: equal
+
+source_names:
+  # Maine supplementary biogenic GHG emissions
+  StateGHGI_ME: 
+    data_format: FBA
+    geoscale: state
+    year: *ghg_year
+    fedefl_mapping: GHGI
+    activity_sets:
+      direct:
+        selection_fields:
+          PrimaryActivity: 
+          - LFGTE projects, Solid Waste Management
+          - Landfill off-gassing, Solid Waste Management
+          - MSW combusted, Solid Waste Management
+          - Methane flared, Solid Waste Management
+          - Residential, Wood and Wood Residuals
+          - Electric power, Wood and Wood Residuals
+        attribution_method: direct
+
+      # EMISSIONS FROM COMMERCIAL ETHANOL COMBUSTION
+      commercial_ethanol:
+        selection_fields:
+          PrimaryActivity: Commercial, Ethanol Combustion
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'324110': ''} # purchases of refinery products (324110)
+
+      # EMISSIONS FROM COMMERCIAL WOOD COMBUSTION
+      commercial_wood:
+        selection_fields:
+          PrimaryActivity: Commercial, Wood and Wood Residuals
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'113000': ''} # forestry and logging
+      
+      # EMISSIONS FROM INDUSTRIAL ETHANOL COMBUSTION
+      industrial_ethanol:
+        selection_fields:
+          PrimaryActivity: Industrial, Ethanol Combustion
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'324110': ''} # purchases of refinery products (324110)
+
+      # EMISSIONS FROM INDUSTRIAL WOOD COMBUSTION
+      industrial_wood:
+        selection_fields:
+          PrimaryActivity: Industrial, Wood and Wood Residuals
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'113000': ''} # forestry and logging
+
+      # EMISSIONS FROM TRANSPORTATION BIODIESEL COMBUSTION
+      transportation_biodiesel:
+        selection_fields:
+          PrimaryActivity: Transportation, Biodiesel Combustion
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'324110': ''} # purchases of refinery products (324110)
+
+      # EMISSIONS FROM TRANSPORTATION ETHANOL COMBUSTION
+      transportation_ethanol:
+        selection_fields:
+          PrimaryActivity: Transportation, Ethanol Combustion
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'324110': ''} # purchases of refinery products (324110)
+
+
+  # Vermont supplementary GHG emissions
+  StateGHGI_VT: 
+    data_format: FBA
+    geoscale: state
+    year: *ghg_year
+    fedefl_mapping: GHGI
+    activity_sets:
+      direct:
+        selection_fields:
+          PrimaryActivity: 
+          - Natural gas distribution, pipe mains
+          - Natural gas distribution, services
+          - ODS substitutes
+          - Semiconductor manufacturing
+          - Solid waste, flare
+          - Solid waste, fugitive
+          - Solid waste, to ICE
+        attribution_method: direct
+
+  # New York customized GHG emissions inventory
+  StateGHGI_NY: 
+    data_format: FBA
+    geoscale: state
+    year: *ghg_year
+    fedefl_mapping: GHGI
+    activity_sets:
+      direct:
+        selection_fields:
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv direct
+        attribution_method: direct
+
+      # EMISSIONS FROM COMMERCIAL COAL
+      commercial_coal:
+        !include:GHG_state_SIT_2017.yaml:source_names:EPA_SIT:activity_sets:commercial_coal
+        selection_fields:
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv commercial_coal
+
+      # EMISSIONS FROM COMMERCIAL NATURAL GAS
+      commercial_gas:
+        !include:GHG_state_SIT_2017.yaml:source_names:EPA_SIT:activity_sets:commercial_gas
+        selection_fields:
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv commercial_gas
+
+      # EMISSIONS FROM COMMERCIAL PETROLEUM
+      commercial_petroleum:
+        !include:GHG_state_SIT_2017.yaml:source_names:EPA_SIT:activity_sets:commercial_petroleum
+        selection_fields:
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv commercial_petroleum
+
+      # EMISSIONS FROM COMMERCIAL WOOD COMBUSTION
+      commercial_wood:
+        !include:GHG_state_SIT_2017.yaml:source_names:EPA_SIT:activity_sets:commercial_wood
+        selection_fields:
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv commercial_wood
+
+      # CH4 and N2O EMISSIONS FROM CONSTRUCTION EQUIPMENT
+      construction_equipment:
+        !include:GHG_state_SIT_2017.yaml:source_names:EPA_SIT:activity_sets:construction_equipment
+      
+      # CH4 and N2O EMISSIONS FROM FARM EQUIPMENT
+      # allocated between crops and animals based on USDA land area
+      farm_equipment:
+        !include:GHG_state_SIT_2017.yaml:source_names:EPA_SIT:activity_sets:farm_equipment
+        selection_fields:
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv farm_equipment
+
+      # EMISSIONS FROM INDUSTRIAL COAL
+      industrial_coal:
+        !include:GHG_state_SIT_2017.yaml:source_names:EPA_SIT:activity_sets:industrial_coal
+        selection_fields:
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_coal
+
+      # EMISSIONS FROM INDUSTRIAL NATURAL GAS 
+      industrial_gas:
+        !include:GHG_state_SIT_2017.yaml:source_names:EPA_SIT:activity_sets:industrial_gas
+        selection_fields:
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_gas
+
+      # EMISSIONS FROM INDUSTRIAL PETROLEUM
+      industrial_petroleum:
+        !include:GHG_state_SIT_2017.yaml:source_names:EPA_SIT:activity_sets:industrial_petroleum
+        selection_fields:
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_petroleum
+
+      # EMISSIONS FROM INDUSTRIAL WOOD COMBUSTION
+      industrial_wood:
+        !include:GHG_state_SIT_2017.yaml:source_names:EPA_SIT:activity_sets:industrial_wood
+        selection_fields:
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_wood
+
+      # EMISSIONS FROM NON-ENERGY USE INDUSTRIAL COAL 
+      industrial_neu_coal:
+        selection_fields:
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_neu_coal
+        attribution_method: proportional
+        attribution_source:
+          EIA_MECS_Energy:
+            <<: *mecs_energy
+            selection_fields:
+              Class: Other
+              Unit: Trillion Btu
+              FlowName: Coal
+
+      # EMISSIONS FROM NON-ENERGY USE INDUSTRIAL GAS
+      industrial_neu_gas:
+        selection_fields:
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_neu_gas
+        attribution_method: proportional
+        attribution_source:
+          EIA_MECS_Energy:
+            <<: *mecs_energy
+            selection_fields:
+              Class: Other
+              Unit: Trillion Btu
+              FlowName: Natural Gas
+
+      # EMISSIONS FROM NON-ENERGY USE INDUSTRIAL DISTILLATE FUEL OIL
+      industrial_neu_fueloil:
+        selection_fields:
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_neu_fueloil
+        attribution_method: proportional
+        attribution_source:
+          EIA_MECS_Energy:
+            <<: *mecs_energy
+            selection_fields:
+              Class: Other
+              Unit: Trillion Btu
+              Flowable: Distillate Fuel Oil 
+
+      # EMISSIONS FROM NON-ENERGY USE INDUSTRIAL HYDROCARBON GAS LIQUIDS
+      industrial_neu_hgl:
+        selection_fields:
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_neu_hgl
+        attribution_method: proportional
+        attribution_source:
+          EIA_MECS_Energy:
+            <<: *mecs_energy
+            selection_fields:
+              Class: Other
+              Unit: Trillion Btu
+              Flowable: Hydrocarbon Gas Liquids, excluding natural gasoline
+
+      # EMISSIONS FROM NON-ENERGY USE INDUSTRIAL COKE
+      industrial_neu_coke:
+        selection_fields:
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_neu_coke
+        attribution_method: proportional
+        attribution_source:
+          EIA_MECS_Energy:
+            <<: *mecs_energy
+            selection_fields:
+              Class: Other
+              Unit: Trillion Btu
+              Flowable: Coke and Breeze
+
+      # EMISSIONS FROM NON-ENERGY USE INDUSTRIAL OTHER FOSSIL FUELS
+      industrial_neu_other:
+        selection_fields:
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_neu_other
+        attribution_method: proportional
+        attribution_source:
+          EIA_MECS_Energy:
+            <<: *mecs_energy
+            selection_fields:
+              Class: Other
+              Unit: Trillion Btu
+              Flowable: Other
+
+      # N2O EMISSIONS FROM INDUSTRIAL PRODUCT USE
+      industrial_pu_no2:
+        selection_fields:
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv industrial_pu_no2
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityProducedBy: {'325120': ''} # Industrial gases (325120)
+
+      # CH4 and N2O EMISSIONS FROM MOBILE SOURCES (excl. construction and farm equipment)
+      mobile_combustion:
+        !include:GHG_state_SIT_2017.yaml:source_names:EPA_SIT:activity_sets:mobile_combustion
+        selection_fields:
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv mobile_combustion
+
+      # EMISSIONS FROM TRANSPORTATION OTHER FOSSIL FUELS
+      transportation_other:
+        !include:GHG_state_SIT_2017.yaml:source_names:EPA_SIT:activity_sets:transportation_other
+        selection_fields:
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv transportation_other
+
+      # EMISSIONS FROM TRANSPORTATION PETROLEUM
+      transportation_petroleum:
+        !include:GHG_state_SIT_2017.yaml:source_names:EPA_SIT:activity_sets:transportation_petroleum
+        selection_fields:
+          PrimaryActivity: !from_index:StateGHGI_NY_asets.csv transportation_petroleum
