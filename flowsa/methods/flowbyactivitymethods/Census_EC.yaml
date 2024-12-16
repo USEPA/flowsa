@@ -1,0 +1,56 @@
+author: US Census Bureau
+source_name: Economic Census
+source_url: https://www.census.gov/programs-surveys/economic-census.html
+source_publication_date: ''
+bib_id: Census_EC
+api_name: Census
+api_key_required: true
+format: json
+url:
+  base_url: http://api.census.gov/data/
+  api_path: __year__/__dataset__?
+  url_params:
+    get: __group__
+    # for: "us:*" or "state:*" # <- in 2017 leave blank to get both
+    key: __apiKey__     # make the __apiKey__ part of the url and substitute in individual api key
+  key_param: key
+url_replace_fxn: !script_function:Census_EC census_EC_URL_helper
+call_response_fxn: !script_function:Census_EC census_EC_call
+parse_response_fxn: !script_function:Census_EC census_EC_parse
+
+# https://www.census.gov/data/developers/data-sets/economic-census.2017.html
+
+datasets:
+  ecnclcust: # Economic Census: Class of Customer Statistics for Selected Geographies
+    '2017':
+      # Selected Sectors: Sales, Value of Shipments, or Revenue by Class of Customer for Selected Geographies: 2017
+      - EC1700CLCUST
+    '2012':
+      # Subject Series - Miscellaneous Subjects: Receipts by Class of Customer for Selected Industries for the U.S.: 2012
+      - EC1256SXSB3 # Administrative and Support and Waste Management and Remediation Services
+
+  # ecnbasic:
+  #   '2012':
+  #     # Administrative and Support and Waste Management and Remediation Services: Geographic Area Series: Summary Statistics for the U.S., States, Metro Areas, Counties, and Places
+  #     - EC1256A1
+  # ecnlines:
+  #   '2012':
+  #     # Administrative and Support and Waste Management and Remediation Services: Subject Series - Product Lines: Product Lines Statistics by Industry for the U.S. and States
+  #     - EC1256SLLS1
+  # ecnexpsvc:
+  #   '2012':
+  #     # Administrative and Support and Waste Management and Remediation Services: Subject Series - Miscellaneous Subjects: Exported Services for Selected Industries for the U.S. and States
+  #     - EC1256SXSB1
+  # ecncomp:
+  #   '2012':
+  #     # All sectors: Core Business Statistics Series: Comparative Statistics for the U.S. and the States (2007 NAICS Basis): 2012 and 2007
+  #     - EC1200CCOMP1
+  # ecnfran:
+  #   '2012':
+  #     # Economic Census: Core Business Statistics Series, 2012: Franchise Status for Selected Industries and States: 2012
+  #     - EC1200CFRA1
+
+years:
+- 2012
+- 2017
+
