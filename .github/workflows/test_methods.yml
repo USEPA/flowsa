@@ -75,7 +75,7 @@ jobs:
     - name: Upload csv files
       # if: steps.FBS.outcome == 'success' # Upload csv only if step succeeds
       if: always()
-      uses: actions/upload-artifact@v3.1.1
+      uses: actions/upload-artifact@v4
       with:
         # Artifact name
         name: FBS diff files

@@ -5,7 +5,7 @@
 USDA Economic Research Service (ERS) Farm Income and Wealth Statistics (FIWS)
 https://www.ers.usda.gov/data-products/farm-income-and-wealth-statistics/
 
-Downloads the February 2, 2022 update
+Downloads the Dec 3, 2024 update
 """
 
 import zipfile
@@ -100,3 +100,8 @@ def fiws_parse(*, df_list, year, **_):
     df.reset_index(drop=True, inplace=True)
 
     return df
+
+if __name__ == "__main__":
+    import flowsa
+    flowsa.generateflowbyactivity.main(year='2012-2023', source='USDA_ERS_FIWS')
+    fba = flowsa.getFlowByActivity('USDA_ERS_FIWS', year=2023)

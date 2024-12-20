@@ -1,0 +1,30 @@
+author: US Census Bureau
+source_name: Servcie Annual Survey (SAS)
+source_url: https://www.census.gov/programs-surveys/sas.html
+source_publication_date: 2024
+bib_id: Census_SAS
+api_name: None
+api_key_required: false
+format: xlsx
+url:
+  base_url: https://www2.census.gov/programs-surveys/sas/tables/time-series/sas-latest/sas-22.xlsx
+sheets:
+  # Table1
+  Table 3: Estimated Expense for Employer Firms
+call_response_fxn: !script_function:Census_SAS census_sas_call
+parse_response_fxn: !script_function:Census_SAS census_sas_parse
+call_all_years: True
+years:
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  - 2018
+  - 2019
+  - 2020
+  - 2021
+  - 2022
+
+# Older years may be available i.e.,
+# https://www2.census.gov/programs-surveys/services/technical-documentation/questionnaires/sas/2015/sas-15.xls

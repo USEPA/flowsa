@@ -46,7 +46,7 @@ jobs:
 
     - name: Upload files
       if: always()
-      uses: actions/upload-artifact@v3.1.1
+      uses: actions/upload-artifact@v4
       with:
         # Artifact name
         name: "${{ github.event.inputs.method }}"

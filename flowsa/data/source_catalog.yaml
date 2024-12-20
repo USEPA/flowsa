@@ -96,6 +96,7 @@ BLS_QCEW:
                     2020: NAICS_2017_Code,
                     2021: NAICS_2017_Code,
                     2022: NAICS_2017_Code,
+                    2023: NAICS_2017_Code,
                     }
   sector_hierarchy: "parent-completeChild"
 BTS_Airlines:

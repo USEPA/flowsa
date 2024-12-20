@@ -409,6 +409,9 @@ class FlowByActivity(_FlowBy):
             self.config['activity_schema'], str) else self.config.get(
             'activity_schema', {}).get(self.config['year'])
 
+        if activity_schema is None:
+            log.error(f"activity_schema is not defined, check assignment in flowsa/data/source_catalog.yaml")
+
         if "NAICS" in activity_schema:
             log.info('Activities in %s are NAICS codes.',
                      self.full_name)

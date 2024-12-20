@@ -1,0 +1,212 @@
+activity_set,name,note
+,"Agriculture, Agricultural Soil Management",EXCLUDED (data captured elsewhere)
+,"Agriculture, Agricultural Soil Management, Direct",EXCLUDED (data captured elsewhere)
+direct,"Agriculture, Agricultural Soil Management, Direct, Crop Residues",
+direct,"Agriculture, Agricultural Soil Management, Direct, Fertilizers",
+direct,"Agriculture, Agricultural Soil Management, Direct, Histosols",
+direct,"Agriculture, Agricultural Soil Management, Direct, Livestock",
+direct,"Agriculture, Agricultural Soil Management, Direct, N-Fixing Crops",
+,"Agriculture, Agricultural Soil Management, Indirect",EXCLUDED (data captured elsewhere)
+direct,"Agriculture, Agricultural Soil Management, Indirect, Fertilizers",
+,"Agriculture, Agricultural Soil Management, Indirect, Leaching/Runoff",EXCLUDED (data captured elsewhere)
+direct,"Agriculture, Agricultural Soil Management, Indirect, Leaching/Runoff, Fertilizer Runoff/Leached",
+direct,"Agriculture, Agricultural Soil Management, Indirect, Leaching/Runoff, Manure Runoff/Leached",
+direct,"Agriculture, Agricultural Soil Management, Indirect, Livestock",
+,"Agriculture, Agricultural Soil Management, TOTAL",EXCLUDED (data captured elsewhere)
+direct,"Agriculture, Burning of Agricultural Crop Waste",
+,"Agriculture, Carbon Dioxide",EXCLUDED (data captured elsewhere)
+direct,"Agriculture, Enteric Fermentation",
+ag,"Agriculture, Liming",
+direct,"Agriculture, Manure Management",
+,"Agriculture, Methane",EXCLUDED (data captured elsewhere)
+,"Agriculture, Nitrous Oxide",EXCLUDED (data captured elsewhere)
+direct,"Agriculture, Rice Cultivation",
+ag,"Agriculture, Urea Fertilization",
+,"CO2FFC, Commercial",EXCLUDED (data captured elsewhere)
+commercial_coal,"CO2FFC, Commercial, Coal",
+commercial_gas,"CO2FFC, Commercial, Natural Gas",
+commercial_other,"CO2FFC, Commercial, Other",
+commercial_petroleum,"CO2FFC, Commercial, Petroleum",
+,"CO2FFC, Electric Utilities",EXCLUDED (data captured elsewhere)
+direct,"CO2FFC, Electric Utilities, Coal",
+direct,"CO2FFC, Electric Utilities, Natural Gas",
+direct,"CO2FFC, Electric Utilities, Other",
+direct,"CO2FFC, Electric Utilities, Petroleum",
+,"CO2FFC, Industrial",EXCLUDED (data captured elsewhere)
+industrial_coal,"CO2FFC, Industrial, Coal",
+industrial_gas,"CO2FFC, Industrial, Natural Gas",
+industrial_other,"CO2FFC, Industrial, Other",
+industrial_petroleum,"CO2FFC, Industrial, Petroleum",
+,"CO2FFC, International Bunker Fuels",EXCLUDED (out of scope)
+,"CO2FFC, International Bunker Fuels, Petroleum",EXCLUDED (out of scope)
+,"CO2FFC, Residential",EXCLUDED (data captured elsewhere)
+direct,"CO2FFC, Residential, Coal",
+direct,"CO2FFC, Residential, Natural Gas",
+direct,"CO2FFC, Residential, Other",
+direct,"CO2FFC, Residential, Petroleum",
+,"CO2FFC, TOTAL",EXCLUDED (data captured elsewhere)
+,"CO2FFC, TOTAL, Coal",EXCLUDED (data captured elsewhere)
+,"CO2FFC, TOTAL, Natural Gas",EXCLUDED (data captured elsewhere)
+,"CO2FFC, TOTAL, Other",EXCLUDED (data captured elsewhere)
+,"CO2FFC, TOTAL, Petroleum",EXCLUDED (data captured elsewhere)
+,"CO2FFC, Transportation",EXCLUDED (data captured elsewhere)
+,"CO2FFC, Transportation, Coal",EXCLUDED (essentially zero coal used for transportation)
+direct,"CO2FFC, Transportation, Natural Gas",
+transportation_other,"CO2FFC, Transportation, Other",
+transportation_petroleum,"CO2FFC, Transportation, Petroleum",
+,"Coal, Abandoned Coal Mines",EXCLUDED (data captured elsewhere)
+direct,"Coal, Abandoned Coal Mines, Flooded",
+direct,"Coal, Abandoned Coal Mines, Sealed",
+direct,"Coal, Abandoned Coal Mines, Vented",
+direct,"Coal, Coal Mining",
+,"Forest Management, Agricultural Soil Carbon Flux",EXCLUDED (out of scope)
+,"Forest Management, Agricultural Soil Carbon Flux, Total",EXCLUDED (out of scope)
+,"Forest Management, Forest Carbon Flux",EXCLUDED (out of scope)
+,"Forest Management, Forest Carbon Flux, Aboveground Biomass",EXCLUDED (out of scope)
+,"Forest Management, Forest Carbon Flux, Belowground Biomass",EXCLUDED (out of scope)
+,"Forest Management, Forest Carbon Flux, Dead Wood",EXCLUDED (out of scope)
+,"Forest Management, Forest Carbon Flux, Litter",EXCLUDED (out of scope)
+,"Forest Management, Forest Carbon Flux, Soil Organic Carbon",EXCLUDED (out of scope)
+,"Forest Management, Forest Carbon Flux, Total Wood products and landfills",EXCLUDED (out of scope)
+,"Forest Management, Forest Fires",EXCLUDED (out of scope)
+,"Forest Management, Forest Fires, CH4",EXCLUDED (out of scope)
+,"Forest Management, Forest Fires, N2O",EXCLUDED (out of scope)
+,"Forest Management, Landfilled Yard Trimmings and Food Scraps",EXCLUDED (out of scope)
+,"Forest Management, Landfilled Yard Trimmings and Food Scraps, Branches",EXCLUDED (out of scope)
+,"Forest Management, Landfilled Yard Trimmings and Food Scraps, Grass",EXCLUDED (out of scope)
+,"Forest Management, Landfilled Yard Trimmings and Food Scraps, Landfilled Food Scraps",EXCLUDED (out of scope)
+,"Forest Management, Landfilled Yard Trimmings and Food Scraps, Leaves",EXCLUDED (out of scope)
+,"Forest Management, N2O from Settlement Soils",EXCLUDED (out of scope)
+,"Forest Management, Urban Trees",EXCLUDED (out of scope)
+,"Gas and Oil, Natural Gas",EXCLUDED (data captured elsewhere)
+direct,"Gas and Oil, Natural Gas Flaring",
+direct,"Gas and Oil, Natural Gas, Distribution",
+direct,"Gas and Oil, Natural Gas, Production",
+direct,"Gas and Oil, Natural Gas, Transmission",
+direct,"Gas and Oil, Oil",
+direct,"IP, Adipic Acid Production",
+direct,"IP, Aluminum Production, CO2",
+direct,"IP, Aluminum Production, PFCs",
+direct,"IP, Ammonia Production",
+,"IP, Carbon Dioxide Emissions",EXCLUDED (data captured elsewhere)
+direct,"IP, Cement Manufacture",
+direct,"IP, Electric Power Transmission and Distribution Systems",
+direct,"IP, HCFC-22 Production",
+,"IP, HFC, PFC, SF6 and NF3 Emissions",EXCLUDED (data captured elsewhere)
+direct,"IP, Iron & Steel Production",
+direct,"IP, Lime Manufacture",
+direct,"IP, Limestone and Dolomite Use",
+direct,"IP, Magnesium Production",
+direct,"IP, Nitric Acid Production",
+,"IP, Nitrous Oxide Emissions",EXCLUDED (data captured elsewhere)
+ods_substitutes,"IP, ODS Substitutes",
+direct,"IP, Semiconductor Manufacturing",
+direct,"IP, Soda Ash",
+,"IP, Total Emissions",EXCLUDED (data captured elsewhere)
+direct,"IP, Urea Consumption",
+,"Mobile Combustion, Alternative Fuel Vehicles",EXCLUDED (data captured elsewhere)
+mobile_combustion,"Mobile Combustion, Alternative Fuel Vehicles, Buses",
+mobile_combustion,"Mobile Combustion, Alternative Fuel Vehicles, Heavy Duty Vehicles",
+mobile_combustion,"Mobile Combustion, Alternative Fuel Vehicles, Light Duty Vehicles",
+,"Mobile Combustion, Diesel Highway",EXCLUDED (data captured elsewhere)
+mobile_combustion,"Mobile Combustion, Diesel Highway, Heavy-Duty Vehicles",
+mobile_combustion,"Mobile Combustion, Diesel Highway, Light-Duty Trucks",
+mobile_combustion,"Mobile Combustion, Diesel Highway, Passenger Cars",
+mobile_combustion,"Mobile Combustion, Diesel Highway, Heavy-Duty Buses",
+,"Mobile Combustion, Gasoline Highway",EXCLUDED (data captured elsewhere)
+mobile_combustion,"Mobile Combustion, Gasoline Highway, Heavy-Duty Vehicles",
+mobile_combustion,"Mobile Combustion, Gasoline Highway, Light-Duty Trucks",
+mobile_combustion,"Mobile Combustion, Gasoline Highway, Motorcycles",
+mobile_combustion,"Mobile Combustion, Gasoline Highway, Passenger Cars",
+,"Mobile Combustion, Non-Highway",EXCLUDED (data captured elsewhere)
+mobile_combustion,"Mobile Combustion, Non-Highway, Aircraft",
+mobile_combustion,"Mobile Combustion, Non-Highway, Boats",
+construction_equipment,"Mobile Combustion, Non-Highway, Construction Equipment",
+farm_equipment,"Mobile Combustion, Non-Highway, Farm Equipment",
+mobile_combustion,"Mobile Combustion, Non-Highway, Locomotives",
+mobile_combustion,"Mobile Combustion, Non-Highway, Other*",
+,"Mobile Combustion, Total",EXCLUDED (data captured elsewhere)
+,"Summary CH4, Residential",EXCLUDED (data captured elsewhere)
+direct,"Summary CH4, Residential, Coal",
+direct,"Summary CH4, Residential, Petroleum",
+direct,"Summary CH4, Residential, Natural Gas",
+direct,"Summary CH4, Residential, Wood",
+direct,"Summary CH4, Residential, Other",
+,"Summary CH4, Commercial",EXCLUDED (data captured elsewhere)
+commercial_coal,"Summary CH4, Commercial, Coal",
+commercial_petroleum,"Summary CH4, Commercial, Petroleum",
+commercial_gas,"Summary CH4, Commercial, Natural Gas",
+commercial_wood,"Summary CH4, Commercial, Wood",
+commercial_other,"Summary CH4, Commercial, Other",
+,"Summary CH4, Industrial",EXCLUDED (data captured elsewhere)
+industrial_coal,"Summary CH4, Industrial, Coal",
+industrial_petroleum,"Summary CH4, Industrial, Petroleum",
+industrial_gas,"Summary CH4, Industrial, Natural Gas",
+industrial_wood,"Summary CH4, Industrial, Wood",
+industrial_other,"Summary CH4, Industrial, Other",
+,"Summary CH4, Electric Power",EXCLUDED (data captured elsewhere)
+direct,"Summary CH4, Electric Power, Coal",
+direct,"Summary CH4, Electric Power, Petroleum",
+direct,"Summary CH4, Electric Power, Natural Gas",
+direct,"Summary CH4, Electric Power, Wood",
+direct,"Summary CH4, Electric Power, Other",
+,"Summary CH4, TOTAL",EXCLUDED (data captured elsewhere)
+,"Summary CH4, TOTAL, Coal",EXCLUDED (data captured elsewhere)
+,"Summary CH4, TOTAL, Petroleum",EXCLUDED (data captured elsewhere)
+,"Summary CH4, TOTAL, Natural Gas",EXCLUDED (data captured elsewhere)
+,"Summary CH4, TOTAL, Wood",EXCLUDED (data captured elsewhere)
+,"Summary CH4, TOTAL, Other",EXCLUDED (data captured elsewhere)
+,"Summary N2O, Residential",EXCLUDED (data captured elsewhere)
+direct,"Summary N2O, Residential, Coal",
+direct,"Summary N2O, Residential, Petroleum",
+direct,"Summary N2O, Residential, Natural Gas",
+direct,"Summary N2O, Residential, Wood",
+direct,"Summary N2O, Residential, Other",
+,"Summary N2O, Commercial",EXCLUDED (data captured elsewhere)
+commercial_coal,"Summary N2O, Commercial, Coal",
+commercial_petroleum,"Summary N2O, Commercial, Petroleum",
+commercial_gas,"Summary N2O, Commercial, Natural Gas",
+commercial_wood,"Summary N2O, Commercial, Wood",
+commercial_other,"Summary N2O, Commercial, Other",
+,"Summary N2O, Industrial",EXCLUDED (data captured elsewhere)
+industrial_coal,"Summary N2O, Industrial, Coal",
+industrial_petroleum,"Summary N2O, Industrial, Petroleum",
+industrial_gas,"Summary N2O, Industrial, Natural Gas",
+industrial_wood,"Summary N2O, Industrial, Wood",
+industrial_other,"Summary N2O, Industrial, Other",
+,"Summary N2O, Electric Power",EXCLUDED (data captured elsewhere)
+direct,"Summary N2O, Electric Power, Coal",
+direct,"Summary N2O, Electric Power, Petroleum",
+direct,"Summary N2O, Electric Power, Natural Gas",
+direct,"Summary N2O, Electric Power, Wood",
+direct,"Summary N2O, Electric Power, Other",
+,"Summary N2O, TOTAL",EXCLUDED (data captured elsewhere)
+,"Summary N2O, TOTAL, Coal",EXCLUDED (data captured elsewhere)
+,"Summary N2O, TOTAL, Petroleum",EXCLUDED (data captured elsewhere)
+,"Summary N2O, TOTAL, Natural Gas",EXCLUDED (data captured elsewhere)
+,"Summary N2O, TOTAL, Wood",EXCLUDED (data captured elsewhere)
+,"Summary N2O, TOTAL, Other",EXCLUDED (data captured elsewhere)
+,"Waste, Emissions from Landfills, CH4 Avoided",EXCLUDED (data captured elsewhere)
+,"Waste, Emissions from Landfills, CH4 Avoided, Flare",EXCLUDED (data captured elsewhere)
+,"Waste, Emissions from Landfills, CH4 Avoided, Landfill Gas-to-Energy",EXCLUDED (data captured elsewhere)
+,"Waste, Emissions from Landfills, Oxidation at Industrial Landfills",EXCLUDED (data captured elsewhere)
+,"Waste, Emissions from Landfills, Oxidation at MSW Landfills",EXCLUDED (data captured elsewhere)
+,"Waste, Emissions from Landfills, Potential CH4",EXCLUDED (data captured elsewhere)
+,"Waste, Emissions from Landfills, Potential CH4, Industrial Generation",EXCLUDED (data captured elsewhere)
+,"Waste, Emissions from Landfills, Potential CH4, MSW Generation",EXCLUDED (data captured elsewhere)
+direct,"Waste, Emissions from Landfills, Total CH4 Emissions",
+direct,"Waste, Emissions from Waste Combustion, CH4",
+direct,"Waste, Emissions from Waste Combustion, CO2",
+direct,"Waste, Emissions from Waste Combustion, N2O",
+,"Waste, Emissions from Waste Combustion, Plastics",EXCLUDED (data captured elsewhere)
+,"Waste, Emissions from Waste Combustion, Synthetic Fibers",EXCLUDED (data captured elsewhere)
+,"Waste, Emissions from Waste Combustion, Synthetic Rubber in MSW",EXCLUDED (data captured elsewhere)
+,"Waste, Emissions from Waste Combustion, Total CO2, N2O, CH4 Emissions",EXCLUDED (data captured elsewhere)
+,"Wastewater, Fruits & Vegetables",EXCLUDED (data captured elsewhere)
+direct,"Wastewater, Industrial CH4",
+direct,"Wastewater, Municipal CH4",
+direct,"Wastewater, Municipal N2O",
+,"Wastewater, Poultry",EXCLUDED (data captured elsewhere)
+,"Wastewater, Pulp & Paper",EXCLUDED (data captured elsewhere)
+,"Wastewater, Red Meat",EXCLUDED (data captured elsewhere)
+,"Wastewater, Total Emissions",EXCLUDED (data captured elsewhere)

@@ -1,0 +1,34 @@
+# Method for state GHG emissions sourced from EPA state inventories 
+# with custom data for Maine from EPA's SIT and the Maine State Inventory
+!include:USEEIO_summary_target.yaml
+year: &ghg_year 2018
+geoscale: state
+
+sources_to_cache:
+  Detail_Use_2018:
+    !include:Detail_Use_SUT.yaml
+    year: *ghg_year
+    source_names:
+      BEA_Summary_Use_SUT:
+        !include:Detail_Use_SUT.yaml:source_names:BEA_Summary_Use_SUT
+        year: *ghg_year
+
+source_names:
+  # U.S. national GHG emissions by state
+  GHG_state_2018_m1:
+    year: *ghg_year
+    data_format: FBS
+    exclusion_fields:
+        Location:
+          - '23000' # ME
+
+  # State Inventory Tool GHG emissions by state
+  EPA_SIT: 
+    !include:GHG_state_SIT_2018.yaml:source_names:EPA_SIT
+    clean_fba_before_activity_sets: !script_function:EPA_SIT clean_up_state_data
+    # list of selected states for which to use SIT data rather than state GHG inventory data
+    state_list: ['ME']
+
+  # Maine supplementary biogenic GHG emissions  
+  StateGHGI_ME: 
+    !include:GHG_state_supplemental_2018.yaml:source_names:StateGHGI_ME
