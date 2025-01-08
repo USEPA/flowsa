@@ -4,12 +4,15 @@ source_url: 'https://www.epa.gov/ghgemissions/state-ghg-emissions-and-removals'
 bib_id: ''
 format: zip  # .zip file with .xlsx file
 url:
-  base_url: 'https://www.epa.gov/system/files/other-files/2023-05/AllStateData-ReadMe_042623.zip'
+  base_url: 'https://www.epa.gov/system/files/other-files/2024-09/allstateghgdata90-22_v082924.zip'
+  
 call_response_fxn: !script_function:EPA_StateGHGI epa_state_ghgi_call
 parse_response_fxn: !script_function:EPA_StateGHGI epa_state_ghgi_parse
-file: 'AllStateGHGData_042623.xlsx'
-sheet: 'Data by Econ Sect'
+file:  'AllStateGHGData90-22_v082924.xlsx'
+sheet: 'Data by Economic Sectors'
 years:
+- 2022
+- 2021
 - 2020
 - 2019
 - 2018

@@ -40,25 +40,25 @@ def epa_state_ghgi_parse(*, df_list, source, year, config, **_):
     """
     data_df = pd.concat(df_list)
 
-    activity_cols = ['ECON_SECTOR', 'ECON_SOURCE', 'SUBSECTOR',
-                     'CATEGORY', 'FUEL', 'SUBCATEGORY1',
-                     'SUBCATEGORY2', 'SUBCATEGORY3', 'SUBCATEGORY4']
+    activity_cols = ['econ_sector', 'econ_subsector', 'subsector',
+                     'category', 'fuel1', 'fuel2', 'sub_category_1',
+                     'sub_category_2', 'sub_category_3', 'sub_category_4', 'sub_category_5']
 
-    states = data_df[['STATE']].drop_duplicates()
-    flows = data_df[['GHG']].drop_duplicates()
+    states = data_df[['geo_ref']].drop_duplicates()
+    flows = data_df[['ghg_category']].drop_duplicates()
 
-    df = (data_df.melt(id_vars = activity_cols + ['STATE'] + ['GHG'],
+    df = (data_df.melt(id_vars = activity_cols + ['geo_ref'] + ['ghg_category'],
                        value_vars=f'Y{year}',
                        var_name = 'Year',
                        value_name = 'FlowAmount')
                 .assign(Year = year)
-                .assign(Unit = 'MMT CO2e') # TODO confirm units
+                .assign(Unit = 'Tg') #TODO confirm units MMT CO2e
                 .assign(FlowType = 'ELEMENTARY_FLOW')
                 .assign(SourceName = source)
                 .assign(Class = 'Chemicals')
                 .assign(Compartment = 'air')
-                .rename(columns={'STATE': 'State',
-                                 'GHG': 'FlowName'})
+                .rename(columns={'geo_ref': 'State',
+                                 'ghg_category': 'FlowName'})
                 .assign(ActivityProducedBy = lambda x: x[activity_cols]
                         .apply(lambda row: " - ".join(
                             row.dropna().drop_duplicates().astype(str)),
@@ -229,5 +229,7 @@ def drop_negative_values(fbs: FlowBySector, **_) -> FlowBySector:
 
 if __name__ == '__main__':
     import flowsa
-    flowsa.generateflowbyactivity.main(source='EPA_StateGHGI', year='2017')
-    fba = flowsa.flowbyactivity.getFlowByActivity('EPA_StateGHGI', '2017')
+    flowsa.generateflowbyactivity.main(source='EPA_StateGHGI', year='2020')
+    fba = flowsa.flowbyactivity.getFlowByActivity('EPA_StateGHGI', '2020')
+    
+    
