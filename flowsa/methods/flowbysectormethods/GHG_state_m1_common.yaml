@@ -30,7 +30,7 @@ source_names:
     activity_sets:
       direct:
       # replicates direct attribution from EPA_GHGI_T_2_1, EPA_GHGI_T_4_103,
-      # and EPA_GHGI_T_4_63
+      # and EPA_GHGI_T_4_121
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct
         attribution_method: direct
@@ -382,7 +382,7 @@ source_names:
           MetaSources:
             - 'EPA_GHGI_T_A_5.direct_attribution'
             - 'EPA_GHGI_T_A_6.direct_attribution'
-            - 'EPA_GHGI_T_A_9.direct_attribution'
+            - 'EPA_GHGI_T_A_7.direct_attribution'
             - 'EPA_GHGI_T_A_8.direct_attribution'
             - 'EPA_GHGI_T_A_9.direct_attribution'
             - 'EPA_GHGI_T_A_10.direct_attribution'
@@ -406,8 +406,8 @@ source_names:
             - 'EPA_GHGI_T_A_5.coal_manufacturing_co2'
             - 'EPA_GHGI_T_A_6.non_manufacturing_coal'
             - 'EPA_GHGI_T_A_6.coal_manufacturing_co2'
-            - 'EPA_GHGI_T_A_9.non_manufacturing_coal'
-            - 'EPA_GHGI_T_A_9.coal_manufacturing_co2'
+            - 'EPA_GHGI_T_A_7.non_manufacturing_coal'
+            - 'EPA_GHGI_T_A_7.coal_manufacturing_co2'
             - 'EPA_GHGI_T_A_8.non_manufacturing_coal'
             - 'EPA_GHGI_T_A_8.coal_manufacturing_co2'
             - 'EPA_GHGI_T_A_9.non_manufacturing_coal'
@@ -437,8 +437,8 @@ source_names:
             - 'EPA_GHGI_T_A_5.natural_gas_manufacturing'
             - 'EPA_GHGI_T_A_6.non_manufacturing_natural_gas'
             - 'EPA_GHGI_T_A_6.natural_gas_manufacturing'
-            - 'EPA_GHGI_T_A_9.non_manufacturing_natural_gas'
-            - 'EPA_GHGI_T_A_9.natural_gas_manufacturing'
+            - 'EPA_GHGI_T_A_7.non_manufacturing_natural_gas'
+            - 'EPA_GHGI_T_A_7.natural_gas_manufacturing'
             - 'EPA_GHGI_T_A_8.non_manufacturing_natural_gas'
             - 'EPA_GHGI_T_A_8.natural_gas_manufacturing'
             - 'EPA_GHGI_T_A_9.non_manufacturing_natural_gas'
@@ -466,7 +466,7 @@ source_names:
           MetaSources:
             - 'EPA_GHGI_T_A_5.petroleum'
             - 'EPA_GHGI_T_A_6.petroleum'
-            - 'EPA_GHGI_T_A_9.petroleum'
+            - 'EPA_GHGI_T_A_7.petroleum'
             - 'EPA_GHGI_T_A_8.petroleum'
             - 'EPA_GHGI_T_A_9.petroleum'
             - 'EPA_GHGI_T_A_10.petroleum'
