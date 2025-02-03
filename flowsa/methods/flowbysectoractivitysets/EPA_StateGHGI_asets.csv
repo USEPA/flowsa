@@ -1,200 +1,200 @@
-activity_set,name,note,,,
-use_table_pet,Agriculture - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Non-Highway Farm Equipment,"EPA_GHGI_T_A_14 (CO2 is included in Industrial/Commerical, not Mobile transport)",,,
-ag_livestock,Agriculture - Enteric Fermentation,EPA_GHGI_T_5_3,,,
-ag_livestock,Agriculture - Enteric Fermentation - American Bison,EPA_GHGI_T_5_3,,,
-ag_livestock,Agriculture - Enteric Fermentation - Beef Cattle,EPA_GHGI_T_5_3,,,
-ag_livestock,Agriculture - Enteric Fermentation - Dairy Cattle,EPA_GHGI_T_5_3,,,
-ag_livestock,Agriculture - Enteric Fermentation - Goats,EPA_GHGI_T_5_3,,,
-ag_livestock,Agriculture - Enteric Fermentation - Horses,EPA_GHGI_T_5_3,,,
-ag_livestock,Agriculture - Enteric Fermentation - Mules and Asses,EPA_GHGI_T_5_3,,,
-ag_livestock,Agriculture - Enteric Fermentation - Sheep,EPA_GHGI_T_5_3,,,
-ag_livestock,Agriculture - Enteric Fermentation - Swine,EPA_GHGI_T_5_3,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Cereals - Barley,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Cereals - Maize,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Cereals - Other - Oats,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Cereals - Other - Other Small Grains,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Cereals - Other - Rice,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Cereals - Other - Sorghum,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Cereals - Wheat,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Other - Cotton,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Other - Grass Hay,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Other - Legume Hay,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Other - Sunflower,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Other - Tobacco,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Other - Vegetables,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Pulses - Other - Chickpeas,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Pulses - Other - Dry Beans,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Pulses - Other - Lentils,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Pulses - Other - Peanuts,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Pulses - Other - Peas,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Pulses - Other - Soybeans,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Sugarcane,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Tubers and Roots - Other - Potatoes,EPA_GHGI_T_5_29,,,
-ag_burning,Agriculture - Field Burning of Agricultural Residues - Tubers and Roots - Other - Sugarbeets,EPA_GHGI_T_5_29,,,
-liming,"Agriculture - Liming - CO2 Emissions from Liming, Urea Application and Other Carbon-Containing Fertilizers - Dolomite",EPA_GHGI_T_2_1,,,
-liming,"Agriculture - Liming - CO2 Emissions from Liming, Urea Application and Other Carbon-Containing Fertilizers - Limestone",EPA_GHGI_T_2_1,,,
-ag_livestock,Agriculture - Manure Management - American Bison,EPA_GHGI_T_5_7,,,
-ag_livestock,Agriculture - Manure Management - Beef Cattle,EPA_GHGI_T_5_7,,,
-ag_livestock,Agriculture - Manure Management - Bison,EPA_GHGI_T_5_7,,,
-ag_livestock,Agriculture - Manure Management - Dairy Cattle,EPA_GHGI_T_5_7,,,
-ag_livestock,Agriculture - Manure Management - Dairy Heifers,EPA_GHGI_T_5_7,,,
-ag_livestock,Agriculture - Manure Management - Goats,EPA_GHGI_T_5_7,,,
-ag_livestock,Agriculture - Manure Management - Horses,EPA_GHGI_T_5_7,,,
-ag_livestock,Agriculture - Manure Management - Mules and Asses,EPA_GHGI_T_5_7,,,
-ag_livestock,Agriculture - Manure Management - Poultry,EPA_GHGI_T_5_7,,,
-ag_livestock,Agriculture - Manure Management - Sheep,EPA_GHGI_T_5_7,,,
-ag_livestock,Agriculture - Manure Management - Swine,EPA_GHGI_T_5_7,,,
-transport_nonroad_ag,Agriculture - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Farm Equipment,EPA_GHGI_T_3_14,,,
-n2o_soil_direct,Agriculture - Nitrous Oxide from Agricultural Soil Management - Direct and indirect N2O emissions from agricultural soils - Agricultural Soil Management - Cropland - Direct,EPA_GHGI_T_5_17,,,
-n2o_soil_indirect,Agriculture - Nitrous Oxide from Agricultural Soil Management - Direct and indirect N2O emissions from agricultural soils - Agricultural Soil Management - Cropland - Indirect,EPA_GHGI_T_5_18,,,
-n2o_soil_direct,Agriculture - Nitrous Oxide from Agricultural Soil Management - Direct and indirect N2O emissions from agricultural soils - Agricultural Soil Management - Grassland - Direct,EPA_GHGI_T_5_17,,,
-n2o_soil_indirect,Agriculture - Nitrous Oxide from Agricultural Soil Management - Direct and indirect N2O emissions from agricultural soils - Agricultural Soil Management - Grassland - Indirect,EPA_GHGI_T_5_18,,,
-direct,Agriculture - Rice Cultivation,EPA_GHGI_T_2_1,,,
-use_table_pet,Agriculture - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary,,,,
-urea_fertilizer,"Agriculture - Urea Fertilization - CO2 Emissions from Liming, Urea Application and Other Carbon-Containing Fertilizers",EPA_GHGI_T_2_1,,,
-direct,Commercial - Anaerobic Digestion at Biogas Facilities - Biological Treatment of Solid Waste,EPA_GHGI_T_2_1,,,
-use_table_coal,Commercial - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,EPA_GHGI_T_2_1,,,
-use_table_gas,Commercial - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,EPA_GHGI_T_2_1,,,
-use_table_pet,Commercial - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,EPA_GHGI_T_2_1,,,
-direct,Commercial - Composting - Biological Treatment of Solid Waste,EPA_GHGI_T_2_1,,,
-ind_com_ch4_n2o,Commercial - Stationary Combustion - Fossil Fuel Combustion - Biomass - Wood,EPA_GHGI_T_2_1,,,
-ind_com_ch4_n2o,Commercial - Stationary Combustion - Fossil Fuel Combustion - Coal,EPA_GHGI_T_2_1,,,
-ind_com_ch4_n2o,Commercial - Stationary Combustion - Fossil Fuel Combustion - Natural Gas,EPA_GHGI_T_2_1,,,
-ind_com_ch4_n2o,Commercial - Stationary Combustion - Fossil Fuel Combustion - Petroleum,EPA_GHGI_T_2_1,,,
-ods_substitutes,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS,EPA_GHGI_T_2_1,,,
-direct,Commercial - Landfills - Municipal - Solid Waste Disposal - Landfills - MSW Landfills Emissions,EPA_GHGI_T_2_1,,,
-direct,Commercial - Wastewater Treatment - Wastewater Treatment and Discharge - Domestic,EPA_GHGI_T_2_1,,,
-electric_power,Electric Power Industry - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Coal,,,,
-electric_power,Electric Power Industry - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Geothermal,,,,
-electric_power,Electric Power Industry - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Natural Gas,EPA_GHGI_T_A_14,,,
-electric_power,Electric Power Industry - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Petroleum,EPA_GHGI_T_A_14,,,
-electricity_transmission,Electric Power Industry - Electrical Equipment - Other product manufacture and use - Electric Power Systems,EPA_GHGI_T_A_14,,,
-electricity_transmission,Electric Power Industry - Electrical Equipment - Other product manufacture and use - Equipment OEM,,,,
-direct,Electric Power Industry - Incineration of Waste - Incineration,EPA_GHGI_T_2_1,,,
-temp_drop,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Ceramics,,,,
-temp_drop,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - FGD,,,,
-temp_drop,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Flux Stone,,,,
-temp_drop,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Non-Metallurgical Magnesium Production,,,,
-temp_drop,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Other Miscellaneous Uses,,,,
-temp_drop,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Soda Ash Consumption,,,,
-electric_ch4_n2o,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation - Biomass - Wood,,,,
-electric_ch4_n2o,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation - Coal,,,,
-electric_ch4_n2o,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation - Natural Gas,,,,
-electric_ch4_n2o,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation - Petroleum,,,,
-direct,Industry - Abandoned Oil and Gas Wells - Fugitives - Abandoned Wells - Gas,,,,
-direct,Industry - Abandoned Oil and Gas Wells - Fugitives - Abandoned Wells - Oil,EPA_GHGI_T_2_1,,,
-direct,Industry - Abandoned Underground Coal Mines - Fugitives - Abandoned Coal Mines - Liberated ,EPA_GHGI_T_2_1,,,
-direct,Industry - Abandoned Underground Coal Mines - Fugitives - Abandoned Coal Mines - Recovered &Used,EPA_GHGI_T_2_1,,,
-direct,Industry - Adipic Acid Production - Chemical Industry,EPA_GHGI_T_2_1,,,
-direct,Industry - Aluminum Production - Metal Industry,EPA_GHGI_T_2_1,,,
-direct,Industry - Ammonia Production - Chemical Industry,EPA_GHGI_T_2_1,,,
-direct,"Industry - Caprolactam, Glyoxal and Glyoxylic Acid Production - Chemical Industry - Caprolactam",EPA_GHGI_T_2_1,,,
-direct,Industry - Carbide Production and Consumption - Chemical Industry - Silicon Carbide Consumption,EPA_GHGI_T_2_1,,,
-direct,Industry - Carbide Production and Consumption - Chemical Industry - Silicon Carbide Production,EPA_GHGI_T_2_1,,,
-exclude,Industry - Carbon Dioxide Consumption - Other,Excluded from national model,,,
-use_table_coal,Industry - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal,,,,
-use_table_pet,Industry - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Mobile Non-Highway Farm Equipment,negative emissions; align with 'Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum' to avoid double counting,,,EPA_GHGI_T_A_14
-use_table_gas,Industry - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas,,,,
-use_table_pet,Industry - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum,EPA_GHGI_T_A_14,,,
-direct,Industry - Cement Production - Mineral Industry,,,,
-industrial_coal,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal - Manufacturing,m1 only,,,
-industrial_gas,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas - Manufacturing,m1 only,,,
-direct,Industry - Coal Mining - Fugitives - CO2 From Methane Flaring,EPA_GHGI_T_2_1,,,
-direct,Industry - Coal Mining - Fugitives - Post-Mining (Surface),EPA_GHGI_T_2_1,,,
-direct,Industry - Coal Mining - Fugitives - Post-Mining (Underground),EPA_GHGI_T_2_1,,,
-direct,Industry - Coal Mining - Fugitives - Surface Mining,EPA_GHGI_T_2_1,,,
-direct,Industry - Coal Mining - Fugitives - Underground Liberated,EPA_GHGI_T_2_1,,,
-direct,Industry - Coal Mining - Fugitives - Underground Recovered &Used,EPA_GHGI_T_2_1,,,
-direct,Industry - Coal Mining - Fugitives - Underground Recovered &Used For Energy,EPA_GHGI_T_2_1,,,
-direct,Industry - Electronics Industry - Micro-Electro-Mechanical Devices,,,,
-direct,Industry - Electronics Industry - Photovoltaics,,,,
-direct,Industry - Electronics Industry - Semiconductor Manufacture,,,,
-direct_ods,Industry - Electronics Industry - Semiconductor Manufacture - Heat Transfer Fluids,,,,
-direct,Industry - Ferroalloy Production - Metal Industry,EPA_GHGI_T_2_1,,,
-hcfc,Industry - Fluorochemical Production - Chemical Industry - HCFC-22 Production,EPA_GHGI_T_4_50,,,
-hcfc,Industry - Fluorochemical Production - Chemical Industry - Production of fluorochemicals other than HCFC-22,EPA_GHGI_T_4_50,,,
-direct,Industry - Glass Production - Mineral Industry,EPA_GHGI_T_2_1,,,
-direct,Industry - Iron and Steel Production - Metal Industry - Metallurgical Coke Production,EPA_GHGI_T_2_1,,,
-direct,Industry - Iron and Steel Production - Metal Industry - Other Activities,EPA_GHGI_T_2_1,,,
-direct,Industry - Iron and Steel Production - Metal Industry - Pellet Production,EPA_GHGI_T_2_1,,,
-direct,Industry - Iron and Steel Production - Metal Industry - Pig Iron Production,EPA_GHGI_T_2_1,,,
-direct,Industry - Iron and Steel Production - Metal Industry - Sinter Production,EPA_GHGI_T_2_1,,,
-direct,Industry - Iron and Steel Production - Metal Industry - Steel Production,EPA_GHGI_T_2_1,,,
-direct,Industry - Landfills - Industrial - Solid Waste Disposal - Landfills - Industrial Waste Landfills Emissions,EPA_GHGI_T_2_1,,,
-lead,Industry - Lead Production - Metal Industry,EPA_GHGI_T_2_1,,,
-direct,Industry - Lime Production - Mineral Industry,EPA_GHGI_T_2_1,,,
-magnesium,Industry - Magnesium Production - Metal Industry,EPA_GHGI_T_4_84,,,
-transport_nonroad_construction,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Construction,EPA_GHGI_T_3_14,,,
-transport_nonroad_other,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,,,,
-nitrous_oxide_use,Industry - N2O from Product Uses - Other product manufacture and use - Medical Applications,EPA_GHGI_T_2_1,,,
-nitrous_oxide_use,Industry - N2O from Product Uses - Other product manufacture and use - Other,EPA_GHGI_T_2_1,,,
-nitrous_oxide_use,Industry - N2O from Product Uses - Other product manufacture and use - Propellant for Pressure and Aerosol Products,EPA_GHGI_T_2_1,,,
-ng_systems,Industry - Natural Gas Systems - Fugitives - Distribution,EPA_GHGI_T_3_63,,,
-ng_systems,Industry - Natural Gas Systems - Fugitives - Exploration,EPA_GHGI_T_3_63,,,
-ng_systems,Industry - Natural Gas Systems - Fugitives - Gas Post-Meter,EPA_GHGI_T_3_63,,,
-ng_systems,Industry - Natural Gas Systems - Fugitives - Processing,EPA_GHGI_T_3_63,,,
-ng_systems,Industry - Natural Gas Systems - Fugitives - Production and Gathering,EPA_GHGI_T_3_63,,,
-ng_systems,Industry - Natural Gas Systems - Fugitives - Transmission and Storage,EPA_GHGI_T_3_63,,,
-direct,Industry - Nitric Acid Production - Chemical Industry,EPA_GHGI_T_2_1,,,
-industrial_neu,Industry - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - Industrial,EPA_GHGI_T_A_14,,,
-carbonate_use,Industry - Other Process Uses of Carbonates - Mineral Industry - Ceramics,EPA_GHGI_T_2_1,,,
-carbonate_use,Industry - Other Process Uses of Carbonates - Mineral Industry - FGD,EPA_GHGI_T_2_1,,,
-carbonate_use,Industry - Other Process Uses of Carbonates - Mineral Industry - Flux Stone,EPA_GHGI_T_2_1,,,
-carbonate_use,Industry - Other Process Uses of Carbonates - Mineral Industry - Non-Metallurgical Magnesium Production,EPA_GHGI_T_2_1,,,
-carbonate_use,Industry - Other Process Uses of Carbonates - Mineral Industry - Other Miscellaneous Uses,EPA_GHGI_T_2_1,,,
-carbonate_use,Industry - Other Process Uses of Carbonates - Mineral Industry - Soda Ash Consumption,EPA_GHGI_T_2_1,,,
-petrochemicals,Industry - Petrochemical Production - Chemical Industry - Acrylonitrile,EPA_GHGI_T_4_46,,,
-petrochemicals,Industry - Petrochemical Production - Chemical Industry - Carbon Black,EPA_GHGI_T_4_46,,,
-petrochemicals,Industry - Petrochemical Production - Chemical Industry - Ethylene,EPA_GHGI_T_4_46,,,
-petrochemicals,Industry - Petrochemical Production - Chemical Industry - Ethylene Dichloride,EPA_GHGI_T_4_46,,,
-petrochemicals,Industry - Petrochemical Production - Chemical Industry - Ethylene Oxide,EPA_GHGI_T_4_46,,,
-petrochemicals,Industry - Petrochemical Production - Chemical Industry - Methanol,EPA_GHGI_T_4_46,,,
-pet_systems,Industry - Petroleum Systems - Fugitives - Crude Oil Refining,EPA_GHGI_T_3_38,,,
-pet_systems,Industry - Petroleum Systems - Fugitives - Crude Oil Transportation,EPA_GHGI_T_3_38,,,
-pet_systems,Industry - Petroleum Systems - Fugitives - Exploration,EPA_GHGI_T_3_38,,,
-pet_systems,Industry - Petroleum Systems - Fugitives - Production and upgrading,EPA_GHGI_T_3_38,,,
-direct,Industry - Phosphoric Acid Production - Chemical Industry,EPA_GHGI_T_2_1,,,
-hcfc,Industry - SF6 and PFCs from Other Product Use - Other product manufacture and use - SF6 and PFCs from other product use - Military Applications - AWACS,EPA_GHGI_T_4_50,,,
-hcfc,Industry - SF6 and PFCs from Other Product Use - Other product manufacture and use - SF6 and PFCs from other product use - Military Applications - Other Military Applications,EPA_GHGI_T_4_50,,,
-hcfc,Industry - SF6 and PFCs from Other Product Use - Other product manufacture and use - SF6 and PFCs from other product use - Scientific Applications - Other Scientific Applications,EPA_GHGI_T_4_50,,,
-hcfc,Industry - SF6 and PFCs from Other Product Use - Other product manufacture and use - SF6 and PFCs from other product use - Scientific Applications - Particle Accelerators,EPA_GHGI_T_4_50,,,
-direct,Industry - Soda Ash Production - Chemical Industry,EPA_GHGI_T_2_1,,,
-ind_com_ch4_n2o,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary,EPA_GHGI_T_2_1,,,
-ind_com_ch4_n2o,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - Biomass - Wood,,,,
-ind_com_ch4_n2o,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - Coal,negative emissions; align with 'Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial' to avoid double counting,,,
-ind_com_ch4_n2o,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - Natural Gas,,,,
-ind_com_ch4_n2o,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - Petroleum,,,,
-ods_substitutes,Industry - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS,EPA_GHGI_T_4_102,,,
-direct,Industry - Titanium Dioxide Production - Chemical Industry,EPA_GHGI_T_2_1,,,
-urea,Industry - Urea Consumption for Non-Agricultural Purposes - Chemical Industry - Urea Consumption for Non-Agricultural Uses,EPA_GHGI_T_2_1,,,
-direct,Industry - Wastewater Treatment - Wastewater Treatment and Discharge - Industrial,EPA_GHGI_T_2_1,,,
-direct,Industry - Zinc Production - Metal Industry,EPA_GHGI_T_2_1,,,
-residential_co2,Residential - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,,,,
-residential_co2,Residential - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,,,,
-residential_co2,Residential - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,,,,
-direct,Residential - Stationary Combustion - Fossil Fuel Combustion - Biomass - Wood,,,,
-direct,Residential - Stationary Combustion - Fossil Fuel Combustion - Coal,,,,
-direct,Residential - Stationary Combustion - Fossil Fuel Combustion - Natural Gas,,,,
-direct,Residential - Stationary Combustion - Fossil Fuel Combustion - Petroleum,,,,
-ods_substitutes,Residential - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS,EPA_GHGI_T_4_102,,,
-direct,Transportation - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,,,,
-transport_ng,Transportation - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,EPA_GHGI_T_A_14,,,
-transport_petroleum,Transportation - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,EPA_GHGI_T_A_14,,,
-transport_nonroad,Transportation - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Construction,negative emissions; align with 'Transportation - Mobile Combustion - Fossil Fuel Combustion - Petroleum - Non-Highway' to avoid double counting,,,
-transport_nonroad,Transportation - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Farm Equipment,negative emissions; align with 'Transportation - Mobile Combustion - Fossil Fuel Combustion - Petroleum - Non-Highway' to avoid double counting,,,
-transport_nonroad,Transportation - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,negative emissions; align with 'Transportation - Mobile Combustion - Fossil Fuel Combustion - Petroleum - Non-Highway' to avoid double counting,,,
-transport_alt_fuel,Transportation - Mobile Combustion - Fossil Fuel Combustion - Other - Alternative Fuel Highway,,,,
-transport_diesel,Transportation - Mobile Combustion - Fossil Fuel Combustion - Petroleum - Diesel Highway,EPA_GHGI_T_3_14,,,
-transport_gasoline,Transportation - Mobile Combustion - Fossil Fuel Combustion - Petroleum - Gasoline Highway,EPA_GHGI_T_3_14,,,
-transport_nonroad,Transportation - Mobile Combustion - Fossil Fuel Combustion - Petroleum - Non-Highway,EPA_GHGI_T_3_14,,,
-industrial_neu,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,,,,
-ods_transportation,Transportation - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS,EPA_GHGI_T_4_102,,,
-exclude,U.S. Territories - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - US Territories - Coal,,,,
-exclude,U.S. Territories - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - US Territories - Natural Gas,,,,
-exclude,U.S. Territories - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - US Territories - Petroleum,,,,
-exclude,U.S. Territories - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - US Territories,,,,
-exclude,U.S. Territories - Stationary Combustion - Fossil Fuel Combustion - US Territories - Biomass - Wood,,,,
-exclude,U.S. Territories - Stationary Combustion - Fossil Fuel Combustion - US Territories - Coal,,,,
-exclude,U.S. Territories - Stationary Combustion - Fossil Fuel Combustion - US Territories - Natural Gas,,,,
-exclude,U.S. Territories - Stationary Combustion - Fossil Fuel Combustion - US Territories - Petroleum,,,,
+activity_set,name,note
+n2o_soil_direct,Agriculture - Nitrous Oxide from Agricultural Soil Management - Direct and indirect N2O emissions from agricultural soils - Agricultural Soil Management - Cropland - Direct,EPA_GHGI_T_5_17
+n2o_soil_direct,Agriculture - Nitrous Oxide from Agricultural Soil Management - Direct and indirect N2O emissions from agricultural soils - Agricultural Soil Management - Grassland - Direct,EPA_GHGI_T_5_17
+n2o_soil_indirect,Agriculture - Nitrous Oxide from Agricultural Soil Management - Direct and indirect N2O emissions from agricultural soils - Agricultural Soil Management - Cropland - Indirect,EPA_GHGI_T_5_18
+n2o_soil_indirect,Agriculture - Nitrous Oxide from Agricultural Soil Management - Direct and indirect N2O emissions from agricultural soils - Agricultural Soil Management - Grassland - Indirect,EPA_GHGI_T_5_18
+ag_livestock,Agriculture - Enteric Fermentation,EPA_GHGI_T_5_3
+ag_livestock,Agriculture - Enteric Fermentation - American Bison,EPA_GHGI_T_5_3
+ag_livestock,Agriculture - Enteric Fermentation - Beef Cattle,EPA_GHGI_T_5_3
+ag_livestock,Agriculture - Enteric Fermentation - Dairy Cattle,EPA_GHGI_T_5_3
+ag_livestock,Agriculture - Enteric Fermentation - Goats,EPA_GHGI_T_5_3
+ag_livestock,Agriculture - Enteric Fermentation - Horses,EPA_GHGI_T_5_3
+ag_livestock,Agriculture - Enteric Fermentation - Mules and Asses,EPA_GHGI_T_5_3
+ag_livestock,Agriculture - Enteric Fermentation - Sheep,EPA_GHGI_T_5_3
+ag_livestock,Agriculture - Enteric Fermentation - Swine,EPA_GHGI_T_5_3
+ag_burning,Agriculture - Field Burning of Agricultural Residues,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Cereals - Barley,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Cereals - Maize,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Cereals - Other - Oats,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Cereals - Other - Other Small Grains,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Cereals - Other - Rice,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Cereals - Other - Sorghum,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Cereals - Wheat,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Other - Cotton,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Other - Grass Hay,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Other - Legume Hay,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Other - Sunflower,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Other - Tobacco,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Other - Vegetables,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Pulses - Other - Chickpeas,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Pulses - Other - Dry Beans,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Pulses - Other - Lentils,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Pulses - Other - Peanuts,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Pulses - Other - Peas,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Pulses - Other - Soybeans,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Sugarcane,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Tubers and Roots - Other - Potatoes,EPA_GHGI_T_5_29
+ag_burning,Agriculture - Field Burning of Agricultural Residues - Tubers and Roots - Other - Sugarbeets,EPA_GHGI_T_5_29
+liming,"Agriculture - Liming - CO2 Emissions from Liming, Urea Application and Other Carbon-Containing Fertilizers - Dolomite",EPA_GHGI_T_2_1
+liming,"Agriculture - Liming - CO2 Emissions from Liming, Urea Application and Other Carbon-Containing Fertilizers - Limestone",EPA_GHGI_T_2_1
+ag_livestock,Agriculture - Manure Management - American Bison,EPA_GHGI_T_5_7
+ag_livestock,Agriculture - Manure Management - Beef Cattle,EPA_GHGI_T_5_7
+ag_livestock,Agriculture - Manure Management - Bison,EPA_GHGI_T_5_7
+ag_livestock,Agriculture - Manure Management - Dairy Cattle,EPA_GHGI_T_5_7
+ag_livestock,Agriculture - Manure Management - Dairy Heifers,EPA_GHGI_T_5_7
+ag_livestock,Agriculture - Manure Management - Goats,EPA_GHGI_T_5_7
+ag_livestock,Agriculture - Manure Management - Horses,EPA_GHGI_T_5_7
+ag_livestock,Agriculture - Manure Management - Mules and Asses,EPA_GHGI_T_5_7
+ag_livestock,Agriculture - Manure Management - Poultry,EPA_GHGI_T_5_7
+ag_livestock,Agriculture - Manure Management - Sheep,EPA_GHGI_T_5_7
+ag_livestock,Agriculture - Manure Management - Swine,EPA_GHGI_T_5_7
+direct,Agriculture - Rice Cultivation,EPA_GHGI_T_2_1
+urea_fertilizer,"Agriculture - Urea Fertilization - CO2 Emissions from Liming, Urea Application and Other Carbon-Containing Fertilizers",EPA_GHGI_T_2_1
+direct,Industry - Abandoned Oil and Gas Wells - Fugitives - Abandoned Wells - Gas,
+direct,Industry - Abandoned Oil and Gas Wells - Fugitives - Abandoned Wells - Oil,
+direct,Industry - Abandoned Underground Coal Mines - Fugitives - Abandoned Coal Mines - Liberated ,EPA_GHGI_T_2_1
+direct,Industry - Abandoned Underground Coal Mines - Fugitives - Abandoned Coal Mines - Recovered &Used,EPA_GHGI_T_2_1
+direct,Industry - Coal Mining - Fugitives - CO2 From Methane Flaring,EPA_GHGI_T_2_1
+direct,Industry - Coal Mining - Fugitives - Post-Mining (Surface),EPA_GHGI_T_2_1
+direct,Industry - Coal Mining - Fugitives - Post-Mining (Underground),EPA_GHGI_T_2_1
+direct,Industry - Coal Mining - Fugitives - Surface Mining,EPA_GHGI_T_2_1
+direct,Industry - Coal Mining - Fugitives - Underground Liberated,EPA_GHGI_T_2_1
+direct,Industry - Coal Mining - Fugitives - Underground Recovered &Used,EPA_GHGI_T_2_1
+direct,Industry - Coal Mining - Fugitives - Underground Recovered &Used For Energy,EPA_GHGI_T_2_1
+ind_com_ch4_n2o,Commercial - Stationary Combustion - Fossil Fuel Combustion - Biomass - Wood,EPA_GHGI_T_2_1
+ind_com_ch4_n2o,Commercial - Stationary Combustion - Fossil Fuel Combustion - Coal,EPA_GHGI_T_2_1
+ind_com_ch4_n2o,Commercial - Stationary Combustion - Fossil Fuel Combustion - Natural Gas,EPA_GHGI_T_2_1
+ind_com_ch4_n2o,Commercial - Stationary Combustion - Fossil Fuel Combustion - Petroleum,EPA_GHGI_T_2_1
+use_table_coal,Commercial - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,EPA_GHGI_T_2_1
+use_table_gas,Commercial - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,EPA_GHGI_T_2_1
+use_table_pet,Commercial - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,EPA_GHGI_T_2_1
+electric_ch4_n2o,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation - Biomass - Wood,
+electric_ch4_n2o,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation - Coal,
+electric_ch4_n2o,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation - Natural Gas,
+electric_ch4_n2o,Electric Power Industry - Stationary Combustion - Fossil Fuel Combustion - Electricity Generation - Petroleum,
+electric_power,Electric Power Industry - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Coal,
+electric_power,Electric Power Industry - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Geothermal,
+electric_power,Electric Power Industry - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Natural Gas,EPA_GHGI_T_A_14
+electric_power,Electric Power Industry - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Electricity Generation - Petroleum,EPA_GHGI_T_A_14
+ind_com_ch4_n2o,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - Biomass - Wood,
+ind_com_ch4_n2o,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - Coal,
+ind_com_ch4_n2o,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - Natural Gas,
+ind_com_ch4_n2o,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - Petroleum,
+industrial_coal,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal - Manufacturing,m1 only
+use_table_coal,Industry - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Coal,
+industrial_gas,Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas - Manufacturing,m1 only
+use_table_gas,Industry - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Natural Gas,
+use_table_pet,Industry - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum,EPA_GHGI_T_A_14
+direct,Residential - Stationary Combustion - Fossil Fuel Combustion - Biomass - Wood,
+direct,Residential - Stationary Combustion - Fossil Fuel Combustion - Coal,
+direct,Residential - Stationary Combustion - Fossil Fuel Combustion - Natural Gas,
+direct,Residential - Stationary Combustion - Fossil Fuel Combustion - Petroleum,
+residential_co2,Residential - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,
+residential_co2,Residential - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,
+residential_co2,Residential - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,
+direct,Transportation - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Coal,
+transport_ng,Transportation - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Natural Gas,EPA_GHGI_T_A_14
+transport_alt_fuel,Transportation - Mobile Combustion - Fossil Fuel Combustion - Other - Alternative Fuel Highway,
+transport_petroleum,Transportation - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Petroleum,EPA_GHGI_T_A_14
+transport_diesel,Transportation - Mobile Combustion - Fossil Fuel Combustion - Petroleum - Diesel Highway,EPA_GHGI_T_3_14
+transport_gasoline,Transportation - Mobile Combustion - Fossil Fuel Combustion - Petroleum - Gasoline Highway,EPA_GHGI_T_3_14
+transport_nonroad,Transportation - Mobile Combustion - Fossil Fuel Combustion - Petroleum - Non-Highway,EPA_GHGI_T_3_14
+exclude,U.S. Territories - Stationary Combustion - Fossil Fuel Combustion - US Territories - Biomass - Wood,
+exclude,U.S. Territories - Stationary Combustion - Fossil Fuel Combustion - US Territories - Coal,
+exclude,U.S. Territories - Stationary Combustion - Fossil Fuel Combustion - US Territories - Natural Gas,
+exclude,U.S. Territories - Stationary Combustion - Fossil Fuel Combustion - US Territories - Petroleum,
+exclude,U.S. Territories - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - US Territories - Coal,
+exclude,U.S. Territories - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - US Territories - Natural Gas,
+exclude,U.S. Territories - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - US Territories - Petroleum,
+direct,Electric Power Industry - Incineration of Waste - Incineration,EPA_GHGI_T_2_1
+ng_systems,Industry - Natural Gas Systems - Fugitives - Distribution,EPA_GHGI_T_3_63
+ng_systems,Industry - Natural Gas Systems - Fugitives - Exploration,EPA_GHGI_T_3_63
+ng_systems,Industry - Natural Gas Systems - Fugitives - Gas Post-Meter,EPA_GHGI_T_3_63
+ng_systems,Industry - Natural Gas Systems - Fugitives - Processing,EPA_GHGI_T_3_63
+ng_systems,Industry - Natural Gas Systems - Fugitives - Production and Gathering,EPA_GHGI_T_3_63
+ng_systems,Industry - Natural Gas Systems - Fugitives - Transmission and Storage,EPA_GHGI_T_3_63
+industrial_neu,Industry - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - Industrial,EPA_GHGI_T_A_14
+industrial_neu,Transportation - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels,
+exclude,U.S. Territories - Non-Energy Use of Fuels - Non-Energy Uses of Fossil Fuels - US Territories,
+pet_systems,Industry - Petroleum Systems - Fugitives - Crude Oil Refining,EPA_GHGI_T_3_38
+pet_systems,Industry - Petroleum Systems - Fugitives - Crude Oil Transportation,EPA_GHGI_T_3_38
+pet_systems,Industry - Petroleum Systems - Fugitives - Exploration,EPA_GHGI_T_3_38
+pet_systems,Industry - Petroleum Systems - Fugitives - Production and upgrading,EPA_GHGI_T_3_38
+use_table_pet,Agriculture - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary,
+transport_nonroad,Transportation - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Construction,negative emissions; align with 'Transportation - Mobile Combustion - Fossil Fuel Combustion - Petroleum - Non-Highway' to avoid double counting
+transport_nonroad,Transportation - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Farm Equipment,negative emissions; align with 'Transportation - Mobile Combustion - Fossil Fuel Combustion - Petroleum - Non-Highway' to avoid double counting
+transport_nonroad,Transportation - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,negative emissions; align with 'Transportation - Mobile Combustion - Fossil Fuel Combustion - Petroleum - Non-Highway' to avoid double counting
+ods_substitutes,Commercial - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS,EPA_GHGI_T_4_102
+ods_substitutes,Industry - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS,EPA_GHGI_T_4_102
+ods_substitutes,Residential - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS,EPA_GHGI_T_4_102
+ods_transportation,Transportation - Substitution of Ozone Depleting Substances - Product uses as substitutes for ODS,EPA_GHGI_T_4_102
+direct,Industry - Adipic Acid Production - Chemical Industry,EPA_GHGI_T_2_1
+direct,Industry - Ammonia Production - Chemical Industry,EPA_GHGI_T_2_1
+direct,"Industry - Caprolactam, Glyoxal and Glyoxylic Acid Production - Chemical Industry - Caprolactam",EPA_GHGI_T_2_1
+direct,Industry - Nitric Acid Production - Chemical Industry,EPA_GHGI_T_2_1
+petrochemicals,Industry - Petrochemical Production - Chemical Industry - Acrylonitrile,EPA_GHGI_T_4_46
+petrochemicals,Industry - Petrochemical Production - Chemical Industry - Carbon Black,EPA_GHGI_T_4_46
+petrochemicals,Industry - Petrochemical Production - Chemical Industry - Ethylene,EPA_GHGI_T_4_46
+petrochemicals,Industry - Petrochemical Production - Chemical Industry - Ethylene Dichloride,EPA_GHGI_T_4_46
+petrochemicals,Industry - Petrochemical Production - Chemical Industry - Ethylene Oxide,EPA_GHGI_T_4_46
+petrochemicals,Industry - Petrochemical Production - Chemical Industry - Methanol,EPA_GHGI_T_4_46
+direct,Industry - Phosphoric Acid Production - Chemical Industry,EPA_GHGI_T_2_1
+direct,Industry - Carbide Production and Consumption - Chemical Industry - Silicon Carbide Consumption,EPA_GHGI_T_2_1
+direct,Industry - Carbide Production and Consumption - Chemical Industry - Silicon Carbide Production,EPA_GHGI_T_2_1
+direct,Industry - Soda Ash Production - Chemical Industry,EPA_GHGI_T_2_1
+direct,Industry - Titanium Dioxide Production - Chemical Industry,EPA_GHGI_T_2_1
+urea,Industry - Urea Consumption for Non-Agricultural Purposes - Chemical Industry - Urea Consumption for Non-Agricultural Uses,EPA_GHGI_T_2_1
+direct,Industry - Electronics Industry - Micro-Electro-Mechanical Devices,
+direct,Industry - Electronics Industry - Photovoltaics,
+direct,Industry - Electronics Industry - Semiconductor Manufacture,
+direct_ods,Industry - Electronics Industry - Semiconductor Manufacture - Heat Transfer Fluids,
+direct,Industry - Aluminum Production - Metal Industry,EPA_GHGI_T_2_1
+direct,Industry - Ferroalloy Production - Metal Industry,EPA_GHGI_T_2_1
+direct,Industry - Iron and Steel Production - Metal Industry - Pig Iron Production,EPA_GHGI_T_2_1
+direct,Industry - Iron and Steel Production - Metal Industry - Metallurgical Coke Production,EPA_GHGI_T_2_1
+direct,Industry - Iron and Steel Production - Metal Industry - Other Activities,EPA_GHGI_T_2_1
+direct,Industry - Iron and Steel Production - Metal Industry - Pellet Production,EPA_GHGI_T_2_1
+direct,Industry - Iron and Steel Production - Metal Industry - Sinter Production,EPA_GHGI_T_2_1
+direct,Industry - Iron and Steel Production - Metal Industry - Steel Production,EPA_GHGI_T_2_1
+lead,Industry - Lead Production - Metal Industry,EPA_GHGI_T_2_1
+magnesium,Industry - Magnesium Production - Metal Industry,EPA_GHGI_T_4_84
+direct,Industry - Zinc Production - Metal Industry,EPA_GHGI_T_2_1
+exclude,Industry - Carbon Dioxide Consumption - Other,Excluded from national model
+direct,Industry - Cement Production - Mineral Industry,EPA_GHGI_T_2_1
+direct,Industry - Glass Production - Mineral Industry,EPA_GHGI_T_2_1
+direct,Industry - Lime Production - Mineral Industry,EPA_GHGI_T_2_1
+carbonate_use,Industry - Other Process Uses of Carbonates - Mineral Industry - Ceramics,EPA_GHGI_T_2_1
+carbonate_use,Industry - Other Process Uses of Carbonates - Mineral Industry - FGD,EPA_GHGI_T_2_1
+carbonate_use,Industry - Other Process Uses of Carbonates - Mineral Industry - Flux Stone,EPA_GHGI_T_2_1
+carbonate_use,Industry - Other Process Uses of Carbonates - Mineral Industry - Non-Metallurgical Magnesium Production,EPA_GHGI_T_2_1
+carbonate_use,Industry - Other Process Uses of Carbonates - Mineral Industry - Other Miscellaneous Uses,EPA_GHGI_T_2_1
+carbonate_use,Industry - Other Process Uses of Carbonates - Mineral Industry - Soda Ash Consumption,EPA_GHGI_T_2_1
+electricity_transmission,Electric Power Industry - Electrical Equipment - Other product manufacture and use - Electric Power Systems,EPA_GHGI_T_A_14
+electricity_transmission,Electric Power Industry - Electrical Equipment - Other product manufacture and use - Equipment OEM,
+hcfc,Industry - Fluorochemical Production - Chemical Industry - HCFC-22 Production,EPA_GHGI_T_4_50
+hcfc,Industry - Fluorochemical Production - Chemical Industry - Production of fluorochemicals other than HCFC-22,EPA_GHGI_T_4_50
+hcfc,Industry - SF6 and PFCs from Other Product Use - Other product manufacture and use - SF6 and PFCs from other product use - Military Applications - AWACS,EPA_GHGI_T_4_50
+hcfc,Industry - SF6 and PFCs from Other Product Use - Other product manufacture and use - SF6 and PFCs from other product use - Military Applications - Other Military Applications,EPA_GHGI_T_4_50
+hcfc,Industry - SF6 and PFCs from Other Product Use - Other product manufacture and use - SF6 and PFCs from other product use - Scientific Applications - Other Scientific Applications,EPA_GHGI_T_4_50
+hcfc,Industry - SF6 and PFCs from Other Product Use - Other product manufacture and use - SF6 and PFCs from other product use - Scientific Applications - Particle Accelerators,EPA_GHGI_T_4_50
+direct,Commercial - Composting - Biological Treatment of Solid Waste,EPA_GHGI_T_2_1
+direct,Commercial - Anaerobic Digestion at Biogas Facilities - Biological Treatment of Solid Waste,EPA_GHGI_T_2_1
+direct,Industry - Landfills - Industrial - Solid Waste Disposal - Landfills - Industrial Waste Landfills Emissions,EPA_GHGI_T_2_1
+direct,Commercial - Landfills - Municipal - Solid Waste Disposal - Landfills - MSW Landfills Emissions,EPA_GHGI_T_2_1
+direct,Industry - Wastewater Treatment - Wastewater Treatment and Discharge - Industrial,EPA_GHGI_T_2_1
+direct,Commercial - Wastewater Treatment - Wastewater Treatment and Discharge - Domestic,EPA_GHGI_T_2_1
+transport_nonroad_ag,Agriculture - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Farm Equipment,EPA_GHGI_T_3_14
+use_table_pet,Industry - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Mobile Non-Highway Farm Equipment,negative emissions; align with 'Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum' to avoid double counting
+use_table_pet,Agriculture - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Non-Highway Farm Equipment,"EPA_GHGI_T_A_14 (CO2 is included in Industrial/Commerical, not Mobile transport)"
+transport_nonroad_construction,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Construction,EPA_GHGI_T_3_14
+temp_drop,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Ceramics,
+temp_drop,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - FGD,
+temp_drop,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Flux Stone,
+temp_drop,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Non-Metallurgical Magnesium Production,
+temp_drop,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Other Miscellaneous Uses,
+temp_drop,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Soda Ash Consumption,
+transport_nonroad_other,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,EPA_GHGI_T_3_14
+ind_com_ch4_n2o,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary,negative emissions; align with 'Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial' to avoid double counting
+nitrous_oxide_use,Industry - N2O from Product Uses - Other product manufacture and use - Medical Applications,EPA_GHGI_T_2_1
+nitrous_oxide_use,Industry - N2O from Product Uses - Other product manufacture and use - Other,EPA_GHGI_T_2_1
+nitrous_oxide_use,Industry - N2O from Product Uses - Other product manufacture and use - Propellant for Pressure and Aerosol Products,EPA_GHGI_T_2_1
