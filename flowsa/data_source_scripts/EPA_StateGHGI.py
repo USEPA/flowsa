@@ -52,7 +52,7 @@ def epa_state_ghgi_parse(*, df_list, source, year, config, **_):
                        var_name = 'Year',
                        value_name = 'FlowAmount')
                 .assign(Year = year)
-                .assign(Unit = 'MMT CO2e') #Updated from Tg
+                .assign(Unit = 'MMT CO2e') # Updated from Tg
                 .assign(FlowType = 'ELEMENTARY_FLOW')
                 .assign(SourceName = source)
                 .assign(Class = 'Chemicals')
