@@ -20,14 +20,17 @@ _bls_load_and_clean: &bls_load_and_clean
 bls_load_and_clean_national:
   <<: *bls_selection_fields_national
   <<: *bls_load_and_clean
+  geoscale: national
 
 bls_load_and_clean_state:
   <<: *bls_selection_fields_state
   <<: *bls_load_and_clean
+  geoscale: state
 
 bls_load_and_clean_county:
   <<: *bls_selection_fields_county
   <<: *bls_load_and_clean
+  geoscale: county
 
 bls_allocation:
   selection_fields:
