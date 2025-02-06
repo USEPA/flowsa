@@ -1101,12 +1101,15 @@ class _FlowBy(pd.DataFrame):
             right_on = attribute_cols + ['Location']
             # if replacing df location with "other" location, drop location from merge columns
             if 'Location' in self.config.get('fill_columns', []):
+                for l in (left_on, right_on):
+                    l.remove('Location')
+                # if merging state with county data, merge on first 2 digits of location column using
+                # temporary "temp_location" col
                 if (self.config['geoscale'] == 'state') & (other.config['geoscale'] == 'county'):
                     fb['temp_location'] = fb['Location'].str[:2]
                     other['temp_location'] = other['Location'].str[:2]
-                for l in (left_on, right_on):
-                    l.remove('Location')
-                    l.append('temp_location')
+                    for l in (left_on, right_on):
+                        l.append('temp_location')
 
             merged = (
                 fb
