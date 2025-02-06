@@ -1,6 +1,7 @@
 from typing import Literal
 import pandas as pd
 import numpy as np
+import re
 from flowsa.flowbyfunctions import aggregator
 from flowsa.flowsa_log import vlog, log
 from . import (common, settings)
@@ -415,3 +416,31 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
             df = aggregator(df, groupby_cols)
 
     return df
+
+def return_max_sector_level(
+    industry_spec: dict,
+) -> pd.DataFrame:
+    """
+    Return max sector length/level based on industry spec.
+
+    The industry_spec is a (possibly nested) dictionary formatted as in this
+    example:
+
+    industry_spec = {'default': 'NAICS_3',
+                     'NAICS_4': ['112', '113'],
+                     'NAICS_6': ['1129']
+                     }
+    """
+    # list of keys in industry spec
+    level_list = list(industry_spec.keys())
+    # append default sector level
+    level_list.append(industry_spec['default'])
+
+    n = []
+    for string in level_list:
+        # Convert each found number to an integer and extend the result into the list n
+        n.extend(map(int, re.findall(r'\d+', string)))
+
+    max_level = max(n)
+
+    return max_level
