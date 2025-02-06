@@ -211,28 +211,18 @@ def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
             )
 
     # subset the bls data to only keep parent-child sectors up to the target sector level,
-    # TODO: update so does not drop the non-naics in dataset because we want to keep all data, as some suppressed
-    #  data will be attributed to these non-naics
-    target_naics = set(
-        industry_spec_key(fba.config['industry_spec'],
-                          fba.config['target_naics_year'])
-        .query('source_naics.str.len() <= target_naics.str.len()')
-        .source_naics)
-    # update set to add our temp 2 digit NAICS
-    target_naics.update(['3X', '4X', '4Y'])
-
-    fba3 = (
-        fba2
-        .assign(ActivityProducedBy=fba2.ActivityProducedBy.mask(
-            (fba2.ActivityProducedBy).isin(target_naics),
-            fba2.ActivityProducedBy
-        ))
-        .query('ActivityProducedBy in @target_naics')
-        .reset_index(drop=True)
-    )
+    # does not drop non-naics because we want to keep all data, as some suppressed
+    # data will be attributed to these non-naics
 
     # determine max sector length for estimating suppressed data
     max_level = return_max_sector_level(fba.config['industry_spec'])
+
+    # subset BLS data to drop all child naics after target sector level
+    fba3 = (
+        fba2
+        .query(f'ActivityProducedBy.str.len() <= {max_level}')
+        .reset_index(drop=True)
+    )
 
     for level in range(max_level-1, 1, -1):
         log.info(f"Identifying sector descendants for NAICS {level}")
