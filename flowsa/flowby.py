@@ -1139,7 +1139,8 @@ class _FlowBy(pd.DataFrame):
                     unattributable.full_name,
                     other.full_name,
                     sorted(set(zip(unattributable.SectorProducedBy.fillna('N/A'),
-                                   unattributable.SectorConsumedBy.fillna('N/A'))))
+                                   unattributable.SectorConsumedBy.fillna('N/A'),
+                                   unattributable.Location)))
                 )
                 vlog.debug(
                     'Unattributed activities: \n {}'.format(
