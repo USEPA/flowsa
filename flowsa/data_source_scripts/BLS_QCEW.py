@@ -211,6 +211,7 @@ def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
             )
 
     for level in [5, 4, 3, 2]:
+        log.info(f"Identifying sector descendants for NAICS {level}")
         descendants = pd.DataFrame(
             fba2
             .drop(columns='descendants')
@@ -296,6 +297,7 @@ def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
 
     unsuppressed = indexed.copy()
     for level in [2, 3, 4, 5, 6]:
+        log.info(f"Estimating suppressed NAICS {level + 1}")
         groupcols = ["{}{}".format("n", i) for i in range(2, level+1)] + [
             'location', 'category']
         unsuppressed = unsuppressed.groupby(
