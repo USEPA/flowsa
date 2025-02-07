@@ -410,6 +410,9 @@ class FlowByActivity(_FlowBy):
             self.config['activity_schema'], str) else self.config.get(
             'activity_schema', {}).get(self.config['year'])
 
+        if activity_schema is None:
+            log.error(f"activity_schema is not defined, check assignment in flowsa/data/source_catalog.yaml")
+
         if "NAICS" in activity_schema:
             log.info('Activities in %s are NAICS codes.',
                      self.full_name)
@@ -836,7 +839,10 @@ class FlowByActivity(_FlowBy):
         else:
             mapped = self.rename(columns={'FlowName': 'Flowable',
                                           'Compartment': 'Context'})
-        return (mapped.standardize_units())
+        if self.config.get('standardize_units', True):
+            mapped = mapped.standardize_units()
+
+        return mapped
 
     def convert_activity_to_emissions(
         self: 'FlowByActivity'

@@ -5,40 +5,48 @@ author: New York Department of Environmental Conservation
 source_name: Statewide Greenhouse Gas Emissions Beginning 1990
 bib_id: StateGHGI_NY
 format: csv  # comma-separated values
-url: None
-filename: 'NY_customized_inventory.csv'
+url:
+  base_url: https://data.ny.gov/resource/5i6e-asw6.csv?$limit=20000
+call_response_fxn: !script_function:StateGHGI NY_call
 parse_response_fxn: !script_function:StateGHGI NY_customized_parse
 years:
+- 2021
+- 2020
 - 2019
 - 2018
 - 2017
+- 2016
+- 2015
+- 2014
+- 2013
+- 2012
 
 
 # Dictionary of activities for disaggregation of HFCs and PFCs
 # The table numbers listed below are based on
-# Inventory of U.S. Greenhouse Gas Emissions and Sinks: 1990–2019 (published 2021)
+# Inventory of U.S. Greenhouse Gas Emissions and Sinks: 1990-2020 (published 2022)
 disagg_activity_dict:
-  Buildings, IPPU, Product Use, ODS Substitues, Building HVAC, Not Applicable: &ODS_allocation
+  Buildings, IPPU, Product Use, ODS Substitutes, Building HVAC, Not Applicable: &ODS_allocation
     HFCs:
-      table: 'EPA_GHGI_T_4_99'
+      table: 'EPA_GHGI_T_4_100' # Emissions of HFCs and PFCs from ODS Substitutes (MMT CO2 Eq.)
       drop_rows:
         - 'CF4'
         - 'Others (a)'
-  Buildings, IPPU, Product Use, ODS Substitues, Building Refrigeration, Not Applicable:
+  Buildings, IPPU, Product Use, ODS Substitutes, Building Refrigeration, Not Applicable:
     <<: *ODS_allocation
-  Buildings, IPPU, Product Use, ODS Substitues, Industrial, Not Applicable:
+  Buildings, IPPU, Product Use, ODS Substitutes, Industrial, Not Applicable:
     <<: *ODS_allocation  
-  Buildings, IPPU, Product Use, ODS Substitues, Other Building Appliances, Not Applicable:
+  Buildings, IPPU, Product Use, ODS Substitutes, Other Building Appliances, Not Applicable:
     <<: *ODS_allocation  
-  Buildings, IPPU, Product Use, ODS Substitues, Other, Not Applicable:
+  Buildings, IPPU, Product Use, ODS Substitutes, Other, Not Applicable:
     <<: *ODS_allocation  
-  Transportation, IPPU, Product Use, ODS Substitues, Transportation HVAC, Not Applicable:
+  Transportation, IPPU, Product Use, ODS Substitutes, Transportation HVAC, Not Applicable:
     <<: *ODS_allocation  
-  Transportation, IPPU, Product Use, ODS Substitues, Transportation Refrigeration, Not Applicable:
+  Transportation, IPPU, Product Use, ODS Substitutes, Transportation Refrigeration, Not Applicable:
     <<: *ODS_allocation
-  Industry, IPPU, Electronics, Semiconductor Industry, Not Applicable, Not Applicable:
+  Industry, IPPU, Electronics Industry, Semiconductor Manufacturing, Not Applicable, Not Applicable:
     HFCs:
-      table: 'EPA_GHGI_T_4_94'
+      table: 'EPA_GHGI_T_4_96' # PFC, HFC, SF6, NF3, and N2O Emissions from Electronics Manufacture (MMT CO2 Eq.)
       drop_rows:
         - 'C2F6'
         - 'C3F8'
@@ -52,7 +60,7 @@ disagg_activity_dict:
         - 'SF6'
         - 'Total F-GHGs'
     PFCs:
-      table: 'EPA_GHGI_T_4_94'
+      table: 'EPA_GHGI_T_4_96'
       drop_rows:
         - 'HFC, PFC and SF6 F-HTFs'
         - 'HFC-23'
@@ -64,8 +72,7 @@ disagg_activity_dict:
         - 'Total F-GHGs' 
   Industry, IPPU, Metals, Aluminum, Not Applicable, Not Applicable:
     PFCs:
-      table: 'EPA_GHGI_T_4_80'
-      drop_rows:  
+      table: 'EPA_GHGI_T_4_80' # PFC Emissions from Aluminum Production (MMT CO2 Eq.)
 
 
 # List of IPCC AR5 GWP-20 values needed to convert flow ammount from CO2e to mass emitted

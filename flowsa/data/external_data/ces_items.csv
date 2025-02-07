@@ -1,0 +1,155 @@
+subcategory_code,item_code,item_text,display_level,selectable,sort_sequence
+TOTALEXP,TOTALEXP,Total average annual expenditures,0,T,1000
+FOODTOTL,FOODTOTL,Food,0,T,2600
+FOODTOTL,FOODHOME,Food at home,1,T,2700
+FOODTOTL,CERBAKRY,Cereals and bakery products,2,T,2800
+FOODTOTL,CEREAL,Cereals and cereal products,3,T,2900
+FOODTOTL,BAKERY,Bakery products,3,T,3000
+FOODTOTL,ANIMAL,"Meats, poultry, fish, and eggs",2,T,3100
+FOODTOTL,BEEF,Beef,3,T,3200
+FOODTOTL,PORK,Pork,3,T,3300
+FOODTOTL,OTHRMEAT,Other meats,3,T,3400
+FOODTOTL,POULTRY,Poultry,3,T,3500
+FOODTOTL,FISHSEA,Fish and seafood,3,T,3600
+FOODTOTL,080110,Eggs,3,T,3700
+FOODTOTL,DAIRY,Dairy products,2,T,3800
+FOODTOTL,MILKCRM,Fresh milk and cream,3,T,3900
+FOODTOTL,OTHDAIRY,Other dairy products,3,T,4000
+FOODTOTL,FRUITVEG,Fruits and vegetables,2,T,4100
+FOODTOTL,FRSHFRUT,Fresh fruits,3,T,4200
+FOODTOTL,FRESHVEG,Fresh vegetables,3,T,4300
+FOODTOTL,PROCFRUT,Processed fruits,3,T,4400
+FOODTOTL,PROCVEG,Processed vegetables,3,T,4500
+FOODTOTL,OTHRFOOD,Other food at home,2,T,4600
+FOODTOTL,SWEETS,Sugar and other sweets,3,T,4700
+FOODTOTL,FATSOILS,Fats and oils,3,T,4800
+FOODTOTL,MISCFOOD,Miscellaneous foods,3,T,4900
+FOODTOTL,NALCBEVG,Nonalcoholic beverages,3,T,5000
+FOODTOTL,190904,"Food prep. by consumer unit, out-of-town trips",3,T,5100
+FOODTOTL,FOODAWAY,Food away from home,1,T,5200
+ALCBEVG,ALCBEVG,Alcoholic beverages,0,T,5300
+HOUSING,HOUSING,Housing,0,T,5400
+HOUSING,SHELTER,Shelter,1,T,5500
+HOUSING,OWNDWELL,Owned dwellings,2,T,5600
+HOUSING,OWNMORTG,Mortgage interest and charges,3,T,5700
+HOUSING,220211,Property taxes,3,T,5800
+HOUSING,OWNEXPEN,"Maintenance, rep., ins., oth. exp., owned dwelling",3,T,5900
+HOUSING,RNTDWELL,Rented dwellings,2,T,6000
+HOUSING,OTHLODGE,Other lodging,2,T,6100
+HOUSING,UTILS,"Utilities, fuels, and public services",1,T,6200
+HOUSING,NATRLGAS,Natural gas,2,T,6300
+HOUSING,ELECTRIC,Electricity,2,T,6400
+HOUSING,OTHRFUEL,Fuel oil and other fuels,2,T,6500
+HOUSING,PHONE,Telephone services,2,T,6600
+HOUSING,RESPHONE,"Residential phone service, VOIP, and phone cards",2,T,6630
+HOUSING,270102,Cellular phone service,2,T,6650
+HOUSING,WATER,Water and other public services,2,T,6700
+HOUSING,HHOPER,Household operations,1,T,6800
+HOUSING,HHPERSRV,Personal services,2,T,6900
+HOUSING,HHOTHXPN,Other household expenses,2,T,7000
+HOUSING,HKPGSUPP,Housekeeping supplies,1,T,7100
+HOUSING,LAUNDRY,Laundry and cleaning supplies,2,T,7200
+HOUSING,HKPGOTHR,Other household products,2,T,7300
+HOUSING,POSTAGE,Postage and stationery,2,T,7400
+HOUSING,HHFURNSH,Household furnishings and equipment,1,T,7500
+HOUSING,HHTXTILE,Household textiles,2,T,7600
+HOUSING,FURNITUR,Furniture,2,T,7700
+HOUSING,FLOORCOV,Floor coverings,2,T,7800
+HOUSING,MAJAPPL,Major appliances,2,T,7900
+HOUSING,SMAPPHWR,"Small appliances, misc. housewares",2,T,8000
+HOUSING,MISCHHEQ,Miscellaneous household equipment,2,T,8100
+APPAREL,APPAREL,Apparel and services,0,T,8200
+APPAREL,MENBOYS,"Apparel, Men and boys",1,T,8300
+APPAREL,MENS,"Apparel, Men, 16 and over",2,T,8400
+APPAREL,BOYS,"Apparel, Boys, 2 to 15",2,T,8500
+APPAREL,WMNSGRLS,"Apparel, Women and girls",1,T,8600
+APPAREL,WOMENS,"Apparel, Women, 16 and over",2,T,8700
+APPAREL,GIRLS,"Apparel, Girls, 2 to 15",2,T,8800
+APPAREL,INFANT,"Apparel, Children under 2",1,T,8900
+APPAREL,FOOTWEAR,Footwear,1,T,9000
+APPAREL,OTHAPPRL,Other apparel products and services,1,T,9100
+TRANS,TRANS,Transportation,0,T,9200
+TRANS,VEHPURCH,Vehicle purchases (net outlay),1,T,9300
+TRANS,NEWCARS,"Vehicle purchases: Cars and trucks, new",2,T,9400
+TRANS,USEDCARS,"Vehicle purchases: Cars and trucks, used",2,T,9500
+TRANS,OTHVEHCL,Other vehicle purchases,2,T,9600
+TRANS,GASOIL,"Gasoline, other fuels, and motor oil",1,T,9700
+TRANS,VEHOTHXP,Other vehicle expenses,1,T,9800
+TRANS,VEHFINCH,Vehicle finance charges,2,T,9900
+TRANS,CAREPAIR,Vehicle maintenance and repairs,2,T,10000
+TRANS,500110,Vehicle insurance,2,T,10100
+TRANS,VEHRNTLC,"Vehicle. rent., leas., licen., oth. charges",2,T,10200
+TRANS,PUBTRANS,Public and other transportation,1,T,10300
+HEALTH,HEALTH,Healthcare,0,T,10400
+HEALTH,HLTHINSR,Health insurance,1,T,10500
+HEALTH,MEDSERVS,Medical services,1,T,10600
+HEALTH,DRUGS,Drugs: Prescription and nonprescription,1,T,10700
+HEALTH,MEDSUPPL,Medical supplies,1,T,10800
+ENTRTAIN,ENTRTAIN,Entertainment,0,T,10900
+ENTRTAIN,FEESADM,Entertainment: fees and admissions,1,T,11000
+ENTRTAIN,TVAUDIO,Audio and visual equipment and services,1,T,11100
+ENTRTAIN,PETSPLAY,"Pets, toys, and playground equipment",1,T,11200
+ENTRTAIN,PETS,Pets,2,T,11230
+ENTRTAIN,TOYS,"Toys, hobbies, and playground equipment",2,T,11250
+ENTRTAIN,ENTEROTH,"Entertainment: other supplies, equip., & services",1,T,11300
+PERSCARE,PERSCARE,Personal care products and services,0,T,11400
+READING,READING,Reading,0,T,11500
+EDUCATN,EDUCATN,Education,0,T,11600
+TOBACCO,TOBACCO,Tobacco products and smoking supplies,0,T,11700
+MISC,MISC,Miscellaneous expenditures,0,T,11800
+CASHCONT,CASHCONT,Cash contributions,0,T,11900
+INSPENSN,INSPENSN,Personal insurance and pensions,0,T,12000
+INSPENSN,LIFEINSR,Life and other personal insurance,1,T,12100
+INSPENSN,PENSIONS,Pensions and Social Security,1,T,12200
+INCBEFTX,INCBEFTX,Income before taxes,0,T,12400
+INCBEFTX,900000,Wages and salaries,1,T,12500
+INCBEFTX,SFEMPINC,Self-employment income,1,T,12600
+INCBEFTX,RETIRINC,"Social Security, private & government retirement",1,T,12700
+INCBEFTX,INDIVRNT,"Interest, dividends, rent income, property income",1,T,12800
+INCBEFTX,OTHBNFTS,"Unemp. & workers' compen., veterans benefits",1,T,12900
+INCBEFTX,WELFARE,"Public assist., suplmntl. secrty. income, SNAP",1,T,13000
+INCBEFTX,REGCONT,Regular contributions for support,1,T,13100
+INCBEFTX,OTHRINC,Other income,1,T,13200
+INCBEFTX,OTHREGIN,"Unemp and workrs' comp, vet bnfits, reg contrib",1,T,13250
+PERSTAX,PERSTAX,Personal taxes,0,T,13300
+PERSTAX,FEDTAXES,Federal income taxes,1,T,13400
+PERSTAX,STATETAX,State and local income taxes,1,T,13500
+PERSTAX,OTHRTAX,Other taxes,1,T,13600
+INCAFTTX,INCAFTTX,Income after taxes,0,T,13700
+CHGASLI,CHGASLI,Net change in total assets and liabilities,0,T,13800
+CHGASLI,CHGASSET,Net change in total assets,1,T,13900
+CHGASLI,CHGLIAB,Net change in total liabilities,1,T,14000
+TITLEOFI,OTHRMONY,Other money receipts,1,T,14100
+TITLEOFI,MRTPRINP,"Mortgage principal paid, owned property",1,T,14200
+TITLEOFI,800721,Estimated market value of owned home,1,T,14300
+TITLEOFI,910050,Est. monthly rental value of owned home,1,T,14400
+CONSUNIT,CONSUNIT,Number of consumer units (in thousands),0,T,14500
+TITLECU,INCBFTAX,Income before taxes,0,T,14600
+TITLECU,INCAFTAX,Income after taxes,0,T,14700
+TITLECU,980020,Age of reference person,0,T,14800
+TITLECU,TITLEACU,Average number in consumer unit:,0,F,14900
+TITLECU,980010,Number of People in CU,1,T,15000
+TITLECU,980050,Number of Children under 18,1,T,15100
+TITLECU,980060,Adults 65 and older,1,T,15200
+TITLECU,980030,Number of Earners,1,T,15300
+TITLECU,VEHICLES,Number of Vehicles,1,T,15400
+TITLEPD,TITLESRP,Reference person:,0,F,15500
+TITLEPD,980210,Percent Men reference persons,1,T,15600
+TITLEPD,980220,Percent Women reference persons,1,T,15700
+TITLEPD,TITLEHT,Housing tenure:,0,F,15800
+TITLEPD,HOMEOWN,Percent Homeowner,1,T,15900
+TITLEPD,980230,Percent Homeowner with mortgage,2,T,16000
+TITLEPD,980240,Percent Homeowner without mortgage,2,T,16100
+TITLEPD,980260,Percent Renter,1,T,16200
+TITLEPD,TITLERRP,Race of reference person:,0,F,16300
+TITLEPD,980270,Percent Black or African American,1,T,16400
+TITLEPD,WHTNDOTH,"Percent White, Asian, and All Other Races, not including African American",1,T,16500
+TITLEPD,TITLEHOP,Hispanic or Latino origin of reference person:,0,F,16600
+TITLEPD,980285,Percent Hispanic or Latino,1,T,16700
+TITLEPD,980286,Percent Not Hispanic or Latino,1,T,16800
+TITLEPD,TITLEEDU,Education of reference person:,0,F,16900
+TITLEPD,980290,Percent Elementary (1-8),1,T,17000
+TITLEPD,980300,Percent High school (9-12),1,T,17100
+TITLEPD,980310,Percent College,1,T,17200
+TITLEPD,980320,Percent Never attended school and other,1,T,17300
+TITLEPD,980350,At least one vehicle owned or leased,0,T,17400

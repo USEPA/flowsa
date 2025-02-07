@@ -3,9 +3,11 @@ source_name: Maine State Biogenic Emissions Data
 bib_id: StateGHGI_ME
 format: xlsx  # Excel spreadsheet
 url: None
-filename: 'ME_biogenic_data_summary.xlsx'
+filename: 'ME_biogenic_data_summary_1990-2021.xlsx'
 parse_response_fxn: !script_function:StateGHGI ME_biogenic_parse
 years:
+- 2021
+- 2020
 - 2019
 - 2018
 - 2017

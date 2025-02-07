@@ -7,7 +7,7 @@ data directory. Parses EPA SIT data to flowbyactivity format.
 """
 
 import pandas as pd
-import os
+from pathlib import Path
 
 import flowsa.flowbyactivity
 from flowsa.settings import externaldatapath
@@ -24,21 +24,24 @@ def epa_sit_parse(*, source, year, config, **_):
     df0 = pd.DataFrame()   
 
     # for each state listed in the method file...
-    for state in config['state_list']:
+    for state, state_dict in config['state_list'].items():
+        if not Path.is_dir(externaldatapath / f"SIT_data/{state}/"):
+            log.warning(f"Skipping {state}, data not found")
+            continue
         log.info(f'Parsing data for {state}...')
-        
+        schema_dict = config['files'].get(state_dict['schema'], {})
         # for each Excel data file listed in the .yaml...
-        for file in config['files']:
+        for file, file_dict in schema_dict['workbooks'].items():
             log.info(f'Loading data from {file}...')
             filepath = externaldatapath / f"SIT_data/{state}/{file}"
             # dictionary containing Excel sheet-specific information
-            file_dict = config['files'][file]['file_dict']
-    
-            if not os.path.exists(filepath):
+
+            if not Path.exists(filepath):
                 raise FileNotFoundError(f'SIT file not found in {filepath}')
-        
+
             # for each sheet in the Excel file containing data...
             for sheet, sheet_dict in file_dict.items():
+                # log.info(f'processing SIT: {sheet}')
                 sheetname = sheet_dict.get('sheetname', sheet)
                 tablename = sheet_dict.get('tablename')
                 if tablename:
@@ -96,18 +99,21 @@ def epa_sit_parse(*, source, year, config, **_):
                             f'{sheetandtable}, {active_header}, '
                             f'{active_subheader}, {subsubheader}')
         
-                # drop all columns except the desired emissions year and the
-                # emissions activity source
-                df = df.filter([year, 'ActivityProducedBy', 'FlowName'])
-                # rename columns
-                df = df.rename(columns={year: 'FlowAmount'})
+                df = df.melt(id_vars=[c for c in ('ActivityProducedBy', 'FlowName')
+                                      if c in df.columns],
+                             var_name= 'Year', value_name='FlowAmount')
+                df = df[pd.to_numeric(df['Year'], errors='coerce').notnull()]
                 # add sheet-specific hardcoded data
                 if 'subgroup' not in sheet_dict:
                     df['FlowName'] = sheet_dict.get('flow')
                 df['Unit'] = sheet_dict.get('unit')
                 df['Description'] = sheet
                 df['State'] = state
-        
+
+                # If required, adjust the units based on the GWP factors used by the state
+                if state_dict.get('GWP', schema_dict['GWP']) != schema_dict['GWP']:
+                    df['Unit'] = df['Unit'].str.replace(schema_dict['GWP'],
+                                                        state_dict['GWP'])
                 # concatenate dataframe from each sheet with existing master dataframe
                 df0 = pd.concat([df0, df])
 
@@ -116,7 +122,6 @@ def epa_sit_parse(*, source, year, config, **_):
     df0['SourceName'] = source
     df0['FlowType'] = "ELEMENTARY_FLOW"
     df0['Compartment'] = 'air'
-    df0['Year'] = year
     df0['DataReliability'] = 5
     df0['DataCollection'] = 5
 
@@ -162,6 +167,9 @@ def disaggregate_emissions(fba: FlowByActivity, **_) -> FlowByActivity:
             # split fba dataframe to include only those items matching the activity
             fba_activity = fba[fba['ActivityProducedBy'] == activity_name]
             fba_main = fba[fba['ActivityProducedBy'] != activity_name]
+            if len(fba_activity) == 0:
+                log.warning(f'unable to disaggregate {activity_name}')
+                continue
             # apply proportional split to activity data
             speciated_df = fba_activity.apply(lambda x: [p * x['FlowAmount'] for p in splits['pct']],
                             axis=1, result_type='expand')
@@ -189,9 +197,9 @@ def disaggregate_emissions(fba: FlowByActivity, **_) -> FlowByActivity:
 
     return new_fba
 
-def clean_up_state_data(fba, source_dict, method, **_):
+def clean_up_state_data(fba: FlowByActivity, **_):
     """
-    clean_fba_df_fxn to:
+    clean_fba_before_activity_sets to:
     
     (i) remove states OTHER THAN those selected for
     alternate data sources. State abbreviations must be passed as list
@@ -201,12 +209,8 @@ def clean_up_state_data(fba, source_dict, method, **_):
     these data must be excluded to avoid double counting because some states 
     have opted to use custom methods (e.g., Vermont estimates emissions from 
     natural gas distribution separately from the SIT tool).
-
-    :param fba: df
-    :param source_dict: dictionary of source methods includes 'state_list'
-        key of states to include in inventory
     """
-    state_list = source_dict.get('state_list')
+    state_list = fba.config.get('state_list')
     
     # (i) drop all states OTHER THAN those selected for alternative data sources
     state_df = pd.DataFrame(state_list, columns=['State'])
@@ -218,7 +222,7 @@ def clean_up_state_data(fba, source_dict, method, **_):
     # if Vermont is included in the inventory, exclude certain data
     # (these data will later be replaced with custom data in the 'StateGHGI'
     # stage)
-    if ('VT' in state_list) and ('StateGHGI_VT' in method['source_names'].keys()):
+    if ('VT' in state_list): # and ('StateGHGI_VT' in method['source_names'].keys())
         from flowsa.data_source_scripts.StateGHGI import VT_remove_dupicate_activities
         df_subset = VT_remove_dupicate_activities(df_subset)
    
@@ -226,5 +230,5 @@ def clean_up_state_data(fba, source_dict, method, **_):
 
 if __name__ == '__main__':
     import flowsa
-    flowsa.generateflowbyactivity.main(source='EPA_SIT', year='2019')
-    fba = flowsa.flowbyactivity.getFlowByActivity('EPA_SIT', '2019')
+    flowsa.generateflowbyactivity.main(source='EPA_SIT', year='2012-2020')
+    fba = flowsa.flowbyactivity.getFlowByActivity('EPA_SIT', 2019)

@@ -1,0 +1,560 @@
+ActivitySourceName,Activity,SectorSourceName,Sector,SectorType,activity_set,Notes
+EPA_SIT,"Agriculture, Agricultural Soil Management",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Agriculture, Agricultural Soil Management, Direct",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Agriculture, Agricultural Soil Management, Direct, Crop Residues",NAICS_2012_Code,111,,direct,crops
+EPA_SIT,"Agriculture, Agricultural Soil Management, Direct, Fertilizers",NAICS_2012_Code,111,,direct,crops
+EPA_SIT,"Agriculture, Agricultural Soil Management, Direct, Histosols",NAICS_2012_Code,111,,direct,crops
+EPA_SIT,"Agriculture, Agricultural Soil Management, Direct, Livestock",NAICS_2012_Code,112,,direct,livestock
+EPA_SIT,"Agriculture, Agricultural Soil Management, Direct, N-Fixing Crops",NAICS_2012_Code,111,,direct,crops
+EPA_SIT,"Agriculture, Agricultural Soil Management, Indirect",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Agriculture, Agricultural Soil Management, Indirect, Fertilizers",NAICS_2012_Code,111,,direct,crops
+EPA_SIT,"Agriculture, Agricultural Soil Management, Indirect, Leaching/Runoff",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Agriculture, Agricultural Soil Management, Indirect, Leaching/Runoff, Fertilizer Runoff/Leached",NAICS_2012_Code,111,,direct,crops
+EPA_SIT,"Agriculture, Agricultural Soil Management, Indirect, Leaching/Runoff, Manure Runoff/Leached",NAICS_2012_Code,112,,direct,livestock
+EPA_SIT,"Agriculture, Agricultural Soil Management, Indirect, Livestock",NAICS_2012_Code,112,,direct,livestock
+EPA_SIT,"Agriculture, Agricultural Soil Management, TOTAL",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Agriculture, Burning of Agricultural Crop Waste",NAICS_2012_Code,111,,direct,crops
+EPA_SIT,"Agriculture, Carbon Dioxide",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Agriculture, Enteric Fermentation",NAICS_2012_Code,112,,direct,animal production and aquaculture
+EPA_SIT,"Agriculture, Liming",NAICS_2012_Code,111,,ag,crops
+EPA_SIT,"Agriculture, Liming",NAICS_2012_Code,112,,ag,animals
+EPA_SIT,"Agriculture, Manure Management",NAICS_2012_Code,112,,direct,animal production and aquaculture
+EPA_SIT,"Agriculture, Methane",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Agriculture, Nitrous Oxide",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Agriculture, Rice Cultivation",NAICS_2012_Code,1111,,direct,oilseed and grain farming
+EPA_SIT,"Agriculture, Urea Fertilization",NAICS_2012_Code,111,,ag,crops
+EPA_SIT,"Agriculture, Urea Fertilization",NAICS_2012_Code,112,,ag,animals
+EPA_SIT,"CO2FFC, Additional CO2 Emissions",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"CO2FFC, Commercial",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"CO2FFC, Commercial, Coal",NAICS_2012_Code,2213,,commercial_coal,"water, sewage and other systems"
+EPA_SIT,"CO2FFC, Commercial, Coal",NAICS_2012_Code,42,,commercial_coal,wholesale trade
+EPA_SIT,"CO2FFC, Commercial, Coal",NAICS_2012_Code,44,,commercial_coal,retail trade
+EPA_SIT,"CO2FFC, Commercial, Coal",NAICS_2012_Code,45,,commercial_coal,retail trade
+EPA_SIT,"CO2FFC, Commercial, Coal",NAICS_2012_Code,493,,commercial_coal,warehousing and storage
+EPA_SIT,"CO2FFC, Commercial, Coal",NAICS_2012_Code,51,,commercial_coal,information
+EPA_SIT,"CO2FFC, Commercial, Coal",NAICS_2012_Code,52,,commercial_coal,finance and insurance
+EPA_SIT,"CO2FFC, Commercial, Coal",NAICS_2012_Code,53,,commercial_coal,real estate and rential and leasing
+EPA_SIT,"CO2FFC, Commercial, Coal",NAICS_2012_Code,54,,commercial_coal,"professional, scientific, and technical services"
+EPA_SIT,"CO2FFC, Commercial, Coal",NAICS_2012_Code,55,,commercial_coal,management of companies and enterprises
+EPA_SIT,"CO2FFC, Commercial, Coal",NAICS_2012_Code,56,,commercial_coal,administrative support and waste management and remediation services
+EPA_SIT,"CO2FFC, Commercial, Coal",NAICS_2012_Code,61,,commercial_coal,educational services
+EPA_SIT,"CO2FFC, Commercial, Coal",NAICS_2012_Code,62,,commercial_coal,health care and social assistance
+EPA_SIT,"CO2FFC, Commercial, Coal",NAICS_2012_Code,71,,commercial_coal,"arts, entertainment, and recreation"
+EPA_SIT,"CO2FFC, Commercial, Coal",NAICS_2012_Code,72,,commercial_coal,accommodation and food services
+EPA_SIT,"CO2FFC, Commercial, Coal",NAICS_2012_Code,81,,commercial_coal,other services (except public administration)
+EPA_SIT,"CO2FFC, Commercial, Natural Gas",NAICS_2012_Code,2213,,commercial_gas,"water, sewage and other systems"
+EPA_SIT,"CO2FFC, Commercial, Natural Gas",NAICS_2012_Code,42,,commercial_gas,wholesale trade
+EPA_SIT,"CO2FFC, Commercial, Natural Gas",NAICS_2012_Code,44,,commercial_gas,retail trade
+EPA_SIT,"CO2FFC, Commercial, Natural Gas",NAICS_2012_Code,45,,commercial_gas,retail trade
+EPA_SIT,"CO2FFC, Commercial, Natural Gas",NAICS_2012_Code,493,,commercial_gas,warehousing and storage
+EPA_SIT,"CO2FFC, Commercial, Natural Gas",NAICS_2012_Code,51,,commercial_gas,information
+EPA_SIT,"CO2FFC, Commercial, Natural Gas",NAICS_2012_Code,52,,commercial_gas,finance and insurance
+EPA_SIT,"CO2FFC, Commercial, Natural Gas",NAICS_2012_Code,53,,commercial_gas,real estate and rential and leasing
+EPA_SIT,"CO2FFC, Commercial, Natural Gas",NAICS_2012_Code,54,,commercial_gas,"professional, scientific, and technical services"
+EPA_SIT,"CO2FFC, Commercial, Natural Gas",NAICS_2012_Code,55,,commercial_gas,management of companies and enterprises
+EPA_SIT,"CO2FFC, Commercial, Natural Gas",NAICS_2012_Code,56,,commercial_gas,administrative support and waste management and remediation services
+EPA_SIT,"CO2FFC, Commercial, Natural Gas",NAICS_2012_Code,61,,commercial_gas,educational services
+EPA_SIT,"CO2FFC, Commercial, Natural Gas",NAICS_2012_Code,62,,commercial_gas,health care and social assistance
+EPA_SIT,"CO2FFC, Commercial, Natural Gas",NAICS_2012_Code,71,,commercial_gas,"arts, entertainment, and recreation"
+EPA_SIT,"CO2FFC, Commercial, Natural Gas",NAICS_2012_Code,72,,commercial_gas,accommodation and food services
+EPA_SIT,"CO2FFC, Commercial, Natural Gas",NAICS_2012_Code,81,,commercial_gas,other services (except public administration)
+EPA_SIT,"CO2FFC, Commercial, Other",NAICS_2012_Code,2213,,commercial_other,"water, sewage and other systems"
+EPA_SIT,"CO2FFC, Commercial, Other",NAICS_2012_Code,42,,commercial_other,wholesale trade
+EPA_SIT,"CO2FFC, Commercial, Other",NAICS_2012_Code,44,,commercial_other,retail trade
+EPA_SIT,"CO2FFC, Commercial, Other",NAICS_2012_Code,45,,commercial_other,retail trade
+EPA_SIT,"CO2FFC, Commercial, Other",NAICS_2012_Code,493,,commercial_other,warehousing and storage
+EPA_SIT,"CO2FFC, Commercial, Other",NAICS_2012_Code,51,,commercial_other,information
+EPA_SIT,"CO2FFC, Commercial, Other",NAICS_2012_Code,52,,commercial_other,finance and insurance
+EPA_SIT,"CO2FFC, Commercial, Other",NAICS_2012_Code,53,,commercial_other,real estate and rential and leasing
+EPA_SIT,"CO2FFC, Commercial, Other",NAICS_2012_Code,54,,commercial_other,"professional, scientific, and technical services"
+EPA_SIT,"CO2FFC, Commercial, Other",NAICS_2012_Code,55,,commercial_other,management of companies and enterprises
+EPA_SIT,"CO2FFC, Commercial, Other",NAICS_2012_Code,56,,commercial_other,administrative support and waste management and remediation services
+EPA_SIT,"CO2FFC, Commercial, Other",NAICS_2012_Code,61,,commercial_other,educational services
+EPA_SIT,"CO2FFC, Commercial, Other",NAICS_2012_Code,62,,commercial_other,health care and social assistance
+EPA_SIT,"CO2FFC, Commercial, Other",NAICS_2012_Code,71,,commercial_other,"arts, entertainment, and recreation"
+EPA_SIT,"CO2FFC, Commercial, Other",NAICS_2012_Code,72,,commercial_other,accommodation and food services
+EPA_SIT,"CO2FFC, Commercial, Other",NAICS_2012_Code,81,,commercial_other,other services (except public administration)
+EPA_SIT,"CO2FFC, Commercial, Petroleum",NAICS_2012_Code,2213,,commercial_petroleum,"water, sewage and other systems"
+EPA_SIT,"CO2FFC, Commercial, Petroleum",NAICS_2012_Code,42,,commercial_petroleum,wholesale trade
+EPA_SIT,"CO2FFC, Commercial, Petroleum",NAICS_2012_Code,44,,commercial_petroleum,retail trade
+EPA_SIT,"CO2FFC, Commercial, Petroleum",NAICS_2012_Code,45,,commercial_petroleum,retail trade
+EPA_SIT,"CO2FFC, Commercial, Petroleum",NAICS_2012_Code,493,,commercial_petroleum,warehousing and storage
+EPA_SIT,"CO2FFC, Commercial, Petroleum",NAICS_2012_Code,51,,commercial_petroleum,information
+EPA_SIT,"CO2FFC, Commercial, Petroleum",NAICS_2012_Code,52,,commercial_petroleum,finance and insurance
+EPA_SIT,"CO2FFC, Commercial, Petroleum",NAICS_2012_Code,53,,commercial_petroleum,real estate and rential and leasing
+EPA_SIT,"CO2FFC, Commercial, Petroleum",NAICS_2012_Code,54,,commercial_petroleum,"professional, scientific, and technical services"
+EPA_SIT,"CO2FFC, Commercial, Petroleum",NAICS_2012_Code,55,,commercial_petroleum,management of companies and enterprises
+EPA_SIT,"CO2FFC, Commercial, Petroleum",NAICS_2012_Code,56,,commercial_petroleum,administrative support and waste management and remediation services
+EPA_SIT,"CO2FFC, Commercial, Petroleum",NAICS_2012_Code,61,,commercial_petroleum,educational services
+EPA_SIT,"CO2FFC, Commercial, Petroleum",NAICS_2012_Code,62,,commercial_petroleum,health care and social assistance
+EPA_SIT,"CO2FFC, Commercial, Petroleum",NAICS_2012_Code,71,,commercial_petroleum,"arts, entertainment, and recreation"
+EPA_SIT,"CO2FFC, Commercial, Petroleum",NAICS_2012_Code,72,,commercial_petroleum,accommodation and food services
+EPA_SIT,"CO2FFC, Commercial, Petroleum",NAICS_2012_Code,81,,commercial_petroleum,other services (except public administration)
+EPA_SIT,"CO2FFC, Electric Utilities",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"CO2FFC, Electric Utilities, Coal",NAICS_2012_Code,2211,,direct,"electric power generation, transmission, and distribution"
+EPA_SIT,"CO2FFC, Electric Utilities, Natural Gas",NAICS_2012_Code,2211,,direct,"electric power generation, transmission, and distribution"
+EPA_SIT,"CO2FFC, Electric Utilities, Other",NAICS_2012_Code,2211,,direct,"electric power generation, transmission, and distribution"
+EPA_SIT,"CO2FFC, Electric Utilities, Petroleum",NAICS_2012_Code,2211,,direct,"electric power generation, transmission, and distribution"
+EPA_SIT,"CO2FFC, Industrial",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"CO2FFC, Industrial, Coal",NAICS_2012_Code,31,,industrial_coal,manufacturing
+EPA_SIT,"CO2FFC, Industrial, Coal",NAICS_2012_Code,32,,industrial_coal,manufacturing
+EPA_SIT,"CO2FFC, Industrial, Coal",NAICS_2012_Code,33,,industrial_coal,manufacturing
+EPA_SIT,"CO2FFC, Industrial, Natural Gas",NAICS_2012_Code,31,,industrial_gas,manufacturing
+EPA_SIT,"CO2FFC, Industrial, Natural Gas",NAICS_2012_Code,32,,industrial_gas,manufacturing
+EPA_SIT,"CO2FFC, Industrial, Natural Gas",NAICS_2012_Code,33,,industrial_gas,manufacturing
+EPA_SIT,"CO2FFC, Industrial, Other",NAICS_2012_Code,31,,industrial_other,manufacturing
+EPA_SIT,"CO2FFC, Industrial, Other",NAICS_2012_Code,32,,industrial_other,manufacturing
+EPA_SIT,"CO2FFC, Industrial, Other",NAICS_2012_Code,33,,industrial_other,manufacturing
+EPA_SIT,"CO2FFC, Industrial, Petroleum",NAICS_2012_Code,31,,industrial_petroleum,manufacturing
+EPA_SIT,"CO2FFC, Industrial, Petroleum",NAICS_2012_Code,32,,industrial_petroleum,manufacturing
+EPA_SIT,"CO2FFC, Industrial, Petroleum",NAICS_2012_Code,33,,industrial_petroleum,manufacturing
+EPA_SIT,"CO2FFC, International Bunker Fuels",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"CO2FFC, International Bunker Fuels, Petroleum",NAICS_2012_Code,,,,INTENTIONALLY BLANK (excluded from GHG emissions inventories)
+EPA_SIT,"CO2FFC, Residential",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"CO2FFC, Residential, Coal",NAICS_2012_Code,F010,,direct,personal consumption
+EPA_SIT,"CO2FFC, Residential, Natural Gas",NAICS_2012_Code,F010,,direct,personal consumption
+EPA_SIT,"CO2FFC, Residential, Other",NAICS_2012_Code,F010,,direct,personal consumption
+EPA_SIT,"CO2FFC, Residential, Petroleum",NAICS_2012_Code,F010,,direct,personal consumption
+EPA_SIT,"CO2FFC, TOTAL",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"CO2FFC, TOTAL, Coal",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"CO2FFC, TOTAL, Natural Gas",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"CO2FFC, TOTAL, Other",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"CO2FFC, TOTAL, Petroleum",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"CO2FFC, Transportation",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"CO2FFC, Transportation, Coal",NAICS_2012_Code,482,,direct,train transport
+EPA_SIT,"CO2FFC, Transportation, Natural Gas",NAICS_2012_Code,4862,,direct,pipeline transportation of natural gas
+EPA_SIT,"CO2FFC, Transportation, Other",NAICS_2012_Code,48,,transportation_other,transportation and warehousing
+EPA_SIT,"CO2FFC, Transportation, Other",NAICS_2012_Code,491,,transportation_other,postal service
+EPA_SIT,"CO2FFC, Transportation, Other",NAICS_2012_Code,492,,transportation_other,couriers and messengers
+EPA_SIT,"CO2FFC, Transportation, Other",NAICS_2012_Code,F010,,transportation_other,personal consumption
+EPA_SIT,"CO2FFC, Transportation, Petroleum",NAICS_2012_Code,48,,transportation_petroleum,transportation and warehousing
+EPA_SIT,"CO2FFC, Transportation, Petroleum",NAICS_2012_Code,491,,transportation_petroleum,postal service
+EPA_SIT,"CO2FFC, Transportation, Petroleum",NAICS_2012_Code,492,,transportation_petroleum,couriers and messengers
+EPA_SIT,"CO2FFC, Transportation, Petroleum",NAICS_2012_Code,F010,,transportation_petroleum,personal consumption
+EPA_SIT,"Coal, Abandoned Coal Mines",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Coal, Abandoned Coal Mines, Flooded",NAICS_2012_Code,2121,,direct,coal mining
+EPA_SIT,"Coal, Abandoned Coal Mines, Sealed",NAICS_2012_Code,2121,,direct,coal mining
+EPA_SIT,"Coal, Abandoned Coal Mines, Vented",NAICS_2012_Code,2121,,direct,coal mining
+EPA_SIT,"Coal, Additional Emissions Source",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Coal, Coal Mining",NAICS_2012_Code,2121,,direct,coal mining
+EPA_SIT,"Forest Management, Additional Carbon Dioxide Emissions",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Additional Methane Emissions",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Additional Nitrous Oxide Emissions",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Agricultural Soil Carbon Flux",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux, Forest Land Converted to Land",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux, Forest Land Converted to Land, Aboveground Biomass",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux, Forest Land Converted to Land, Belowground Biomass",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux, Forest Land Converted to Land, Deadwood",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux, Forest Land Converted to Land, Litter",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux, Forest Land Converted to Land, Soil (Mineral)",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux, Forest Land Remaining Forest Land",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux, Forest Land Remaining Forest Land, Aboveground Biomass",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux, Forest Land Remaining Forest Land, Belowground Biomass",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux, Forest Land Remaining Forest Land, Deadwood",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux, Forest Land Remaining Forest Land, Drained Organic Soil",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux, Forest Land Remaining Forest Land, Litter",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux, Forest Land Remaining Forest Land, Soil (Mineral)",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux, Forest Land Remaining Forest Land, Soil (Organic)",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux, Forest Land Remaining Forest Land, Total wood products and landfills",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux, Land Converted to Forest Land",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux, Land Converted to Forest Land, Aboveground Biomass",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux, Land Converted to Forest Land, Belowground Biomass",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux, Land Converted to Forest Land, Deadwood",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux, Land Converted to Forest Land, Litter",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Carbon Flux, Land Converted to Forest Land, Soil (Mineral)",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Fires",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Fires, CH4",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Forest Fires, N2O",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Landfilled Yard Trimmings and Food Scraps",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Landfilled Yard Trimmings and Food Scraps, Branches",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Landfilled Yard Trimmings and Food Scraps, Grass",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Landfilled Yard Trimmings and Food Scraps, Landfilled Food Scraps",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Landfilled Yard Trimmings and Food Scraps, Leaves",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, N2O from Settlement Soils",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Total",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Forest Management, Urban Trees",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Gas and Oil, Natural Gas",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Gas and Oil, Natural Gas Flaring",NAICS_2012_Code,2111,,direct,oil and gas extraction
+EPA_SIT,"Gas and Oil, Natural Gas, Distribution",NAICS_2012_Code,2212,,direct,natural gas distribution
+EPA_SIT,"Gas and Oil, Natural Gas, Production",NAICS_2012_Code,2111,,direct,oil and gas extraction
+EPA_SIT,"Gas and Oil, Natural Gas, Transmission",NAICS_2012_Code,4862,,direct,pipeline transportation of natural gas
+EPA_SIT,"Gas and Oil, Oil",NAICS_2012_Code,2111,,direct,oil and gas extraction
+EPA_SIT,"IP, Additional Carbon Dioxide Emissions",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"IP, Additional HFC, PFC, SF6 and NF3 Emissions",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"IP, Additional Nitrous Oxide Emissions",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"IP, Adipic Acid Production",NAICS_2012_Code,3251,,direct,basic chemical manufacturing
+EPA_SIT,"IP, Aluminum Production, CO2",NAICS_2012_Code,3313,,direct,alumina and aluminum production and processing
+EPA_SIT,"IP, Aluminum Production, PFCs",NAICS_2012_Code,3313,,direct,alumina and aluminum production and processing
+EPA_SIT,"IP, Ammonia Production",NAICS_2012_Code,3253,,direct,"pesticide, fertilizer, and other agricultural chemical manufacturing"
+EPA_SIT,"IP, Carbon Dioxide Emissions",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"IP, Cement Manufacture",NAICS_2012_Code,3273,,direct,cement and concrete product manufacturing
+EPA_SIT,"IP, Electric Power Transmission and Distribution Systems",NAICS_2012_Code,22112,,direct,transmission and distribution
+EPA_SIT,"IP, HCFC-22 Production",NAICS_2012_Code,3251,,direct,basic chemical manufacturing
+EPA_SIT,"IP, HFC, PFC, SF6 and NF3 Emissions",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"IP, Iron & Steel Production",NAICS_2012_Code,3311,,direct,iron and steel mills and ferroalloy manufacturing
+EPA_SIT,"IP, Lime Manufacture",NAICS_2012_Code,3274,,direct,lime and gypsum product manufacturing
+EPA_SIT,"IP, Limestone and Dolomite Use",NAICS_2012_Code,3274,,direct,lime and gypsum product manufacturing
+EPA_SIT,"IP, Magnesium Production",NAICS_2012_Code,3314,,direct,nonferrous metal (except aluminum) production and processing
+EPA_SIT,"IP, Nitric Acid Production",NAICS_2012_Code,3253,,direct,"pesticide, fertilizer, and other agricultural chemical manufacturing"
+EPA_SIT,"IP, Nitrous Oxide Emissions",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"IP, Semiconductor Manufacturing",NAICS_2012_Code,3332,,direct,industrial machinery manufacturing
+EPA_SIT,"IP, Soda Ash",NAICS_2012_Code,3251,,direct,basic chemical manufacturing
+EPA_SIT,"IP, Total Emissions",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"IP, Urea Consumption",NAICS_2012_Code,3253,,direct,"pesticide, fertilizer, and other agricultural chemical manufacturing"
+EPA_SIT,"IP, ODS Substitutes",NAICS_2012_Code,31,,ods_substitutes,manufacturing
+EPA_SIT,"IP, ODS Substitutes",NAICS_2012_Code,32,,ods_substitutes,manufacturing
+EPA_SIT,"IP, ODS Substitutes",NAICS_2012_Code,33,,ods_substitutes,manufacturing
+EPA_SIT,"Mobile Combustion, Additional CH4 Emissions",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Mobile Combustion, Additional N2O Emissions",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Mobile Combustion, Alternative Fuel Vehicles",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Mobile Combustion, Alternative Fuel Vehicles, Buses",NAICS_2012_Code,485,,mobile_combustion,transit and ground passenger transportation
+EPA_SIT,"Mobile Combustion, Alternative Fuel Vehicles, Buses",NAICS_2012_Code,487,,mobile_combustion,scenic and sightseeing transportation
+EPA_SIT,"Mobile Combustion, Alternative Fuel Vehicles, Buses",NAICS_2012_Code,488,,mobile_combustion,support activities for transportation
+EPA_SIT,"Mobile Combustion, Alternative Fuel Vehicles, Buses",NAICS_2012_Code,5321,,mobile_combustion,automotive equipment rental and leasing
+EPA_SIT,"Mobile Combustion, Alternative Fuel Vehicles, Buses",NAICS_2012_Code,9221,,mobile_combustion,"justice, public order, and safety activities"
+EPA_SIT,"Mobile Combustion, Alternative Fuel Vehicles, Buses",NAICS_2012_Code,928,,mobile_combustion,national security and international affairs
+EPA_SIT,"Mobile Combustion, Alternative Fuel Vehicles, Heavy Duty Vehicles",NAICS_2012_Code,484,,mobile_combustion,truck transportation
+EPA_SIT,"Mobile Combustion, Alternative Fuel Vehicles, Heavy Duty Vehicles",NAICS_2012_Code,487,,mobile_combustion,scenic and sightseeing transportation
+EPA_SIT,"Mobile Combustion, Alternative Fuel Vehicles, Heavy Duty Vehicles",NAICS_2012_Code,488,,mobile_combustion,support activities for transportation
+EPA_SIT,"Mobile Combustion, Alternative Fuel Vehicles, Heavy Duty Vehicles",NAICS_2012_Code,928,,mobile_combustion,national security and international affairs
+EPA_SIT,"Mobile Combustion, Alternative Fuel Vehicles, Light Duty Vehicles",NAICS_2012_Code,487,,mobile_combustion,scenic and sightseeing transportation
+EPA_SIT,"Mobile Combustion, Alternative Fuel Vehicles, Light Duty Vehicles",NAICS_2012_Code,488,,mobile_combustion,support activities for transportation
+EPA_SIT,"Mobile Combustion, Alternative Fuel Vehicles, Light Duty Vehicles",NAICS_2012_Code,491,,mobile_combustion,postal service
+EPA_SIT,"Mobile Combustion, Alternative Fuel Vehicles, Light Duty Vehicles",NAICS_2012_Code,492,,mobile_combustion,couriers and messengers
+EPA_SIT,"Mobile Combustion, Alternative Fuel Vehicles, Light Duty Vehicles",NAICS_2012_Code,5321,,mobile_combustion,automotive equipment rental and leasing
+EPA_SIT,"Mobile Combustion, Alternative Fuel Vehicles, Light Duty Vehicles",NAICS_2012_Code,9221,,mobile_combustion,"justice, public order, and safety activities"
+EPA_SIT,"Mobile Combustion, Alternative Fuel Vehicles, Light Duty Vehicles",NAICS_2012_Code,928,,mobile_combustion,national security and international affairs
+EPA_SIT,"Mobile Combustion, Alternative Fuel Vehicles, Light Duty Vehicles",NAICS_2012_Code,F010,,mobile_combustion,personal consumption
+EPA_SIT,"Mobile Combustion, Diesel Highway",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Mobile Combustion, Diesel Highway, Heavy-Duty Vehicles",NAICS_2012_Code,484,,mobile_combustion,truck transportation
+EPA_SIT,"Mobile Combustion, Diesel Highway, Heavy-Duty Vehicles",NAICS_2012_Code,487,,mobile_combustion,scenic and sightseeing transportation
+EPA_SIT,"Mobile Combustion, Diesel Highway, Heavy-Duty Vehicles",NAICS_2012_Code,488,,mobile_combustion,support activities for transportation
+EPA_SIT,"Mobile Combustion, Diesel Highway, Heavy-Duty Vehicles",NAICS_2012_Code,928,,mobile_combustion,national security and international affairs
+EPA_SIT,"Mobile Combustion, Diesel Highway, Light-Duty Trucks",NAICS_2012_Code,487,,mobile_combustion,scenic and sightseeing transportation
+EPA_SIT,"Mobile Combustion, Diesel Highway, Light-Duty Trucks",NAICS_2012_Code,488,,mobile_combustion,support activities for transportation
+EPA_SIT,"Mobile Combustion, Diesel Highway, Light-Duty Trucks",NAICS_2012_Code,491,,mobile_combustion,postal service
+EPA_SIT,"Mobile Combustion, Diesel Highway, Light-Duty Trucks",NAICS_2012_Code,492,,mobile_combustion,couriers and messengers
+EPA_SIT,"Mobile Combustion, Diesel Highway, Light-Duty Trucks",NAICS_2012_Code,5321,,mobile_combustion,automotive equipment rental and leasing
+EPA_SIT,"Mobile Combustion, Diesel Highway, Light-Duty Trucks",NAICS_2012_Code,9221,,mobile_combustion,"justice, public order, and safety activities"
+EPA_SIT,"Mobile Combustion, Diesel Highway, Light-Duty Trucks",NAICS_2012_Code,928,,mobile_combustion,national security and international affairs
+EPA_SIT,"Mobile Combustion, Diesel Highway, Light-Duty Trucks",NAICS_2012_Code,F010,,mobile_combustion,personal consumption
+EPA_SIT,"Mobile Combustion, Diesel Highway, Passenger Cars",NAICS_2012_Code,487,,mobile_combustion,scenic and sightseeing transportation
+EPA_SIT,"Mobile Combustion, Diesel Highway, Passenger Cars",NAICS_2012_Code,488,,mobile_combustion,support activities for transportation
+EPA_SIT,"Mobile Combustion, Diesel Highway, Passenger Cars",NAICS_2012_Code,491,,mobile_combustion,postal service
+EPA_SIT,"Mobile Combustion, Diesel Highway, Passenger Cars",NAICS_2012_Code,492,,mobile_combustion,couriers and messengers
+EPA_SIT,"Mobile Combustion, Diesel Highway, Passenger Cars",NAICS_2012_Code,5321,,mobile_combustion,automotive equipment rental and leasing
+EPA_SIT,"Mobile Combustion, Diesel Highway, Passenger Cars",NAICS_2012_Code,9221,,mobile_combustion,"justice, public order, and safety activities"
+EPA_SIT,"Mobile Combustion, Diesel Highway, Passenger Cars",NAICS_2012_Code,928,,mobile_combustion,national security and international affairs
+EPA_SIT,"Mobile Combustion, Diesel Highway, Passenger Cars",NAICS_2012_Code,F010,,mobile_combustion,personal consumption
+EPA_SIT,"Mobile Combustion, Diesel Highway, Heavy-Duty Buses",NAICS_2012_Code,485,,mobile_combustion,transit and ground passenger transportation
+EPA_SIT,"Mobile Combustion, Gasoline Highway",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Heavy-Duty Vehicles",NAICS_2012_Code,484,,mobile_combustion,truck transportation
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Heavy-Duty Vehicles",NAICS_2012_Code,487,,mobile_combustion,scenic and sightseeing transportation
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Heavy-Duty Vehicles",NAICS_2012_Code,488,,mobile_combustion,support activities for transportation
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Heavy-Duty Vehicles",NAICS_2012_Code,928,,mobile_combustion,national security and international affairs
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Light-Duty Trucks",NAICS_2012_Code,485,,mobile_combustion,transit and ground passenger transportation
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Light-Duty Trucks",NAICS_2012_Code,487,,mobile_combustion,scenic and sightseeing transportation
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Light-Duty Trucks",NAICS_2012_Code,488,,mobile_combustion,support activities for transportation
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Light-Duty Trucks",NAICS_2012_Code,491,,mobile_combustion,postal service
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Light-Duty Trucks",NAICS_2012_Code,492,,mobile_combustion,couriers and messengers
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Light-Duty Trucks",NAICS_2012_Code,5321,,mobile_combustion,automotive equipment rental and leasing
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Light-Duty Trucks",NAICS_2012_Code,9221,,mobile_combustion,"justice, public order, and safety activities"
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Light-Duty Trucks",NAICS_2012_Code,928,,mobile_combustion,national security and international affairs
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Light-Duty Trucks",NAICS_2012_Code,F010,,mobile_combustion,personal consumption
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Motorcycles",NAICS_2012_Code,485,,mobile_combustion,transit and ground passenger transportation
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Motorcycles",NAICS_2012_Code,487,,mobile_combustion,scenic and sightseeing transportation
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Motorcycles",NAICS_2012_Code,488,,mobile_combustion,support activities for transportation
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Motorcycles",NAICS_2012_Code,492,,mobile_combustion,couriers and messengers
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Motorcycles",NAICS_2012_Code,9221,,mobile_combustion,"justice, public order, and safety activities"
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Motorcycles",NAICS_2012_Code,928,,mobile_combustion,national security and international affairs
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Motorcycles",NAICS_2012_Code,F010,,mobile_combustion,personal consumption
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Passenger Cars",NAICS_2012_Code,485,,mobile_combustion,transit and ground passenger transportation
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Passenger Cars",NAICS_2012_Code,487,,mobile_combustion,scenic and sightseeing transportation
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Passenger Cars",NAICS_2012_Code,488,,mobile_combustion,support activities for transportation
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Passenger Cars",NAICS_2012_Code,491,,mobile_combustion,postal service
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Passenger Cars",NAICS_2012_Code,492,,mobile_combustion,couriers and messengers
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Passenger Cars",NAICS_2012_Code,5321,,mobile_combustion,automotive equipment rental and leasing
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Passenger Cars",NAICS_2012_Code,9221,,mobile_combustion,"justice, public order, and safety activities"
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Passenger Cars",NAICS_2012_Code,928,,mobile_combustion,national security and international affairs
+EPA_SIT,"Mobile Combustion, Gasoline Highway, Passenger Cars",NAICS_2012_Code,F010,,mobile_combustion,personal consumption
+EPA_SIT,"Mobile Combustion, Non-Highway",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Mobile Combustion, Non-Highway, Aircraft",NAICS_2012_Code,481,,mobile_combustion,air transportation
+EPA_SIT,"Mobile Combustion, Non-Highway, Aircraft",NAICS_2012_Code,487,,mobile_combustion,scenic and sightseeing transportation
+EPA_SIT,"Mobile Combustion, Non-Highway, Aircraft",NAICS_2012_Code,488,,mobile_combustion,support activities for transportation
+EPA_SIT,"Mobile Combustion, Non-Highway, Aircraft",NAICS_2012_Code,9221,,mobile_combustion,"justice, public order, and safety activities"
+EPA_SIT,"Mobile Combustion, Non-Highway, Aircraft",NAICS_2012_Code,928,,mobile_combustion,national security and international affairs
+EPA_SIT,"Mobile Combustion, Non-Highway, Aircraft",NAICS_2012_Code,F010,,mobile_combustion,personal consumption
+EPA_SIT,"Mobile Combustion, Non-Highway, Boats",NAICS_2012_Code,483,,mobile_combustion,water transportation
+EPA_SIT,"Mobile Combustion, Non-Highway, Boats",NAICS_2012_Code,487,,mobile_combustion,scenic and sightseeing transportation
+EPA_SIT,"Mobile Combustion, Non-Highway, Boats",NAICS_2012_Code,488,,mobile_combustion,support activities for transportation
+EPA_SIT,"Mobile Combustion, Non-Highway, Boats",NAICS_2012_Code,9221,,mobile_combustion,"justice, public order, and safety activities"
+EPA_SIT,"Mobile Combustion, Non-Highway, Boats",NAICS_2012_Code,928,,mobile_combustion,national security and international affairs
+EPA_SIT,"Mobile Combustion, Non-Highway, Boats",NAICS_2012_Code,F010,,mobile_combustion,personal consumption
+EPA_SIT,"Mobile Combustion, Non-Highway, Construction Equipment",NAICS_2012_Code,23,,construction_equipment,construction
+EPA_SIT,"Mobile Combustion, Non-Highway, Farm Equipment",NAICS_2012_Code,11,,farm_equipment,"agriculture, forestry, fishing and hunting"
+EPA_SIT,"Mobile Combustion, Non-Highway, Locomotives",NAICS_2012_Code,482,,mobile_combustion,rail transportation
+EPA_SIT,"Mobile Combustion, Non-Highway, Locomotives",NAICS_2012_Code,485,,mobile_combustion,transit and ground passenger transportation
+EPA_SIT,"Mobile Combustion, Non-Highway, Locomotives",NAICS_2012_Code,487,,mobile_combustion,scenic and sightseeing transportation
+EPA_SIT,"Mobile Combustion, Non-Highway, Locomotives",NAICS_2012_Code,488,,mobile_combustion,support activities for transportation
+EPA_SIT,"Mobile Combustion, Non-Highway, Other*",NAICS_2012_Code,92613,,mobile_combustion,"regulation and administration of communications, electric, gas, and other utilities"
+EPA_SIT,"Mobile Combustion, Non-Highway, Other*",NAICS_2012_Code,9221,,mobile_combustion,"justice, public order, and safety activities"
+EPA_SIT,"Mobile Combustion, Non-Highway, Other*",NAICS_2012_Code,928,,mobile_combustion,national security and international affairs
+EPA_SIT,"Mobile Combustion, Non-Highway, Other*",NAICS_2012_Code,F010,,mobile_combustion,personal consumption
+EPA_SIT,"Mobile Combustion, Total",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Summary CH4, Residential",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Summary CH4, Residential, Coal",NAICS_2012_Code,F010,,direct,personal consumption
+EPA_SIT,"Summary CH4, Residential, Petroleum",NAICS_2012_Code,F010,,direct,personal consumption
+EPA_SIT,"Summary CH4, Residential, Natural Gas",NAICS_2012_Code,F010,,direct,personal consumption
+EPA_SIT,"Summary CH4, Residential, Wood",NAICS_2012_Code,F010,,direct,personal consumption
+EPA_SIT,"Summary CH4, Residential, Other",NAICS_2012_Code,F010,,direct,personal consumption
+EPA_SIT,"Summary CH4, Commercial",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Summary CH4, Commercial, Coal",NAICS_2012_Code,2213,,commercial_coal,"water, sewage and other systems"
+EPA_SIT,"Summary CH4, Commercial, Coal",NAICS_2012_Code,42,,commercial_coal,wholesale trade
+EPA_SIT,"Summary CH4, Commercial, Coal",NAICS_2012_Code,44,,commercial_coal,retail trade
+EPA_SIT,"Summary CH4, Commercial, Coal",NAICS_2012_Code,45,,commercial_coal,retail trade
+EPA_SIT,"Summary CH4, Commercial, Coal",NAICS_2012_Code,493,,commercial_coal,warehousing and storage
+EPA_SIT,"Summary CH4, Commercial, Coal",NAICS_2012_Code,51,,commercial_coal,information
+EPA_SIT,"Summary CH4, Commercial, Coal",NAICS_2012_Code,52,,commercial_coal,finance and insurance
+EPA_SIT,"Summary CH4, Commercial, Coal",NAICS_2012_Code,53,,commercial_coal,real estate and rential and leasing
+EPA_SIT,"Summary CH4, Commercial, Coal",NAICS_2012_Code,54,,commercial_coal,"professional, scientific, and technical services"
+EPA_SIT,"Summary CH4, Commercial, Coal",NAICS_2012_Code,55,,commercial_coal,management of companies and enterprises
+EPA_SIT,"Summary CH4, Commercial, Coal",NAICS_2012_Code,56,,commercial_coal,administrative support and waste management and remediation services
+EPA_SIT,"Summary CH4, Commercial, Coal",NAICS_2012_Code,61,,commercial_coal,educational services
+EPA_SIT,"Summary CH4, Commercial, Coal",NAICS_2012_Code,62,,commercial_coal,health care and social assistance
+EPA_SIT,"Summary CH4, Commercial, Coal",NAICS_2012_Code,71,,commercial_coal,"arts, entertainment, and recreation"
+EPA_SIT,"Summary CH4, Commercial, Coal",NAICS_2012_Code,72,,commercial_coal,accommodation and food services
+EPA_SIT,"Summary CH4, Commercial, Coal",NAICS_2012_Code,81,,commercial_coal,other services (except public administration)
+EPA_SIT,"Summary CH4, Commercial, Petroleum",NAICS_2012_Code,2213,,commercial_petroleum,"water, sewage and other systems"
+EPA_SIT,"Summary CH4, Commercial, Petroleum",NAICS_2012_Code,42,,commercial_petroleum,wholesale trade
+EPA_SIT,"Summary CH4, Commercial, Petroleum",NAICS_2012_Code,44,,commercial_petroleum,retail trade
+EPA_SIT,"Summary CH4, Commercial, Petroleum",NAICS_2012_Code,45,,commercial_petroleum,retail trade
+EPA_SIT,"Summary CH4, Commercial, Petroleum",NAICS_2012_Code,493,,commercial_petroleum,warehousing and storage
+EPA_SIT,"Summary CH4, Commercial, Petroleum",NAICS_2012_Code,51,,commercial_petroleum,information
+EPA_SIT,"Summary CH4, Commercial, Petroleum",NAICS_2012_Code,52,,commercial_petroleum,finance and insurance
+EPA_SIT,"Summary CH4, Commercial, Petroleum",NAICS_2012_Code,53,,commercial_petroleum,real estate and rential and leasing
+EPA_SIT,"Summary CH4, Commercial, Petroleum",NAICS_2012_Code,54,,commercial_petroleum,"professional, scientific, and technical services"
+EPA_SIT,"Summary CH4, Commercial, Petroleum",NAICS_2012_Code,55,,commercial_petroleum,management of companies and enterprises
+EPA_SIT,"Summary CH4, Commercial, Petroleum",NAICS_2012_Code,56,,commercial_petroleum,administrative support and waste management and remediation services
+EPA_SIT,"Summary CH4, Commercial, Petroleum",NAICS_2012_Code,61,,commercial_petroleum,educational services
+EPA_SIT,"Summary CH4, Commercial, Petroleum",NAICS_2012_Code,62,,commercial_petroleum,health care and social assistance
+EPA_SIT,"Summary CH4, Commercial, Petroleum",NAICS_2012_Code,71,,commercial_petroleum,"arts, entertainment, and recreation"
+EPA_SIT,"Summary CH4, Commercial, Petroleum",NAICS_2012_Code,72,,commercial_petroleum,accommodation and food services
+EPA_SIT,"Summary CH4, Commercial, Petroleum",NAICS_2012_Code,81,,commercial_petroleum,other services (except public administration)
+EPA_SIT,"Summary CH4, Commercial, Natural Gas",NAICS_2012_Code,2213,,commercial_gas,"water, sewage and other systems"
+EPA_SIT,"Summary CH4, Commercial, Natural Gas",NAICS_2012_Code,42,,commercial_gas,wholesale trade
+EPA_SIT,"Summary CH4, Commercial, Natural Gas",NAICS_2012_Code,44,,commercial_gas,retail trade
+EPA_SIT,"Summary CH4, Commercial, Natural Gas",NAICS_2012_Code,45,,commercial_gas,retail trade
+EPA_SIT,"Summary CH4, Commercial, Natural Gas",NAICS_2012_Code,493,,commercial_gas,warehousing and storage
+EPA_SIT,"Summary CH4, Commercial, Natural Gas",NAICS_2012_Code,51,,commercial_gas,information
+EPA_SIT,"Summary CH4, Commercial, Natural Gas",NAICS_2012_Code,52,,commercial_gas,finance and insurance
+EPA_SIT,"Summary CH4, Commercial, Natural Gas",NAICS_2012_Code,53,,commercial_gas,real estate and rential and leasing
+EPA_SIT,"Summary CH4, Commercial, Natural Gas",NAICS_2012_Code,54,,commercial_gas,"professional, scientific, and technical services"
+EPA_SIT,"Summary CH4, Commercial, Natural Gas",NAICS_2012_Code,55,,commercial_gas,management of companies and enterprises
+EPA_SIT,"Summary CH4, Commercial, Natural Gas",NAICS_2012_Code,56,,commercial_gas,administrative support and waste management and remediation services
+EPA_SIT,"Summary CH4, Commercial, Natural Gas",NAICS_2012_Code,61,,commercial_gas,educational services
+EPA_SIT,"Summary CH4, Commercial, Natural Gas",NAICS_2012_Code,62,,commercial_gas,health care and social assistance
+EPA_SIT,"Summary CH4, Commercial, Natural Gas",NAICS_2012_Code,71,,commercial_gas,"arts, entertainment, and recreation"
+EPA_SIT,"Summary CH4, Commercial, Natural Gas",NAICS_2012_Code,72,,commercial_gas,accommodation and food services
+EPA_SIT,"Summary CH4, Commercial, Natural Gas",NAICS_2012_Code,81,,commercial_gas,other services (except public administration)
+EPA_SIT,"Summary CH4, Commercial, Wood",NAICS_2012_Code,2213,,commercial_wood,"water, sewage and other systems"
+EPA_SIT,"Summary CH4, Commercial, Wood",NAICS_2012_Code,42,,commercial_wood,wholesale trade
+EPA_SIT,"Summary CH4, Commercial, Wood",NAICS_2012_Code,44,,commercial_wood,retail trade
+EPA_SIT,"Summary CH4, Commercial, Wood",NAICS_2012_Code,45,,commercial_wood,retail trade
+EPA_SIT,"Summary CH4, Commercial, Wood",NAICS_2012_Code,493,,commercial_wood,warehousing and storage
+EPA_SIT,"Summary CH4, Commercial, Wood",NAICS_2012_Code,51,,commercial_wood,information
+EPA_SIT,"Summary CH4, Commercial, Wood",NAICS_2012_Code,52,,commercial_wood,finance and insurance
+EPA_SIT,"Summary CH4, Commercial, Wood",NAICS_2012_Code,53,,commercial_wood,real estate and rential and leasing
+EPA_SIT,"Summary CH4, Commercial, Wood",NAICS_2012_Code,54,,commercial_wood,"professional, scientific, and technical services"
+EPA_SIT,"Summary CH4, Commercial, Wood",NAICS_2012_Code,55,,commercial_wood,management of companies and enterprises
+EPA_SIT,"Summary CH4, Commercial, Wood",NAICS_2012_Code,56,,commercial_wood,administrative support and waste management and remediation services
+EPA_SIT,"Summary CH4, Commercial, Wood",NAICS_2012_Code,61,,commercial_wood,educational services
+EPA_SIT,"Summary CH4, Commercial, Wood",NAICS_2012_Code,62,,commercial_wood,health care and social assistance
+EPA_SIT,"Summary CH4, Commercial, Wood",NAICS_2012_Code,71,,commercial_wood,"arts, entertainment, and recreation"
+EPA_SIT,"Summary CH4, Commercial, Wood",NAICS_2012_Code,72,,commercial_wood,accommodation and food services
+EPA_SIT,"Summary CH4, Commercial, Wood",NAICS_2012_Code,81,,commercial_wood,other services (except public administration)
+EPA_SIT,"Summary CH4, Commercial, Other",NAICS_2012_Code,2213,,commercial_other,"water, sewage and other systems"
+EPA_SIT,"Summary CH4, Commercial, Other",NAICS_2012_Code,42,,commercial_other,wholesale trade
+EPA_SIT,"Summary CH4, Commercial, Other",NAICS_2012_Code,44,,commercial_other,retail trade
+EPA_SIT,"Summary CH4, Commercial, Other",NAICS_2012_Code,45,,commercial_other,retail trade
+EPA_SIT,"Summary CH4, Commercial, Other",NAICS_2012_Code,493,,commercial_other,warehousing and storage
+EPA_SIT,"Summary CH4, Commercial, Other",NAICS_2012_Code,51,,commercial_other,information
+EPA_SIT,"Summary CH4, Commercial, Other",NAICS_2012_Code,52,,commercial_other,finance and insurance
+EPA_SIT,"Summary CH4, Commercial, Other",NAICS_2012_Code,53,,commercial_other,real estate and rential and leasing
+EPA_SIT,"Summary CH4, Commercial, Other",NAICS_2012_Code,54,,commercial_other,"professional, scientific, and technical services"
+EPA_SIT,"Summary CH4, Commercial, Other",NAICS_2012_Code,55,,commercial_other,management of companies and enterprises
+EPA_SIT,"Summary CH4, Commercial, Other",NAICS_2012_Code,56,,commercial_other,administrative support and waste management and remediation services
+EPA_SIT,"Summary CH4, Commercial, Other",NAICS_2012_Code,61,,commercial_other,educational services
+EPA_SIT,"Summary CH4, Commercial, Other",NAICS_2012_Code,62,,commercial_other,health care and social assistance
+EPA_SIT,"Summary CH4, Commercial, Other",NAICS_2012_Code,71,,commercial_other,"arts, entertainment, and recreation"
+EPA_SIT,"Summary CH4, Commercial, Other",NAICS_2012_Code,72,,commercial_other,accommodation and food services
+EPA_SIT,"Summary CH4, Commercial, Other",NAICS_2012_Code,81,,commercial_other,other services (except public administration)
+EPA_SIT,"Summary CH4, Industrial",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Summary CH4, Industrial, Coal",NAICS_2012_Code,31,,industrial_coal,manufacturing
+EPA_SIT,"Summary CH4, Industrial, Coal",NAICS_2012_Code,32,,industrial_coal,manufacturing
+EPA_SIT,"Summary CH4, Industrial, Coal",NAICS_2012_Code,33,,industrial_coal,manufacturing
+EPA_SIT,"Summary CH4, Industrial, Petroleum",NAICS_2012_Code,31,,industrial_petroleum,manufacturing
+EPA_SIT,"Summary CH4, Industrial, Petroleum",NAICS_2012_Code,32,,industrial_petroleum,manufacturing
+EPA_SIT,"Summary CH4, Industrial, Petroleum",NAICS_2012_Code,33,,industrial_petroleum,manufacturing
+EPA_SIT,"Summary CH4, Industrial, Natural Gas",NAICS_2012_Code,31,,industrial_gas,manufacturing
+EPA_SIT,"Summary CH4, Industrial, Natural Gas",NAICS_2012_Code,32,,industrial_gas,manufacturing
+EPA_SIT,"Summary CH4, Industrial, Natural Gas",NAICS_2012_Code,33,,industrial_gas,manufacturing
+EPA_SIT,"Summary CH4, Industrial, Wood",NAICS_2012_Code,31,,industrial_wood,manufacturing
+EPA_SIT,"Summary CH4, Industrial, Wood",NAICS_2012_Code,32,,industrial_wood,manufacturing
+EPA_SIT,"Summary CH4, Industrial, Wood",NAICS_2012_Code,33,,industrial_wood,manufacturing
+EPA_SIT,"Summary CH4, Industrial, Other",NAICS_2012_Code,31,,industrial_other,manufacturing
+EPA_SIT,"Summary CH4, Industrial, Other",NAICS_2012_Code,32,,industrial_other,manufacturing
+EPA_SIT,"Summary CH4, Industrial, Other",NAICS_2012_Code,33,,industrial_other,manufacturing
+EPA_SIT,"Summary CH4, Electric Power",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Summary CH4, Electric Power, Coal",NAICS_2012_Code,2211,,direct,"electric power generation, transmission, and distribution"
+EPA_SIT,"Summary CH4, Electric Power, Petroleum",NAICS_2012_Code,2211,,direct,"electric power generation, transmission, and distribution"
+EPA_SIT,"Summary CH4, Electric Power, Natural Gas",NAICS_2012_Code,2211,,direct,"electric power generation, transmission, and distribution"
+EPA_SIT,"Summary CH4, Electric Power, Wood",NAICS_2012_Code,2211,,direct,"electric power generation, transmission, and distribution"
+EPA_SIT,"Summary CH4, Electric Power, Other",NAICS_2012_Code,2211,,direct,"electric power generation, transmission, and distribution"
+EPA_SIT,"Summary CH4, TOTAL",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Summary CH4, TOTAL, Coal",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Summary CH4, TOTAL, Petroleum",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Summary CH4, TOTAL, Natural Gas",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Summary CH4, TOTAL, Wood",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Summary CH4, TOTAL, Other",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Summary N2O, Residential",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Summary N2O, Residential, Coal",NAICS_2012_Code,F010,,direct,personal consumption
+EPA_SIT,"Summary N2O, Residential, Petroleum",NAICS_2012_Code,F010,,direct,personal consumption
+EPA_SIT,"Summary N2O, Residential, Natural Gas",NAICS_2012_Code,F010,,direct,personal consumption
+EPA_SIT,"Summary N2O, Residential, Wood",NAICS_2012_Code,F010,,direct,personal consumption
+EPA_SIT,"Summary N2O, Residential, Other",NAICS_2012_Code,F010,,direct,personal consumption
+EPA_SIT,"Summary N2O, Commercial",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Summary N2O, Commercial, Coal",NAICS_2012_Code,2213,,commercial_coal,"water, sewage and other systems"
+EPA_SIT,"Summary N2O, Commercial, Coal",NAICS_2012_Code,42,,commercial_coal,wholesale trade
+EPA_SIT,"Summary N2O, Commercial, Coal",NAICS_2012_Code,44,,commercial_coal,retail trade
+EPA_SIT,"Summary N2O, Commercial, Coal",NAICS_2012_Code,45,,commercial_coal,retail trade
+EPA_SIT,"Summary N2O, Commercial, Coal",NAICS_2012_Code,493,,commercial_coal,warehousing and storage
+EPA_SIT,"Summary N2O, Commercial, Coal",NAICS_2012_Code,51,,commercial_coal,information
+EPA_SIT,"Summary N2O, Commercial, Coal",NAICS_2012_Code,52,,commercial_coal,finance and insurance
+EPA_SIT,"Summary N2O, Commercial, Coal",NAICS_2012_Code,53,,commercial_coal,real estate and rential and leasing
+EPA_SIT,"Summary N2O, Commercial, Coal",NAICS_2012_Code,54,,commercial_coal,"professional, scientific, and technical services"
+EPA_SIT,"Summary N2O, Commercial, Coal",NAICS_2012_Code,55,,commercial_coal,management of companies and enterprises
+EPA_SIT,"Summary N2O, Commercial, Coal",NAICS_2012_Code,56,,commercial_coal,administrative support and waste management and remediation services
+EPA_SIT,"Summary N2O, Commercial, Coal",NAICS_2012_Code,61,,commercial_coal,educational services
+EPA_SIT,"Summary N2O, Commercial, Coal",NAICS_2012_Code,62,,commercial_coal,health care and social assistance
+EPA_SIT,"Summary N2O, Commercial, Coal",NAICS_2012_Code,71,,commercial_coal,"arts, entertainment, and recreation"
+EPA_SIT,"Summary N2O, Commercial, Coal",NAICS_2012_Code,72,,commercial_coal,accommodation and food services
+EPA_SIT,"Summary N2O, Commercial, Coal",NAICS_2012_Code,81,,commercial_coal,other services (except public administration)
+EPA_SIT,"Summary N2O, Commercial, Petroleum",NAICS_2012_Code,2213,,commercial_petroleum,"water, sewage and other systems"
+EPA_SIT,"Summary N2O, Commercial, Petroleum",NAICS_2012_Code,42,,commercial_petroleum,wholesale trade
+EPA_SIT,"Summary N2O, Commercial, Petroleum",NAICS_2012_Code,44,,commercial_petroleum,retail trade
+EPA_SIT,"Summary N2O, Commercial, Petroleum",NAICS_2012_Code,45,,commercial_petroleum,retail trade
+EPA_SIT,"Summary N2O, Commercial, Petroleum",NAICS_2012_Code,493,,commercial_petroleum,warehousing and storage
+EPA_SIT,"Summary N2O, Commercial, Petroleum",NAICS_2012_Code,51,,commercial_petroleum,information
+EPA_SIT,"Summary N2O, Commercial, Petroleum",NAICS_2012_Code,52,,commercial_petroleum,finance and insurance
+EPA_SIT,"Summary N2O, Commercial, Petroleum",NAICS_2012_Code,53,,commercial_petroleum,real estate and rential and leasing
+EPA_SIT,"Summary N2O, Commercial, Petroleum",NAICS_2012_Code,54,,commercial_petroleum,"professional, scientific, and technical services"
+EPA_SIT,"Summary N2O, Commercial, Petroleum",NAICS_2012_Code,55,,commercial_petroleum,management of companies and enterprises
+EPA_SIT,"Summary N2O, Commercial, Petroleum",NAICS_2012_Code,56,,commercial_petroleum,administrative support and waste management and remediation services
+EPA_SIT,"Summary N2O, Commercial, Petroleum",NAICS_2012_Code,61,,commercial_petroleum,educational services
+EPA_SIT,"Summary N2O, Commercial, Petroleum",NAICS_2012_Code,62,,commercial_petroleum,health care and social assistance
+EPA_SIT,"Summary N2O, Commercial, Petroleum",NAICS_2012_Code,71,,commercial_petroleum,"arts, entertainment, and recreation"
+EPA_SIT,"Summary N2O, Commercial, Petroleum",NAICS_2012_Code,72,,commercial_petroleum,accommodation and food services
+EPA_SIT,"Summary N2O, Commercial, Petroleum",NAICS_2012_Code,81,,commercial_petroleum,other services (except public administration)
+EPA_SIT,"Summary N2O, Commercial, Natural Gas",NAICS_2012_Code,2213,,commercial_gas,"water, sewage and other systems"
+EPA_SIT,"Summary N2O, Commercial, Natural Gas",NAICS_2012_Code,42,,commercial_gas,wholesale trade
+EPA_SIT,"Summary N2O, Commercial, Natural Gas",NAICS_2012_Code,44,,commercial_gas,retail trade
+EPA_SIT,"Summary N2O, Commercial, Natural Gas",NAICS_2012_Code,45,,commercial_gas,retail trade
+EPA_SIT,"Summary N2O, Commercial, Natural Gas",NAICS_2012_Code,493,,commercial_gas,warehousing and storage
+EPA_SIT,"Summary N2O, Commercial, Natural Gas",NAICS_2012_Code,51,,commercial_gas,information
+EPA_SIT,"Summary N2O, Commercial, Natural Gas",NAICS_2012_Code,52,,commercial_gas,finance and insurance
+EPA_SIT,"Summary N2O, Commercial, Natural Gas",NAICS_2012_Code,53,,commercial_gas,real estate and rential and leasing
+EPA_SIT,"Summary N2O, Commercial, Natural Gas",NAICS_2012_Code,54,,commercial_gas,"professional, scientific, and technical services"
+EPA_SIT,"Summary N2O, Commercial, Natural Gas",NAICS_2012_Code,55,,commercial_gas,management of companies and enterprises
+EPA_SIT,"Summary N2O, Commercial, Natural Gas",NAICS_2012_Code,56,,commercial_gas,administrative support and waste management and remediation services
+EPA_SIT,"Summary N2O, Commercial, Natural Gas",NAICS_2012_Code,61,,commercial_gas,educational services
+EPA_SIT,"Summary N2O, Commercial, Natural Gas",NAICS_2012_Code,62,,commercial_gas,health care and social assistance
+EPA_SIT,"Summary N2O, Commercial, Natural Gas",NAICS_2012_Code,71,,commercial_gas,"arts, entertainment, and recreation"
+EPA_SIT,"Summary N2O, Commercial, Natural Gas",NAICS_2012_Code,72,,commercial_gas,accommodation and food services
+EPA_SIT,"Summary N2O, Commercial, Natural Gas",NAICS_2012_Code,81,,commercial_gas,other services (except public administration)
+EPA_SIT,"Summary N2O, Commercial, Wood",NAICS_2012_Code,2213,,commercial_wood,"water, sewage and other systems"
+EPA_SIT,"Summary N2O, Commercial, Wood",NAICS_2012_Code,42,,commercial_wood,wholesale trade
+EPA_SIT,"Summary N2O, Commercial, Wood",NAICS_2012_Code,44,,commercial_wood,retail trade
+EPA_SIT,"Summary N2O, Commercial, Wood",NAICS_2012_Code,45,,commercial_wood,retail trade
+EPA_SIT,"Summary N2O, Commercial, Wood",NAICS_2012_Code,493,,commercial_wood,warehousing and storage
+EPA_SIT,"Summary N2O, Commercial, Wood",NAICS_2012_Code,51,,commercial_wood,information
+EPA_SIT,"Summary N2O, Commercial, Wood",NAICS_2012_Code,52,,commercial_wood,finance and insurance
+EPA_SIT,"Summary N2O, Commercial, Wood",NAICS_2012_Code,53,,commercial_wood,real estate and rential and leasing
+EPA_SIT,"Summary N2O, Commercial, Wood",NAICS_2012_Code,54,,commercial_wood,"professional, scientific, and technical services"
+EPA_SIT,"Summary N2O, Commercial, Wood",NAICS_2012_Code,55,,commercial_wood,management of companies and enterprises
+EPA_SIT,"Summary N2O, Commercial, Wood",NAICS_2012_Code,56,,commercial_wood,administrative support and waste management and remediation services
+EPA_SIT,"Summary N2O, Commercial, Wood",NAICS_2012_Code,61,,commercial_wood,educational services
+EPA_SIT,"Summary N2O, Commercial, Wood",NAICS_2012_Code,62,,commercial_wood,health care and social assistance
+EPA_SIT,"Summary N2O, Commercial, Wood",NAICS_2012_Code,71,,commercial_wood,"arts, entertainment, and recreation"
+EPA_SIT,"Summary N2O, Commercial, Wood",NAICS_2012_Code,72,,commercial_wood,accommodation and food services
+EPA_SIT,"Summary N2O, Commercial, Wood",NAICS_2012_Code,81,,commercial_wood,other services (except public administration)
+EPA_SIT,"Summary N2O, Commercial, Other",NAICS_2012_Code,2213,,commercial_other,"water, sewage and other systems"
+EPA_SIT,"Summary N2O, Commercial, Other",NAICS_2012_Code,42,,commercial_other,wholesale trade
+EPA_SIT,"Summary N2O, Commercial, Other",NAICS_2012_Code,44,,commercial_other,retail trade
+EPA_SIT,"Summary N2O, Commercial, Other",NAICS_2012_Code,45,,commercial_other,retail trade
+EPA_SIT,"Summary N2O, Commercial, Other",NAICS_2012_Code,493,,commercial_other,warehousing and storage
+EPA_SIT,"Summary N2O, Commercial, Other",NAICS_2012_Code,51,,commercial_other,information
+EPA_SIT,"Summary N2O, Commercial, Other",NAICS_2012_Code,52,,commercial_other,finance and insurance
+EPA_SIT,"Summary N2O, Commercial, Other",NAICS_2012_Code,53,,commercial_other,real estate and rential and leasing
+EPA_SIT,"Summary N2O, Commercial, Other",NAICS_2012_Code,54,,commercial_other,"professional, scientific, and technical services"
+EPA_SIT,"Summary N2O, Commercial, Other",NAICS_2012_Code,55,,commercial_other,management of companies and enterprises
+EPA_SIT,"Summary N2O, Commercial, Other",NAICS_2012_Code,56,,commercial_other,administrative support and waste management and remediation services
+EPA_SIT,"Summary N2O, Commercial, Other",NAICS_2012_Code,61,,commercial_other,educational services
+EPA_SIT,"Summary N2O, Commercial, Other",NAICS_2012_Code,62,,commercial_other,health care and social assistance
+EPA_SIT,"Summary N2O, Commercial, Other",NAICS_2012_Code,71,,commercial_other,"arts, entertainment, and recreation"
+EPA_SIT,"Summary N2O, Commercial, Other",NAICS_2012_Code,72,,commercial_other,accommodation and food services
+EPA_SIT,"Summary N2O, Commercial, Other",NAICS_2012_Code,81,,commercial_other,other services (except public administration)
+EPA_SIT,"Summary N2O, Industrial",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Summary N2O, Industrial, Coal",NAICS_2012_Code,31,,industrial_coal,manufacturing
+EPA_SIT,"Summary N2O, Industrial, Coal",NAICS_2012_Code,32,,industrial_coal,manufacturing
+EPA_SIT,"Summary N2O, Industrial, Coal",NAICS_2012_Code,33,,industrial_coal,manufacturing
+EPA_SIT,"Summary N2O, Industrial, Petroleum",NAICS_2012_Code,31,,industrial_petroleum,manufacturing
+EPA_SIT,"Summary N2O, Industrial, Petroleum",NAICS_2012_Code,32,,industrial_petroleum,manufacturing
+EPA_SIT,"Summary N2O, Industrial, Petroleum",NAICS_2012_Code,33,,industrial_petroleum,manufacturing
+EPA_SIT,"Summary N2O, Industrial, Natural Gas",NAICS_2012_Code,31,,industrial_gas,manufacturing
+EPA_SIT,"Summary N2O, Industrial, Natural Gas",NAICS_2012_Code,32,,industrial_gas,manufacturing
+EPA_SIT,"Summary N2O, Industrial, Natural Gas",NAICS_2012_Code,33,,industrial_gas,manufacturing
+EPA_SIT,"Summary N2O, Industrial, Wood",NAICS_2012_Code,31,,industrial_wood,manufacturing
+EPA_SIT,"Summary N2O, Industrial, Wood",NAICS_2012_Code,32,,industrial_wood,manufacturing
+EPA_SIT,"Summary N2O, Industrial, Wood",NAICS_2012_Code,33,,industrial_wood,manufacturing
+EPA_SIT,"Summary N2O, Industrial, Other",NAICS_2012_Code,31,,industrial_other,manufacturing
+EPA_SIT,"Summary N2O, Industrial, Other",NAICS_2012_Code,32,,industrial_other,manufacturing
+EPA_SIT,"Summary N2O, Industrial, Other",NAICS_2012_Code,33,,industrial_other,manufacturing
+EPA_SIT,"Summary N2O, Electric Power",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Summary N2O, Electric Power, Coal",NAICS_2012_Code,2211,,direct,"electric power generation, transmission, and distribution"
+EPA_SIT,"Summary N2O, Electric Power, Petroleum",NAICS_2012_Code,2211,,direct,"electric power generation, transmission, and distribution"
+EPA_SIT,"Summary N2O, Electric Power, Natural Gas",NAICS_2012_Code,2211,,direct,"electric power generation, transmission, and distribution"
+EPA_SIT,"Summary N2O, Electric Power, Wood",NAICS_2012_Code,2211,,direct,"electric power generation, transmission, and distribution"
+EPA_SIT,"Summary N2O, Electric Power, Other",NAICS_2012_Code,2211,,direct,"electric power generation, transmission, and distribution"
+EPA_SIT,"Summary N2O, TOTAL",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Summary N2O, TOTAL, Coal",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Summary N2O, TOTAL, Petroleum",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Summary N2O, TOTAL, Natural Gas",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Summary N2O, TOTAL, Wood",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Summary N2O, TOTAL, Other",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Waste, Emissions from Landfills, CH4 Avoided",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Waste, Emissions from Landfills, CH4 Avoided, Flare",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Waste, Emissions from Landfills, CH4 Avoided, Landfill Gas-to-Energy",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Waste, Emissions from Landfills, Oxidation at Industrial Landfills",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Waste, Emissions from Landfills, Oxidation at MSW Landfills",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Waste, Emissions from Landfills, Potential CH4",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Waste, Emissions from Landfills, Potential CH4, Industrial Generation",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Waste, Emissions from Landfills, Potential CH4, MSW Generation",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Waste, Emissions from Landfills, Total CH4 Emissions",NAICS_2012_Code,562212,,direct,solid waste landfill
+EPA_SIT,"Waste, Emissions from Waste Combustion, CH4",NAICS_2012_Code,562213,,direct,solid waste combustors and incinerators
+EPA_SIT,"Waste, Emissions from Waste Combustion, CO2",NAICS_2012_Code,562213,,direct,solid waste combustors and incinerators
+EPA_SIT,"Waste, Emissions from Waste Combustion, N2O",NAICS_2012_Code,562213,,direct,solid waste combustors and incinerators
+EPA_SIT,"Waste, Emissions from Waste Combustion, Plastics",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Waste, Emissions from Waste Combustion, Synthetic Fibers",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Waste, Emissions from Waste Combustion, Synthetic Rubber in MSW",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Waste, Emissions from Waste Combustion, Total CO2, N2O, CH4 Emissions",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Wastewater, Additional Methane Emissions",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Wastewater, Additional Nitrous Oxide Emissions",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Wastewater, Fruits & Vegetables",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Wastewater, Industrial CH4",NAICS_2012_Code,2213,,direct,"water, sewage, and other systems"
+EPA_SIT,"Wastewater, Municipal CH4",NAICS_2012_Code,2213,,direct,"water, sewage, and other systems"
+EPA_SIT,"Wastewater, Municipal N2O",NAICS_2012_Code,2213,,direct,"water, sewage, and other systems"
+EPA_SIT,"Wastewater, Poultry",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Wastewater, Pulp & Paper",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Wastewater, Red Meat",NAICS_2012_Code,,,,EXCLUDED
+EPA_SIT,"Wastewater, Total Emissions",NAICS_2012_Code,,,,EXCLUDED

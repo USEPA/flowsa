@@ -1,0 +1,8 @@
+ActivitySourceName,Activity,SectorSourceName,Sector,SectorType,activity_set,Notes
+StateGHGI_VT,"Natural gas distribution, pipe mains",NAICS_2012_Code,2212,,direct,natural gas distribution
+StateGHGI_VT,"Natural gas distribution, services",NAICS_2012_Code,2212,,direct,natural gas distribution
+StateGHGI_VT,ODS substitutes,NAICS_2012_Code,3251,,direct,basic chemical manufacturing
+StateGHGI_VT,Semiconductor manufacturing,NAICS_2012_Code,3332,,direct,industrial machinery manufacturing
+StateGHGI_VT,"Solid waste, flare",NAICS_2012_Code,562212,,direct,solid waste landfill
+StateGHGI_VT,"Solid waste, fugitive",NAICS_2012_Code,562212,,direct,solid waste landfill
+StateGHGI_VT,"Solid waste, to ICE",NAICS_2012_Code,562213,,direct,solid waste combustors and incinerators

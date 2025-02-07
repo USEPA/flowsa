@@ -11,6 +11,7 @@ EX: --year 2015 --source USGS_NWIS_WU
 import argparse
 import pandas as pd
 from urllib import parse
+import time
 import flowsa
 from esupy.processed_data_mgmt import write_df_to_file
 from esupy.remote import make_url_request
@@ -58,7 +59,7 @@ def assemble_urls_for_query(*, source, year, config):
     """
     # if there are url parameters defined in the yaml,
     # then build a url, else use "base_url"
-    urlinfo = config['url']
+    urlinfo = config.get('url', 'None')
     if urlinfo == 'None':
         return [None]
 
@@ -102,6 +103,7 @@ def call_urls(*, url_list, source, year, config):
     # identify if url request requires cookies set
     set_cookies = config.get('allow_http_request_cookies')
     confirm_gdrive = config.get('confirm_gdrive')
+    pause = config.get('time_delay', 0) # in seconds
 
     # create dataframes list by iterating through url list
     data_frames_list = []
@@ -123,6 +125,7 @@ def call_urls(*, url_list, source, year, config):
                 data_frames_list.append(df)
             elif isinstance(df, list):
                 data_frames_list.extend(df)
+            time.sleep(pause)
 
     return data_frames_list
 
@@ -220,18 +223,27 @@ def main(**kwargs):
         log.warning(f'Years not listed in FBA method yaml: {years_list}, '
                     f'data might not exist')
 
+    if config.get('call_all_years'):
+        urls = assemble_urls_for_query(source=source, year=None, config=config)
+        df_list = call_urls(url_list=urls, source=source, year=None, config=config)
+        dfs = parse_data(df_list=df_list, source=source, year=None, config=config)
+        call_all_years = True
+    else:
+        call_all_years = False
     for p_year in year_iter:
         year = str(p_year)
-        # replace parts of urls with specific instructions from source.py
-        urls = assemble_urls_for_query(source=source, year=year, config=config)
-        # create a list with data from all source urls
-        df_list = call_urls(url_list=urls,
-                            source=source, year=year, config=config)
-        # concat the dataframes and parse data with specific
-        # instructions from source.py
-        log.info("Concat dataframe list and parse data")
-        dfs = parse_data(df_list=df_list,
-                         source=source, year=year, config=config)
+        if not call_all_years:
+            # replace parts of urls with specific instructions from source.py
+            urls = assemble_urls_for_query(source=source,
+                                           year=year, config=config)
+            # create a list with data from all source urls
+            df_list = call_urls(url_list=urls,
+                                source=source, year=year, config=config)
+            # concat the dataframes and parse data with specific
+            # instructions from source.py
+            log.info("Concat dataframe list and parse data")
+            dfs = parse_data(df_list=df_list, source=source,
+                             year=year, config=config)
         if isinstance(dfs, list):
             for frame in dfs:
                 if not len(frame.index) == 0:
@@ -243,6 +255,11 @@ def main(**kwargs):
                     process_data_frame(df=frame,
                                        source=source_name, year=year,
                                        config=config)
+        elif call_all_years:
+            process_data_frame(
+                df=dfs.query('Year == @year').reset_index(drop=True),
+                source=source, year=year, config=config)
+
         else:
             process_data_frame(df=dfs, source=source, year=year, config=config)
 

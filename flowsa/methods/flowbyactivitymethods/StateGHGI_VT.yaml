@@ -6,6 +6,8 @@ url: None
 filename: 'VT_custom_data_summary.xlsx'
 parse_response_fxn: !script_function:StateGHGI VT_supplementary_parse
 years:
+- 2021
+- 2020
 - 2019
 - 2018
 - 2017
@@ -54,11 +56,15 @@ table_dict:
     'Emissions from Semiconductor Manufacturing':
         sheetname: 'Sheet1'
         header: 16
-        nrows: 7
+        nrows: 10
         SIT_APB_proxy: 'IP, Semiconductor Manufacturing'
 
     'Emissions from Solid Waste':
         sheetname: 'Sheet1'
-        header: 27
+        header: 30
         nrows: 3
-        SIT_APB_proxy: ['Landfills', 'Waste Combustion']
+        SIT_APB_proxy:
+          - 'Waste, Emissions from Landfills, Total CH4 Emissions'
+          - 'Waste, Emissions from Waste Combustion, CH4'
+          - 'Waste, Emissions from Waste Combustion, CO2'
+          - 'Waste, Emissions from Waste Combustion, N2O'
