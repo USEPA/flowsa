@@ -45,20 +45,20 @@ def epa_state_ghgi_parse(*, df_list, source, year, config, **_):
                      'sub_category_2', 'sub_category_3', 'sub_category_4', 'sub_category_5']
 
     states = data_df[['geo_ref']].drop_duplicates()
-    flows = data_df[['ghg_category']].drop_duplicates()
-
-    df = (data_df.melt(id_vars = activity_cols + ['geo_ref'] + ['ghg_category'],
-                       value_vars=f'Y{year}',
+    flows = data_df[['ghg']].drop_duplicates()
+    year_cols = [col for col in data_df if col.startswith('Y') and len(col)==5]
+    df = (data_df.melt(id_vars = activity_cols + ['geo_ref'] + ['ghg'],
+                       value_vars=year_cols,
                        var_name = 'Year',
                        value_name = 'FlowAmount')
-                .assign(Year = year)
+                .assign(Year = lambda x: x['Year'].str[1:])
                 .assign(Unit = 'MMT CO2e') # Updated from Tg
                 .assign(FlowType = 'ELEMENTARY_FLOW')
                 .assign(SourceName = source)
                 .assign(Class = 'Chemicals')
                 .assign(Compartment = 'air')
                 .rename(columns={'geo_ref': 'State',
-                                 'ghg_category': 'FlowName'})
+                                 'ghg': 'FlowName'})
                 .assign(ActivityProducedBy = lambda x: x[activity_cols]
                         .apply(lambda row: " - ".join(
                             row.dropna().drop_duplicates().astype(str)),
@@ -229,7 +229,5 @@ def drop_negative_values(fbs: FlowBySector, **_) -> FlowBySector:
 
 if __name__ == '__main__':
     import flowsa
-    flowsa.generateflowbyactivity.main(source='EPA_StateGHGI', year='2020')
+    flowsa.generateflowbyactivity.main(source='EPA_StateGHGI', year='2012-2022')
     fba = flowsa.flowbyactivity.getFlowByActivity('EPA_StateGHGI', '2020')
-    
-    

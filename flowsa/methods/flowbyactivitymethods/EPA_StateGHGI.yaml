@@ -10,6 +10,7 @@ call_response_fxn: !script_function:EPA_StateGHGI epa_state_ghgi_call
 parse_response_fxn: !script_function:EPA_StateGHGI epa_state_ghgi_parse
 file:  'AllStateGHGData90-22_v082924.xlsx'
 sheet: 'Data by Economic Sectors'
+call_all_years: True
 years:
 - 2022
 - 2021
