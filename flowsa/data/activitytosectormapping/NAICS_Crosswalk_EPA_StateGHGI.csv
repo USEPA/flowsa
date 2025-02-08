@@ -408,6 +408,10 @@ EPA_State_GHGI,Electric Power Industry - Electrical Equipment - Other product ma
 EPA_State_GHGI,Electric Power Industry - Electrical Equipment - Other product manufacture and use - Equipment OEM,NAICS_2012_Code,22112,,electricity_transmission
 EPA_State_GHGI,Industry - Fluorochemical Production - Chemical Industry - HCFC-22 Production,NAICS_2012_Code,325120,,hcfc
 EPA_State_GHGI,Industry - Fluorochemical Production - Chemical Industry - Production of fluorochemicals other than HCFC-22,NAICS_2012_Code,325120,,hcfc
+EPA_State_GHGI,Industry - SF6 and PFCs from Other Product Use - Other product manufacture and use - SF6 and PFCs from other product use - Military Applications - AWACS,NAICS_2012_Code,928110,,hcfc
+EPA_State_GHGI,Industry - SF6 and PFCs from Other Product Use - Other product manufacture and use - SF6 and PFCs from other product use - Military Applications - Other Military Applications,NAICS_2012_Code,928110,,hcfc
+EPA_State_GHGI,Industry - SF6 and PFCs from Other Product Use - Other product manufacture and use - SF6 and PFCs from other product use - Scientific Applications - Other Scientific Applications,NAICS_2012_Code,54171,,hcfc
+EPA_State_GHGI,Industry - SF6 and PFCs from Other Product Use - Other product manufacture and use - SF6 and PFCs from other product use - Scientific Applications - Particle Accelerators,NAICS_2012_Code,54171,,hcfc
 EPA_State_GHGI,Commercial - Composting - Biological Treatment of Solid Waste,NAICS_2012_Code,562219,,direct
 EPA_State_GHGI,Commercial - Anaerobic Digestion at Biogas Facilities - Biological Treatment of Solid Waste,NAICS_2012_Code,5622,,direct
 EPA_State_GHGI,Industry - Landfills - Industrial - Solid Waste Disposal - Landfills - Industrial Waste Landfills Emissions,NAICS_2012_Code,562212,,direct
