@@ -440,50 +440,10 @@ class FlowByActivity(_FlowBy):
                 log.info('NAICS are a mix of parent-completeChild, assigning '
                          'activity columns directly to sector columns')
 
-                # load master crosswalk
-                cw = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')
-                sectors = (cw[[f"NAICS_{self.config['target_naics_year']}_Code"]]
-                           .drop_duplicates()
-                           .dropna()
-                           )
-
-                # existing naics
-                existing_sectors = pd.DataFrame()
-                existing_sectors['Sector'] = (
-                    pd.Series(self[['ActivityProducedBy',
-                                    'ActivityConsumedBy']].values.ravel('F'))
-                    .dropna()
-                    .drop_duplicates()
-                    .reset_index(drop=True)
-                    )
-
-                # drop all sectors that are not sectors because BLS QCEW
-                # often has non-traditional NAICS6, but the parent NAICS5 do
-                # map correctly to sectors
-                existing_sectors = existing_sectors[existing_sectors[
-                    'Sector'].isin(sectors[f"NAICS_{self.config['target_naics_year']}_Code"].values)]
-
-                # drop parent sectors
-                existing_sectors_df = pd.DataFrame([])
-                for i in existing_sectors['Sector']:
-                    n = existing_sectors[
-                        existing_sectors['Sector'].apply(
-                            lambda x: x[0:len(str(i))] == i)]
-                    if len(n) == 1:
-                        existing_sectors_df = pd.concat(
-                            [existing_sectors_df, n])
-                existing_sectors_list = existing_sectors_df[
-                    'Sector'].values.tolist()
-
-                activity_to_target_naics_crosswalk = (
-                    naics_key
-                    .query('source_naics in @existing_sectors_list')
-                )
-                activity_to_target_naics_crosswalk = (
-                    sectormapping.assign_technological_correlation(
-                        activity_to_target_naics_crosswalk))
                 fba_w_naics = self
                 for direction in ['ProducedBy', 'ConsumedBy']:
+                    activity_to_target_naics_crosswalk = naics.subset_industry_key(
+                        fba_w_naics, direction, naics_key)
                     fba_w_naics = (
                         fba_w_naics
                         .merge(activity_to_target_naics_crosswalk,
@@ -497,6 +457,9 @@ class FlowByActivity(_FlowBy):
                                        'source_naics'],
                               errors='ignore')
                     )
+                fba_w_naics = fba_w_naics.dropna(
+                    subset=["SectorProducedBy", "SectorConsumedBy"],
+                    how='all')
                 fba_w_naics['TechnologicalCorrelation'] = (
                     fba_w_naics[['TechCorr_x', 'TechCorr_y']].apply(np.nanmax, axis=1)
                     )
