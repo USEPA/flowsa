@@ -405,6 +405,8 @@ class FlowByActivity(_FlowBy):
         naics_key = naics.industry_spec_key(self.config['industry_spec'],
                                             self.config['target_naics_year']
                                             )
+        # assign technological correlation scores
+        naics_key= sectormapping.assign_technological_correlation(naics_key)
 
         activity_schema = self.config['activity_schema'] if isinstance(
             self.config['activity_schema'], str) else self.config.get(
@@ -460,8 +462,8 @@ class FlowByActivity(_FlowBy):
                 fba_w_naics = fba_w_naics.dropna(
                     subset=["SectorProducedBy", "SectorConsumedBy"],
                     how='all')
-                fba_w_naics['TechnologicalCorrelation'] = (
-                    fba_w_naics[['TechCorr_x', 'TechCorr_y']].apply(np.nanmax, axis=1)
+                fba_w_naics = fba_w_naics.assign(
+                    TechnologicalCorrelation=fba_w_naics[['TechCorr_x', 'TechCorr_y']].apply(np.nanmax, axis=1)
                     )
             else:  # either "flat" or "parent-inComplete"
                 # if sector-like activities are aggregated, then map all
