@@ -67,22 +67,35 @@ def assign_technological_correlation(mapping):
                  '1': '2',
                  '2': '3',
                  '3': '4',
-                 '4': '5'
+                 '4': '5',
+                 '5': '5',
+                 '6': '5',
+                 '7': '5',
+                 '8': '5'
                  }
 
-    # assign string lengths to compare to assign tech correlation
-    mapping = (
-        mapping
-        .assign(SourceLength=mapping['source_naics'].str.len())
-        .assign(TargetLength=mapping['target_naics'].str.len())
-    )
-    mapping = mapping.assign(SectorDifference = abs(mapping['SourceLength'] - mapping['TargetLength']))
+    # load the sector length crosswalk
+    naics_crosswalk = load_crosswalk("Sector_Levels")
+
+    # assign sector lengths to compare to assign tech correlation
+    # merge dfs
+    for i in ['source', 'target']:
+        mapping = (mapping
+                  .merge(naics_crosswalk[['Sector', 'SectorLength']],
+                         how='left',
+                         left_on=[f'{i}_naics'],
+                         right_on=['Sector'])
+                  .drop(columns=['Sector'])
+                  .rename(columns={'SectorLength': f'{i}Length'})
+                  )
+    mapping = mapping.assign(SectorDifference = abs(mapping['sourceLength'].astype(int) - mapping[
+        'targetLength'].astype(int)))
 
     # determine difference in sector lengths between source and target and assign tech score
     mapping = mapping.assign(TechCorr=mapping["SectorDifference"].astype(str).apply(lambda x: tech_dict.get(x)))
     mapping["TechCorr"] = mapping["TechCorr"].map(int)
 
-    return mapping.drop(columns=['SourceLength', 'TargetLength', 'SectorDifference'])
+    return mapping.drop(columns=['sourceLength', 'targetLength', 'SectorDifference'])
 
 
 def convert_units_to_annual(df):
