@@ -32,7 +32,8 @@ sector_level_key = {"NAICS_2": 2,
                     "NAICS_3": 3,
                     "NAICS_4": 4,
                     "NAICS_5": 5,
-                    "NAICS_6": 6}
+                    "NAICS_6": 6,
+                    "NAICS_7": 7}
 
 # withdrawn keyword changed to "none" over "W"
 # because unable to run calculation functions with text string
