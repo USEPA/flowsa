@@ -18,7 +18,7 @@ import numpy as np
 import pandas as pd
 
 from flowsa.flowsa_log import log
-from flowsa.common import load_crosswalk
+from flowsa.common import load_crosswalk, sector_level_key
 from flowsa.settings import datapath, crosswalkpath
 
 
@@ -316,6 +316,25 @@ def write_sector_name_crosswalk():
               .reset_index(drop=True)
               )
         df.to_csv(f'{datapath}/Sector_{y}_Names.csv', index=False)
+
+def write_sector_level_crosswalk():
+    """
+    Write a csv that contains sector codes with their sector level
+    """
+    df = pd.DataFrame()
+    for y in ['2012', '2017']:
+        cw = pd.read_csv(datapath / f'NAICS_{y}_Crosswalk.csv')
+        df = pd.concat([df,cw], ignore_index=True)
+    df2 = pd.melt(df, var_name='Sector_Level', value_name='Sector')
+    df2 = (df2
+           .drop_duplicates()
+           .dropna()
+           .reset_index(drop=True)
+           )
+    df2 = df2.assign(SectorLength=df2['Sector_Level'].apply(
+        lambda x: sector_level_key.get(x)))
+    df2.SectorLength = df2.SectorLength.astype(int)
+    df2.to_csv(f'{datapath}/Sector_Levels.csv', index=False)
 
 
 if __name__ == '__main__':
