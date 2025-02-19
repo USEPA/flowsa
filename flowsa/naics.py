@@ -96,11 +96,12 @@ def industry_spec_key(
 def subset_industry_key(flowby, activitycol, industry_key):
     """
     Subset the naics key to return an industry that most closely maps source sectors to target
-    sectors by matching on sector length, based on the sectors that are in the
+    sectors by matching on sector length, based on the sectors that are in the FBA
     """
-    # first subset the industry key to only retain rows of data that are in the flowbyactivity
+
+    # First subset the industry key to retain rows of data in the flowbyactivity
     existing_sectors_list = (
-        flowby[f"Activity{activitycol}"]
+        flowby[f"{activitycol}"]
         .dropna()
         .drop_duplicates()
         .values.tolist()
@@ -110,30 +111,53 @@ def subset_industry_key(flowby, activitycol, industry_key):
         .query('source_naics in @existing_sectors_list')
     )
 
-    # keep rows where source = target
+    group_cols = ["target_naics"]
+    # If there are activity names in the flowby, merge back into the industry key to retain info
+    if "Activity" in flowby.columns:
+        group_cols = ["target_naics", "Activity"]
+
+        industry_key = (industry_key
+                        .merge(flowby[['Activity', 'Sector']],
+                         how='left',
+                         left_on=['source_naics'],
+                         right_on=['Sector']
+                               )
+                        ).drop(columns='Sector')
+
+    # Keep rows where source = target
     df_keep = industry_key[industry_key["source_naics"] == industry_key["target_naics"]].reset_index(drop=True)
 
-    df_remaining = industry_key[~industry_key["target_naics"].isin(df_keep["target_naics"])]
+    # subset df to all remaining target sectors by dropping the one to one matches
+    # Subset df to all remaining target sectors and Activity if present
+    if "Activity" in industry_key.columns:
+        df_remaining = industry_key[~(industry_key["target_naics"].isin(df_keep["target_naics"]) &
+                                      industry_key["Activity"].isin(df_keep["Activity"]))]
+    else:
+        df_remaining = industry_key[~industry_key["target_naics"].isin(df_keep["target_naics"])]
 
-    if not df_remaining.empty:
-        # todo: modify so apply to all unique target naics
-        target = df_remaining["target_naics"].iloc[0]
+    # function to identify which source naics most closely match to the target naics
+    def process_group(group):
+        target = group["target_naics"].iloc[0]
         target_length = len(target)
 
         # first check for length source > length target
-        group_filtered_greater = df_remaining[df_remaining["source_naics"].apply(len)>target_length]
+        group_filtered_greater = group[group["source_naics"].apply(len) > target_length]
         if not group_filtered_greater.empty:
             # keep rows where source length is smallest greater length
             min_source_length = min(group_filtered_greater["source_naics"].apply(len))
             result_greater = group_filtered_greater[group_filtered_greater["source_naics"].apply(len)
                                                     == min_source_length]
             # drop the greater data from the remainder df before looking for shorter lengths
-            df_remaining = df_remaining[~df_remaining["target_naics"].isin(result_greater["target_naics"])]
+            if "Activity" in group.columns:
+                group = group[~((group["target_naics"].isin(result_greater["target_naics"])) &
+                                (group["Activity"].isin(result_greater["Activity"])))]
+            else:
+                group = group[~group["target_naics"].isin(result_greater["target_naics"])]
         else:
             result_greater = pd.DataFrame()
 
         # if there are no source length greater than target, check for source values shorter
-        group_filtered_shorter = df_remaining[df_remaining["source_naics"].apply(len) < target_length]
+        group_filtered_shorter = group[group["source_naics"].apply(len) < target_length]
         if not group_filtered_shorter.empty:
             # keep rows where source length is smallest smaller length
             max_source_length = max(group_filtered_shorter["source_naics"].apply(len))
@@ -141,11 +165,15 @@ def subset_industry_key(flowby, activitycol, industry_key):
                 group_filtered_shorter["source_naics"].apply(len) == max_source_length]
         else:
             result_shorter = pd.DataFrame()
+        return pd.concat([result_greater, result_shorter], ignore_index=True)
 
-        return pd.concat([df_keep, result_greater, result_shorter], ignore_index=True)
+    grouped_results = (df_remaining
+                       .groupby(group_cols)
+                       .apply(process_group)
+                       .reset_index(drop=True)
+                       )
 
-    else:
-        return df_keep
+    return pd.concat([df_keep, grouped_results], ignore_index=True)
 
 
 def map_target_sectors_to_less_aggregated_sectors(
