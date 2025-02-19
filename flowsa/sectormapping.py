@@ -59,10 +59,14 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
 
 def assign_technological_correlation(mapping):
     """
-    Assign technolgical correlation sources based on the difference between source and target sectors using
+    Assign technological correlation sources based on the difference between source and target sectors using
     https://github.com/USEPA/esupy/blob/main/DataQualityPedigreeMatrix.md
     as a guideline
     """
+
+    # todo: modify tech assignments for cases where there is one:one parent:child relationships because a NAICS5 is
+    #  the same as a NAICS6 in these situations, so the tech score should be the same for each
+
     tech_dict = {'0': '1',
                  '1': '2',
                  '2': '3',
