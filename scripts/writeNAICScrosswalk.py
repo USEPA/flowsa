@@ -11,7 +11,6 @@ to NAICS crosswalk.
 - Writes reshaped file to datapath as csv.
 """
 
-
 import glob
 import re
 import numpy as np
@@ -22,13 +21,16 @@ from flowsa.common import load_crosswalk
 from flowsa.settings import datapath, crosswalkpath
 
 
-def load_naics_02_to_07_crosswalk():
+def load_naics_concordance(y1, y2):
     """
-    Load the 2002 to 2007 crosswalk from US Census
+    Load the naics concordance from US Census, which are provided in naics6 format
+    https://www.census.gov/naics/?68967
+
+    Must be valid years
+    For example: 2002 to 2007 and 2017 to 2022
     :return:
     """
-    naics_url = \
-        'https://www.census.gov/naics/concordances/2002_to_2007_NAICS.xls'
+    naics_url = f'https://www.census.gov/naics/concordances/{y1}_to_{y2}_NAICS.xls'
     df_load = pd.read_excel(naics_url)
     # drop first rows
     df = pd.DataFrame(df_load.loc[2:]).reset_index(drop=True)
@@ -36,16 +38,39 @@ def load_naics_02_to_07_crosswalk():
     df.columns = df_load.loc[1, ]
 
     # df subset columns
-    naics_02_to_07_cw = df[['2002 NAICS Code', '2007 NAICS Code']].rename(
-        columns={'2002 NAICS Code': 'NAICS_2002_Code',
-                 '2007 NAICS Code': 'NAICS_2007_Code'})
+    naics_cw = df[[f'{y1} NAICS Code', f'{y2} NAICS Code']].rename(
+        columns={f'{y1} NAICS Code': f'NAICS_{y1}_Code',
+                 f'{y2} NAICS Code': f'NAICS_{y2}_Code'})
     # ensure datatype is string
-    naics_02_to_07_cw = naics_02_to_07_cw.astype(str)
+    naics_cw = naics_cw.astype(str)
 
-    naics_02_to_07_cw = naics_02_to_07_cw.apply(
-        lambda x: x.str.strip() if isinstance(x, str) else x)
+    naics_cw = naics_cw.apply(lambda x: x.str.strip() if isinstance(x, str) else x)
 
-    return naics_02_to_07_cw
+    return naics_cw
+
+
+def write_naics_year_concordance():
+    """
+    Generate a csv of 6-digit NAICS year concordances
+    """
+
+    # List of year pairs for concordances
+    year_pairs = [('2002', '2007'), ('2007', '2012'), ('2012', '2017'), ('2017', '2022')]
+
+    # empty df
+    cw_merged = pd.DataFrame()
+    # Loop through each pair of years and call the function
+    for y1, y2 in year_pairs:
+        cw = load_naics_concordance(y1, y2)
+
+        if cw_merged.empty:
+            cw_merged = cw
+        else:
+            # Merge df based on shared column
+            cw_merged = pd.merge(cw_merged, cw, how='outer')
+
+    # save as csv
+    cw_merged.to_csv(f"{datapath}/NAICS_Year_Concordance.csv", index=False)
 
 
 def update_naics_crosswalk():
@@ -132,7 +157,7 @@ def update_naics_crosswalk():
     total_naics = total_naics.astype(str)
 
     # add naics 2002
-    naics_02 = load_naics_02_to_07_crosswalk()
+    naics_02 = load_naics_concordance('2002', '2007')
     naics_cw = pd.merge(total_naics, naics_02, how='left')
 
     # reorder
