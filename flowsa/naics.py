@@ -281,10 +281,11 @@ def check_if_sectors_are_naics(df_load, crosswalk_list, column_headers):
     return non_sectors
 
 
-def melt_naics_crosswalk(targetsectorsourcename):
+def generate_naics_crosswalk_conversion_ratios(sectorsourcename, targetsectorsourcename):
     """
-    Create a melt version of the naics 07 to 17 crosswalk to map
-    naics to naics 2012
+    Create a melt version of the source naics source years crosswalk to map
+    naics to naics target year
+    :param sectorsourcename: str, the source sector year
     :param targetsectorsourcename: str, the target sector year, such as
     "NAICS_2012_Code"
     :return: df, naics crosswalk melted
@@ -292,36 +293,36 @@ def melt_naics_crosswalk(targetsectorsourcename):
 
     # load the mastercroswalk and subset by sectorsourcename,
     # save values to list
-    cw_load = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')
+    df = common.load_crosswalk('NAICS_Year_Concordance')[[sectorsourcename,
+                                                               targetsectorsourcename]].drop_duplicates()
 
-    # create melt table of possible naics from other years that can
-    # be mapped to target naics year
-    cw_melt = cw_load.melt(
-        id_vars=targetsectorsourcename, var_name='NAICS_year', value_name='NAICS')
-    # drop the naics year because not relevant for replacement purposes
-    cw_replacement = cw_melt.dropna(how='any')
-    cw_replacement = cw_replacement[
-        [targetsectorsourcename, 'NAICS']].drop_duplicates()
-    # drop rows where contents are equal
-    cw_replacement = cw_replacement[
-        cw_replacement[targetsectorsourcename] != cw_replacement['NAICS']]
-    # drop rows where length > 6
-    cw_replacement = cw_replacement[cw_replacement[targetsectorsourcename].apply(
-        lambda x: len(x) < 7)].reset_index(drop=True)
-    # order by naics target tear
-    cw_replacement = cw_replacement.sort_values(
-        ['NAICS', targetsectorsourcename]).reset_index(drop=True)
+    all_ratios = []
 
-    # create allocation ratios by determining number of
-    # NAICS year to other naics when not a 1:1 ratio
-    cw_replacement_2 = cw_replacement.assign(
-        naics_count=cw_replacement.groupby(
-            ['NAICS'])[targetsectorsourcename].transform('count'))
-    cw_replacement_2 = cw_replacement_2.assign(
-        allocation_ratio=1/cw_replacement_2['naics_count'])
+    # Calculate allocation ratios for each length from 6 to 2
+    for length in range(6, 1, -1):
+        # Truncate both NAICS and NAICS_2017_Code to the current string length
+        df['source'] = df[f'{sectorsourcename}'].str[:length]
+        df['target'] = df[f'{targetsectorsourcename}'].str[:length]
 
-    return cw_replacement_2
+        # Group by the truncated NAICS codes
+        df_grouped = df.groupby(['source', 'target']).size().reset_index(name='count')
 
+        # Calculate the allocation ratios
+        df_grouped['allocation_ratio'] = df_grouped.groupby('source')['count'].transform(lambda x: x / x.sum())
+
+        # Add the length to the results
+        df_grouped['length'] = length
+
+        # Collect the results
+        all_ratios.append(df_grouped)
+
+    # Combine all ratios into a single DataFrame
+    ratios_df = pd.concat(all_ratios, ignore_index=True)
+    ratios_df = ratios_df.rename(columns={'source': 'NAICS',
+                                          'target': f'{targetsectorsourcename}'
+                                          })
+
+    return ratios_df
 
 def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
                        dfname):
@@ -346,10 +347,10 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
             targetsectorsourcename, sectorsourcename]]
     cw = cw_load[targetsectorsourcename].drop_duplicates().tolist()
 
-    # load melted crosswalk
-    cw_melt = melt_naics_crosswalk(targetsectorsourcename)
+    # load conversion crosswalk
+    cw_melt = generate_naics_crosswalk_conversion_ratios(sectorsourcename, targetsectorsourcename)
     # drop the count column
-    cw_melt = cw_melt.drop(columns='naics_count')
+    cw_melt = cw_melt.drop(columns=['naics_count', 'length'])
 
     # determine which headers are in the df
     column_headers = ['ActivityProducedBy', 'ActivityConsumedBy']
