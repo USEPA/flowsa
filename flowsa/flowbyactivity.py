@@ -372,7 +372,7 @@ class FlowByActivity(_FlowBy):
 
     def map_to_sectors(
             self: 'FlowByActivity',
-            target_year: Literal[2002, 2007, 2012, 2017],
+            target_year: Literal[2002, 2007, 2012, 2017, 2022],
             external_config_path: str = None
     ) -> 'FlowByActivity':
         """
