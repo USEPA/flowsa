@@ -297,17 +297,26 @@ def get_census_cnty_tbl(year):
     calculate each area's urban population percentage.
     :param year: integer data year from a LocationSystem column (FIPS_yyyy)
     """
-    cnty_url = ('https://www2.census.gov/geo/docs/'
-                'reference/ua/PctUrbanRural_County.txt')
+    cnty_url = {2010: ('https://www2.census.gov/geo/docs/'
+                       'reference/ua/PctUrbanRural_County.txt'),
+                2020: ('https://www2.census.gov/geo/docs/reference/'
+                       'ua/2020_UA_COUNTY.xlsx')}
 
-    # screen for data availability; limited to 2010-2019 for now
-    if (year - (year % 10)) != 2010:
+    decade = year - (year % 10)
+    # screen for data availability; limited to 2010-2029 for now
+    if decade not in (2010, 2020):
         log.error('County-level data year not yet available')
         return None
 
     try:
-        df = pd.read_csv(cnty_url, encoding='iso-8859-1',
-                         usecols=['STATE', 'COUNTY', 'POP_COU', 'POP_URBAN'])
+        if decade == 2010:
+            df = pd.read_csv(cnty_url[2010], encoding='iso-8859-1',
+                             usecols=['STATE', 'COUNTY', 'POP_COU', 'POP_URBAN'])
+        elif decade == 2020:
+            df = (pd.read_excel(cnty_url[2020], sheet_name='2020_UA_COUNTY',
+                                usecols=['STATE', 'COUNTY', 'POP_COU', 'POP_URB'])
+                  .rename(columns={'POP_URB': 'POP_URBAN'})
+                  )
     except urllib.error.HTTPError:
         log.error(f'File unavailable, check Census domain status: '
                   f'\n{cnty_url}')
@@ -315,7 +324,7 @@ def get_census_cnty_tbl(year):
 
     df['STATE'] = df['STATE'].apply(lambda x: '{0:0>2}'.format(x))
     df['COUNTY'] = df['COUNTY'].apply(lambda x: '{0:0>3}'.format(x))
-    df['FIPS_2010'] = df['STATE'] + df['COUNTY']  # 5-digit county codes
+    df[f'FIPS_{decade}'] = df['STATE'] + df['COUNTY']  # 5-digit county codes
     # Note: {total = urban + rural} population, for all FIPS areas
     df['pct_pop_urb'] = df['POP_URBAN'] / df['POP_COU']
 
@@ -386,3 +395,12 @@ def reshape_urb_rur_df(df):
     df['Compartment'] = df['Compartment'] + '/' + df['SubCompartment']
     df = df.drop(columns=['SubCompartment', 'pct_pop'])
     return df
+
+if __name__ == "__main__":
+    df = pd.DataFrame()
+    for year in [2010, 2020]:
+        pct_urb = get_census_cnty_tbl(year).rename(columns={'pct_pop_urb': str(year)})
+        if len(df) == 0:
+            df = pct_urb.copy()
+        else:
+            df = df.merge(pct_urb, how='outer', on='Location')
