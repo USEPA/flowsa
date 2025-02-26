@@ -1,6 +1,6 @@
 industry_spec:
   default: NAICS_6
-target_naics_year: 2017
+target_naics_year: 2022
 geoscale: state
 
 source_names:
