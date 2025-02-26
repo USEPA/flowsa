@@ -440,8 +440,9 @@ class FlowByActivity(_FlowBy):
                          'activity columns directly to sector columns')
 
                 # load master crosswalk
-                cw = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')
-                sectors = (cw[[f"NAICS_{self.config['target_naics_year']}_Code"]]
+                cw = common.load_sector_length_cw_melt(
+                    f"{self.config['target_naics_year']}")
+                sectors = (cw[["Sector"]]
                            .drop_duplicates()
                            .dropna()
                            )
@@ -460,7 +461,7 @@ class FlowByActivity(_FlowBy):
                 # often has non-traditional NAICS6, but the parent NAICS5 do
                 # map correctly to sectors
                 existing_sectors = existing_sectors[existing_sectors[
-                    'Sector'].isin(sectors[f"NAICS_{self.config['target_naics_year']}_Code"].values)]
+                    'Sector'].isin(sectors["Sector"].values)]
 
                 # drop parent sectors
                 existing_sectors_df = pd.DataFrame([])
