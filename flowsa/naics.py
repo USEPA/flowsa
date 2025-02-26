@@ -305,10 +305,10 @@ def generate_naics_crosswalk_conversion_ratios(sectorsourcename, targetsectorsou
         df['target'] = df[f'{targetsectorsourcename}'].str[:length]
 
         # Group by the truncated NAICS codes
-        df_grouped = df.groupby(['source', 'target']).size().reset_index(name='count')
+        df_grouped = df.groupby(['source', 'target']).size().reset_index(name='naics_count')
 
         # Calculate the allocation ratios
-        df_grouped['allocation_ratio'] = df_grouped.groupby('source')['count'].transform(lambda x: x / x.sum())
+        df_grouped['allocation_ratio'] = df_grouped.groupby('source')['naics_count'].transform(lambda x: x / x.sum())
 
         # Add the length to the results
         df_grouped['length'] = length
