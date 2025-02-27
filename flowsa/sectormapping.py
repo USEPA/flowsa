@@ -99,6 +99,9 @@ def assign_technological_correlation(mapping):
     mapping = mapping.assign(TechCorr=mapping["SectorDifference"].astype(str).apply(lambda x: tech_dict.get(x)))
     mapping["TechCorr"] = mapping["TechCorr"].map(int)
 
+    # address special circumstances for BEA household/gov codes by dropping duplicates, keeping first assignment
+    mapping = mapping.drop_duplicates(subset=['source_naics', 'target_naics'], keep="first")
+
     return mapping.drop(columns=['sourceLength', 'targetLength', 'SectorDifference'])
 
 
