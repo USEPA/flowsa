@@ -94,50 +94,58 @@ def industry_spec_key(
     return naics_key
 
 
-def subset_industry_key(flowby, activitycol, industry_key):
+def subset_sector_key(flowbyactivity, activitycol, primary_sector_key, secondary_sector_key=None):
     """
-    Subset the naics key to return an industry that most closely maps source sectors to target
+    Subset the sector key to return an industry that most closely maps source sectors to target
     sectors by matching on sector length, based on the sectors that are in the FBA
-    """
 
-    # First subset the industry key to retain rows of data in the flowbyactivity
+    @param flowbyactivity: FBA (if activities are sector like) or df of activity to sector mapping (if activites are text
+    based) that contains activity data
+    @param activitycol:
+    @param primary_sector_key:
+    @param secondary_sector_key:
+    @return:
+    """
+    # if the primary sector key is the activity to sector crosswalk, which is the case for FBAs with non-sector-like
+    # activities, merge with the secondary sector key (the naics industry key) to pull in target sectors and tech
+    # corr scoring
+    source_data_col = "source_naics"
+    group_cols = ["target_naics"]
+    if "Activity" in primary_sector_key.columns:
+        source_data_col = "Activity"
+        group_cols = ["target_naics", "Activity"]
+
+        primary_sector_key = primary_sector_key.merge(
+            secondary_sector_key,
+            how='left',
+            left_on='Sector',
+            right_on='source_naics',
+        ).drop(columns=['Sector'])
+
+    # Subset the industry key to retain rows of data in the flowbyactivity
     existing_sectors_list = (
-        flowby[f"{activitycol}"]
+        flowbyactivity[f"{activitycol}"]
         .dropna()
         .drop_duplicates()
         .values.tolist()
     )
-    industry_key = (
-        industry_key
-        .query('source_naics in @existing_sectors_list')
+    primary_sector_key = (
+        primary_sector_key
+        .query(f'{source_data_col} in @existing_sectors_list')
     )
 
-    group_cols = ["target_naics"]
-    # If there are activity names in the flowby, merge back into the industry key to retain info
-    if "Activity" in flowby.columns:
-        group_cols = ["target_naics", "Activity"]
-
-        industry_key = (industry_key
-                        .merge(flowby[['Activity', 'Sector']],
-                         how='left',
-                         left_on=['source_naics'],
-                         right_on=['Sector']
-                               )
-                        ).drop(columns='Sector')
-
     # Keep rows where source = target
-    df_keep = industry_key[industry_key["source_naics"] == industry_key["target_naics"]].reset_index(drop=True)
+    df_keep = primary_sector_key[primary_sector_key["source_naics"] == primary_sector_key["target_naics"]].reset_index(drop=True)
 
-    # subset df to all remaining target sectors by dropping the one to one matches
-    # Subset df to all remaining target sectors and Activity if present
-    if "Activity" in industry_key.columns:
-        df_remaining = industry_key[~(industry_key["target_naics"].isin(df_keep["target_naics"]) &
-                                      industry_key["Activity"].isin(df_keep["Activity"]))]
+    # subset df to all remaining target sectors and Activity if present by dropping the one to one matches
+    if "Activity" in primary_sector_key.columns:
+        df_remaining = primary_sector_key[~(primary_sector_key["target_naics"].isin(df_keep["target_naics"]) &
+                                    primary_sector_key["Activity"].isin(df_keep["Activity"]))]
     else:
-        df_remaining = industry_key[~industry_key["target_naics"].isin(df_keep["target_naics"])]
+        df_remaining = primary_sector_key[~primary_sector_key["target_naics"].isin(df_keep["target_naics"])]
 
     # function to identify which source naics most closely match to the target naics
-    def process_group(group):
+    def subset_target_sectors_by_source_sectors(group):
         target = group["target_naics"].iloc[0]
         target_length = len(target)
 
@@ -168,13 +176,13 @@ def subset_industry_key(flowby, activitycol, industry_key):
             result_shorter = pd.DataFrame()
         return pd.concat([result_greater, result_shorter], ignore_index=True)
 
-    grouped_results = (df_remaining
+    df_remaining_mapped = (df_remaining
                        .groupby(group_cols)
-                       .apply(process_group)
+                       .apply(subset_target_sectors_by_source_sectors)
                        .reset_index(drop=True)
                        )
 
-    return pd.concat([df_keep, grouped_results], ignore_index=True)
+    return pd.concat([df_keep, df_remaining_mapped], ignore_index=True)
 
 
 def map_target_sectors_to_less_aggregated_sectors(
@@ -301,8 +309,8 @@ def map_source_sectors_to_less_aggregated_sectors(
 
 
 def year_crosswalk(
-    source_year: Literal[2002, 2007, 2012, 2017],
-    target_year: Literal[2002, 2007, 2012, 2017]
+    source_year: Literal[2002, 2007, 2012, 2017, 2022],
+    target_year: Literal[2002, 2007, 2012, 2017, 2022]
 ) -> pd.DataFrame:
     '''
     Provides a key for switching between years of the NAICS specification.

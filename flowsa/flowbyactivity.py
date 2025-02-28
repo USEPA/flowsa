@@ -398,8 +398,6 @@ class FlowByActivity(_FlowBy):
         :param external_config_path: str, an external path to search for a
             crosswalk.
         """
-        # todo: update code so less duplicated, address parent-completechild, parent-incompletechild,
-        #  flat differences in mapping
         from flowsa.flowbyclean import \
             define_parentincompletechild_descendants, \
             drop_parentincompletechild_descendants
@@ -417,23 +415,7 @@ class FlowByActivity(_FlowBy):
         if activity_schema is None:
             log.error(f"activity_schema is not defined, check assignment in flowsa/data/source_catalog.yaml")
 
-        def map_activity_column_to_sectors(fba, crosswalk, direction):
-            fba = fba.merge(
-                crosswalk,
-                how='left',
-                left_on=f'Activity{direction}',
-                right_on='source_naics'
-            ).rename(columns={'target_naics': f'Sector{direction}',
-                             'SectorType': f'{direction}SectorType'})
-            fba = fba.drop(columns=['ActivitySourceName',
-                                    'SectorSourceName',
-                                    'source_naics'],
-                           errors='ignore')
-            if self.config.get('sector_hierarchy') == 'parent-incompleteChild':
-                fba = define_parentincompletechild_descendants(fba, activity_col=f'Activity{direction}')
-                fba = drop_parentincompletechild_descendants(fba, sector_col=f'Sector{direction}')
-            return fba
-
+        # Determine sector year
         if "NAICS" in activity_schema:
             log.info('Activities in %s are NAICS codes.',
                      self.full_name)
@@ -447,29 +429,16 @@ class FlowByActivity(_FlowBy):
                 log.info('NAICS Activities in %s use NAICS year %s.',
                          self.full_name, source_year)
 
-            # if activity schema does not match target naics year,
-            # convert sectors to target sectors
-            if activity_schema != f"NAICS_{self.config['target_naics_year']}_Code":
+            if source_year != self.config['target_naics_year']:
+                log.info('Converting NAICS year %s to NAICS year %s.', source_year, target_year)
+                # if FBA data are sector-like, convert the Activity column data to target sector year
                 self = naics.convert_naics_year(
                     self,
                     f"NAICS_{self.config['target_naics_year']}_Code",
                     activity_schema,
                     self.full_name)
 
-            fba_w_naics = self.copy()
-            for direction in ['ProducedBy', 'ConsumedBy']:
-                activity_to_target_naics_crosswalk = naics.subset_industry_key(
-                    fba_w_naics, f'Activity{direction}', naics_key)
-                fba_w_naics = map_activity_column_to_sectors(
-                    fba_w_naics, activity_to_target_naics_crosswalk, direction)
-            fba_w_naics = fba_w_naics.dropna(
-                subset=["SectorProducedBy", "SectorConsumedBy"],
-                how='all')
-            fba_w_naics = fba_w_naics.assign(
-                TechnologicalCorrelation=fba_w_naics[['TechCorr_x', 'TechCorr_y']].apply(np.nanmax, axis=1)
-            )
-
-        # if FBA is not NAICS-like
+        # if FBA is not NAICS-like, pull sector year and crosswalk from activity to sector crosswalk
         else:
             log.info('Getting crosswalk between activities in %s and NAICS codes.', self.full_name)
             activity_to_source_naics_crosswalk = sectormapping.get_activitytosector_mapping(
@@ -492,55 +461,50 @@ class FlowByActivity(_FlowBy):
             activity_to_source_naics_crosswalk = activity_to_source_naics_crosswalk.query(
                 f'SectorSourceName == "NAICS_{source_year}_Code"').reset_index(drop=True)
 
-            activities_in_fba = pd.Series(self[['ActivityProducedBy', 'ActivityConsumedBy']].values.ravel(
-                'F')).dropna().drop_duplicates().tolist()
-            activity_to_source_naics_crosswalk = activity_to_source_naics_crosswalk[
-                activity_to_source_naics_crosswalk['Activity'].isin(activities_in_fba)]
+            if source_year != self.config['target_naics_year']:
+                log.info('Converting NAICS year %s to NAICS year %s.', source_year, target_year)
+                # todo: will need to revise convert naics year to work for cw
+                activity_to_source_naics_crosswalk = naics.convert_naics_year(
+                    activity_to_source_naics_crosswalk,
+                    f"NAICS_{self.config['target_naics_year']}_Code",
+                    f"NAICS_{source_year}_Code",
+                    self.full_name)
 
-            if source_year != target_year:
-                log.info('Using NAICS time series/crosswalk to map NAICS codes from NAICS year %s to NAICS year %s.',
-                         source_year, target_year)
-                activity_to_source_naics_crosswalk = activity_to_source_naics_crosswalk.merge(
-                    naics.year_crosswalk(source_year, target_year),
-                    how='left',
-                    left_on='Sector',
-                    right_on='source_naics'
-                ).assign(Sector=lambda x: x.target_naics).drop(columns=['source_naics', 'target_naics']).assign(
-                    SectorSourceName=f'NAICS_{target_year}_Code')
+        # map the FBA activity columns to sectors
+        fba_w_naics = self.copy()
+        for direction in ['ProducedBy', 'ConsumedBy']:
+            if "NAICS" in activity_schema:
+                activity_to_target_naics_crosswalk = naics.subset_sector_key(
+                    fba_w_naics, f'Activity{direction}', primary_sector_key=naics_key)
+                merge_col = 'source_naics'
+            else:
+                activity_to_target_naics_crosswalk = naics.subset_sector_key(
+                    fba_w_naics, f'Activity{direction}', primary_sector_key=activity_to_source_naics_crosswalk,
+                    secondary_sector_key=naics_key)
+                merge_col = 'Activity'
+            fba_w_naics = fba_w_naics.merge(
+                activity_to_target_naics_crosswalk,
+                how='left',
+                left_on=f'Activity{direction}',
+                right_on=merge_col
+            ).rename(columns={'target_naics': f'Sector{direction}', # when activities are sector-like
+                              'Sector': f'Sector{direction}', # when activities are text based
+                              'SectorType': f'{direction}SectorType'})
+            fba_w_naics = fba_w_naics.drop(columns=['ActivitySourceName',
+                                    'SectorSourceName',
+                                    'source_naics', # when activities are sector-like
+                                    'Activity' # when activities are text based
+                                    ],
+                           errors='ignore')
+            if fba_w_naics.config.get('sector_hierarchy') == 'parent-incompleteChild':
+                fba_w_naics = define_parentincompletechild_descendants(fba_w_naics, activity_col=f'Activity{direction}')
+                fba_w_naics = drop_parentincompletechild_descendants(fba_w_naics, sector_col=f'Sector{direction}')
+        fba_w_naics = fba_w_naics.assign(
+            TechnologicalCorrelation=fba_w_naics[['TechCorr_x', 'TechCorr_y']].apply(np.nanmax, axis=1)
+        )
 
-            def map_activity_crosswalk_to_target_sectors(crosswalk, existing_sectors):
-                naics_df = pd.DataFrame([])
-                for i in existing_sectors['Activity'].unique():
-                    existing_sectors_sub = existing_sectors[existing_sectors['Activity'] == i]
-                    for j in existing_sectors_sub['Sector']:
-                        n = existing_sectors_sub[existing_sectors_sub['Sector'].str.startswith(j)]
-                        if len(n) == 1:
-                            expanded_n = naics_key[naics_key['source_naics'] == j].assign(Activity=i)
-                            naics_df = pd.concat([naics_df, expanded_n])
-
-                return crosswalk.merge(
-                    naics_df,
-                    how='left',
-                    left_on=['Activity', 'Sector'],
-                    right_on=['Activity', 'source_naics']
-                ).assign(Sector=lambda x: x['target_naics']).drop(
-                    columns=['source_naics', 'target_naics']).drop_duplicates()
-
-            log.info('Converting NAICS codes in crosswalk to desired industry/sector aggregation structure.')
-            existing_sectors = activity_to_source_naics_crosswalk[['Activity', 'Sector']]
-            activity_to_target_naics_crosswalk = map_activity_crosswalk_to_target_sectors(activity_to_source_naics_crosswalk, existing_sectors)
-
-            fba_w_naics = self.copy()
-            for direction in ['ProducedBy', 'ConsumedBy']:
-                fba_w_naics = fba_w_naics.merge(
-                    activity_to_target_naics_crosswalk,
-                    how='left',
-                    left_on=f'Activity{direction}',
-                    right_on='Activity'
-                ).rename(columns={'Sector': f'Sector{direction}', 'SectorType': f'{direction}SectorType'}).drop(
-                    columns=['ActivitySourceName', 'SectorSourceName', 'Activity'], errors='ignore')
-
-            fba_w_naics['TechnologicalCorrelation'] = fba_w_naics[['TechCorr_x', 'TechCorr_y']].apply(np.nanmax, axis=1)
+        # if activities are text-based, print out any data that are dropped
+        if "NAICS" not in activity_schema:
             not_mapped = fba_w_naics[fba_w_naics[['SectorProducedBy', 'SectorConsumedBy']].isna().all(1)]
 
             if (len(not_mapped) > 0) & ("NAICS" not in activity_schema):
@@ -548,9 +512,15 @@ class FlowByActivity(_FlowBy):
                 log.warning('Activities in %s are not mapped to sectors: %s', not_mapped.full_name, sorted(
                     set(not_mapped.ActivityProducedBy.dropna()).union(set(not_mapped.ActivityConsumedBy.dropna()))))
 
-            fba_w_naics = fba_w_naics.dropna(subset=['SectorProducedBy', 'SectorConsumedBy'], how='all')
+        # drop all NA data
+        fba_w_naics = (fba_w_naics
+                       .dropna(subset=['SectorProducedBy', 'SectorConsumedBy'], how='all')
+                       .assign(SectorSourceName=f'NAICS_{target_year}_Code')
+                       .drop(columns=['TechCorr_x', 'TechCorr_y'])
+                       .reset_index(drop=True)
+                       )
 
-        return fba_w_naics.assign(SectorSourceName=f'NAICS_{target_year}_Code').reset_index(drop=True)
+        return fba_w_naics
 
 
     def prepare_fbs(
