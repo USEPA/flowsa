@@ -417,14 +417,18 @@ class FlowByActivity(_FlowBy):
         if activity_schema is None:
             log.error(f"activity_schema is not defined, check assignment in flowsa/data/source_catalog.yaml")
 
-        def map_activity_column_to_sectors(fba, direction):
+        def map_activity_column_to_sectors(fba, crosswalk, direction):
             fba = fba.merge(
-                naics_key,
+                crosswalk,
                 how='left',
                 left_on=f'Activity{direction}',
                 right_on='source_naics'
-            ).rename(columns={'target_naics': f'Sector{direction}'})
-            fba = fba.drop(columns='source_naics')
+            ).rename(columns={'target_naics': f'Sector{direction}',
+                             'SectorType': f'{direction}SectorType'})
+            fba = fba.drop(columns=['ActivitySourceName',
+                                    'SectorSourceName',
+                                    'source_naics'],
+                           errors='ignore')
             if self.config.get('sector_hierarchy') == 'parent-incompleteChild':
                 fba = define_parentincompletechild_descendants(fba, activity_col=f'Activity{direction}')
                 fba = drop_parentincompletechild_descendants(fba, sector_col=f'Sector{direction}')
@@ -452,13 +456,19 @@ class FlowByActivity(_FlowBy):
                     activity_schema,
                     self.full_name)
 
-            fba_w_naics = self
+            fba_w_naics = self.copy()
             for direction in ['ProducedBy', 'ConsumedBy']:
-                fba_w_naics = map_activity_column_to_sectors(fba_w_naics, direction)
-            fba_w_naics = fba_w_naics.dropna(subset=["SectorProducedBy", "SectorConsumedBy"], how='all')
+                activity_to_target_naics_crosswalk = naics.subset_industry_key(
+                    fba_w_naics, f'Activity{direction}', naics_key)
+                fba_w_naics = map_activity_column_to_sectors(
+                    fba_w_naics, activity_to_target_naics_crosswalk, direction)
+            fba_w_naics = fba_w_naics.dropna(
+                subset=["SectorProducedBy", "SectorConsumedBy"],
+                how='all')
             fba_w_naics = fba_w_naics.assign(
                 TechnologicalCorrelation=fba_w_naics[['TechCorr_x', 'TechCorr_y']].apply(np.nanmax, axis=1)
             )
+
         # if FBA is not NAICS-like
         else:
             log.info('Getting crosswalk between activities in %s and NAICS codes.', self.full_name)
@@ -541,7 +551,6 @@ class FlowByActivity(_FlowBy):
             fba_w_naics = fba_w_naics.dropna(subset=['SectorProducedBy', 'SectorConsumedBy'], how='all')
 
         return fba_w_naics.assign(SectorSourceName=f'NAICS_{target_year}_Code').reset_index(drop=True)
-
 
 
     def prepare_fbs(
