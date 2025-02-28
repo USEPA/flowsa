@@ -402,12 +402,7 @@ class FlowByActivity(_FlowBy):
             define_parentincompletechild_descendants, \
             drop_parentincompletechild_descendants
 
-        naics_key = naics.industry_spec_key(self.config['industry_spec'],
-                                            self.config['target_naics_year']
-                                            )
-        # assign technological correlation scores
-        naics_key= sectormapping.assign_technological_correlation(naics_key)
-
+        # determine activity schema and use for mapping
         activity_schema = self.config['activity_schema'] if isinstance(
             self.config['activity_schema'], str) else self.config.get(
             'activity_schema', {}).get(self.config['year'])
@@ -428,15 +423,6 @@ class FlowByActivity(_FlowBy):
             else:
                 log.info('NAICS Activities in %s use NAICS year %s.',
                          self.full_name, source_year)
-
-            if source_year != self.config['target_naics_year']:
-                log.info('Converting NAICS year %s to NAICS year %s.', source_year, target_year)
-                # if FBA data are sector-like, convert the Activity column data to target sector year
-                self = naics.convert_naics_year(
-                    self,
-                    f"NAICS_{self.config['target_naics_year']}_Code",
-                    activity_schema,
-                    self.full_name)
 
         # if FBA is not NAICS-like, pull sector year and crosswalk from activity to sector crosswalk
         else:
@@ -461,14 +447,12 @@ class FlowByActivity(_FlowBy):
             activity_to_source_naics_crosswalk = activity_to_source_naics_crosswalk.query(
                 f'SectorSourceName == "NAICS_{source_year}_Code"').reset_index(drop=True)
 
-            if source_year != self.config['target_naics_year']:
-                log.info('Converting NAICS year %s to NAICS year %s.', source_year, target_year)
-                # todo: will need to revise convert naics year to work for cw
-                activity_to_source_naics_crosswalk = naics.convert_naics_year(
-                    activity_to_source_naics_crosswalk,
-                    f"NAICS_{self.config['target_naics_year']}_Code",
-                    f"NAICS_{source_year}_Code",
-                    self.full_name)
+        # load the naics key for the source year - will convert to target year after mapping
+        naics_key = naics.industry_spec_key(self.config['industry_spec'],
+                                            source_year
+                                            )
+        # assign technological correlation scores
+        naics_key = sectormapping.assign_technological_correlation(naics_key)
 
         # map the FBA activity columns to sectors
         fba_w_naics = self.copy()
@@ -502,6 +486,18 @@ class FlowByActivity(_FlowBy):
         fba_w_naics = fba_w_naics.assign(
             TechnologicalCorrelation=fba_w_naics[['TechCorr_x', 'TechCorr_y']].apply(np.nanmax, axis=1)
         )
+
+        # convert NAICS year of data if necessary. Converting after mapping because we do not need to convert all
+        # rows of data as not all rows of data are preserved. And in general if target sectors are NAICS3,
+        # those data do not require conversion. For text-based activities, we need to convert to
+        # sectors after mapping so we can apply the allocation ratio to the flow amount
+        if source_year != self.config['target_naics_year']:
+            # if FBA data are sector-like, convert the Activity column data to target sector year
+            fba_w_naics = naics.convert_naics_year(
+                fba_w_naics,
+                f"NAICS_{fba_w_naics.config['target_naics_year']}_Code",
+                f"NAICS_{source_year}_Code",
+                self.full_name)
 
         # if activities are text-based, print out any data that are dropped
         if "NAICS" not in activity_schema:
