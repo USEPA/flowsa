@@ -421,6 +421,8 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
         column_headers = ['ActivityProducedBy', 'ActivityConsumedBy']
         if 'SectorConsumedBy' in df_load:
             column_headers = ['SectorProducedBy', 'SectorConsumedBy']
+        if 'Sector' in df_load:
+            column_headers = ['Sector']
 
         # check if there are any sectors that are not in the naics annual crosswalk
         non_naics = check_if_sectors_are_naics(df_load, cw_list, column_headers)
