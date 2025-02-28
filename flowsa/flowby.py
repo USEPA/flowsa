@@ -936,6 +936,9 @@ class _FlowBy(pd.DataFrame):
         fb_geoscale = geo.scale.from_string(self.config['geoscale'])
         other_geoscale = geo.scale.from_string(other.config['geoscale'])
 
+        log.info(f"Harmonizing {self.full_name} {self.config['geoscale']} data "
+                 f"with {other.full_name} {other.config['geoscale']} data")
+
         fill_cols = self.config.get('fill_columns')
         if fill_cols and 'Location' in fill_cols:
             # Don't harmonize geoscales when updating Location
@@ -1096,9 +1099,18 @@ class _FlowBy(pd.DataFrame):
             left_on = attribute_cols + ['temp_location' if 'temp_location'
                                         in fb else 'Location']
             right_on = attribute_cols + ['Location']
-            for l in (left_on, right_on):
-                if 'Location' in self.config.get('fill_columns', []):
+            # if replacing df location with "other" location, drop location from merge columns
+            if 'Location' in self.config.get('fill_columns', []):
+                for l in (left_on, right_on):
                     l.remove('Location')
+                # if merging state with county data, merge on first 2 digits of location column using
+                # temporary "temp_location" col
+                if (self.config['geoscale'] == 'state') & (other.config['geoscale'] == 'county'):
+                    fb['temp_location'] = fb['Location'].str[:2]
+                    other['temp_location'] = other['Location'].str[:2]
+                    for l in (left_on, right_on):
+                        l.append('temp_location')
+
             merged = (
                 fb
                 .merge(other,
@@ -1127,7 +1139,8 @@ class _FlowBy(pd.DataFrame):
                     unattributable.full_name,
                     other.full_name,
                     sorted(set(zip(unattributable.SectorProducedBy.fillna('N/A'),
-                                   unattributable.SectorConsumedBy.fillna('N/A'))))
+                                   unattributable.SectorConsumedBy.fillna('N/A'),
+                                   unattributable.Location)))
                 )
                 vlog.debug(
                     'Unattributed activities: \n {}'.format(
