@@ -73,7 +73,8 @@ def load_crosswalk(crosswalk_name):
     """
     Used to load the crosswalks:
 
-    'NAICS_2012_Crosswalk', 'Sector_2012_Names', 'Sector_2017_Names','Household_SectorCodes',
+    'NAICS_Crosswalk_TimeSeries', 'NAICS_2012_Crosswalk',
+    'Sector_2012_Names', 'Sector_2017_Names','Household_SectorCodes',
     'Government_SectorCodes', 'NAICS_to_BEA_Crosswalk_2012',
     'NAICS_to_BEA_Crosswalk_2017', 'NAICS_Year_Concordance'
 
