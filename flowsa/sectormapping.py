@@ -67,7 +67,12 @@ def assign_technological_correlation(mapping):
     # todo: modify tech assignments for cases where there is one:one parent:child relationships because a NAICS5 is
     #  the same as a NAICS6 in these situations, so the tech score should be the same for each
 
-    tech_dict = {'0': '1',
+    tech_dict = {'-5': '1',
+                 '-4': '1',
+                 '-3': '1',
+                 '-2': '1',
+                 '-1': '1',
+                 '0': '1',
                  '1': '2',
                  '2': '3',
                  '3': '4',
@@ -92,8 +97,8 @@ def assign_technological_correlation(mapping):
                   .drop(columns=['Sector'])
                   .rename(columns={'SectorLength': f'{i}Length'})
                   )
-    mapping = mapping.assign(SectorDifference = abs(mapping['sourceLength'].astype(int) - mapping[
-        'targetLength'].astype(int)))
+    mapping = mapping.assign(SectorDifference = mapping[
+        'targetLength'].astype(int) - mapping['sourceLength'].astype(int))
 
     # determine difference in sector lengths between source and target and assign tech score
     mapping = mapping.assign(TechCorr=mapping["SectorDifference"].astype(str).apply(lambda x: tech_dict.get(x)))
