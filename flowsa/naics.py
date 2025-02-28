@@ -308,29 +308,6 @@ def map_source_sectors_to_less_aggregated_sectors(
     return cw_melt
 
 
-def year_crosswalk(
-    source_year: Literal[2002, 2007, 2012, 2017, 2022],
-    target_year: Literal[2002, 2007, 2012, 2017, 2022]
-) -> pd.DataFrame:
-    '''
-    Provides a key for switching between years of the NAICS specification.
-
-    :param source_year: int, one of 2002, 2007, 2012, or 2017.
-    :param target_year: int, one of 2002, 2007, 2012, or 2017.
-    :return: pd.DataFrame with columns 'source_naics' and 'target_naics',
-        corresponding to NAICS codes for the source and target specifications.
-    '''
-    return (
-        pd.read_csv(settings.datapath / 'NAICS_Crosswalk_TimeSeries.csv',
-                    dtype='object')
-        .assign(source_naics=lambda x: x[f'NAICS_{source_year}_Code'],
-                target_naics=lambda x: x[f'NAICS_{target_year}_Code'])
-        [['source_naics', 'target_naics']]
-        .drop_duplicates()
-        .reset_index(drop=True)
-    )
-
-
 def check_if_sectors_are_naics(df_load, crosswalk_list, column_headers):
     """
     Check if activity-like sectors are in fact sectors.
@@ -433,22 +410,20 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
     else:
         log.info(f"Converting {sectorsourcename} to "
                  f"{targetsectorsourcename} in {dfname}")
-        cw_load = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')[[
-            targetsectorsourcename, sectorsourcename]]
-        cw = cw_load[targetsectorsourcename].drop_duplicates().tolist()
 
         # load conversion crosswalk
         cw_melt = generate_naics_crosswalk_conversion_ratios(sectorsourcename, targetsectorsourcename)
         # drop the count column
         cw_melt = cw_melt.drop(columns=['naics_count', 'length'])
+        cw_list = cw_melt[targetsectorsourcename].drop_duplicates().tolist()
 
         # determine which headers are in the df
         column_headers = ['ActivityProducedBy', 'ActivityConsumedBy']
         if 'SectorConsumedBy' in df_load:
             column_headers = ['SectorProducedBy', 'SectorConsumedBy']
 
-        # check if there are any sectors that are not in the naics 2012 crosswalk
-        non_naics = check_if_sectors_are_naics(df_load, cw, column_headers)
+        # check if there are any sectors that are not in the naics annual crosswalk
+        non_naics = check_if_sectors_are_naics(df_load, cw_list, column_headers)
 
         # loop through the df headers and determine if value is
         # not in crosswalk list
@@ -481,7 +456,7 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
             # the target sector crosswalk and if so, drop those sectors
             log.info('Checking for unconverted NAICS - determine if rows should '
                      'be dropped.')
-            nonsectors = check_if_sectors_are_naics(df, cw, column_headers)
+            nonsectors = check_if_sectors_are_naics(df, cw_list, column_headers)
             if len(nonsectors) != 0:
                 vlog.debug('Dropping non-NAICS from dataframe')
                 for c in column_headers:

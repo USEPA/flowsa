@@ -204,7 +204,7 @@ class FlowBySector(_FlowBy):
         fbs = fbs.sector_aggregation()
 
         # set all data quality fields to none until implemented fully
-        log.info('Reset all data quality fields to None')
+        log.info('Reset data quality fields to None')
         dq_cols = ['Spread', 'Min', 'Max',
                    # 'DataReliability', # 'TemporalCorrelation',
                    # 'GeographicalCorrelation', # 'TechnologicalCorrelation',
