@@ -30,8 +30,7 @@ def load_naics_concordance(y1, y2):
     For example: 2002 to 2007 and 2017 to 2022
     :return:
     """
-    naics_url = f'https://www.census.gov/naics/concordances/{y1}_to_{y2}_NAICS.xls'
-    df_load = pd.read_excel(naics_url)
+    df_load = pd.read_csv(f'{datapath}/external_data/{y1}_to_{y2}_NAICS.csv', dtype=str)
     # drop first rows
     df = pd.DataFrame(df_load.loc[2:]).reset_index(drop=True)
     # Assign the column titles
@@ -68,6 +67,17 @@ def write_naics_year_concordance():
         else:
             # Merge df based on shared column
             cw_merged = pd.merge(cw_merged, cw, how='outer')
+
+    # append household and gov data
+    cw_name = ('Household_SectorCodes','Government_SectorCodes')
+    for n in cw_name:
+        df = load_crosswalk(n)
+        df = df.query("NAICS_Level_to_Use_For == 'NAICS_6'")
+
+        # Add rows to each column of the cw merged
+        df_extend = pd.concat([df[['Code']]] * len(cw_merged.columns), axis=1)
+        df_extend.columns = cw_merged.columns
+        cw_merged = pd.concat([cw_merged, df_extend], ignore_index=True)
 
     # save as csv
     cw_merged.to_csv(f"{datapath}/NAICS_Year_Concordance.csv", index=False)
