@@ -457,14 +457,24 @@ class FlowByActivity(_FlowBy):
         # map the FBA activity columns to sectors
         fba_w_naics = self.copy()
         for direction in ['ProducedBy', 'ConsumedBy']:
+            if self.config.get('sector_hierarchy') == 'parent-incompleteChild':
+                # add descendants column
+                fba_w_naics = define_parentincompletechild_descendants(
+                    fba_w_naics, activity_col=f'Activity{direction}')
             if "NAICS" in activity_schema:
                 activity_to_target_naics_crosswalk = naics.subset_sector_key(
-                    fba_w_naics, f'Activity{direction}', primary_sector_key=naics_key)
+                    fba_w_naics,
+                    f'Activity{direction}',
+                    primary_sector_key=naics_key
+                )
                 merge_col = 'source_naics'
             else:
                 activity_to_target_naics_crosswalk = naics.subset_sector_key(
-                    fba_w_naics, f'Activity{direction}', primary_sector_key=activity_to_source_naics_crosswalk,
-                    secondary_sector_key=naics_key)
+                    fba_w_naics,
+                    f'Activity{direction}',
+                    primary_sector_key=activity_to_source_naics_crosswalk,
+                    secondary_sector_key=naics_key
+                )
                 merge_col = 'Activity'
             fba_w_naics = fba_w_naics.merge(
                 activity_to_target_naics_crosswalk,
@@ -481,7 +491,6 @@ class FlowByActivity(_FlowBy):
                                     ],
                            errors='ignore')
             if fba_w_naics.config.get('sector_hierarchy') == 'parent-incompleteChild':
-                fba_w_naics = define_parentincompletechild_descendants(fba_w_naics, activity_col=f'Activity{direction}')
                 fba_w_naics = drop_parentincompletechild_descendants(fba_w_naics, sector_col=f'Sector{direction}')
         fba_w_naics = fba_w_naics.assign(
             TechnologicalCorrelation=fba_w_naics[['TechCorr_x', 'TechCorr_y']].apply(np.nanmax, axis=1)
