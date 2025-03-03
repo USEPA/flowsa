@@ -182,7 +182,18 @@ def subset_sector_key(flowbyactivity, activitycol, primary_sector_key, secondary
                        .reset_index(drop=True)
                        )
 
-    return pd.concat([df_keep, df_remaining_mapped], ignore_index=True)
+    mapping = pd.concat([df_keep, df_remaining_mapped], ignore_index=True)
+
+    # if merging crosswalk back in based on activity columns, drop the "source_naics" column and drop duplicates.
+    # Necessary when source activities initially map to a finer resolution NAICS level
+    if "Activity" in primary_sector_key.columns:
+        mapping = (mapping
+                   .drop(columns='source_naics')
+                   .drop_duplicates()
+                   .reset_index(drop=True)
+                   )
+
+    return mapping
 
 
 def map_target_sectors_to_less_aggregated_sectors(
