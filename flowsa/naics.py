@@ -112,10 +112,11 @@ def subset_sector_key(flowbyactivity, activitycol, primary_sector_key, secondary
     # activities, merge with the secondary sector key (the naics industry key) to pull in target sectors and tech
     # corr scoring
     group_cols = ["target_naics", "Class", "Flowable", "Context"]
+    merge_col = "source_naics"
     drop_col = activitycol
     if "Activity" in primary_sector_key.columns:
-        source_data_col = "Activity"
         group_cols = group_cols + ["Activity"]
+        merge_col = "Activity"
         drop_col = "source_naics"
 
         primary_sector_key = primary_sector_key.merge(
@@ -132,8 +133,8 @@ def subset_sector_key(flowbyactivity, activitycol, primary_sector_key, secondary
         primary_sector_key,
         how='left',
         left_on=activitycol,
-        right_on='source_naics',
-    ))
+        right_on=merge_col,
+    )).dropna(subset=[merge_col]).drop(columns=activitycol)
 
     # Keep rows where source = target
     df_keep = primary_sector_key[primary_sector_key["source_naics"] ==
@@ -180,7 +181,7 @@ def subset_sector_key(flowbyactivity, activitycol, primary_sector_key, secondary
         return pd.concat([result_greater, result_shorter], ignore_index=True)
 
     df_remaining_mapped = (df_remaining
-                       .groupby(group_cols)
+                       .groupby(group_cols, dropna=False)
                        .apply(subset_target_sectors_by_source_sectors)
                        .reset_index(drop=True)
                        )
@@ -191,7 +192,7 @@ def subset_sector_key(flowbyactivity, activitycol, primary_sector_key, secondary
     # if text based activities, drop duplicates.
     # Necessary when source activities initially map to a finer resolution NAICS level
     mapping = (mapping
-               .drop(columns=drop_col)
+               .drop(columns=drop_col, errors='ignore') # if activities naics-like, already dropped col
                .drop_duplicates()
                .reset_index(drop=True)
                )
