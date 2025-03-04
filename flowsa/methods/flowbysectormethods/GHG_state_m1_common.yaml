@@ -5,6 +5,7 @@
 
 !include:USEEIO_summary_target.yaml
 # year: &ghg_year 2019
+# target_naics_year: 2017 <- update once new stateio tables ready
 geoscale: state
 
 _allocation_types:
@@ -39,7 +40,7 @@ source_names:
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct_ods
         exclusion_fields:
-          FlowName: 'SF6' # Handle this flow without splitting
+          FlowName: 'Sulfur hexafluoride' # Handle this flow without splitting
         clean_fba_before_mapping: !script_function:EPA_GHGI split_HFCs_by_type
         clean_parameter:
             # Proportions of specific HFCs are assigned based on national total
@@ -48,7 +49,7 @@ source_names:
       direct_ods2:
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct_ods
-          FlowName: 'SF6' # Handle this flow without splitting (see above)
+          FlowName: 'Sulfur hexafluoride' # Handle this flow without splitting (see above)
         attribution_method: direct
       electricity_transmission: #SF6
       # replicates electricity_transmission from EPA_GHGI_T_2_1
