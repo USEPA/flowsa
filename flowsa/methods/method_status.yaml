@@ -29,7 +29,7 @@ EPA_SIT:
 EPA_WFR:
     Active: True
     Status: Report removed from EPA website
-    Type: 4HTTPError
+    Type: HTTPError
 
 StateGHGI_ME:
     Active: True
