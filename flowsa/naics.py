@@ -119,12 +119,21 @@ def subset_sector_key(flowbyactivity, activitycol, primary_sector_key, secondary
         merge_col = "Activity"
         drop_col = "source_naics"
 
-        primary_sector_key = primary_sector_key.merge(
+        primary_sector_key = (primary_sector_key.merge(
             secondary_sector_key,
             how='left',
             left_on='Sector',
             right_on='source_naics',
-        ).drop(columns=['Sector'])
+        ))
+        # print where values are not mapped
+        unmapped = primary_sector_key.query('source_naics.isnull()')
+        if len(unmapped) > 0:
+            log.warning('Activities are unmapped for %s',
+                        set(zip(unmapped['Activity'], unmapped['Sector'])))
+        # drop null values and sector col
+        primary_sector_key = (primary_sector_key
+                              .dropna(subset=['source_naics'])
+                              .drop(columns=['Sector']))
 
     # want to best match class/flowable/context/activities combos with target sectors
     flowbyactivity = flowbyactivity[['Class', 'Flowable', 'Context', activitycol]].drop_duplicates()
