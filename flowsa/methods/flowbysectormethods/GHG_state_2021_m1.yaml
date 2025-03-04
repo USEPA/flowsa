@@ -6,7 +6,7 @@
 !include:GHG_state_m1_common.yaml
 year: &ghg_year 2021
 geoscale: state
-
+stateio_year: &stateio_year 2020
 
 source_names:
 ## Directly sourced from State Inventory
@@ -19,3 +19,33 @@ source_names:
   GHG_national_2021_m1: #U.S. GHG emissions, summary model
     !include:GHG_state_m1_common.yaml:source_names:GHG_national_common_m1
     year: *ghg_year
+    # Update stateio year for some activity_sets until updated data are available
+    activity_sets: 
+      !include:GHG_state_m1_common.yaml:source_names:GHG_national_common_m1:activity_sets
+      transport_petroleum:
+        !include:GHG_state_m1_common.yaml:source_names:GHG_national_common_m1:activity_sets:transport_petroleum
+        attribution_source:
+          stateio_Use_Summary:
+            !include:GHG_state_m1_common.yaml:source_names:GHG_national_common_m1:activity_sets:transport_petroleum:attribution_source:stateio_Use_Summary
+            year: *stateio_year
+
+      transport_ch4_n2o_diesel:
+        !include:GHG_state_m1_common.yaml:source_names:GHG_national_common_m1:activity_sets:transport_ch4_n2o_diesel
+        attribution_source:
+          stateio_Use_Summary:
+            !include:GHG_state_m1_common.yaml:source_names:GHG_national_common_m1:activity_sets:transport_ch4_n2o_diesel:attribution_source:stateio_Use_Summary
+            year: *stateio_year
+
+      transport_ch4_n2o_gasoline:
+        !include:GHG_state_m1_common.yaml:source_names:GHG_national_common_m1:activity_sets:transport_ch4_n2o_gasoline
+        attribution_source:
+          stateio_Use_Summary:
+            !include:GHG_state_m1_common.yaml:source_names:GHG_national_common_m1:activity_sets:transport_ch4_n2o_gasoline:attribution_source:stateio_Use_Summary
+            year: *stateio_year
+
+      transport_ch4_n2o_nonroad:
+        !include:GHG_state_m1_common.yaml:source_names:GHG_national_common_m1:activity_sets:transport_ch4_n2o_nonroad
+        attribution_source:
+          stateio_Use_Summary:
+            !include:GHG_state_m1_common.yaml:source_names:GHG_national_common_m1:activity_sets:transport_ch4_n2o_nonroad:attribution_source:stateio_Use_Summary
+            year: *stateio_year
