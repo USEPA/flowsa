@@ -457,44 +457,55 @@ class FlowByActivity(_FlowBy):
         # map the FBA activity columns to sectors
         fba_w_naics = self.copy()
         for direction in ['ProducedBy', 'ConsumedBy']:
-            if self.config.get('sector_hierarchy') == 'parent-incompleteChild':
-                # add descendants column
-                fba_w_naics = define_parentincompletechild_descendants(
-                    fba_w_naics, activity_col=f'Activity{direction}')
-            if "NAICS" in activity_schema:
-                activity_to_target_naics_crosswalk = naics.subset_sector_key(
-                    fba_w_naics,
-                    f'Activity{direction}',
-                    primary_sector_key=naics_key
+            # skip if entire column is nan
+            if fba_w_naics[f'Activity{direction}'].isna().all():
+                fba_w_naics = (fba_w_naics
+                               .assign(**{f"Sector{direction}": np.nan})
+                               .assign(**{f"{direction}SectorType": np.nan})
                 )
-                merge_col = 'source_naics'
             else:
-                activity_to_target_naics_crosswalk = naics.subset_sector_key(
-                    fba_w_naics,
-                    f'Activity{direction}',
-                    primary_sector_key=activity_to_source_naics_crosswalk,
-                    secondary_sector_key=naics_key
-                )
-                merge_col = 'Activity'
-            fba_w_naics = fba_w_naics.merge(
-                activity_to_target_naics_crosswalk,
-                how='left',
-                left_on=['Class', 'Flowable', 'Context', f'Activity{direction}'],
-                right_on=['Class', 'Flowable', 'Context', merge_col]
-            ).rename(columns={'target_naics': f'Sector{direction}', # when activities are sector-like
-                              'Sector': f'Sector{direction}', # when activities are text based
-                              'SectorType': f'{direction}SectorType'})
-            fba_w_naics = fba_w_naics.drop(columns=['ActivitySourceName',
-                                    'SectorSourceName',
-                                    'source_naics', # when activities are sector-like
-                                    'Activity' # when activities are text based
-                                    ],
-                           errors='ignore')
-            if fba_w_naics.config.get('sector_hierarchy') == 'parent-incompleteChild':
-                fba_w_naics = drop_parentincompletechild_descendants(fba_w_naics, sector_col=f'Sector{direction}')
-        fba_w_naics = fba_w_naics.assign(
-            TechnologicalCorrelation=fba_w_naics[['TechCorr_x', 'TechCorr_y']].apply(np.nanmax, axis=1)
-        )
+                if self.config.get('sector_hierarchy') == 'parent-incompleteChild':
+                    # add descendants column
+                    fba_w_naics = define_parentincompletechild_descendants(
+                        fba_w_naics, activity_col=f'Activity{direction}')
+                if "NAICS" in activity_schema:
+                    activity_to_target_naics_crosswalk = naics.subset_sector_key(
+                        fba_w_naics,
+                        f'Activity{direction}',
+                        primary_sector_key=naics_key
+                    )
+                    merge_col = 'source_naics'
+                else:
+                    activity_to_target_naics_crosswalk = naics.subset_sector_key(
+                        fba_w_naics,
+                        f'Activity{direction}',
+                        primary_sector_key=activity_to_source_naics_crosswalk,
+                        secondary_sector_key=naics_key
+                    )
+                    merge_col = 'Activity'
+                fba_w_naics = fba_w_naics.merge(
+                    activity_to_target_naics_crosswalk,
+                    how='left',
+                    left_on=['Class', 'Flowable', 'Context', f'Activity{direction}'],
+                    right_on=['Class', 'Flowable', 'Context', merge_col]
+                ).rename(columns={'target_naics': f'Sector{direction}', # when activities are sector-like
+                                  'Sector': f'Sector{direction}', # when activities are text based
+                                  'SectorType': f'{direction}SectorType'})
+                fba_w_naics = fba_w_naics.drop(columns=['ActivitySourceName',
+                                        'SectorSourceName',
+                                        'source_naics', # when activities are sector-like
+                                        'Activity' # when activities are text based
+                                        ],
+                               errors='ignore')
+                if fba_w_naics.config.get('sector_hierarchy') == 'parent-incompleteChild':
+                    fba_w_naics = drop_parentincompletechild_descendants(fba_w_naics, sector_col=f'Sector{direction}')
+        # assign tech correlation scores based on highest value, if there are data for both SCB and SPB
+        if 'TechCorr_x' in fba_w_naics.columns:
+            fba_w_naics = fba_w_naics.assign(
+                TechnologicalCorrelation=fba_w_naics[['TechCorr_x', 'TechCorr_y']].apply(np.nanmax, axis=1)
+            )
+        else:
+            fba_w_naics = fba_w_naics.assign(TechnologicalCorrelation=fba_w_naics[['TechCorr']])
 
         # convert NAICS year of data if necessary. Converting after mapping because we do not need to convert all
         # rows of data as not all rows of data are preserved. And in general if target sectors are NAICS3,
@@ -521,7 +532,7 @@ class FlowByActivity(_FlowBy):
         fba_w_naics = (fba_w_naics
                        .dropna(subset=['SectorProducedBy', 'SectorConsumedBy'], how='all')
                        .assign(SectorSourceName=f'NAICS_{target_year}_Code')
-                       .drop(columns=['TechCorr_x', 'TechCorr_y'])
+                       .drop(columns=['TechCorr_x', 'TechCorr_y', 'TechCorr'], errors='ignore')
                        .reset_index(drop=True)
                        )
 
