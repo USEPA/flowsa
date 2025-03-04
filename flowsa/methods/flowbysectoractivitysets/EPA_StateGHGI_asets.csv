@@ -3,7 +3,6 @@ n2o_soil_direct,Agriculture - Nitrous Oxide from Agricultural Soil Management - 
 n2o_soil_direct,Agriculture - Nitrous Oxide from Agricultural Soil Management - Direct and indirect N2O emissions from agricultural soils - Agricultural Soil Management - Grassland - Direct,EPA_GHGI_T_5_17
 n2o_soil_indirect,Agriculture - Nitrous Oxide from Agricultural Soil Management - Direct and indirect N2O emissions from agricultural soils - Agricultural Soil Management - Cropland - Indirect,EPA_GHGI_T_5_18
 n2o_soil_indirect,Agriculture - Nitrous Oxide from Agricultural Soil Management - Direct and indirect N2O emissions from agricultural soils - Agricultural Soil Management - Grassland - Indirect,EPA_GHGI_T_5_18
-ag_livestock,Agriculture - Enteric Fermentation,EPA_GHGI_T_5_3
 ag_livestock,Agriculture - Enteric Fermentation - American Bison,EPA_GHGI_T_5_3
 ag_livestock,Agriculture - Enteric Fermentation - Beef Cattle,EPA_GHGI_T_5_3
 ag_livestock,Agriculture - Enteric Fermentation - Dairy Cattle,EPA_GHGI_T_5_3
@@ -12,7 +11,6 @@ ag_livestock,Agriculture - Enteric Fermentation - Horses,EPA_GHGI_T_5_3
 ag_livestock,Agriculture - Enteric Fermentation - Mules and Asses,EPA_GHGI_T_5_3
 ag_livestock,Agriculture - Enteric Fermentation - Sheep,EPA_GHGI_T_5_3
 ag_livestock,Agriculture - Enteric Fermentation - Swine,EPA_GHGI_T_5_3
-ag_burning,Agriculture - Field Burning of Agricultural Residues,EPA_GHGI_T_5_29
 ag_burning,Agriculture - Field Burning of Agricultural Residues - Cereals - Barley,EPA_GHGI_T_5_29
 ag_burning,Agriculture - Field Burning of Agricultural Residues - Cereals - Maize,EPA_GHGI_T_5_29
 ag_burning,Agriculture - Field Burning of Agricultural Residues - Cereals - Other - Oats,EPA_GHGI_T_5_29
