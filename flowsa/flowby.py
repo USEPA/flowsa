@@ -6,6 +6,7 @@ FlowByActivity and FlowBySector classes.
 from typing import List, Literal, TypeVar, TYPE_CHECKING
 import pandas as pd
 import numpy as np
+import re
 from functools import partial, reduce
 from copy import deepcopy
 from flowsa import (settings, literature_values, flowsa_yaml, geo, schema,
@@ -1413,7 +1414,7 @@ class _FlowBy(pd.DataFrame):
 
         fbs = self.copy()
         if not target_year:
-            target_year = fbs.config['year']
+            target_year = int((re.search(r"\d{4}", fbs.full_name)).group())
             # target_year = max(fbs['Year'])
         if 'TemporalCorrelation' not in fbs:
             fbs['TemporalCorrelation'] = 1
