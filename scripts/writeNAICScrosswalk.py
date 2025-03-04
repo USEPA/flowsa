@@ -293,13 +293,14 @@ def write_sector_level_crosswalk():
     Write a csv that contains sector codes with their sector level
     """
     df = pd.DataFrame()
-    for y in ['2012', '2017']:
+    for y in ['2002', '2007', '2012', '2017', '2022']:
         cw = pd.read_csv(datapath / f'NAICS_{y}_Crosswalk.csv')
         df = pd.concat([df,cw], ignore_index=True)
     df2 = pd.melt(df, var_name='Sector_Level', value_name='Sector')
     df2 = (df2
            .drop_duplicates()
            .dropna()
+           .sort_values(by=['Sector_Level', 'Sector'])
            .reset_index(drop=True)
            )
     df2 = df2.assign(SectorLength=df2['Sector_Level'].apply(
