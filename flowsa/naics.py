@@ -106,14 +106,17 @@ def subset_sector_key(flowbyactivity, activitycol, primary_sector_key, secondary
     @param secondary_sector_key:
     @return:
     """
+    # todo: add warning for the sectors that are dropped/not mapped
+
     # if the primary sector key is the activity to sector crosswalk, which is the case for FBAs with non-sector-like
     # activities, merge with the secondary sector key (the naics industry key) to pull in target sectors and tech
     # corr scoring
-    source_data_col = "source_naics"
-    group_cols = ["target_naics"]
+    group_cols = ["target_naics", "Class", "Flowable", "Context"]
+    drop_col = activitycol
     if "Activity" in primary_sector_key.columns:
         source_data_col = "Activity"
-        group_cols = ["target_naics", "Activity"]
+        group_cols = group_cols + ["Activity"]
+        drop_col = "source_naics"
 
         primary_sector_key = primary_sector_key.merge(
             secondary_sector_key,
@@ -122,27 +125,27 @@ def subset_sector_key(flowbyactivity, activitycol, primary_sector_key, secondary
             right_on='source_naics',
         ).drop(columns=['Sector'])
 
-    # Subset the industry key to retain rows of data in the flowbyactivity
-    existing_sectors_list = (
-        flowbyactivity[f"{activitycol}"]
-        .dropna()
-        .drop_duplicates()
-        .values.tolist()
-    )
-    primary_sector_key = (
-        primary_sector_key
-        .query(f'{source_data_col} in @existing_sectors_list')
-    )
+    # want to best match class/flowable/context/activities combos with target sectors
+    flowbyactivity = flowbyactivity[['Class', 'Flowable', 'Context', activitycol]].drop_duplicates()
+
+    primary_sector_key = pd.DataFrame(flowbyactivity.merge(
+        primary_sector_key,
+        how='left',
+        left_on=activitycol,
+        right_on='source_naics',
+    ))
 
     # Keep rows where source = target
-    df_keep = primary_sector_key[primary_sector_key["source_naics"] == primary_sector_key["target_naics"]].reset_index(drop=True)
+    df_keep = primary_sector_key[primary_sector_key["source_naics"] ==
+                                 primary_sector_key["target_naics"]].reset_index(drop=True)
 
     # subset df to all remaining target sectors and Activity if present by dropping the one to one matches
-    if "Activity" in primary_sector_key.columns:
-        df_remaining = primary_sector_key[~(primary_sector_key["target_naics"].isin(df_keep["target_naics"]) &
-                                    primary_sector_key["Activity"].isin(df_keep["Activity"]))]
-    else:
-        df_remaining = primary_sector_key[~primary_sector_key["target_naics"].isin(df_keep["target_naics"])]
+    df_remaining = primary_sector_key.merge(
+        df_keep,
+        on=list(primary_sector_key.columns),
+        how='left',
+        indicator=True
+    ).query('_merge == "left_only"').drop('_merge', axis=1)
 
     # function to identify which source naics most closely match to the target naics
     def subset_target_sectors_by_source_sectors(group):
@@ -184,14 +187,14 @@ def subset_sector_key(flowbyactivity, activitycol, primary_sector_key, secondary
 
     mapping = pd.concat([df_keep, df_remaining_mapped], ignore_index=True)
 
-    # if merging crosswalk back in based on activity columns, drop the "source_naics" column and drop duplicates.
+    # depending on if activities are naics-like or not determines which column to drop,
+    # if text based activities, drop duplicates.
     # Necessary when source activities initially map to a finer resolution NAICS level
-    if "Activity" in primary_sector_key.columns:
-        mapping = (mapping
-                   .drop(columns='source_naics')
-                   .drop_duplicates()
-                   .reset_index(drop=True)
-                   )
+    mapping = (mapping
+               .drop(columns=drop_col)
+               .drop_duplicates()
+               .reset_index(drop=True)
+               )
 
     return mapping
 
@@ -375,6 +378,9 @@ def generate_naics_crosswalk_conversion_ratios(sectorsourcename, targetsectorsou
     df = common.load_crosswalk('NAICS_Year_Concordance')[[sectorsourcename,
                                                                targetsectorsourcename]].drop_duplicates()
 
+    # test
+    # df = df[df[sectorsourcename].str.startswith('1119')]
+
     all_ratios = []
 
     # Calculate allocation ratios for each length from 6 to 2
@@ -413,6 +419,8 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
     :return: df, with sectors replaced with new sector year
     """
     # todo: update this function to work better with recursive method
+
+    # todo: ensure non-naics (7-digits, etc are converted)
 
     # load the mastercrosswalk and subset by sectorsourcename,
     # save values to list

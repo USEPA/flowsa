@@ -479,8 +479,8 @@ class FlowByActivity(_FlowBy):
             fba_w_naics = fba_w_naics.merge(
                 activity_to_target_naics_crosswalk,
                 how='left',
-                left_on=f'Activity{direction}',
-                right_on=merge_col
+                left_on=['Class', 'Flowable', 'Context', f'Activity{direction}'],
+                right_on=['Class', 'Flowable', 'Context', merge_col]
             ).rename(columns={'target_naics': f'Sector{direction}', # when activities are sector-like
                               'Sector': f'Sector{direction}', # when activities are text based
                               'SectorType': f'{direction}SectorType'})
