@@ -530,14 +530,14 @@ source_names:
       industrial_neu:
         selection_fields:
           MetaSources:
-            - 'EPA_GHGI_T_3_22.coal'
-            - 'EPA_GHGI_T_3_22.petroleum_neu'
-            - 'EPA_GHGI_T_3_22.natural_gas_neu'
-            - 'EPA_GHGI_T_3_22.transportation_lubricants'
-            - 'EPA_GHGI_T_3_22b.coal'
-            - 'EPA_GHGI_T_3_22b.petroleum_neu'
-            - 'EPA_GHGI_T_3_22b.natural_gas_neu'
-            - 'EPA_GHGI_T_3_22b.transportation_lubricants'
+            - 'EPA_GHGI_T_3_24.coal'
+            - 'EPA_GHGI_T_3_24.petroleum_neu'
+            - 'EPA_GHGI_T_3_24.natural_gas_neu'
+            - 'EPA_GHGI_T_3_24.transportation_lubricants'
+            - 'EPA_GHGI_T_3_24b.coal'
+            - 'EPA_GHGI_T_3_24b.petroleum_neu'
+            - 'EPA_GHGI_T_3_24b.natural_gas_neu'
+            - 'EPA_GHGI_T_3_24b.transportation_lubricants'
         attribution_method: proportional
         attribute_on: ['Flowable', 'SectorProducedBy']
         fill_columns: Location
