@@ -185,12 +185,12 @@ transport_nonroad_ag,Agriculture - Mobile Combustion - Fossil Fuel Combustion - 
 use_table_pet,Industry - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Mobile Non-Highway Farm Equipment,negative emissions; align with 'Industry - CO2 from Fossil Fuel Combustion - Fossil Fuel Combustion - Industrial - Petroleum' to avoid double counting
 use_table_pet,Agriculture - Carbon Dioxide from Fossil Fuel Combustion - Fossil Fuel Combustion - Mobile Non-Highway Farm Equipment,"EPA_GHGI_T_A_14 (CO2 is included in Industrial/Commerical, not Mobile transport)"
 transport_nonroad_construction,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Construction,EPA_GHGI_T_3_14
-temp_drop,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Ceramics,
-temp_drop,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - FGD,
-temp_drop,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Flux Stone,
-temp_drop,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Non-Metallurgical Magnesium Production,
-temp_drop,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Other Miscellaneous Uses,
-temp_drop,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Soda Ash Consumption,
+carbonate_use,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Ceramics,"when data updated in national tables, use direct and attribute to electricity sector"
+carbonate_use,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - FGD,"when data updated in national tables, use direct and attribute to electricity sector"
+carbonate_use,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Flux Stone,"when data updated in national tables, use direct and attribute to electricity sector"
+carbonate_use,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Non-Metallurgical Magnesium Production,"when data updated in national tables, use direct and attribute to electricity sector"
+carbonate_use,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Other Miscellaneous Uses,"when data updated in national tables, use direct and attribute to electricity sector"
+carbonate_use,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Soda Ash Consumption,"when data updated in national tables, use direct and attribute to electricity sector"
 transport_nonroad_other,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,EPA_GHGI_T_3_14
 ind_com_ch4_n2o,Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial - AG Stationary,negative emissions; align with 'Industry - Stationary Combustion - Fossil Fuel Combustion - Industrial' to avoid double counting
 nitrous_oxide_use,Industry - N2O from Product Uses - Other product manufacture and use - Medical Applications,EPA_GHGI_T_2_1

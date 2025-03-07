@@ -436,12 +436,24 @@ EPA_State_GHGI,Agriculture - Carbon Dioxide from Fossil Fuel Combustion - Fossil
 EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Construction,NAICS_2012_Code,211,,transport_nonroad_construction
 EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Construction,NAICS_2012_Code,212,,transport_nonroad_construction
 EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Construction,NAICS_2012_Code,213111,,transport_nonroad_construction
-EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Ceramics,NAICS_2012_Code,2211,,direct
-EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - FGD,NAICS_2012_Code,2211,,direct
-EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Flux Stone,NAICS_2012_Code,2211,,direct
-EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Non-Metallurgical Magnesium Production,NAICS_2012_Code,2211,,direct
-EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Other Miscellaneous Uses,NAICS_2012_Code,2211,,direct
-EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Soda Ash Consumption,NAICS_2012_Code,2211,,direct
+EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Ceramics,NAICS_2012_Code,31,,"carbonate_use, later attribute to 2211 and do direct"
+EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - FGD,NAICS_2012_Code,31,,"carbonate_use, later attribute to 2211 and do direct"
+EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Flux Stone,NAICS_2012_Code,31,,"carbonate_use, later attribute to 2211 and do direct"
+EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Non-Metallurgical Magnesium Production,NAICS_2012_Code,31,,"carbonate_use, later attribute to 2211 and do direct"
+EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Other Miscellaneous Uses,NAICS_2012_Code,31,,"carbonate_use, later attribute to 2211 and do direct"
+EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Soda Ash Consumption,NAICS_2012_Code,31,,"carbonate_use, later attribute to 2211 and do direct"
+EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Ceramics,NAICS_2012_Code,32,,"carbonate_use, later attribute to 2211 and do direct"
+EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - FGD,NAICS_2012_Code,32,,"carbonate_use, later attribute to 2211 and do direct"
+EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Flux Stone,NAICS_2012_Code,32,,"carbonate_use, later attribute to 2211 and do direct"
+EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Non-Metallurgical Magnesium Production,NAICS_2012_Code,32,,"carbonate_use, later attribute to 2211 and do direct"
+EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Other Miscellaneous Uses,NAICS_2012_Code,32,,"carbonate_use, later attribute to 2211 and do direct"
+EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Soda Ash Consumption,NAICS_2012_Code,32,,"carbonate_use, later attribute to 2211 and do direct"
+EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Ceramics,NAICS_2012_Code,33,,"carbonate_use, later attribute to 2211 and do direct"
+EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - FGD,NAICS_2012_Code,33,,"carbonate_use, later attribute to 2211 and do direct"
+EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Flux Stone,NAICS_2012_Code,33,,"carbonate_use, later attribute to 2211 and do direct"
+EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Non-Metallurgical Magnesium Production,NAICS_2012_Code,33,,"carbonate_use, later attribute to 2211 and do direct"
+EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Other Miscellaneous Uses,NAICS_2012_Code,33,,"carbonate_use, later attribute to 2211 and do direct"
+EPA_State_GHGI,Electric Power Industry - Other Process Uses of Carbonates - Mineral Industry - Soda Ash Consumption,NAICS_2012_Code,33,,"carbonate_use, later attribute to 2211 and do direct"
 EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,NAICS_2012_Code,485,,transport_nonroad_other
 EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,NAICS_2012_Code,487,,transport_nonroad_other
 EPA_State_GHGI,Industry - Mobile Combustion - Fossil Fuel Combustion - Mobile Non-Highway Other,NAICS_2012_Code,488,,transport_nonroad_other

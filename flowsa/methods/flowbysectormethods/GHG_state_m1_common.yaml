@@ -136,6 +136,8 @@ source_names:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv urea_fertilizer
 
       carbonate_use:
+      ## TODO: Update this activity to better handle split between electricity and
+      # industry see https://github.com/USEPA/GHGbyindustrydocs/issues/50
         selection_fields:
           MetaSources: 'EPA_GHGI_T_2_1.carbonate_use'
         attribution_method: proportional
