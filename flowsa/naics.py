@@ -412,7 +412,7 @@ def generate_naics_crosswalk_conversion_ratios(sectorsourcename, targetsectorsou
 
     all_ratios = []
 
-    # Calculate allocation ratios for each length from 6 to 2
+    # Calculate allocation ratios for each length
     for length in range(6, 1, -1):
         # Truncate both NAICS and NAICS_2017_Code to the current string length
         df['source'] = df[f'{sectorsourcename}'].str[:length]
@@ -432,9 +432,30 @@ def generate_naics_crosswalk_conversion_ratios(sectorsourcename, targetsectorsou
 
     # Combine all ratios into a single DataFrame
     ratios_df = pd.concat(all_ratios, ignore_index=True)
+
+
+    # TODO: modify how unofficial sectors are added - ensure correct mapping between years
+    # append the unofficial sector codes
+    year_df = common.load_sector_length_cw_melt(re.search(r'\d+', sectorsourcename).group())
+    year_df = year_df[year_df['SectorLength'] > 6]
+    year_df = year_df.rename(columns={'Sector': 'source', 'SectorLength': 'length'})
+    year_df['target'] = year_df['source']
+    year_df['naics_count'] = 1
+    year_df['allocation_ratio'] = 1
+
+    # add unofficial sectors
+    ratios_df = pd.concat([ratios_df, year_df], ignore_index=True)
+
+    # rename cols
     ratios_df = ratios_df.rename(columns={'source': 'NAICS',
                                           'target': f'{targetsectorsourcename}'
                                           })
+
+    # drop gov and household codes by length
+    ratios_df = ratios_df[~((ratios_df['NAICS'].str.startswith('F0')) &
+                            (ratios_df['NAICS'].str.len() < 4))]
+    ratios_df = ratios_df[~((ratios_df['NAICS'].str.startswith('S0')) &
+                            (ratios_df['NAICS'].str.len() < 6))]
 
     return ratios_df
 
