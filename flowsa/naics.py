@@ -331,6 +331,28 @@ def map_source_sectors_to_less_aggregated_sectors(
 
     return cw_melt
 
+def year_crosswalk(
+    source_year: Literal[2002, 2007, 2012, 2017, 2022],
+    target_year: Literal[2002, 2007, 2012, 2017, 2022]
+) -> pd.DataFrame:
+    '''
+    Provides a key for switching between years of the NAICS specification.
+
+    :param source_year: int, one of 2002, 2007, 2012, or 2017.
+    :param target_year: int, one of 2002, 2007, 2012, or 2017.
+    :return: pd.DataFrame with columns 'source_naics' and 'target_naics',
+        corresponding to NAICS codes for the source and target specifications.
+    '''
+    return (
+        pd.read_csv(settings.datapath / 'NAICS_Crosswalk_TimeSeries.csv',
+                    dtype='object')
+        .assign(source_naics=lambda x: x[f'NAICS_{source_year}_Code'],
+                target_naics=lambda x: x[f'NAICS_{target_year}_Code'])
+        [['source_naics', 'target_naics']]
+        .drop_duplicates()
+        .reset_index(drop=True)
+    )
+
 
 def check_if_sectors_are_naics(df_load, crosswalk_list, column_headers):
     """
@@ -387,9 +409,6 @@ def generate_naics_crosswalk_conversion_ratios(sectorsourcename, targetsectorsou
     # save values to list
     df = common.load_crosswalk('NAICS_Year_Concordance')[[sectorsourcename,
                                                                targetsectorsourcename]].drop_duplicates()
-
-    # test
-    # df = df[df[sectorsourcename].str.startswith('1119')]
 
     all_ratios = []
 
