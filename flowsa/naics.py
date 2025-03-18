@@ -151,8 +151,8 @@ def subset_sector_key(flowbyactivity, activitycol, primary_sector_key, secondary
 
     # subset df to all remaining target sectors and Activity if present by dropping the one to one matches
     df_remaining = primary_sector_key.merge(
-        df_keep,
-        on=list(primary_sector_key.columns),
+        df_keep[group_cols],
+        on=group_cols,
         how='left',
         indicator=True
     ).query('_merge == "left_only"').drop('_merge', axis=1)
