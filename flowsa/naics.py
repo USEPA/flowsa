@@ -106,7 +106,6 @@ def subset_sector_key(flowbyactivity, activitycol, primary_sector_key, secondary
     @param secondary_sector_key:
     @return:
     """
-    # todo: add warning for the sectors that are dropped/not mapped
 
     # if the primary sector key is the activity to sector crosswalk, which is the case for FBAs with non-sector-like
     # activities, merge with the secondary sector key (the naics industry key) to pull in target sectors and tech
@@ -134,15 +133,14 @@ def subset_sector_key(flowbyactivity, activitycol, primary_sector_key, secondary
         primary_sector_key = (primary_sector_key
                               .dropna(subset=['source_naics'])
                               .drop(columns=['Sector']))
+    # else, if activities are sector-like, drop all sectors that are not in sector crosswalk, due to datasets
+    # such as BLS QCEW which often has non-traditional NAICS6, but the parent NAICS5 do map correctly to sectors
+    else:
+        flowbyactivity = flowbyactivity[flowbyactivity[
+            activitycol].isin(primary_sector_key["source_naics"].values)]
 
     # want to best match class/flowable/context/activities combos with target sectors
     flowbyactivity = flowbyactivity[['Class', 'Flowable', 'Context', activitycol]].drop_duplicates()
-
-    # drop all sectors that are not sectors because BLS QCEW
-    # often has non-traditional NAICS6, but the parent NAICS5 do
-    # map correctly to sectors
-    flowbyactivity = flowbyactivity[flowbyactivity[
-        activitycol].isin(primary_sector_key["source_naics"].values)]
 
     # drop parent sectors if parent-completechild
     if flowbyactivity.config.get('sector_hierarchy') == 'parent-completeChild':
@@ -157,12 +155,12 @@ def subset_sector_key(flowbyactivity, activitycol, primary_sector_key, secondary
         existing_sectors_list = existing_sectors_df[
             activitycol].values.tolist()
 
-        flowbyactivity_sub = (
+        flowbyactivity = (
             flowbyactivity
             .query(f'{activitycol} in @existing_sectors_list')
         )
 
-    primary_sector_key_2 = pd.DataFrame(flowbyactivity_sub.merge(
+    primary_sector_key_2 = pd.DataFrame(flowbyactivity.merge(
         primary_sector_key,
         how='left',
         left_on=activitycol,
