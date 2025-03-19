@@ -17,5 +17,5 @@ Flow-By-Activity.
   parents and children, but it is a mix of what data is available (e.g., 
   EIA_MECS_Energy)
 
-  # Data Documentation
-  - NAICS_to_NAPCS_Crosswalk_2017.csv: Data in this csv was provided to EPA by U.S. Census Bureau in March 2025. 
+# Data Documentation
+- NAICS_to_NAPCS_Crosswalk_2017.csv: Data in this csv was provided to EPA by U.S. Census Bureau in March 2025. 
