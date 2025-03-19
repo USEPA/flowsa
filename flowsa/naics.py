@@ -138,7 +138,31 @@ def subset_sector_key(flowbyactivity, activitycol, primary_sector_key, secondary
     # want to best match class/flowable/context/activities combos with target sectors
     flowbyactivity = flowbyactivity[['Class', 'Flowable', 'Context', activitycol]].drop_duplicates()
 
-    primary_sector_key = pd.DataFrame(flowbyactivity.merge(
+    # drop all sectors that are not sectors because BLS QCEW
+    # often has non-traditional NAICS6, but the parent NAICS5 do
+    # map correctly to sectors
+    flowbyactivity = flowbyactivity[flowbyactivity[
+        activitycol].isin(primary_sector_key["source_naics"].values)]
+
+    # drop parent sectors if parent-completechild
+    if flowbyactivity.config.get('sector_hierarchy') == 'parent-completeChild':
+        existing_sectors_df = pd.DataFrame([])
+        for i in flowbyactivity[activitycol]:
+            n = flowbyactivity[
+                flowbyactivity[activitycol].apply(
+                    lambda x: x[0:len(str(i))] == i)]
+            if len(n) == 1:
+                existing_sectors_df = pd.concat(
+                    [existing_sectors_df, n])
+        existing_sectors_list = existing_sectors_df[
+            activitycol].values.tolist()
+
+        flowbyactivity_sub = (
+            flowbyactivity
+            .query(f'{activitycol} in @existing_sectors_list')
+        )
+
+    primary_sector_key_2 = pd.DataFrame(flowbyactivity_sub.merge(
         primary_sector_key,
         how='left',
         left_on=activitycol,
@@ -146,11 +170,11 @@ def subset_sector_key(flowbyactivity, activitycol, primary_sector_key, secondary
     )).dropna(subset=[merge_col]).drop(columns=activitycol)
 
     # Keep rows where source = target
-    df_keep = primary_sector_key[primary_sector_key["source_naics"] ==
-                                 primary_sector_key["target_naics"]].reset_index(drop=True)
+    df_keep = primary_sector_key_2[primary_sector_key_2["source_naics"] ==
+                                 primary_sector_key_2["target_naics"]].reset_index(drop=True)
 
     # subset df to all remaining target sectors and Activity if present by dropping the one to one matches
-    df_remaining = primary_sector_key.merge(
+    df_remaining = primary_sector_key_2.merge(
         df_keep[group_cols],
         on=group_cols,
         how='left',
