@@ -34,7 +34,7 @@ def parse_statior(*, source, year, config, **_):
 
     data_dict = {}
 
-    # uses rpy2
+    # uses rpy2, known to work with 3.5.12 and python 3.12
     # this .rds is stored as a list of named dataframes by state
     for state in us_state_abbrev.keys():
          matrix = states.rx2(state)

@@ -5,14 +5,14 @@
 
 !include:USEEIO_summary_target.yaml
 # year: &ghg_year 2019
-# target_naics_year: 2017 <- update once new stateio tables ready
+target_naics_year: 2017
 geoscale: state
 
 _allocation_types:
   _use_allocation: &use_table_allocation
     # year: *ghg_year
     geoscale: state
-    activity_to_sector_mapping: BEA_2012_Summary
+    activity_to_sector_mapping: BEA_2017_Summary
     # selection_fields:
     #   ActivityProducedBy: {'324': ''}  # Petroleum 324110
     exclusion_fields:
