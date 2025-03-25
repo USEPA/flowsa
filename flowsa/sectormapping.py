@@ -101,8 +101,8 @@ def assign_technological_correlation(mapping):
         'targetLength'].astype(int) - mapping['sourceLength'].astype(int))
 
     # determine difference in sector lengths between source and target and assign tech score
-    mapping = mapping.assign(TechCorr=mapping["SectorDifference"].astype(str).apply(lambda x: tech_dict.get(x)))
-    mapping["TechCorr"] = mapping["TechCorr"].map(int)
+    mapping = mapping.assign(TechnologicalCorrelation=mapping["SectorDifference"].astype(str).apply(lambda x: tech_dict.get(x)))
+    mapping["TechnologicalCorrelation"] = mapping["TechnologicalCorrelation"].map(int)
 
     # address special circumstances for BEA household/gov codes by dropping duplicates, keeping first assignment
     mapping = mapping.drop_duplicates(subset=['source_naics', 'target_naics'], keep="first")
