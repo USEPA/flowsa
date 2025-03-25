@@ -143,6 +143,9 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None, **kwargs):
         if path.exists(path.join(str(filepath), f'{filename}.yaml')):
             log.info(f'Loading {filename} from {filepath}')
             folder = filepath
+        elif path.exists(path.join(str(filepath), 'flowbysectormethods/', f'{filename}.yaml')):
+            log.info(f'Loading {filename} from {filepath}flowbysectormethods/')
+            folder = f'{filepath}flowbysectormethods/'
         else:
             if filepath is not None:
                 log.warning(f'{filename} not found in {filepath}. '
