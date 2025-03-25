@@ -82,5 +82,6 @@ if __name__ == "__main__":
     # source = 'stateio_Industry_GO'
     # source = 'stateio_Make_Summary'
     source = 'stateio_Use_Summary'
-    flowsa.generateflowbyactivity.main(year=2017, source=source)
-    fba = flowsa.flowbyactivity.getFlowByActivity(source, 2017)
+    for y in range(2012, 2024):
+        flowsa.generateflowbyactivity.main(year=y, source=source)
+    fba = flowsa.flowbyactivity.getFlowByActivity(source, 2022)
