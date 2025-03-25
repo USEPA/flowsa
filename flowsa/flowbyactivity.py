@@ -472,6 +472,7 @@ class FlowByActivity(_FlowBy):
                     activity_to_target_naics_crosswalk = naics.subset_sector_key(
                         fba_w_naics,
                         f'Activity{direction}',
+                        source_year,
                         primary_sector_key=naics_key
                     )
                     merge_col = 'source_naics'
@@ -479,6 +480,7 @@ class FlowByActivity(_FlowBy):
                     activity_to_target_naics_crosswalk = naics.subset_sector_key(
                         fba_w_naics,
                         f'Activity{direction}',
+                        source_year,
                         primary_sector_key=activity_to_source_naics_crosswalk,
                         secondary_sector_key=naics_key
                     )

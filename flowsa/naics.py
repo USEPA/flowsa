@@ -95,13 +95,13 @@ def industry_spec_key(
     return naics_key
 
 
-def subset_sector_key(flowbyactivity, activitycol, primary_sector_key, secondary_sector_key=None):
+def subset_sector_key(flowbyactivity, activitycol, sector_source_year, primary_sector_key, secondary_sector_key=None):
     """
     Subset the sector key to return an industry that most closely maps source sectors to target
     sectors by matching on sector length, based on the sectors that are in the FBA
 
-    @param flowbyactivity: FBA (if activities are sector like) or df of activity to sector mapping (if activites are text
-    based) that contains activity data
+    @param flowbyactivity: FBA (if activities are sector like) or df of activity to sector mapping
+    (if activities are text based) that contains activity data
     @param activitycol:
     @param primary_sector_key:
     @param secondary_sector_key:
@@ -134,21 +134,28 @@ def subset_sector_key(flowbyactivity, activitycol, primary_sector_key, secondary
         primary_sector_key = (primary_sector_key
                               .dropna(subset=['source_naics'])
                               .drop(columns=['Sector']))
-    # else, if activities are sector-like, drop all sectors that are not in sector crosswalk, due to datasets
-    # such as BLS QCEW which often has non-traditional NAICS6, but the parent NAICS5 do map correctly to sectors
+    # else, if activities are sector-like
     else:
+        # if activities end in ".0", strip characters from activity (noted in some data pulled from stewi)
+        flowbyactivity[activitycol] = flowbyactivity[activitycol].str.replace(".0", "")
+        # if activities are sector-like, drop all sectors that are not in sector crosswalk, due to datasets such as
+        # BLS QCEW which often has non-traditional NAICS6, but the parent NAICS5 do map correctly to sectors
         flowbyactivity = flowbyactivity[flowbyactivity[
             activitycol].isin(primary_sector_key["source_naics"].values)]
 
     # want to best match class/flowable/context/activities combos with target sectors
-    flowbyactivity = flowbyactivity[['Class', 'Flowable', 'Context', activitycol]].drop_duplicates()
+    subset_cols = ['Class', 'Flowable', 'Context', activitycol, 'DataReliability', 'DataCollection']
+    if "DataReliability" not in flowbyactivity.columns:
+        subset_cols = ['Class', 'Flowable', 'Context', activitycol]
+    flowbyactivity = flowbyactivity[subset_cols].drop_duplicates()
 
     # drop parent sectors if parent-completechild
     if flowbyactivity.config.get('sector_hierarchy') == 'parent-completeChild':
+        flowbyactivity_sub = flowbyactivity[['Class', 'Flowable', 'Context', activitycol]].drop_duplicates()
         existing_sectors_df = pd.DataFrame([])
-        for i in flowbyactivity[activitycol]:
-            n = flowbyactivity[
-                flowbyactivity[activitycol].apply(
+        for i in flowbyactivity_sub[activitycol]:
+            n = flowbyactivity_sub[
+                flowbyactivity_sub[activitycol].apply(
                     lambda x: x[0:len(str(i))] == i)]
             if len(n) == 1:
                 existing_sectors_df = pd.concat(
@@ -167,6 +174,12 @@ def subset_sector_key(flowbyactivity, activitycol, primary_sector_key, secondary
         left_on=activitycol,
         right_on=merge_col,
     )).dropna(subset=[merge_col]).drop(columns=activitycol)
+
+    # modify dqi scores for data reliability and collection based on mapping
+    if "DataReliability" in flowbyactivity.columns:
+        scores = adjust_dqi_reliability_collection_scores(primary_sector_key_2, sector_source_year)
+        primary_sector_key_2 = scores
+
 
     # Keep rows where source = target
     df_keep = primary_sector_key_2[primary_sector_key_2["source_naics"] ==
