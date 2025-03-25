@@ -501,13 +501,12 @@ class FlowByActivity(_FlowBy):
                                errors='ignore')
                 if fba_w_naics.config.get('sector_hierarchy') == 'parent-incompleteChild':
                     fba_w_naics = drop_parentincompletechild_descendants(fba_w_naics, sector_col=f'Sector{direction}')
-        # assign tech correlation scores based on highest value, if there are data for both SCB and SPB
-        if 'TechCorr_x' in fba_w_naics.columns:
-            fba_w_naics = fba_w_naics.assign(
-                TechnologicalCorrelation=fba_w_naics[['TechCorr_x', 'TechCorr_y']].apply(np.nanmax, axis=1)
-            )
-        else:
-            fba_w_naics = fba_w_naics.assign(TechnologicalCorrelation=fba_w_naics[['TechCorr']])
+        # assign data quality scores based on highest value, if there are data for both SCB and SPB
+        for dq in ['DataReliability', 'DataCollection', 'TechnologicalCorrelation']:
+            if f'{dq}_x' in fba_w_naics.columns:
+                fba_w_naics = fba_w_naics.assign(
+                    **{f'{dq}': fba_w_naics[[f'{dq}_x', f'{dq}_y']].apply(np.nanmax, axis=1)}
+                )
 
         # convert NAICS year of data if necessary. Converting after mapping because we do not need to convert all
         # rows of data as not all rows of data are preserved. And in general if target sectors are NAICS3,
@@ -534,7 +533,10 @@ class FlowByActivity(_FlowBy):
         fba_w_naics = (fba_w_naics
                        .dropna(subset=['SectorProducedBy', 'SectorConsumedBy'], how='all')
                        .assign(SectorSourceName=f'NAICS_{target_year}_Code')
-                       .drop(columns=['TechCorr_x', 'TechCorr_y', 'TechCorr'], errors='ignore')
+                       .drop(columns=['TechnologicalCorrelation_x', 'TechnologicalCorrelation_y',
+                                      'DataReliability_x', 'DataReliability_y',
+                                      'DataCollection_x', 'DataCollection_y'],
+                             errors='ignore')
                        .reset_index(drop=True)
                        )
 
