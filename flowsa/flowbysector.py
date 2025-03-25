@@ -305,6 +305,7 @@ class FlowBySector(_FlowBy):
             self
             .function_socket('clean_fbs')
             .select_by_fields()
+            .assign_geographic_correlation()
             .convert_fips_to_geoscale()
             .attribute_flows_to_sectors(external_config_path=external_config_path,
                                         download_sources_ok=download_sources_ok)

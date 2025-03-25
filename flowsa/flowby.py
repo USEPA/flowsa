@@ -13,6 +13,7 @@ from flowsa import (settings, literature_values, flowsa_yaml, geo, schema,
                     naics)
 from flowsa.common import get_catalog_info
 from flowsa.flowsa_log import log, vlog
+from flowsa.location import fips_number_key
 import esupy.processed_data_mgmt
 import esupy.dqi
 
@@ -1418,9 +1419,29 @@ class _FlowBy(pd.DataFrame):
             # target_year = max(fbs['Year'])
         if 'TemporalCorrelation' not in fbs:
             fbs['TemporalCorrelation'] = 1
-        fbs = esupy.dqi.adjust_dqi_scores(fbs, abs(fbs['Year'] - target_year),
+        fbs = esupy.dqi.adjust_dqi_reliability_collection_scores(fbs, abs(fbs['Year'] - target_year),
                                          'TemporalCorrelation')
         fbs['Year'] = target_year
+        return(fbs)
+
+    def assign_geographic_correlation(
+            self: FB,
+            geoscale = None,
+            **kwargs
+    ) -> FB:
+
+        fbs = self.copy()
+        if not geoscale:
+            geoscale = fbs.config.get('geoscale')
+        if 'GeographicalCorrelation' not in fbs:
+            fips = geo.get_all_fips(int((re.search(r"\d{4}", fbs['LocationSystem'][0])).group())
+                                    ).rename(columns={'FIPS': 'Location',
+                                                      'FIPS_Scale':'GeographicalCorrelation'})
+            fbs = fbs.merge(fips[['Location', 'GeographicalCorrelation']])
+        fbs['GeographicalCorrelation'] = fbs['GeographicalCorrelation'].astype(float)
+        fbs = esupy.dqi.adjust_dqi_reliability_collection_scores(fbs,
+                                                                 fbs['GeographicalCorrelation'] - fips_number_key[geoscale],
+                                         'GeographicalCorrelation')
         return(fbs)
 
     def add_primary_secondary_columns(
