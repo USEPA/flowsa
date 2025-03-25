@@ -177,9 +177,7 @@ def subset_sector_key(flowbyactivity, activitycol, sector_source_year, primary_s
 
     # modify dqi scores for data reliability and collection based on mapping
     if "DataReliability" in flowbyactivity.columns:
-        scores = adjust_dqi_reliability_collection_scores(primary_sector_key_2, sector_source_year)
-        primary_sector_key_2 = scores
-
+        primary_sector_key_2 = adjust_dqi_reliability_collection_scores(primary_sector_key_2, sector_source_year)
 
     # Keep rows where source = target
     df_keep = primary_sector_key_2[primary_sector_key_2["source_naics"] ==
