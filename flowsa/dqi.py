@@ -20,8 +20,6 @@ def adjust_dqi_reliability_collection_scores(df, sector_source_year):
     :param df:
     :return:
     """
-    # test
-    # print(df['SectorSourceName'][0])
 
     # assign two new columns to df, sector length for source and target naics
     cw = load_sector_length_cw_melt(sector_source_year)
