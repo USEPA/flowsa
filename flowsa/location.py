@@ -17,9 +17,10 @@ from flowsa.common import clean_str_and_capitalize
 
 US_FIPS = "00000"
 
-fips_number_key = {"national": 0,
+# see geo.py for assignments
+fips_number_key = {"national": 5,
                    "state": 2,
-                   "county": 5}
+                   "county": 1}
 
 
 def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
