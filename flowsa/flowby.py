@@ -1416,10 +1416,9 @@ class _FlowBy(pd.DataFrame):
         fbs = self.copy()
         if not target_year:
             target_year = int((re.search(r"\d{4}", fbs.full_name)).group())
-            # target_year = max(fbs['Year'])
         if 'TemporalCorrelation' not in fbs:
             fbs['TemporalCorrelation'] = 1
-        fbs = esupy.dqi.adjust_dqi_reliability_collection_scores(fbs, abs(fbs['Year'] - target_year),
+        fbs = esupy.dqi.adjust_dqi_scores(fbs, abs(fbs['Year'] - target_year),
                                          'TemporalCorrelation')
         fbs['Year'] = target_year
         return(fbs)
@@ -1439,8 +1438,8 @@ class _FlowBy(pd.DataFrame):
                                                       'FIPS_Scale':'GeographicalCorrelation'})
             fbs = fbs.merge(fips[['Location', 'GeographicalCorrelation']])
         fbs['GeographicalCorrelation'] = fbs['GeographicalCorrelation'].astype(float)
-        fbs = esupy.dqi.adjust_dqi_reliability_collection_scores(fbs,
-                                                                 fbs['GeographicalCorrelation'] - fips_number_key[geoscale],
+        fbs = esupy.dqi.adjust_dqi_scores(fbs,
+                                          fbs['GeographicalCorrelation'] - fips_number_key[geoscale],
                                          'GeographicalCorrelation')
         return(fbs)
 
