@@ -659,7 +659,7 @@ class _FlowBy(pd.DataFrame):
                 self
                 .reset_index(drop=True).reset_index()
                 .rename(columns={'index': 'group_id'})
-                .assign(group_total=self.FlowAmount)
+                .assign(group_total=lambda x: x.FlowAmount)
             )
             if len(grouped) == 0:
                 log.warning(f'No data remaining in {self.full_name}.')
