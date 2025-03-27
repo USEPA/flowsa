@@ -485,20 +485,24 @@ class FlowByActivity(_FlowBy):
                         secondary_sector_key=naics_key
                     )
                     merge_col = 'Activity'
-                fba_w_naics = fba_w_naics.merge(
-                    activity_to_target_naics_crosswalk,
-                    how='left',
-                    left_on=['Class', 'Flowable', 'Context', f'Activity{direction}'],
-                    right_on=['Class', 'Flowable', 'Context', merge_col]
-                ).rename(columns={'target_naics': f'Sector{direction}', # when activities are sector-like
-                                  'Sector': f'Sector{direction}', # when activities are text based
-                                  'SectorType': f'{direction}SectorType'})
-                fba_w_naics = fba_w_naics.drop(columns=['ActivitySourceName',
-                                        'SectorSourceName',
-                                        'source_naics', # when activities are sector-like
-                                        'Activity' # when activities are text based
-                                        ],
-                               errors='ignore')
+                fba_w_naics = (fba_w_naics
+                               # drop original DQ scores in favor of modified scores after mapping
+                               .drop(columns=['DataCollection', 'DataReliability'], errors='ignore')
+                               .merge(activity_to_target_naics_crosswalk,
+                                      how='left',
+                                      left_on=['Class', 'Flowable', 'Context', f'Activity{direction}'],
+                                      right_on=['Class', 'Flowable', 'Context', merge_col]
+                                      )
+                               .rename(columns={'target_naics': f'Sector{direction}', # when activities are sector-like
+                                                'Sector': f'Sector{direction}', # when activities are text based
+                                                'SectorType': f'{direction}SectorType'}
+                                       )
+                               .drop(columns=['ActivitySourceName',
+                                              'SectorSourceName',
+                                              'source_naics', # when activities are sector-like
+                                              'Activity' # when activities are text based
+                                              ], errors='ignore')
+                               )
                 if fba_w_naics.config.get('sector_hierarchy') == 'parent-incompleteChild':
                     fba_w_naics = drop_parentincompletechild_descendants(fba_w_naics, sector_col=f'Sector{direction}')
         # assign data quality scores based on highest value, if there are data for both SCB and SPB
