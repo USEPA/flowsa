@@ -149,8 +149,8 @@ def subset_sector_key(flowbyactivity, activitycol, sector_source_year, primary_s
         subset_cols = ['Class', 'Flowable', 'Context', activitycol]
     # ensure dq column decimals do not cause errors with dropping duplicates, without this statement, rows often
     # duplicated
-    flowbyactivity[['DataReliability', 'DataCollection']] = (
-        flowbyactivity[['DataReliability', 'DataCollection']].round(decimals=5))
+    flowbyactivity.loc[:, ['DataReliability', 'DataCollection']] = (
+        flowbyactivity.loc[:, ['DataReliability', 'DataCollection']].round(decimals=5))
     flowbyactivity = flowbyactivity[subset_cols].drop_duplicates()
 
     # drop parent sectors if parent-completechild
