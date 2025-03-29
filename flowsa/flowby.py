@@ -1425,23 +1425,43 @@ class _FlowBy(pd.DataFrame):
 
     def assign_geographic_correlation(
             self: FB,
-            geoscale = None,
+            target_geoscale = None,
+            fbs_method_name = None,
             **kwargs
     ) -> FB:
 
         fbs = self.copy()
-        if not geoscale:
-            geoscale = fbs.config.get('geoscale')
+
+        # if target_geoscale not assigned, pull target from FBS name
+        if not target_geoscale:
+            if not fbs_method_name:
+                # if there isn't a target geoscale or method name, return FBS without appending geo correlation
+                return self
+            else:
+                # function to extract target geoscale from fbs name
+                def extract_target_geoscale(text):
+                    # Match "national," "state," or "county" (case-insensitive)
+                    if re.search(r"_national_", text, re.IGNORECASE):
+                        return "national"
+                    elif re.search(r"_state_", text, re.IGNORECASE):
+                        return "state"
+                    elif re.search(r"_county_", text, re.IGNORECASE):
+                        return "county"
+                    return None
+
+                target_geoscale = extract_target_geoscale(fbs_method_name)
+
         if 'GeographicalCorrelation' not in fbs:
             fips = geo.get_all_fips(int((re.search(r"\d{4}", fbs['LocationSystem'][0])).group())
                                     ).rename(columns={'FIPS': 'Location',
                                                       'FIPS_Scale':'GeographicalCorrelation'})
             fbs = fbs.merge(fips[['Location', 'GeographicalCorrelation']])
         fbs['GeographicalCorrelation'] = fbs['GeographicalCorrelation'].astype(float)
+        fbs['GeographicalCorrelation'] = fbs['GeographicalCorrelation'] - fips_number_key[target_geoscale]
         fbs = esupy.dqi.adjust_dqi_scores(fbs,
-                                          fbs['GeographicalCorrelation'] - fips_number_key[geoscale],
+                                          fbs['GeographicalCorrelation'],
                                          'GeographicalCorrelation')
-        return(fbs)
+        return fbs
 
     def add_primary_secondary_columns(
         self: FB,
