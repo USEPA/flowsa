@@ -160,7 +160,8 @@ class FlowBySector(_FlowBy):
                     download_sources_ok=download_sources_ok
                 ).prepare_fbs(external_config_path=external_config_path,
                               download_sources_ok=download_sources_ok,
-                              retain_activity_columns=retain_activity_columns
+                              retain_activity_columns=retain_activity_columns,
+                              fbs_method_name=method,
                               )
             )
             # ^^^ This is done with a for loop instead of a dict comprehension
@@ -183,7 +184,8 @@ class FlowBySector(_FlowBy):
                 download_sources_ok=download_sources_ok
             ).prepare_fbs(external_config_path=external_config_path,
                           download_sources_ok=download_sources_ok,
-                          retain_activity_columns=retain_activity_columns
+                          retain_activity_columns=retain_activity_columns,
+                          fbs_method_name=method,
                           )
             for source_name, config in sources.items()
         ])
@@ -283,6 +285,7 @@ class FlowBySector(_FlowBy):
             self: 'FlowBySector',
             external_config_path: str = None,
             download_sources_ok: bool = True,
+            fbs_method_name: str = None,
             **kwargs
     ) -> 'FlowBySector':
 
@@ -305,7 +308,7 @@ class FlowBySector(_FlowBy):
             self
             .function_socket('clean_fbs')
             .select_by_fields()
-            .assign_geographic_correlation()
+            .assign_geographic_correlation(fbs_method_name=fbs_method_name)
             .convert_fips_to_geoscale()
             .attribute_flows_to_sectors(external_config_path=external_config_path,
                                         download_sources_ok=download_sources_ok)

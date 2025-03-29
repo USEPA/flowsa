@@ -553,6 +553,7 @@ class FlowByActivity(_FlowBy):
             download_sources_ok: bool = True,
             skip_select_by: bool = False,
             retain_activity_columns: bool = False,
+            fbs_method_name: str = None,
             ) -> 'FlowBySector':
 
         from flowsa.flowbysector import FlowBySector
@@ -571,7 +572,8 @@ class FlowByActivity(_FlowBy):
                             external_config_path=external_config_path,
                             download_sources_ok=download_sources_ok,
                             skip_select_by=True,
-                            retain_activity_columns=retain_activity_columns)
+                            retain_activity_columns=retain_activity_columns,
+                            fbs_method_name=fbs_method_name)
                         for fba in (
                             self
                             .select_by_fields()
@@ -592,10 +594,10 @@ class FlowByActivity(_FlowBy):
             .function_socket('estimate_suppressed')
             .select_by_fields(skip_select_by=skip_select_by,
                               selection_fields=self.config.get(
-                'selection_fields_after_data_suppression_estimation', 'null'))
+                                  'selection_fields_after_data_suppression_estimation', 'null'))
             .convert_units_and_flows()  # and also map to flow lists
             .function_socket('clean_fba')
-            .assign_geographic_correlation()
+            .assign_geographic_correlation(fbs_method_name=fbs_method_name)
             .convert_to_geoscale()
             .attribute_flows_to_sectors(external_config_path=external_config_path,
                                         download_sources_ok=download_sources_ok)  # recursive call to prepare_fbs
