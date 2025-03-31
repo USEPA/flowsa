@@ -469,29 +469,24 @@ class FlowByActivity(_FlowBy):
                     fba_w_naics = define_parentincompletechild_descendants(
                         fba_w_naics, activity_col=f'Activity{direction}')
                 if "NAICS" in activity_schema:
-                    activity_to_target_naics_crosswalk = naics.subset_sector_key(
-                        fba_w_naics,
-                        f'Activity{direction}',
-                        source_year,
-                        primary_sector_key=naics_key
-                    )
-                    merge_col = 'source_naics'
+                    primary_sector_key = naics_key
+                    secondary_sector_key = None
                 else:
-                    activity_to_target_naics_crosswalk = naics.subset_sector_key(
-                        fba_w_naics,
-                        f'Activity{direction}',
-                        source_year,
-                        primary_sector_key=activity_to_source_naics_crosswalk,
-                        secondary_sector_key=naics_key
-                    )
-                    merge_col = 'Activity'
+                    primary_sector_key = activity_to_source_naics_crosswalk
+                    secondary_sector_key = naics_key
+
+                activity_to_target_naics_crosswalk = naics.subset_sector_key(
+                    fba_w_naics,
+                    f'Activity{direction}',
+                    source_year,
+                    primary_sector_key=primary_sector_key,
+                    secondary_sector_key=secondary_sector_key
+                )
+
                 fba_w_naics = (fba_w_naics
-                               # drop original DQ scores in favor of modified scores after mapping
-                               .drop(columns=['DataCollection', 'DataReliability'], errors='ignore')
                                .merge(activity_to_target_naics_crosswalk,
                                       how='left',
-                                      left_on=['Class', 'Flowable', 'Context', f'Activity{direction}'],
-                                      right_on=['Class', 'Flowable', 'Context', merge_col]
+                                      on=['Class', 'Flowable', 'Context', 'ActivityProducedBy', 'ActivityConsumedBy'],
                                       )
                                .rename(columns={'target_naics': f'Sector{direction}', # when activities are sector-like
                                                 'Sector': f'Sector{direction}', # when activities are text based
@@ -503,6 +498,11 @@ class FlowByActivity(_FlowBy):
                                               'Activity' # when activities are text based
                                               ], errors='ignore')
                                )
+                # drop original DQ scores in favor of modified scores after mapping
+                dq_cols = ['DataReliability', 'DataCollection']
+                for c in dq_cols:
+                    fba_w_naics.loc[fba_w_naics[f'{c}_y'].notnull(), f'{c}_x'] = fba_w_naics[f'{c}_y']
+                    fba_w_naics = fba_w_naics.drop(columns=[f'{c}_y']).rename(columns={f'{c}_x': c})
                 if fba_w_naics.config.get('sector_hierarchy') == 'parent-incompleteChild':
                     fba_w_naics = drop_parentincompletechild_descendants(fba_w_naics, sector_col=f'Sector{direction}')
         # assign data quality scores based on highest value, if there are data for both SCB and SPB

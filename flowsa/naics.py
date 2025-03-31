@@ -143,10 +143,14 @@ def subset_sector_key(flowbyactivity, activitycol, sector_source_year, primary_s
         flowbyactivity = flowbyactivity[flowbyactivity[
             activitycol].isin(primary_sector_key["source_naics"].values)]
 
-    # want to best match class/flowable/context/activities combos with target sectors
-    subset_cols = ['Class', 'Flowable', 'Context', activitycol, 'DataReliability', 'DataCollection']
+    # drop rows of data where activitycol value is null - no mapping required
+    flowbyactivity = flowbyactivity.query(f'~{activitycol}.isnull()')
+    # want to best match class/flowable/context/activities combos with target sectors, retain both activity columns
+    # for situations where an activity can be listed in both columns for different circumstances
+    subset_cols = ['Class', 'Flowable', 'Context', 'ActivityProducedBy',
+                   'ActivityConsumedBy', 'DataReliability', 'DataCollection']
     if "DataReliability" not in flowbyactivity.columns:
-        subset_cols = ['Class', 'Flowable', 'Context', activitycol]
+        subset_cols = ['Class', 'Flowable', 'Context', 'ActivityProducedBy', 'ActivityConsumedBy']
     # ensure dq column decimals do not cause errors with dropping duplicates, without this statement, rows often
     # duplicated
     flowbyactivity.loc[:, ['DataReliability', 'DataCollection']] = (
@@ -242,6 +246,9 @@ def subset_sector_key(flowbyactivity, activitycol, sector_source_year, primary_s
                .drop(columns=drop_col, errors='ignore') # if activities naics-like, already dropped col
                .drop_duplicates()
                .reset_index(drop=True)
+               # rename activity column back to original name
+               .rename(columns={'Activity': f'{activitycol}',
+                                'source_naics': f'{activitycol}'}, errors='ignore')
                )
 
     return mapping
