@@ -1455,10 +1455,15 @@ class _FlowBy(pd.DataFrame):
                 return self
 
         if 'GeographicalCorrelation' not in fbs:
-            fips = geo.get_all_fips(int((re.search(r"\d{4}", fbs['LocationSystem'][0])).group())
-                                    ).rename(columns={'FIPS': 'Location',
-                                                      'FIPS_Scale':'GeographicalCorrelation'})
-            fbs = fbs.merge(fips[['Location', 'GeographicalCorrelation']])
+            if fbs['LocationSystem'][0] == 'Census_Region':
+                fbs = fbs.assign(GeographicalCorrelation = 4)
+            elif fbs['LocationSystem'][0] == 'Census_Division':
+                fbs = fbs.assign(GeographicalCorrelation = 3)
+            else:
+                fips = geo.get_all_fips(int((re.search(r"\d{4}", fbs['LocationSystem'][0])).group())
+                                        ).rename(columns={'FIPS': 'Location',
+                                                          'FIPS_Scale':'GeographicalCorrelation'})
+                fbs = fbs.merge(fips[['Location', 'GeographicalCorrelation']])
         fbs['GeographicalCorrelation'] = fbs['GeographicalCorrelation'].astype(float)
         fbs['GeographicalCorrelation'] = fbs['GeographicalCorrelation'] - fips_number_key[target_geoscale]
         fbs = esupy.dqi.adjust_dqi_scores(fbs,
