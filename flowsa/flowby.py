@@ -1434,20 +1434,25 @@ class _FlowBy(pd.DataFrame):
 
         # if target_geoscale not assigned, pull target from FBS name
         if not target_geoscale:
-            # function to extract target geoscale from fbs name
-            def extract_target_geoscale(text):
-                # Match "national," "state," or "county" (case-insensitive)
-                if re.search(r"_national_", text, re.IGNORECASE):
-                    return "national"
-                elif re.search(r"_state_", text, re.IGNORECASE):
-                    return "state"
-                elif re.search(r"_county_", text, re.IGNORECASE):
-                    return "county"
-                return None
+            try:
+                # function to extract target geoscale from fbs name
+                def extract_target_geoscale(text):
+                    # Match "national," "state," or "county" (case-insensitive)
+                    if re.search(r"_national_", text, re.IGNORECASE):
+                        return "national"
+                    elif re.search(r"_state_", text, re.IGNORECASE):
+                        return "state"
+                    elif re.search(r"_county_", text, re.IGNORECASE):
+                        return "county"
+                    return None
 
-            # if target geoscale not defined, first try pulling from config, else pull from method name
-            target_geoscale = (self.config.get('target_geoscale') or
-                               extract_target_geoscale(fbs_method_name))
+                # if target geoscale not defined, first try pulling from config, else pull from method name
+                target_geoscale = (self.config.get('target_geoscale') or
+                                   extract_target_geoscale(fbs_method_name))
+                log.info(f"Assigning geographical correlation data quality score for {self.full_name}")
+            except:
+                # if there isn't a target geoscale or method name, return FBS without appending geo correlation
+                return self
 
         if 'GeographicalCorrelation' not in fbs:
             fips = geo.get_all_fips(int((re.search(r"\d{4}", fbs['LocationSystem'][0])).group())
