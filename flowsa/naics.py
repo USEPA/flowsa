@@ -517,10 +517,20 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
 
     # todo: ensure non-naics (7-digits, etc are converted)
 
+    # determine which headers are in the df
+    column_headers = ['ActivityProducedBy', 'ActivityConsumedBy']
+    if 'SectorConsumedBy' in df_load:
+        column_headers = ['SectorProducedBy', 'SectorConsumedBy']
+    if 'Sector' in df_load:
+        column_headers = ['Sector']
+
     # load the mastercrosswalk and subset by sectorsourcename,
     # save values to list
     if targetsectorsourcename == sectorsourcename:
-        return df_load
+        df = df_load.copy()
+
+        cw_list = common.load_crosswalk(f"NAICS_Crosswalk_TimeSeries"
+                                        )[targetsectorsourcename].drop_duplicates().tolist()
     else:
         log.info(f"Converting {sectorsourcename} to "
                  f"{targetsectorsourcename} in {dfname}")
@@ -530,13 +540,6 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
         # drop the count column
         cw_melt = cw_melt.drop(columns=['naics_count', 'length'])
         cw_list = cw_melt[targetsectorsourcename].drop_duplicates().tolist()
-
-        # determine which headers are in the df
-        column_headers = ['ActivityProducedBy', 'ActivityConsumedBy']
-        if 'SectorConsumedBy' in df_load:
-            column_headers = ['SectorProducedBy', 'SectorConsumedBy']
-        if 'Sector' in df_load:
-            column_headers = ['Sector']
 
         # check if there are any sectors that are not in the naics annual crosswalk
         non_naics = check_if_sectors_are_naics(df_load, cw_list, column_headers)
@@ -568,34 +571,34 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
             # replace the sector year in the sectorsourcename column
             df['SectorSourceName'] = targetsectorsourcename
 
-            # check if there are any sectors that are not in
-            # the target sector crosswalk and if so, drop those sectors
-            log.info('Checking for unconverted NAICS - determine if rows should '
-                     'be dropped.')
-            nonsectors = check_if_sectors_are_naics(df, cw_list, column_headers)
-            if len(nonsectors) != 0:
-                vlog.debug('Dropping non-NAICS from dataframe')
-                for c in column_headers:
-                    if df[c].isna().all():
-                        continue
-                    # drop rows where column value is in the nonnaics list
-                    df = df[~df[c].isin(nonsectors)]
-            # aggregate data
-            if hasattr(df, 'aggregate_flowby'):
-                df = (df.aggregate_flowby()
-                        .reset_index(drop=True).reset_index()
-                        .rename(columns={'index': 'group_id'}))
-            else:
-                # todo: drop else statement once all dataframes are converted
-                #  to classes
-                possible_column_headers = \
-                    ('FlowAmount', 'Spread', 'Min', 'Max', 'DataReliability',
-                     'TemporalCorrelation', 'GeographicalCorrelation',
-                     'TechnologicalCorrelation', 'DataCollection', 'Description')
-                # list of column headers to group aggregation by
-                groupby_cols = [e for e in df.columns.values.tolist()
-                                if e not in possible_column_headers]
-                df = aggregator(df, groupby_cols)
+    # check if there are any sectors that are not in
+    # the target sector crosswalk and if so, drop those sectors
+    log.info('Checking for unconverted NAICS - determine if rows should '
+             'be dropped.')
+    nonsectors = check_if_sectors_are_naics(df, cw_list, column_headers)
+    if len(nonsectors) != 0:
+        log.info(f'Dropping non {targetsectorsourcename}s from dataframe: {nonsectors}')
+        for c in column_headers:
+            if df[c].isna().all():
+                continue
+            # drop rows where column value is in the nonnaics list
+            df = df[~df[c].isin(nonsectors)]
+    # aggregate data
+    if hasattr(df, 'aggregate_flowby'):
+        df = (df.aggregate_flowby()
+                .reset_index(drop=True).reset_index()
+                .rename(columns={'index': 'group_id'}))
+    else:
+        # todo: drop else statement once all dataframes are converted
+        #  to classes
+        possible_column_headers = \
+            ('FlowAmount', 'Spread', 'Min', 'Max', 'DataReliability',
+             'TemporalCorrelation', 'GeographicalCorrelation',
+             'TechnologicalCorrelation', 'DataCollection', 'Description')
+        # list of column headers to group aggregation by
+        groupby_cols = [e for e in df.columns.values.tolist()
+                        if e not in possible_column_headers]
+        df = aggregator(df, groupby_cols)
 
         return df
 
