@@ -600,7 +600,7 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
                         if e not in possible_column_headers]
         df = aggregator(df, groupby_cols)
 
-        return df
+    return df
 
 def return_max_sector_level(
     industry_spec: dict,
