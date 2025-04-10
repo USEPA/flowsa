@@ -206,12 +206,7 @@ class FlowBySector(_FlowBy):
         fbs = fbs.sector_aggregation()
 
         # set all data quality fields to none until implemented fully
-        log.info('Reset data quality fields to None')
-        dq_cols = ['Spread', 'Min', 'Max',
-                   # 'DataReliability', # 'TemporalCorrelation',
-                   # 'GeographicalCorrelation', # 'TechnologicalCorrelation',
-                   # 'DataCollection'
-                   ]
+        dq_cols = ['Spread', 'Min', 'Max']
         fbs = fbs.assign(**dict.fromkeys(dq_cols, None))
 
         # append the sector names to the FBS if specified
