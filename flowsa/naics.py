@@ -504,6 +504,52 @@ def generate_naics_crosswalk_conversion_ratios(sectorsourcename, targetsectorsou
 
     return ratios_df
 
+def return_closest_naics_year(nonsectors, mapping, targetsectorsourcename):
+    """
+    Match sectors to the closest NAICS year to target naics using naics timeseries.
+    """
+    naics_years = mapping.columns
+    sector_year_match = {}
+    for sector in nonsectors:
+        closest_year = ''
+        min_difference = 100
+        for year in naics_years:
+            if year in mapping.columns and sector in mapping[year].values:
+                difference = abs(int(year.split('_')[1]) - int(targetsectorsourcename.split('_')[1]))
+                if difference < min_difference:
+                    closest_year = year
+                    min_difference = difference
+
+        sector_year_match[sector] = closest_year
+
+    return sector_year_match
+
+
+def replace_sectors_with_targetsectors(df, non_naics, cw_melt, column_headers, targetsectorsourcename):
+    log.info('Replacing sectors with {targetsectorsourcename}')
+    for c in column_headers:
+        if df[c].isna().all():
+            continue
+        # merge df with the melted sector crosswalk
+        df = df.merge(cw_melt, left_on=c, right_on='NAICS', how='left')
+        # if there is a value in the sectorsourcename column,
+        # use that value to replace sector in column c if value in
+        # column c is in the non_naics list
+        df[c] = np.where(
+            (df[c] == df['NAICS']) & (df[c].isin(non_naics)),
+            df[targetsectorsourcename], df[c])
+        # multiply the FlowAmount col by allocation_ratio
+        df.loc[df[c] == df[targetsectorsourcename],
+        'FlowAmount'] = df['FlowAmount'] * df['allocation_ratio']
+        # drop columns
+        df = df.drop(
+            columns=[targetsectorsourcename, 'NAICS', 'allocation_ratio'])
+    log.info(f'Replaced NAICS with {targetsectorsourcename}')
+    # replace the sector year in the sectorsourcename column
+    df['SectorSourceName'] = targetsectorsourcename
+
+    return df
+
 def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
                        dfname):
     """
@@ -528,7 +574,6 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
     # save values to list
     if targetsectorsourcename == sectorsourcename:
         df = df_load.copy()
-
         cw_list = common.load_crosswalk(f"NAICS_Crosswalk_TimeSeries"
                                         )[targetsectorsourcename].drop_duplicates().tolist()
     else:
@@ -548,28 +593,33 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
         # not in crosswalk list
         df = df_load.copy()
         if len(non_naics) != 0:
-            log.info('Checking if sectors represent a different '
-                     f'NAICS year, if so, replace with {targetsectorsourcename}')
-            for c in column_headers:
-                if df[c].isna().all():
-                    continue
-                # merge df with the melted sector crosswalk
-                df = df.merge(cw_melt, left_on=c, right_on='NAICS', how='left')
-                # if there is a value in the sectorsourcename column,
-                # use that value to replace sector in column c if value in
-                # column c is in the non_naics list
-                df[c] = np.where(
-                    (df[c] == df['NAICS']) & (df[c].isin(non_naics)),
-                    df[targetsectorsourcename], df[c])
-                # multiply the FlowAmount col by allocation_ratio
-                df.loc[df[c] == df[targetsectorsourcename],
-                       'FlowAmount'] = df['FlowAmount'] * df['allocation_ratio']
-                # drop columns
-                df = df.drop(
-                    columns=[targetsectorsourcename, 'NAICS', 'allocation_ratio'])
-            log.info(f'Replaced NAICS with {targetsectorsourcename}')
-            # replace the sector year in the sectorsourcename column
-            df['SectorSourceName'] = targetsectorsourcename
+            df = replace_sectors_with_targetsectors(df, non_naics, cw_melt, column_headers, targetsectorsourcename)
+
+    # regardless of if sector year = target sector year, check if there are any non naics that are naics in another
+    # naics year. Checking for other years as data out of stewi not always assigned correctly
+    nonsectors = check_if_sectors_are_naics(df, cw_list, column_headers)
+    # Determine closest NAICS year for non_naics sectors
+    if len(nonsectors) > 0:
+        log.info('Checking if sectors represent a different '
+                 f'NAICS year, if so, replace with {targetsectorsourcename}')
+        # load entire naics year crosswalk to determine if nonsectors belong to another naics year
+        mapping = common.load_crosswalk("NAICS_Crosswalk_TimeSeries")
+        sector_year_mapping = return_closest_naics_year(nonsectors, mapping, targetsectorsourcename)
+
+        # Generate multiple crosswalks based on found NAICS years
+        cw_melt_list = []
+        for sector, year in sector_year_mapping.items():
+            if year:
+                cw_melt = generate_naics_crosswalk_conversion_ratios(year, targetsectorsourcename)
+                cw_melt = cw_melt[cw_melt['NAICS'] == sector].drop(columns=['naics_count', 'length'])
+                cw_melt_list.append(cw_melt)
+
+        # Merge generated crosswalks
+        cw_melt = pd.concat(cw_melt_list, ignore_index=True)
+
+        # if sectors were found to represent a different naics year, use those values to map to target naics
+        if len(cw_melt) > 0:
+            df = replace_sectors_with_targetsectors(df, nonsectors, cw_melt, column_headers, targetsectorsourcename)
 
     # check if there are any sectors that are not in
     # the target sector crosswalk and if so, drop those sectors
