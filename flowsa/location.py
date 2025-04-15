@@ -7,8 +7,10 @@ Functions related to accessing and modifying location codes
 
 import pandas as pd
 import numpy as np
+import io
 import pycountry
 import urllib.error
+from esupy.remote import make_url_request
 from flowsa.flowsa_log import log
 from flowsa.geo import get_all_fips
 from flowsa.settings import datapath
@@ -310,10 +312,12 @@ def get_census_cnty_tbl(year):
 
     try:
         if decade == 2010:
-            df = pd.read_csv(cnty_url[2010], encoding='iso-8859-1',
+            resp = make_url_request(cnty_url[2010])
+            df = pd.read_csv(io.StringIO(resp.content.decode('iso-8859-1')),
                              usecols=['STATE', 'COUNTY', 'POP_COU', 'POP_URBAN'])
         elif decade == 2020:
-            df = (pd.read_excel(cnty_url[2020], sheet_name='2020_UA_COUNTY',
+            resp = make_url_request(cnty_url[2020])
+            df = (pd.read_excel(resp.content, sheet_name='2020_UA_COUNTY',
                                 usecols=['STATE', 'COUNTY', 'POP_COU', 'POP_URB'])
                   .rename(columns={'POP_URB': 'POP_URBAN'})
                   )
@@ -404,3 +408,4 @@ if __name__ == "__main__":
             df = pct_urb.copy()
         else:
             df = df.merge(pct_urb, how='outer', on='Location')
+    df.sort_values(by='Location').to_csv('percent_urban.csv', index=False)
