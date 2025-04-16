@@ -159,22 +159,19 @@ def subset_sector_key(flowbyactivity, activitycol, sector_source_year, primary_s
 
     # drop parent sectors if parent-completechild
     if flowbyactivity.config.get('sector_hierarchy') == 'parent-completeChild':
+        # Drop duplicates and group by Class, Flowable, Context
         flowbyactivity_sub = flowbyactivity[['Class', 'Flowable', 'Context', activitycol]].drop_duplicates()
         existing_sectors_df = pd.DataFrame([])
-        for i in flowbyactivity_sub[activitycol]:
-            n = flowbyactivity_sub[
-                flowbyactivity_sub[activitycol].apply(
-                    lambda x: x[0:len(str(i))] == i)]
-            if len(n) == 1:
-                existing_sectors_df = pd.concat(
-                    [existing_sectors_df, n])
-        existing_sectors_list = existing_sectors_df[
-            activitycol].values.tolist()
+        # subset the df by grouping cols
+        for _, df_sub in flowbyactivity_sub.groupby(['Class', 'Flowable', 'Context'], dropna=False):
+            for i in df_sub[activitycol]:
+                n = df_sub[df_sub[activitycol].apply(
+                    lambda x: str(x).startswith(str(i)))]
+                if len(n) == 1:
+                    existing_sectors_df = pd.concat(
+                        [existing_sectors_df, n])
 
-        flowbyactivity = (
-            flowbyactivity
-            .query(f'{activitycol} in @existing_sectors_list')
-        )
+        flowbyactivity = flowbyactivity.merge(existing_sectors_df, on=existing_sectors_df.columns.tolist())
 
     primary_sector_key_2 = pd.DataFrame(flowbyactivity.merge(
         primary_sector_key,
@@ -433,9 +430,6 @@ def check_if_sectors_are_naics(df_load, crosswalk_list, column_headers):
         non_sectors = ns_list['NonSectors'].drop_duplicates().tolist()
         vlog.debug('There are sectors that are not target NAICS Codes')
         vlog.debug(non_sectors)
-    else:
-        log.info('Sectors are all in the target NAICS year and do not require '
-                 'conversion')
 
     return non_sectors
 
@@ -526,7 +520,15 @@ def return_closest_naics_year(nonsectors, mapping, targetsectorsourcename):
 
 
 def replace_sectors_with_targetsectors(df, non_naics, cw_melt, column_headers, targetsectorsourcename):
-    log.info('Replacing sectors with {targetsectorsourcename}')
+    """
+    Replacing sectors with those of the target yeear
+    :param df:
+    :param non_naics:
+    :param cw_melt:
+    :param column_headers:
+    :param targetsectorsourcename:
+    :return:
+    """
     for c in column_headers:
         if df[c].isna().all():
             continue
@@ -544,7 +546,6 @@ def replace_sectors_with_targetsectors(df, non_naics, cw_melt, column_headers, t
         # drop columns
         df = df.drop(
             columns=[targetsectorsourcename, 'NAICS', 'allocation_ratio'])
-    log.info(f'Replaced NAICS with {targetsectorsourcename}')
     # replace the sector year in the sectorsourcename column
     df['SectorSourceName'] = targetsectorsourcename
 
