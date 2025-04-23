@@ -6,15 +6,15 @@ from setuptools import setup, find_packages
 
 setup(
     name='flowsa',
-    version='2.0.4',
+    version='2.0.5',
     packages=find_packages(),
     package_dir={'flowsa': 'flowsa'},
     include_package_data=True,
     python_requires=">=3.9",
     install_requires=[
-        'fedelemflowlist @ git+https://github.com/USEPA/fedelemflowlist.git@develop#egg=fedelemflowlist',
-        'esupy @ git+https://github.com/USEPA/esupy.git@develop#egg=esupy',
-        'StEWI @ git+https://github.com/USEPA/standardizedinventories.git@develop#egg=StEWI',
+        'fedelemflowlist @ git+https://github.com/USEPA/fedelemflowlist.git#egg=fedelemflowlist',
+        'esupy @ git+https://github.com/USEPA/esupy.git#egg=esupy',
+        'StEWI @ git+https://github.com/USEPA/standardizedinventories.git#egg=StEWI',
         'appdirs>=1.4.3',
         'bibtexparser>=1.2.0',
         "kaleido==0.1.0.post1;platform_system=='Windows'",
