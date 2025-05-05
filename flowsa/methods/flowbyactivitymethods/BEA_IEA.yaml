@@ -1,0 +1,37 @@
+author: US Bureau of Economic Analysis
+source_name: International Economic Accounts
+source_url: https://www.bea.gov/data/intl-trade-investment/international-trade-goods-and-services
+bib_id: BEA
+api_name: BEA
+api_key_required: True
+format: [json,xml]
+url:
+  base_url: https://apps.bea.gov/
+  api_path: 'api/data/?'
+  url_params:
+    Affiliation: AllAffiliations
+    method: GetData
+    DataSetName: IntlServTrade
+    TradeDirection: Imports,Exports
+    ResultFormat: json
+    AreaOrCountry: __areaorcountry__
+    Year: __year__
+    UserID: __apiKey__
+
+url_replace_fxn: !script_function:BEA_IEA bea_iea_url_helper
+call_response_fxn: !script_function:BEA_IEA bea_iea_call
+parse_response_fxn: !script_function:BEA_IEA bea_iea_parse
+
+years:
+- 2012
+- 2013
+- 2014
+- 2015
+- 2016
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
