@@ -397,10 +397,11 @@ class _FlowBy(pd.DataFrame):
             log.error(f'No FIPS level corresponds to {target_geoscale}')
 
     def select_by_fields(
-        self: FB,
-        selection_fields: dict = None,
-        exclusion_fields: dict = None,
-        skip_select_by: bool = False,
+            self: FB,
+            selection_fields: dict = None,
+            exclusion_fields: dict = None,
+            skip_select_by: bool = False,
+            assign_fields: dict = None,
     ) -> FB:
         '''
         Filter the calling FlowBy dataset according to the 'selection_fields'
@@ -441,6 +442,8 @@ class _FlowBy(pd.DataFrame):
 
         Similarly, can use 'exclusion_fields' to remove particular data in the
         same manner.
+
+        Use 'assign_fields' to assign column values
         '''
         if skip_select_by:
             return self
@@ -463,6 +466,15 @@ class _FlowBy(pd.DataFrame):
                 else:
                     self = self.query(f'{field} not in @values')
 
+        # assign column values as defined in FBS method yaml
+        assign_fields = (assign_fields or
+                            self.config.get('assign_fields', {}))
+        assign_fields = {k: [v] if not isinstance(v, (list, dict)) else v
+                            for k, v in assign_fields.items()}
+        for field, values in assign_fields.items():
+            self = self.assign(**{f"{field}": values})
+
+        # subset FBA by selection fields identified in FBS yaml
         selection_fields = (selection_fields
                             or self.config.get('selection_fields'))
 
