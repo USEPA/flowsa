@@ -83,6 +83,8 @@ def bea_nipa_parse(*, df_list, source, year, config, **_):
           .assign(Year = lambda x: x['Period'].astype('Int64').astype(str))
           .rename(columns={'SeriesLabel': 'ActivityProducedBy',
                            'Value': 'FlowAmount'})
+          .assign(ActivityProducedBy = lambda x: x['ActivityProducedBy']
+                  + ' (' + x['Line'].astype(str) + ')')
           )
 
     # columns relevant to all BEA data
