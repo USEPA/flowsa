@@ -1,0 +1,47 @@
+!include:BEA_detail_target.yaml
+year: 2017
+target_naics_year: 2017
+geoscale: national
+activity_schema: None
+
+_attribution_sources:
+  BEA: &bea # 2017 Make and Use tables
+    year: 2017
+    activity_to_sector_mapping: BEA_2017_Detail
+    exclusion_fields:
+      # Drop irrelevant final demand and total sectors
+      ActivityConsumedBy: ['T001', 'T004', 'T007', 'T019']
+      ActivityProducedBy: ['T007', 'T013', 'T015', 'T016', 'TOP',
+                           'MCIF']
+    attribution_method: equal
+
+source_names:
+  BEA_NIPA:
+    geoscale: national
+    year: 2017
+    data_format: FBA
+    clean_fba_before_activity_sets: !script_function:BEA_NIPA extract_table_info
+    activity_sets:
+      direct:
+        activity_to_sector_mapping: BEA_NIPA_FD_IP
+        selection_fields:
+          Table: T50605 # Table 5.6.5. Private Fixed Investment in Intellectual Property Products by Type 
+          ActivityProducedBy:
+           - Research and development
+        # assign_fields:
+        #   ActivityConsumedBy: F02000
+        attribution_method: direct
+
+      proportional:
+        activity_to_sector_mapping: BEA_NIPA_FD_IP
+        selection_fields:
+          Table: T50605 # Table 5.6.5. Private Fixed Investment in Intellectual Property Products by Type 
+        exclusion_fields:
+          ActivityProducedBy:
+           - Research and development
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityConsumedBy: {'F02N00': ''}

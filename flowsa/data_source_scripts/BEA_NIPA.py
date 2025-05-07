@@ -100,6 +100,21 @@ def bea_nipa_parse(*, df_list, source, year, config, **_):
 
     return df
 
+
+def extract_table_info(fba, **_):
+    """
+    """
+    # extract table info for easier parsing
+    fba[['Table', 'Code_Line']] = fba['Description'].str.split(': ', expand=True)
+    fba[['Code', 'Line']] = fba['Code_Line'].str.split(' - ', expand=True)
+    fba = (fba
+           .assign(Line = lambda x: x['Line'].astype(int))
+           .drop(columns=['Code_Line'])
+           # .sort_values(by=['Table', 'Line'])
+           )
+    return fba
+
+
 if __name__ == "__main__":
     import flowsa
     flowsa.generateflowbyactivity.main(source='BEA_NIPA', year='2022-2024')

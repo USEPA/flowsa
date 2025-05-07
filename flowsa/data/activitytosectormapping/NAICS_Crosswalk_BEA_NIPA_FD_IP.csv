@@ -1,0 +1,53 @@
+ActivitySourceName,Activity,SectorSourceName,Sector,SectorType,Note
+BEA_NIPA,Intellectual property products,NAICS_2017_Code,,,
+BEA_NIPA,Software,NAICS_2017_Code,,,
+BEA_NIPA,Prepackaged,NAICS_2017_Code,51121,,Software publishers
+BEA_NIPA,Custom,NAICS_2017_Code,51121,,Software publishers
+BEA_NIPA,Own account,NAICS_2017_Code,51121,,Software publishers
+BEA_NIPA,Prepackaged,NAICS_2017_Code,541511,,Custom computer programming services
+BEA_NIPA,Custom,NAICS_2017_Code,541511,,Custom computer programming services
+BEA_NIPA,Own account,NAICS_2017_Code,541511,,Custom computer programming services
+BEA_NIPA,Prepackaged,NAICS_2017_Code,5182,,"Data processing, hosting, and related services"
+BEA_NIPA,Custom,NAICS_2017_Code,5182,,"Data processing, hosting, and related services"
+BEA_NIPA,Own account,NAICS_2017_Code,5182,,"Data processing, hosting, and related services"
+BEA_NIPA,Research and development,NAICS_2017_Code,5417,,Scientific research and development services
+BEA_NIPA,Business,NAICS_2017_Code,,,
+BEA_NIPA,Manufacturing,NAICS_2017_Code,,,
+BEA_NIPA,Pharmaceutical and medicine manufacturing,NAICS_2017_Code,,,
+BEA_NIPA,"Chemical manufacturing, excluding pharmaceutical and medicine",NAICS_2017_Code,,,
+BEA_NIPA,Semiconductor and other electronic component manufacturing,NAICS_2017_Code,,,
+BEA_NIPA,Other computer and electronic product manufacturing,NAICS_2017_Code,,,
+BEA_NIPA,"Motor vehicles, bodies and trailers, and parts manufacturing",NAICS_2017_Code,,,
+BEA_NIPA,Aerospace products and parts manufacturing,NAICS_2017_Code,,,
+BEA_NIPA,Other manufacturing,NAICS_2017_Code,,,
+BEA_NIPA,Nonmanufacturing,NAICS_2017_Code,,,
+BEA_NIPA,Scientific research and development services,NAICS_2017_Code,,,
+BEA_NIPA,All other nonmanufacturing,NAICS_2017_Code,,,
+BEA_NIPA,Software publishers,NAICS_2017_Code,,,
+BEA_NIPA,Financial and real estate services,NAICS_2017_Code,,,
+BEA_NIPA,Computer systems design and related services,NAICS_2017_Code,,,
+BEA_NIPA,Other nonmanufacturing,NAICS_2017_Code,,,
+BEA_NIPA,Nonprofit institutions serving households,NAICS_2017_Code,,,
+BEA_NIPA,Universities and colleges,NAICS_2017_Code,,,
+BEA_NIPA,Other nonprofit institutions,NAICS_2017_Code,,,
+BEA_NIPA,"Entertainment, literary, and artistic originals",NAICS_2017_Code,,,
+BEA_NIPA,Theatrical movies,NAICS_2017_Code,5121,,Motion picture and video industries
+BEA_NIPA,Theatrical movies,NAICS_2017_Code,5151,,Radio and television broadcasting
+BEA_NIPA,Theatrical movies,NAICS_2017_Code,5152,,Cable and other subscription programming
+BEA_NIPA,Long-lived television programs,NAICS_2017_Code,5121,,Motion picture and video industries
+BEA_NIPA,Long-lived television programs,NAICS_2017_Code,5151,,Radio and television broadcasting
+BEA_NIPA,Long-lived television programs,NAICS_2017_Code,5152,,Cable and other subscription programming
+BEA_NIPA,Books,NAICS_2017_Code,51113,,Book publishers
+BEA_NIPA,Books,NAICS_2017_Code,51112,,Periodical Publishers
+BEA_NIPA,Music,NAICS_2017_Code,5122,,Sound recording industries
+BEA_NIPA,Music,NAICS_2017_Code,54192,,Photographic services
+BEA_NIPA,Music,NAICS_2017_Code,7115,,"Independent artists, writers, and performers"
+BEA_NIPA,Music,NAICS_2017_Code,7111,,Performing arts companies
+BEA_NIPA,Music,NAICS_2017_Code,51114,,"Directory, mailing list, and other publishers"
+BEA_NIPA,Music,NAICS_2017_Code,51119,,"Directory, mailing list, and other publishers"
+BEA_NIPA,Other,NAICS_2017_Code,5122,,Sound recording industries
+BEA_NIPA,Other,NAICS_2017_Code,54192,,Photographic services
+BEA_NIPA,Other,NAICS_2017_Code,7115,,"Independent artists, writers, and performers"
+BEA_NIPA,Other,NAICS_2017_Code,7111,,Performing arts companies
+BEA_NIPA,Other,NAICS_2017_Code,51114,,"Directory, mailing list, and other publishers"
+BEA_NIPA,Other,NAICS_2017_Code,51119,,"Directory, mailing list, and other publishers"
