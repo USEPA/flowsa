@@ -21,6 +21,7 @@ source_names:
     year: 2017
     data_format: FBA
     clean_fba_before_activity_sets: !script_function:BEA_NIPA extract_table_info
+    clean_fba_w_sec: !script_function:BEA_NIPA drop_unassigned
     activity_sets:
       direct:
         activity_to_sector_mapping: BEA_NIPA_FD_IP
@@ -28,8 +29,8 @@ source_names:
           Table: T50605 # Table 5.6.5. Private Fixed Investment in Intellectual Property Products by Type 
           ActivityProducedBy:
            - Research and development
-        # assign_fields:
-        #   ActivityConsumedBy: F02000
+        assign_fields:
+          ActivityConsumedBy: Private Fixed Investment
         attribution_method: direct
 
       proportional:
@@ -39,6 +40,8 @@ source_names:
         exclusion_fields:
           ActivityProducedBy:
            - Research and development
+        assign_fields:
+          ActivityConsumedBy: Private Fixed Investment
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Use_SUT:

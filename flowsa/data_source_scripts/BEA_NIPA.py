@@ -115,6 +115,16 @@ def extract_table_info(fba, **_):
     return fba
 
 
+def drop_unassigned(fba, **_):
+    """clean_fba_w_sec fxn
+    """
+    # Because ACB is assigned in the method yaml, need to drop those that don't
+    # have an original APB assignment in the mapping file
+    fba = fba[~fba['SectorProducedBy'].isna()]
+
+    return fba
+
+
 if __name__ == "__main__":
     import flowsa
     flowsa.generateflowbyactivity.main(source='BEA_NIPA', year='2022-2024')

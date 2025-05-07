@@ -469,8 +469,6 @@ class _FlowBy(pd.DataFrame):
         # assign column values as defined in FBS method yaml
         assign_fields = (assign_fields or
                             self.config.get('assign_fields', {}))
-        assign_fields = {k: [v] if not isinstance(v, (list, dict)) else v
-                            for k, v in assign_fields.items()}
         for field, values in assign_fields.items():
             self = self.assign(**{f"{field}": values})
 
@@ -871,7 +869,9 @@ class _FlowBy(pd.DataFrame):
                     f'{parent_df.full_name}{NAME_SEP_CHAR}{activity_set}')
                 .select_by_fields(
                     selection_fields=activity_config.get('selection_fields'),
-                    exclusion_fields=activity_config.get('exclusion_fields'))
+                    exclusion_fields=activity_config.get('exclusion_fields'),
+                    assign_fields=activity_config.get('assign_fields')
+                    )
             )
 
             child_df.config = {**parent_config, **activity_config}
