@@ -1454,17 +1454,32 @@ class _FlowBy(pd.DataFrame):
                 # if there isn't a target geoscale or method name, return FBS without appending geo correlation
                 return self
 
+        # if all Geo Corr scores in the FBS are 0, drop the column and reassign values
+        if (fbs['GeographicalCorrelation'] == 0).all():
+            fbs = fbs.drop(columns=['GeographicalCorrelation'])
+
+        # if Geo Corr column is missing from the df or if all Geo Corr column is all 0s, add score based on fips
         if 'GeographicalCorrelation' not in fbs:
             if fbs['LocationSystem'][0] == 'Census_Region':
                 fbs = fbs.assign(GeographicalCorrelation = 4)
             elif fbs['LocationSystem'][0] == 'Census_Division':
                 fbs = fbs.assign(GeographicalCorrelation = 3)
             else:
-                fips = geo.get_all_fips(int((re.search(r"\d{4}", fbs['LocationSystem'][0])).group())
-                                        ).rename(columns={'FIPS': 'Location',
-                                                          'FIPS_Scale':'GeographicalCorrelation'})
+                # assign geo corr score by FIPS year
+                try:
+                    fips = (geo
+                            .get_all_fips(int((re.search(r"\d{4}", fbs['LocationSystem'][0])).group()))
+                            .rename(columns={'FIPS': 'Location',
+                                             'FIPS_Scale':'GeographicalCorrelation'})
+                            )
+                # if FIPS year not defined, assume default year of 2015
+                except AttributeError:
+                    fips = (geo.get_all_fips()
+                            .rename(columns={'FIPS': 'Location',
+                                             'FIPS_Scale':'GeographicalCorrelation'})
+                            )
                 fbs = fbs.merge(fips[['Location', 'GeographicalCorrelation']])
-        fbs['GeographicalCorrelation'] = fbs['GeographicalCorrelation'].astype(float)
+        fbs['GeographicalCorrelation'] = fbs['GeographicalCorrelation'].astype(int)
         fbs['GeographicalCorrelation'] = fbs['GeographicalCorrelation'] - fips_number_key[target_geoscale]
         fbs = esupy.dqi.adjust_dqi_scores(fbs,
                                           fbs['GeographicalCorrelation'],
