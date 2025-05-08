@@ -2,18 +2,18 @@ ActivitySourceName,Activity,SectorSourceName,Sector,SectorType,Note
 BEA_NIPA,Private fixed investment in structures (1),NAICS_2017_Code,,,
 BEA_NIPA,Structures (2),NAICS_2017_Code,,,
 BEA_NIPA,Commercial and health care (3),NAICS_2017_Code,,,
-BEA_NIPA,Office (4),NAICS_2017_Code,2332A0,,Office and commercial structures
-BEA_NIPA,Health care (5),NAICS_2017_Code,233210,,Health care structures
+BEA_NIPA,Office (4),NAICS_2017_Code,,,Office and commercial structures; 2332A0
+BEA_NIPA,Health care (5),NAICS_2017_Code,,,Health care structures; 233210
 BEA_NIPA,Hospitals and special care (6),NAICS_2017_Code,,,
 BEA_NIPA,Hospitals (7),NAICS_2017_Code,,,
 BEA_NIPA,Special care (8),NAICS_2017_Code,,,
 BEA_NIPA,Medical buildings (9),NAICS_2017_Code,,,
-BEA_NIPA,Multimerchandise shopping (10),NAICS_2017_Code,2332A0,,Office and commercial structures
-BEA_NIPA,Food and beverage establishments (11),NAICS_2017_Code,2332A0,,Office and commercial structures
-BEA_NIPA,Warehouses (12),NAICS_2017_Code,2332A0,,Office and commercial structures
-BEA_NIPA,Other commercial (13),NAICS_2017_Code,2332A0,,Office and commercial structures
-BEA_NIPA,Manufacturing (14),NAICS_2017_Code,233230,,Manufacturing structures
-BEA_NIPA,Power and communication (15),NAICS_2017_Code,233240,,Power and communication structures
+BEA_NIPA,Multimerchandise shopping (10),NAICS_2017_Code,,,Office and commercial structures; 2332A0
+BEA_NIPA,Food and beverage establishments (11),NAICS_2017_Code,,,Office and commercial structures; 2332A0
+BEA_NIPA,Warehouses (12),NAICS_2017_Code,,,Office and commercial structures; 2332A0
+BEA_NIPA,Other commercial (13),NAICS_2017_Code,,,Office and commercial structures; 2332A0
+BEA_NIPA,Manufacturing (14),NAICS_2017_Code,,,Manufacturing structures; 233230
+BEA_NIPA,Power and communication (15),NAICS_2017_Code,237110,,Power and communication structures; 233240
 BEA_NIPA,Power (16),NAICS_2017_Code,,,
 BEA_NIPA,Electric (17),NAICS_2017_Code,,,
 BEA_NIPA,Alternative electric (18),NAICS_2017_Code,,,
@@ -32,21 +32,21 @@ BEA_NIPA,Mining (24),NAICS_2017_Code,213113,,Other support activities for mining
 BEA_NIPA,Mining (24),NAICS_2017_Code,213114,,Other support activities for mining
 BEA_NIPA,Mining (24),NAICS_2017_Code,213115,,Other support activities for mining
 BEA_NIPA,Other structures (25),NAICS_2017_Code,,,
-BEA_NIPA,Religious (26),NAICS_2017_Code,2332D0,,Other nonresidential structures
-BEA_NIPA,Educational and vocational (27),NAICS_2017_Code,233262,,Educational and vocational structures
-BEA_NIPA,Lodging (28),NAICS_2017_Code,2332D0,,Other nonresidential structures
-BEA_NIPA,Amusement and recreation (29),NAICS_2017_Code,2332D0,,Other nonresidential structures
-BEA_NIPA,Transportation (30),NAICS_2017_Code,2332C0,,Transportation structures and highways and streets
+BEA_NIPA,Religious (26),NAICS_2017_Code,237990,,Other nonresidential structures; 2332D0
+BEA_NIPA,Educational and vocational (27),NAICS_2017_Code,,,Educational and vocational structures; 233262
+BEA_NIPA,Lodging (28),NAICS_2017_Code,237990,,Other nonresidential structures; 2332D0
+BEA_NIPA,Amusement and recreation (29),NAICS_2017_Code,237990,,Other nonresidential structures; 2332D0
+BEA_NIPA,Transportation (30),NAICS_2017_Code,237310,,Transportation structures and highways and streets; 2332C0
 BEA_NIPA,Air (31),NAICS_2017_Code,,,
 BEA_NIPA,Land (32),NAICS_2017_Code,,,
-BEA_NIPA,Farm (33),NAICS_2017_Code,2332D0,,Other nonresidential structures
-BEA_NIPA,Other (34),NAICS_2017_Code,2332D0,,Other nonresidential structures
+BEA_NIPA,Farm (33),NAICS_2017_Code,237990,,Other nonresidential structures; 2332D0
+BEA_NIPA,Other (34),NAICS_2017_Code,237990,,Other nonresidential structures; 2332D0
 BEA_NIPA,Brokers' commissions on sale of structures (35),NAICS_2017_Code,531,,Other real estate
 BEA_NIPA,Net purchases of used structures (36),NAICS_2017_Code,S00402,,Used and secondhand goods
 BEA_NIPA,Structures (37),NAICS_2017_Code,,,
 BEA_NIPA,Permanent site (38),NAICS_2017_Code,,,
-BEA_NIPA,Single family (39),NAICS_2017_Code,233411,,Single-family residential structures
-BEA_NIPA,Multifamily (40),NAICS_2017_Code,233412,,Multifamily residential structures
+BEA_NIPA,Single family (39),NAICS_2017_Code,236115,,Single-family residential structures; 233411
+BEA_NIPA,Multifamily (40),NAICS_2017_Code,236116,,Multifamily residential structures; 233412
 BEA_NIPA,Other structures (41),NAICS_2017_Code,,,
 BEA_NIPA,Manufactured homes (42),NAICS_2017_Code,32192,,All other wood product manufacturing
 BEA_NIPA,Manufactured homes (42),NAICS_2017_Code,32193,,All other wood product manufacturing
