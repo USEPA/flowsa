@@ -22,6 +22,11 @@ BEA_NIPA,Other power (20),NAICS_2017_Code,,,
 BEA_NIPA,Communication (21),NAICS_2017_Code,,,
 BEA_NIPA,"Mining exploration, shafts, and wells (22)",NAICS_2017_Code,,,
 BEA_NIPA,Petroleum and natural gas (23),NAICS_2017_Code,213111,,Drilling oil and gas wells
+BEA_NIPA,Mining (24),NAICS_2017_Code,213111,,Drilling oil and gas wells
+BEA_NIPA,Petroleum and natural gas (23),NAICS_2017_Code,213112,,Other support activities for mining
+BEA_NIPA,Petroleum and natural gas (23),NAICS_2017_Code,213113,,Other support activities for mining
+BEA_NIPA,Petroleum and natural gas (23),NAICS_2017_Code,213114,,Other support activities for mining
+BEA_NIPA,Petroleum and natural gas (23),NAICS_2017_Code,213115,,Other support activities for mining
 BEA_NIPA,Mining (24),NAICS_2017_Code,213112,,Other support activities for mining
 BEA_NIPA,Mining (24),NAICS_2017_Code,213113,,Other support activities for mining
 BEA_NIPA,Mining (24),NAICS_2017_Code,213114,,Other support activities for mining
