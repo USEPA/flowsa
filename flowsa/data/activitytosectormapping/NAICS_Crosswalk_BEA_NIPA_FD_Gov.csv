@@ -16,7 +16,7 @@ BEA_NIPA,Intellectual property products (14),NAICS_2017_Code,,,
 BEA_NIPA,Software (15),NAICS_2017_Code,,,
 BEA_NIPA,Research and development (16),NAICS_2017_Code,,,
 BEA_NIPA,National defense (17),NAICS_2017_Code,,,
-BEA_NIPA,Consumption expenditures (18),NAICS_2017_Code,S00500,,Federal general government (defense)
+BEA_NIPA,Consumption expenditures (18),NAICS_2017_Code,928110,,Federal general government (defense)
 BEA_NIPA,National defense (19),NAICS_2017_Code,,,
 BEA_NIPA,Structures (20),NAICS_2017_Code,,,
 BEA_NIPA,Equipment (21),NAICS_2017_Code,,,
@@ -26,7 +26,7 @@ BEA_NIPA,Software (23),NAICS_2017_Code,5182,,"Data processing, hosting, and rela
 BEA_NIPA,Software (23),NAICS_2017_Code,541511,,Custom computer programming services
 BEA_NIPA,Research and development (24),NAICS_2017_Code,5417,,Scientific research and development services
 BEA_NIPA,Nondefense (25),NAICS_2017_Code,,,
-BEA_NIPA,Consumption expenditures (26),NAICS_2017_Code,S00600,,Federal general government (nondefense)
+BEA_NIPA,Consumption expenditures (26),NAICS_2017_Code,928120,,Federal general government (nondefense)
 BEA_NIPA,Nondefense (27),NAICS_2017_Code,,,
 BEA_NIPA,Structures (28),NAICS_2017_Code,,,
 BEA_NIPA,Equipment (29),NAICS_2017_Code,,,
