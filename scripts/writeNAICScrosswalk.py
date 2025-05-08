@@ -175,7 +175,7 @@ def write_annual_naics_crosswalk():
         cw_load = load_crosswalk('NAICS_Crosswalk_TimeSeries')
 
         # load BEA codes that will act as NAICS
-        house = load_crosswalk('Household_SectorCodes')
+        house = load_crosswalk('FinalDemand_SectorCodes')
         govt = load_crosswalk('Government_SectorCodes')
         bea = pd.concat([house, govt], ignore_index=True).rename(
             columns={'Code': f'NAICS_{year}_Code',
@@ -188,7 +188,7 @@ def write_annual_naics_crosswalk():
         # also drop the existing household and government codes because not all
         # inclusive and does not conform to NAICS length standards
         cw = cw[~cw[f'NAICS_{year}_Code'].str.startswith(
-            tuple(['F0', 'S0', '562B']))].reset_index(drop=True)
+            tuple(['F0', 'S0', 'F1', '562B']))].reset_index(drop=True)
 
         # add column of sector length
         cw['secLength'] = cw[f'NAICS_{year}_Code'].apply(
@@ -219,7 +219,7 @@ def write_annual_naics_crosswalk():
                 f"{l}", f"{l - 1}")
             # drop household and gov codes
             df_sub = df_sub[~df_sub[f'NAICS_{l - 1}'].str.startswith(
-                tuple(['F0', 'S0', '562B']))].drop_duplicates()
+                tuple(['F0', 'S0', 'F1', '562B']))].drop_duplicates()
             missing_sectors = df_sub[~df_sub[f'NAICS_{l - 1}'].isin(
                 existing_sec_list)]
 

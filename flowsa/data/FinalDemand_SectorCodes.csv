@@ -1,0 +1,101 @@
+Code,NAICS_Level_to_Use_For,Name
+F010,NAICS_2,Personal Consumption Expenditures
+F010,NAICS_3,Personal Consumption Expenditures
+F010,NAICS_4,Personal Consumption Expenditures
+F01000,NAICS_5,Personal Consumption Expenditures
+F01000,NAICS_6,Personal Consumption Expenditures
+F020,NAICS_2,Private fixed investment
+F020,NAICS_3,Private fixed investment
+F020,NAICS_4,Private fixed investment
+F02000,NAICS_5,Private fixed investment
+F02000,NAICS_6,Private fixed investment
+F02E,NAICS_2,Nonresidential private fixed investment in equipment
+F02E,NAICS_3,Nonresidential private fixed investment in equipment
+F02E,NAICS_4,Nonresidential private fixed investment in equipment
+F02E00,NAICS_5,Nonresidential private fixed investment in equipment
+F02E00,NAICS_6,Nonresidential private fixed investment in equipment
+F02N,NAICS_2,Nonresidential private fixed investment in intellectual property products
+F02N,NAICS_3,Nonresidential private fixed investment in intellectual property products
+F02N,NAICS_4,Nonresidential private fixed investment in intellectual property products
+F02N00,NAICS_5,Nonresidential private fixed investment in intellectual property products
+F02N00,NAICS_6,Nonresidential private fixed investment in intellectual property products
+F02R,NAICS_2,Residential private fixed investment
+F02R,NAICS_3,Residential private fixed investment
+F02R,NAICS_4,Residential private fixed investment
+F02R00,NAICS_5,Residential private fixed investment
+F02R00,NAICS_6,Residential private fixed investment
+F02S,NAICS_2,Nonresidential private fixed investment in structures
+F02S,NAICS_3,Nonresidential private fixed investment in structures
+F02S,NAICS_4,Nonresidential private fixed investment in structures
+F02S00,NAICS_5,Nonresidential private fixed investment in structures
+F02S00,NAICS_6,Nonresidential private fixed investment in structures
+F040,NAICS_2,Exports of goods and services
+F040,NAICS_3,Exports of goods and services
+F040,NAICS_4,Exports of goods and services
+F04000,NAICS_5,Exports of goods and services
+F04000,NAICS_6,Exports of goods and services
+F050,NAICS_2,Imports of goods and services
+F050,NAICS_3,Imports of goods and services
+F050,NAICS_4,Imports of goods and services
+F05000,NAICS_5,Imports of goods and services
+F05000,NAICS_6,Imports of goods and services
+F06C,NAICS_2,Federal Government defense: Consumption expenditures
+F06C,NAICS_3,Federal Government defense: Consumption expenditures
+F06C,NAICS_4,Federal Government defense: Consumption expenditures
+F06C00,NAICS_5,Federal Government defense: Consumption expenditures
+F06C00,NAICS_6,Federal Government defense: Consumption expenditures
+F06E,NAICS_2,Federal national defense: Gross investment in equipment
+F06E,NAICS_3,Federal national defense: Gross investment in equipment
+F06E,NAICS_4,Federal national defense: Gross investment in equipment
+F06E00,NAICS_5,Federal national defense: Gross investment in equipment
+F06E00,NAICS_6,Federal national defense: Gross investment in equipment
+F06N,NAICS_2,Federal national defense: Gross investment in intellectual property products
+F06N,NAICS_3,Federal national defense: Gross investment in intellectual property products
+F06N,NAICS_4,Federal national defense: Gross investment in intellectual property products
+F06N00,NAICS_5,Federal national defense: Gross investment in intellectual property products
+F06N00,NAICS_6,Federal national defense: Gross investment in intellectual property products
+F06S,NAICS_2,Federal national defense: Gross investment in structures
+F06S,NAICS_3,Federal national defense: Gross investment in structures
+F06S,NAICS_4,Federal national defense: Gross investment in structures
+F06S00,NAICS_5,Federal national defense: Gross investment in structures
+F06S00,NAICS_6,Federal national defense: Gross investment in structures
+F07C,NAICS_2,Federal Government nondefense: Consumption expenditures
+F07C,NAICS_3,Federal Government nondefense: Consumption expenditures
+F07C,NAICS_4,Federal Government nondefense: Consumption expenditures
+F07C00,NAICS_5,Federal Government nondefense: Consumption expenditures
+F07C00,NAICS_6,Federal Government nondefense: Consumption expenditures
+F07E,NAICS_2,Federal nondefense: Gross investment in equipment
+F07E,NAICS_3,Federal nondefense: Gross investment in equipment
+F07E,NAICS_4,Federal nondefense: Gross investment in equipment
+F07E00,NAICS_5,Federal nondefense: Gross investment in equipment
+F07E00,NAICS_6,Federal nondefense: Gross investment in equipment
+F07N,NAICS_2,Federal nondefense: Gross investment in intellectual property products
+F07N,NAICS_3,Federal nondefense: Gross investment in intellectual property products
+F07N,NAICS_4,Federal nondefense: Gross investment in intellectual property products
+F07N00,NAICS_5,Federal nondefense: Gross investment in intellectual property products
+F07N00,NAICS_6,Federal nondefense: Gross investment in intellectual property products
+F07S,NAICS_2,Federal nondefense: Gross investment in structures
+F07S,NAICS_3,Federal nondefense: Gross investment in structures
+F07S,NAICS_4,Federal nondefense: Gross investment in structures
+F07S00,NAICS_5,Federal nondefense: Gross investment in structures
+F07S00,NAICS_6,Federal nondefense: Gross investment in structures
+F10C,NAICS_2,State and local government consumption expenditures
+F10C,NAICS_3,State and local government consumption expenditures
+F10C,NAICS_4,State and local government consumption expenditures
+F10C00,NAICS_5,State and local government consumption expenditures
+F10C00,NAICS_6,State and local government consumption expenditures
+F10E,NAICS_2,State and local: Gross investment in equipment
+F10E,NAICS_3,State and local: Gross investment in equipment
+F10E,NAICS_4,State and local: Gross investment in equipment
+F10E00,NAICS_5,State and local: Gross investment in equipment
+F10E00,NAICS_6,State and local: Gross investment in equipment
+F10N,NAICS_2,State and local: Gross investment in intellectual property products
+F10N,NAICS_3,State and local: Gross investment in intellectual property products
+F10N,NAICS_4,State and local: Gross investment in intellectual property products
+F10N00,NAICS_5,State and local: Gross investment in intellectual property products
+F10N00,NAICS_6,State and local: Gross investment in intellectual property products
+F10S,NAICS_2,State and local: Gross investment in structures
+F10S,NAICS_3,State and local: Gross investment in structures
+F10S,NAICS_4,State and local: Gross investment in structures
+F10S00,NAICS_5,State and local: Gross investment in structures
+F10S00,NAICS_6,State and local: Gross investment in structures

@@ -73,7 +73,7 @@ def load_crosswalk(crosswalk_name):
     Used to load the crosswalks:
 
     'NAICS_Crosswalk_TimeSeries', 'NAICS_2012_Crosswalk',
-    'Sector_2012_Names', 'Sector_2017_Names','Household_SectorCodes',
+    'Sector_2012_Names', 'Sector_2017_Names','FinalDemand_SectorCodes',
     'Government_SectorCodes', 'NAICS_to_BEA_Crosswalk_2012',
     'NAICS_to_BEA_Crosswalk_2017'
 
@@ -107,7 +107,7 @@ def return_bea_codes_used_as_naics():
     :return: list of BEA codes used as NAICS
     """
     cw_list = []
-    for cw in ['Household_SectorCodes', 'Government_SectorCodes']:
+    for cw in ['FinalDemand_SectorCodes', 'Government_SectorCodes']:
         df = load_crosswalk(cw)
         cw_list.append(df)
     # concat data into single dataframe
