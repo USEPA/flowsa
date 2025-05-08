@@ -23,23 +23,37 @@ source_names:
     clean_fba_before_activity_sets: !script_function:BEA_NIPA extract_table_info
     clean_fba_w_sec: !script_function:BEA_NIPA drop_unassigned
     activity_sets:
-      direct:
+
+      FD_PCE:
+        activity_to_sector_mapping: BEA_NIPA_FD_PCE
+        selection_fields:
+          Table: U20405 # Table 2.4.5U. Personal Consumption Expenditures by Type of Product
+        assign_fields:
+          ActivityConsumedBy: Personal Consumption Expenditures
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityConsumedBy: {'F01000': ''}
+
+      FD_IP_direct:
         activity_to_sector_mapping: BEA_NIPA_FD_IP
         selection_fields:
           Table: T50605 # Table 5.6.5. Private Fixed Investment in Intellectual Property Products by Type 
           ActivityProducedBy:
-           - Research and development
+           - Research and development (6)
         assign_fields:
           ActivityConsumedBy: Private Fixed Investment
         attribution_method: direct
 
-      proportional:
+      FD_IP_proportional:
         activity_to_sector_mapping: BEA_NIPA_FD_IP
         selection_fields:
           Table: T50605 # Table 5.6.5. Private Fixed Investment in Intellectual Property Products by Type 
         exclusion_fields:
           ActivityProducedBy:
-           - Research and development
+           - Research and development (6)
         assign_fields:
           ActivityConsumedBy: Private Fixed Investment
         attribution_method: proportional
@@ -48,3 +62,72 @@ source_names:
             <<: *bea
             selection_fields:
               ActivityConsumedBy: {'F02N00': ''}
+
+      FD_Gov_IP:
+        activity_to_sector_mapping: BEA_NIPA_FD_Gov
+        selection_fields:
+          Table: T30905 # Table 3.9.5. Government Consumption Expenditures and Gross Investment
+          ActivityProducedBy:
+           - Software (23)
+           - Research and development (24)
+        assign_fields:
+          ActivityConsumedBy: Federal Government Defense IP
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityConsumedBy: {'F06N00': ''}
+
+      FD_Structures1:
+        activity_to_sector_mapping: BEA_NIPA_FD_Structures
+        selection_fields:
+          Table: U50405 # Table 5.4.5. Private Fixed Investment in Structures by Type
+          ActivityProducedBy:
+           - Single-family structures (39)
+           - Multifamily structures (40)
+           - Manufactured homes (42)
+           - Dormitories (43)
+           - "Brokers' commissions and other ownership transfer costs (45)"
+           - Net purchases of used structures (46)
+        assign_fields:
+          ActivityConsumedBy: Residential Investment
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityConsumedBy: {'F02R00': ''}
+
+      FD_Structures2:
+        activity_to_sector_mapping: BEA_NIPA_FD_Structures
+        selection_fields:
+          Table: U50405 # Table 5.4.5. Private Fixed Investment in Structures by Type
+          ActivityProducedBy:
+           - Office (4)
+           - Health care (5)
+           - Multimerchandise shopping (10)
+           - Food and beverage establishments (11)
+           - Warehouses (12)
+           - Other commercial (13)
+           - Manufacturing (14)
+           - Power and communication (15)
+           - Petroleum and natural gas (23)
+           - Mining (24)
+           - Religious (26)
+           - Educational and vocational (27)
+           - Lodging (28)
+           - Amusement and recreation (29)
+           - Transportation (30)
+           - Farm (33)
+           - Other (34)
+           - "Brokers' commissions on sale of structures (35)"
+           - Net purchases of used structures (36)
+        assign_fields:
+          ActivityConsumedBy: Nonresidential Investment in Structures
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityConsumedBy: {'F02S00': ''}

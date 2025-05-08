@@ -1,0 +1,73 @@
+ActivitySourceName,Activity,SectorSourceName,Sector,SectorType,Note
+BEA_NIPA,Private fixed investment in structures (1),NAICS_2017_Code,,,
+BEA_NIPA,Structures (2),NAICS_2017_Code,,,
+BEA_NIPA,Commercial and health care (3),NAICS_2017_Code,,,
+BEA_NIPA,Office (4),NAICS_2017_Code,2332A0,,Office and commercial structures
+BEA_NIPA,Health care (5),NAICS_2017_Code,233210,,Health care structures
+BEA_NIPA,Hospitals and special care (6),NAICS_2017_Code,,,
+BEA_NIPA,Hospitals (7),NAICS_2017_Code,,,
+BEA_NIPA,Special care (8),NAICS_2017_Code,,,
+BEA_NIPA,Medical buildings (9),NAICS_2017_Code,,,
+BEA_NIPA,Multimerchandise shopping (10),NAICS_2017_Code,2332A0,,Office and commercial structures
+BEA_NIPA,Food and beverage establishments (11),NAICS_2017_Code,2332A0,,Office and commercial structures
+BEA_NIPA,Warehouses (12),NAICS_2017_Code,2332A0,,Office and commercial structures
+BEA_NIPA,Other commercial (13),NAICS_2017_Code,2332A0,,Office and commercial structures
+BEA_NIPA,Manufacturing (14),NAICS_2017_Code,233230,,Manufacturing structures
+BEA_NIPA,Power and communication (15),NAICS_2017_Code,233240,,Power and communication structures
+BEA_NIPA,Power (16),NAICS_2017_Code,,,
+BEA_NIPA,Electric (17),NAICS_2017_Code,,,
+BEA_NIPA,Alternative electric (18),NAICS_2017_Code,,,
+BEA_NIPA,All other electric (19),NAICS_2017_Code,,,
+BEA_NIPA,Other power (20),NAICS_2017_Code,,,
+BEA_NIPA,Communication (21),NAICS_2017_Code,,,
+BEA_NIPA,"Mining exploration, shafts, and wells (22)",NAICS_2017_Code,,,
+BEA_NIPA,Petroleum and natural gas (23),NAICS_2017_Code,213111,,Drilling oil and gas wells
+BEA_NIPA,Mining (24),NAICS_2017_Code,213112,,Other support activities for mining
+BEA_NIPA,Mining (24),NAICS_2017_Code,213113,,Other support activities for mining
+BEA_NIPA,Mining (24),NAICS_2017_Code,213114,,Other support activities for mining
+BEA_NIPA,Mining (24),NAICS_2017_Code,213115,,Other support activities for mining
+BEA_NIPA,Other structures (25),NAICS_2017_Code,,,
+BEA_NIPA,Religious (26),NAICS_2017_Code,2332D0,,Other nonresidential structures
+BEA_NIPA,Educational and vocational (27),NAICS_2017_Code,233262,,Educational and vocational structures
+BEA_NIPA,Lodging (28),NAICS_2017_Code,2332D0,,Other nonresidential structures
+BEA_NIPA,Amusement and recreation (29),NAICS_2017_Code,2332D0,,Other nonresidential structures
+BEA_NIPA,Transportation (30),NAICS_2017_Code,2332C0,,Transportation structures and highways and streets
+BEA_NIPA,Air (31),NAICS_2017_Code,,,
+BEA_NIPA,Land (32),NAICS_2017_Code,,,
+BEA_NIPA,Farm (33),NAICS_2017_Code,2332D0,,Other nonresidential structures
+BEA_NIPA,Other (34),NAICS_2017_Code,2332D0,,Other nonresidential structures
+BEA_NIPA,Brokers' commissions on sale of structures (35),NAICS_2017_Code,531ORE,,Other real estate
+BEA_NIPA,Brokers' commissions on sale of structures (35),NAICS_2017_Code,32192,,All other wood product manufacturing
+BEA_NIPA,Brokers' commissions on sale of structures (35),NAICS_2017_Code,32193,,All other wood product manufacturing
+BEA_NIPA,Brokers' commissions on sale of structures (35),NAICS_2017_Code,32194,,All other wood product manufacturing
+BEA_NIPA,Brokers' commissions on sale of structures (35),NAICS_2017_Code,32195,,All other wood product manufacturing
+BEA_NIPA,Brokers' commissions on sale of structures (35),NAICS_2017_Code,32196,,All other wood product manufacturing
+BEA_NIPA,Brokers' commissions on sale of structures (35),NAICS_2017_Code,32197,,All other wood product manufacturing
+BEA_NIPA,Brokers' commissions on sale of structures (35),NAICS_2017_Code,32198,,All other wood product manufacturing
+BEA_NIPA,Brokers' commissions on sale of structures (35),NAICS_2017_Code,32199,,All other wood product manufacturing
+BEA_NIPA,Net purchases of used structures (36),NAICS_2017_Code,S00402,,Used and secondhand goods
+BEA_NIPA,Structures (37),NAICS_2017_Code,,,
+BEA_NIPA,Permanent site (38),NAICS_2017_Code,,,
+BEA_NIPA,Single family (39),NAICS_2017_Code,233411,,Single-family residential structures
+BEA_NIPA,Multifamily (40),NAICS_2017_Code,233412,,Multifamily residential structures
+BEA_NIPA,Other structures (41),NAICS_2017_Code,,,
+BEA_NIPA,Manufactured homes (42),NAICS_2017_Code,32192,,All other wood product manufacturing
+BEA_NIPA,Manufactured homes (42),NAICS_2017_Code,32193,,All other wood product manufacturing
+BEA_NIPA,Manufactured homes (42),NAICS_2017_Code,32194,,All other wood product manufacturing
+BEA_NIPA,Manufactured homes (42),NAICS_2017_Code,32195,,All other wood product manufacturing
+BEA_NIPA,Manufactured homes (42),NAICS_2017_Code,32196,,All other wood product manufacturing
+BEA_NIPA,Manufactured homes (42),NAICS_2017_Code,32197,,All other wood product manufacturing
+BEA_NIPA,Manufactured homes (42),NAICS_2017_Code,32198,,All other wood product manufacturing
+BEA_NIPA,Manufactured homes (42),NAICS_2017_Code,32199,,All other wood product manufacturing
+BEA_NIPA,Dormitories (43),NAICS_2017_Code,,,
+BEA_NIPA,Improvements (44),NAICS_2017_Code,,,
+BEA_NIPA,Brokers' commissions and other ownership transfer costs (45),NAICS_2017_Code,5241XX,,"Insurance carriers, except direct life"
+BEA_NIPA,Brokers' commissions and other ownership transfer costs (45),NAICS_2017_Code,531ORE,,Other real estate
+BEA_NIPA,Brokers' commissions and other ownership transfer costs (45),NAICS_2017_Code,5411,,Legal services
+BEA_NIPA,Brokers' commissions and other ownership transfer costs (45),NAICS_2017_Code,5413,,"Architectural, engineering, and related services"
+BEA_NIPA,Net purchases of used structures (46),NAICS_2017_Code,,,
+BEA_NIPA,Private fixed investment in new structures (47),NAICS_2017_Code,,,
+BEA_NIPA,Nonresidential structures (48),NAICS_2017_Code,,,
+BEA_NIPA,Residential structures (49),NAICS_2017_Code,,,
+BEA_NIPA,Nonresidential Investment in Structures,NAICS_2017_Code,F05000,,F02S00
+BEA_NIPA,Residential Investment,NAICS_2017_Code,F04000,,F02R00
