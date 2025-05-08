@@ -41,15 +41,7 @@ BEA_NIPA,Air (31),NAICS_2017_Code,,,
 BEA_NIPA,Land (32),NAICS_2017_Code,,,
 BEA_NIPA,Farm (33),NAICS_2017_Code,2332D0,,Other nonresidential structures
 BEA_NIPA,Other (34),NAICS_2017_Code,2332D0,,Other nonresidential structures
-BEA_NIPA,Brokers' commissions on sale of structures (35),NAICS_2017_Code,531ORE,,Other real estate
-BEA_NIPA,Brokers' commissions on sale of structures (35),NAICS_2017_Code,32192,,All other wood product manufacturing
-BEA_NIPA,Brokers' commissions on sale of structures (35),NAICS_2017_Code,32193,,All other wood product manufacturing
-BEA_NIPA,Brokers' commissions on sale of structures (35),NAICS_2017_Code,32194,,All other wood product manufacturing
-BEA_NIPA,Brokers' commissions on sale of structures (35),NAICS_2017_Code,32195,,All other wood product manufacturing
-BEA_NIPA,Brokers' commissions on sale of structures (35),NAICS_2017_Code,32196,,All other wood product manufacturing
-BEA_NIPA,Brokers' commissions on sale of structures (35),NAICS_2017_Code,32197,,All other wood product manufacturing
-BEA_NIPA,Brokers' commissions on sale of structures (35),NAICS_2017_Code,32198,,All other wood product manufacturing
-BEA_NIPA,Brokers' commissions on sale of structures (35),NAICS_2017_Code,32199,,All other wood product manufacturing
+BEA_NIPA,Brokers' commissions on sale of structures (35),NAICS_2017_Code,531,,Other real estate
 BEA_NIPA,Net purchases of used structures (36),NAICS_2017_Code,S00402,,Used and secondhand goods
 BEA_NIPA,Structures (37),NAICS_2017_Code,,,
 BEA_NIPA,Permanent site (38),NAICS_2017_Code,,,
@@ -66,8 +58,10 @@ BEA_NIPA,Manufactured homes (42),NAICS_2017_Code,32198,,All other wood product m
 BEA_NIPA,Manufactured homes (42),NAICS_2017_Code,32199,,All other wood product manufacturing
 BEA_NIPA,Dormitories (43),NAICS_2017_Code,,,
 BEA_NIPA,Improvements (44),NAICS_2017_Code,,,
-BEA_NIPA,Brokers' commissions and other ownership transfer costs (45),NAICS_2017_Code,5241XX,,"Insurance carriers, except direct life"
-BEA_NIPA,Brokers' commissions and other ownership transfer costs (45),NAICS_2017_Code,531ORE,,Other real estate
+BEA_NIPA,Brokers' commissions and other ownership transfer costs (45),NAICS_2017_Code,524114,,"Insurance carriers, except direct life"
+BEA_NIPA,Brokers' commissions and other ownership transfer costs (45),NAICS_2017_Code,52412,,"Insurance carriers, except direct life"
+BEA_NIPA,Brokers' commissions and other ownership transfer costs (45),NAICS_2017_Code,52413,,"Insurance carriers, except direct life"
+BEA_NIPA,Brokers' commissions and other ownership transfer costs (45),NAICS_2017_Code,531,,Other real estate
 BEA_NIPA,Brokers' commissions and other ownership transfer costs (45),NAICS_2017_Code,5411,,Legal services
 BEA_NIPA,Brokers' commissions and other ownership transfer costs (45),NAICS_2017_Code,5413,,"Architectural, engineering, and related services"
 BEA_NIPA,Net purchases of used structures (46),NAICS_2017_Code,,,
