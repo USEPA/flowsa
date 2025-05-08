@@ -146,8 +146,8 @@ source_names:
         selection_fields:
           Table: U50405 # Table 5.4.5. Private Fixed Investment in Structures by Type
           ActivityProducedBy:
-           - Single-family structures (39)
-           - Multifamily structures (40)
+           - Single family (39)
+           - Multifamily (40)
            - Manufactured homes (42)
            - Dormitories (43)
            - "Brokers' commissions and other ownership transfer costs (45)"
