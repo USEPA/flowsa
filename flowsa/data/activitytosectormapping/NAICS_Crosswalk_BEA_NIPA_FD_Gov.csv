@@ -26,19 +26,27 @@ BEA_NIPA,Software (23),NAICS_2017_Code,5182,,"Data processing, hosting, and rela
 BEA_NIPA,Software (23),NAICS_2017_Code,541511,,Custom computer programming services
 BEA_NIPA,Research and development (24),NAICS_2017_Code,5417,,Scientific research and development services
 BEA_NIPA,Nondefense (25),NAICS_2017_Code,,,
-BEA_NIPA,Consumption expenditures (26),NAICS_2017_Code,,,
+BEA_NIPA,Consumption expenditures (26),NAICS_2017_Code,S00600,,Federal general government (nondefense)
 BEA_NIPA,Nondefense (27),NAICS_2017_Code,,,
 BEA_NIPA,Structures (28),NAICS_2017_Code,,,
 BEA_NIPA,Equipment (29),NAICS_2017_Code,,,
 BEA_NIPA,Intellectual property products (30),NAICS_2017_Code,,,
-BEA_NIPA,Software (31),NAICS_2017_Code,,,
-BEA_NIPA,Research and development (32),NAICS_2017_Code,,,
+BEA_NIPA,Software (31),NAICS_2017_Code,51121,,Software publishers
+BEA_NIPA,Software (31),NAICS_2017_Code,5182,,"Data processing, hosting, and related services"
+BEA_NIPA,Software (31),NAICS_2017_Code,541511,,Custom computer programming services
+BEA_NIPA,Research and development (32),NAICS_2017_Code,5417,,Scientific research and development services
 BEA_NIPA,State and local (33),NAICS_2017_Code,,,
 BEA_NIPA,State and local (34),NAICS_2017_Code,,,
 BEA_NIPA,State and local (35),NAICS_2017_Code,,,
 BEA_NIPA,Structures (36),NAICS_2017_Code,,,
 BEA_NIPA,Equipment (37),NAICS_2017_Code,,,
 BEA_NIPA,Intellectual property products (38),NAICS_2017_Code,,,
-BEA_NIPA,Software (39),NAICS_2017_Code,,,
-BEA_NIPA,Research and development (40),NAICS_2017_Code,,,
-BEA_NIPA,Federal Government Defense IP,NAICS_2017_Code,F07N00,,
+BEA_NIPA,Software (39),NAICS_2017_Code,51121,,Software publishers
+BEA_NIPA,Software (39),NAICS_2017_Code,5182,,"Data processing, hosting, and related services"
+BEA_NIPA,Software (39),NAICS_2017_Code,541511,,Custom computer programming services
+BEA_NIPA,Research and development (40),NAICS_2017_Code,5417,,Scientific research and development services
+BEA_NIPA,Federal Government Defense Consumption Expenditures,NAICS_2017_Code,F06C00,,
+BEA_NIPA,Federal Government Nondefense Consumption Expenditures,NAICS_2017_Code,F07C00,,
+BEA_NIPA,Federal Government Defense IP,NAICS_2017_Code,F06N00,,
+BEA_NIPA,Federal Government Nondefense IP,NAICS_2017_Code,F07N00,,
+BEA_NIPA,State and Local IP,NAICS_2017_Code,F10N00,,

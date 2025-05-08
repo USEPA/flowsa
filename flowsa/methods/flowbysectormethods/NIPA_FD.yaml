@@ -63,7 +63,22 @@ source_names:
             selection_fields:
               ActivityConsumedBy: {'F02N00': ''}
 
-      FD_Gov_IP:
+      FD_Gov_FedD_CE:
+        activity_to_sector_mapping: BEA_NIPA_FD_Gov
+        selection_fields:
+          Table: T30905 # Table 3.9.5. Government Consumption Expenditures and Gross Investment
+          ActivityProducedBy:
+           - Consumption expenditures (18)
+        assign_fields:
+          ActivityConsumedBy: Federal Government Defense Consumption Expenditures
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityConsumedBy: {'F06C00': ''}
+
+      FD_Gov_FedD_IP:
         activity_to_sector_mapping: BEA_NIPA_FD_Gov
         selection_fields:
           Table: T30905 # Table 3.9.5. Government Consumption Expenditures and Gross Investment
@@ -78,6 +93,53 @@ source_names:
             <<: *bea
             selection_fields:
               ActivityConsumedBy: {'F06N00': ''}
+
+      FD_Gov_FedND_CE:
+        activity_to_sector_mapping: BEA_NIPA_FD_Gov
+        selection_fields:
+          Table: T30905 # Table 3.9.5. Government Consumption Expenditures and Gross Investment
+          ActivityProducedBy:
+           - Consumption expenditures (26)
+        assign_fields:
+          ActivityConsumedBy: Federal Government Nondefense Consumption Expenditures
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityConsumedBy: {'F07C00': ''}
+
+      FD_Gov_FedND_IP:
+        activity_to_sector_mapping: BEA_NIPA_FD_Gov
+        selection_fields:
+          Table: T30905 # Table 3.9.5. Government Consumption Expenditures and Gross Investment
+          ActivityProducedBy:
+           - Software (31)
+           - Research and development (32)
+        assign_fields:
+          ActivityConsumedBy: Federal Government Nondefense IP
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityConsumedBy: {'F07N00': ''}
+
+      FD_Gov_SLG_IP:
+        activity_to_sector_mapping: BEA_NIPA_FD_Gov
+        selection_fields:
+          Table: T30905 # Table 3.9.5. Government Consumption Expenditures and Gross Investment
+          ActivityProducedBy:
+           - Software (39)
+           - Research and development (40)
+        assign_fields:
+          ActivityConsumedBy: State and Local IP
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityConsumedBy: {'F10N00': ''}
 
       FD_Structures1:
         activity_to_sector_mapping: BEA_NIPA_FD_Structures
