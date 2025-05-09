@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='flowsa',
-    version='2.0.4',
+    version='2.0.5',
     packages=find_packages(),
     package_dir={'flowsa': 'flowsa'},
     include_package_data=True,
