@@ -5,13 +5,14 @@
 
 !include:USEEIO_summary_target.yaml
 # year: &ghg_year 2019
+target_naics_year: 2017
 geoscale: state
 
 _allocation_types:
   _use_allocation: &use_table_allocation
     # year: *ghg_year
     geoscale: state
-    activity_to_sector_mapping: BEA_2012_Summary
+    activity_to_sector_mapping: BEA_2017_Summary
     # selection_fields:
     #   ActivityProducedBy: {'324': ''}  # Petroleum 324110
     exclusion_fields:
@@ -26,11 +27,11 @@ source_names:
   EPA_StateGHGI: ## Directly sourced from State Inventory FBA
     geoscale: state
     # year: *ghg_year
-    fedefl_mapping: GHGI
+    fedefl_mapping: GHGI_AR5_100
     activity_sets:
       direct:
-      # replicates direct attribution from EPA_GHGI_T_2_1, EPA_GHGI_T_4_80,
-      # and EPA_GHGI_T_4_96
+      # replicates direct attribution from EPA_GHGI_T_2_1, EPA_GHGI_T_4_103,
+      # and EPA_GHGI_T_4_121
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct
         attribution_method: direct
@@ -39,16 +40,16 @@ source_names:
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct_ods
         exclusion_fields:
-          FlowName: 'SF6' # Handle this flow without splitting
+          FlowName: 'Sulfur hexafluoride' # Handle this flow without splitting
         clean_fba_before_mapping: !script_function:EPA_GHGI split_HFCs_by_type
         clean_parameter:
             # Proportions of specific HFCs are assigned based on national total
-            flow_fba: EPA_GHGI_T_4_100
+            flow_fba: EPA_GHGI_T_4_125
         attribution_method: direct
       direct_ods2:
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv direct_ods
-          FlowName: 'SF6' # Handle this flow without splitting (see above)
+          FlowName: 'Sulfur hexafluoride' # Handle this flow without splitting (see above)
         attribution_method: direct
       electricity_transmission: #SF6
       # replicates electricity_transmission from EPA_GHGI_T_2_1
@@ -56,7 +57,7 @@ source_names:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv electricity_transmission
         attribution_method: direct
       petrochemicals: #CO2 for selected petrochemicals
-      # replicates EPA_GHGI_T_4_46
+      # replicates EPA_GHGI_T_4_55
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv petrochemicals
         attribution_method: direct
@@ -71,7 +72,7 @@ source_names:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ag_burning
         attribution_method: direct
       hcfc: # HFCs from HCFC-22 production
-      # replicates EPA_GHGI_T_4_50
+      # replicates EPA_GHGI_T_4_59
         selection_fields:
           PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv hcfc
         attribution_method: direct
@@ -91,7 +92,7 @@ source_names:
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv electric_power
 
@@ -104,7 +105,7 @@ source_names:
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv liming
 
@@ -117,7 +118,7 @@ source_names:
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv urea
 
@@ -130,11 +131,13 @@ source_names:
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv urea_fertilizer
 
       carbonate_use:
+      ## TODO: Update this activity to better handle split between electricity and
+      # industry see https://github.com/USEPA/GHGbyindustrydocs/issues/50
         selection_fields:
           MetaSources: 'EPA_GHGI_T_2_1.carbonate_use'
         attribution_method: proportional
@@ -143,7 +146,7 @@ source_names:
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv carbonate_use
 
@@ -156,7 +159,7 @@ source_names:
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv lead
 
@@ -169,7 +172,7 @@ source_names:
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv nitrous_oxide_use
 
@@ -177,32 +180,32 @@ source_names:
       ng_systems:
         selection_fields:
           MetaSources:
-            - 'EPA_GHGI_T_3_68'
-            - 'EPA_GHGI_T_3_70'
-            - 'EPA_GHGI_T_3_72'
+            - 'EPA_GHGI_T_3_73'
+            - 'EPA_GHGI_T_3_75'
+            - 'EPA_GHGI_T_3_77'
         attribution_method: proportional
         attribute_on: ['Flowable', 'SectorProducedBy']
         fill_columns: Location
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ng_systems
 
       pet_systems:
         selection_fields:
           MetaSources:
-            - 'EPA_GHGI_T_3_42'
             - 'EPA_GHGI_T_3_44'
             - 'EPA_GHGI_T_3_46'
+            - 'EPA_GHGI_T_3_48'
         attribution_method: proportional
         attribute_on: ['Flowable', 'SectorProducedBy']
         fill_columns: Location
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv pet_systems
 
@@ -219,7 +222,7 @@ source_names:
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv n2o_soil_direct
 
@@ -234,7 +237,7 @@ source_names:
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv n2o_soil_indirect
 
@@ -264,7 +267,7 @@ source_names:
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_ng
 
@@ -311,7 +314,7 @@ source_names:
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_alt_fuel
 
@@ -341,7 +344,7 @@ source_names:
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_nonroad_other
 
@@ -356,7 +359,7 @@ source_names:
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_nonroad_ag
 
@@ -371,7 +374,7 @@ source_names:
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv transport_nonroad_construction
 
@@ -395,7 +398,7 @@ source_names:
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv residential_co2
 
@@ -426,7 +429,7 @@ source_names:
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_coal
 
@@ -457,7 +460,7 @@ source_names:
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_gas
 
@@ -479,7 +482,7 @@ source_names:
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv use_table_pet
             clean_fbs_after_aggregation: !script_function:EPA_StateGHGI drop_negative_values
@@ -505,7 +508,7 @@ source_names:
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ind_com_ch4_n2o
 
@@ -520,38 +523,38 @@ source_names:
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv electric_ch4_n2o
 
       industrial_neu:
         selection_fields:
           MetaSources:
-            - 'EPA_GHGI_T_3_22.coal'
-            - 'EPA_GHGI_T_3_22.petroleum_neu'
-            - 'EPA_GHGI_T_3_22.natural_gas_neu'
-            - 'EPA_GHGI_T_3_22.transportation_lubricants'
-            - 'EPA_GHGI_T_3_22b.coal'
-            - 'EPA_GHGI_T_3_22b.petroleum_neu'
-            - 'EPA_GHGI_T_3_22b.natural_gas_neu'
-            - 'EPA_GHGI_T_3_22b.transportation_lubricants'
+            - 'EPA_GHGI_T_3_24.coal'
+            - 'EPA_GHGI_T_3_24.petroleum_neu'
+            - 'EPA_GHGI_T_3_24.natural_gas_neu'
+            - 'EPA_GHGI_T_3_24.transportation_lubricants'
+            - 'EPA_GHGI_T_3_24b.coal'
+            - 'EPA_GHGI_T_3_24b.petroleum_neu'
+            - 'EPA_GHGI_T_3_24b.natural_gas_neu'
+            - 'EPA_GHGI_T_3_24b.transportation_lubricants'
         attribution_method: proportional
         attribute_on: ['Flowable', 'SectorProducedBy']
         fill_columns: Location
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv industrial_neu
 
       ods_substitutes:
         selection_fields:
           MetaSources:
-            - 'EPA_GHGI_T_4_102.households'
-            - 'EPA_GHGI_T_4_102.refrigerants'
-            - 'EPA_GHGI_T_4_102.air_conditioning'
-            - 'EPA_GHGI_T_4_102.foams'
+            - 'EPA_GHGI_T_4_127.households'
+            - 'EPA_GHGI_T_4_127.refrigerants'
+            - 'EPA_GHGI_T_4_127.air_conditioning'
+            - 'EPA_GHGI_T_4_127.foams'
         attribution_method: proportional
         attribute_on: ['Flowable', 'SectorProducedBy']
         fill_columns: Location
@@ -560,15 +563,15 @@ source_names:
             clean_fba_before_mapping: !script_function:EPA_GHGI split_HFCs_by_type
             clean_parameter:
                 # Proportions of specific HFCs are assigned based on national total
-                flow_fba: EPA_GHGI_T_4_100
+                flow_fba: EPA_GHGI_T_4_125
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ods_substitutes
 
       ods_transportation:
         selection_fields:
-          MetaSources: 'EPA_GHGI_T_A_97'
+          MetaSources: 'EPA_GHGI_T_A_89'
         attribution_method: proportional
         attribute_on: ['Flowable', 'SectorProducedBy']
         fill_columns: Location
@@ -577,21 +580,21 @@ source_names:
             clean_fba_before_mapping: !script_function:EPA_GHGI split_HFCs_by_type
             clean_parameter:
                 # Proportions of specific HFCs are assigned based on national total
-                flow_fba: EPA_GHGI_T_4_100
+                flow_fba: EPA_GHGI_T_4_125
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv ods_transportation
 
       magnesium:
         selection_fields:
-          MetaSources: 'EPA_GHGI_T_4_86'
+          MetaSources: 'EPA_GHGI_T_4_109'
         attribution_method: proportional
         attribute_on: ['Flowable', 'SectorProducedBy']
         fill_columns: Location
         attribution_source:
           EPA_StateGHGI:
             geoscale: state
-            fedefl_mapping: GHGI
+            fedefl_mapping: GHGI_AR5_100
             selection_fields:
               PrimaryActivity: !from_index:EPA_StateGHGI_asets.csv magnesium

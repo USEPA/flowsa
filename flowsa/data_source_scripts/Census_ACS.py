@@ -6,7 +6,8 @@ U.S. Census American Community Survey
 5-yr Data Profile (DP03): Selected Economic Characteristics
 5-yr Data Profile (DP04): Selected Housing Characteristics
 5-yr Data Profile (DP05): Demographic and Housing Estimates
-5-yr Data Profile (S1501): Educational Attainment
+5-yr Subject Tables (S1401): School Enrollment
+5-yr Subject Tables (S1501): Educational Attainment
 
 variables: https://api.census.gov/data/2022/acs/acs5/profile/variables.html
 """
