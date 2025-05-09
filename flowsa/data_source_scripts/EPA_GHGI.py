@@ -211,8 +211,10 @@ def ghg_call(*, resp, url, year, config, **_):
 
             else:
             # Access chapter specific zip files within the main zip
-                chapter_name = f'{chapter}.zip'
-                zfiledata = io.BytesIO(f.read(chapter_name))
+              chapter_name = f'{chapter}.zip'
+              zfiledata0 = io.BytesIO(f.read('Main Text CSVs.zip'))
+              with zipfile.ZipFile(zfiledata0, "r") as f1:
+                zfiledata = io.BytesIO(f1.read(chapter_name))
                 with zipfile.ZipFile(zfiledata) as f2:
                     for table in tables:
                         df = None
