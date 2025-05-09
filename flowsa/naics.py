@@ -180,6 +180,7 @@ def subset_sector_key(flowbyactivity, activitycol, sector_source_year, primary_s
         right_on=merge_col,
     )).dropna(subset=[merge_col]).drop(columns=activitycol)
 
+
     # modify dqi scores for data reliability and collection based on mapping
     if "DataReliability" in flowbyactivity.columns:
         primary_sector_key_2 = adjust_dqi_reliability_collection_scores(primary_sector_key_2, sector_source_year)
@@ -189,12 +190,14 @@ def subset_sector_key(flowbyactivity, activitycol, sector_source_year, primary_s
                                  primary_sector_key_2["target_naics"]].reset_index(drop=True)
 
     # subset df to all remaining target sectors and Activity if present by dropping the one to one matches
-    df_remaining = primary_sector_key_2.merge(
-        df_keep[group_cols],
-        on=group_cols,
-        how='left',
-        indicator=True
-    ).query('_merge == "left_only"').drop('_merge', axis=1)
+    df_remaining = primary_sector_key_2[primary_sector_key_2["source_naics"] !=
+                                        primary_sector_key_2["target_naics"]].reset_index(drop=True)
+    # df_remaining = primary_sector_key_2.merge(
+    #     df_keep[group_cols + [merge_col]],
+    #     on=group_cols + [merge_col],
+    #     how='left',
+    #     indicator=True
+    # ).query('_merge == "left_only"').drop('_merge', axis=1)
 
     # function to identify which source naics most closely match to the target naics
     def subset_target_sectors_by_source_sectors(group):
