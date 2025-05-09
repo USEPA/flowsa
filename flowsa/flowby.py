@@ -1455,7 +1455,8 @@ class _FlowBy(pd.DataFrame):
                 return self
 
         # if all Geo Corr scores in the FBS are 0, drop the column and reassign values
-        if (fbs['GeographicalCorrelation'] == 0).all():
+        if ('GeographicalCorrelation' in fbs and
+            (fbs['GeographicalCorrelation'] == 0).all()):
             fbs = fbs.drop(columns=['GeographicalCorrelation'])
 
         # if Geo Corr column is missing from the df or if all Geo Corr column is all 0s, add score based on fips
