@@ -1,6 +1,7 @@
 from typing import Literal
 import pandas as pd
 import numpy as np
+import re
 from flowsa.flowbyfunctions import aggregator
 from flowsa.flowsa_log import vlog, log
 from . import (common, settings)
@@ -280,10 +281,11 @@ def check_if_sectors_are_naics(df_load, crosswalk_list, column_headers):
     return non_sectors
 
 
-def melt_naics_crosswalk(targetsectorsourcename):
+def generate_naics_crosswalk_conversion_ratios(sectorsourcename, targetsectorsourcename):
     """
-    Create a melt version of the naics 07 to 17 crosswalk to map
-    naics to naics 2012
+    Create a melt version of the source naics source years crosswalk to map
+    naics to naics target year
+    :param sectorsourcename: str, the source sector year
     :param targetsectorsourcename: str, the target sector year, such as
     "NAICS_2012_Code"
     :return: df, naics crosswalk melted
@@ -291,127 +293,154 @@ def melt_naics_crosswalk(targetsectorsourcename):
 
     # load the mastercroswalk and subset by sectorsourcename,
     # save values to list
-    cw_load = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')
+    df = common.load_crosswalk('NAICS_Year_Concordance')[[sectorsourcename,
+                                                               targetsectorsourcename]].drop_duplicates()
 
-    # create melt table of possible naics from other years that can
-    # be mapped to target naics year
-    cw_melt = cw_load.melt(
-        id_vars=targetsectorsourcename, var_name='NAICS_year', value_name='NAICS')
-    # drop the naics year because not relevant for replacement purposes
-    cw_replacement = cw_melt.dropna(how='any')
-    cw_replacement = cw_replacement[
-        [targetsectorsourcename, 'NAICS']].drop_duplicates()
-    # drop rows where contents are equal
-    cw_replacement = cw_replacement[
-        cw_replacement[targetsectorsourcename] != cw_replacement['NAICS']]
-    # drop rows where length > 6
-    cw_replacement = cw_replacement[cw_replacement[targetsectorsourcename].apply(
-        lambda x: len(x) < 7)].reset_index(drop=True)
-    # order by naics target tear
-    cw_replacement = cw_replacement.sort_values(
-        ['NAICS', targetsectorsourcename]).reset_index(drop=True)
+    all_ratios = []
 
-    # create allocation ratios by determining number of
-    # NAICS year to other naics when not a 1:1 ratio
-    cw_replacement_2 = cw_replacement.assign(
-        naics_count=cw_replacement.groupby(
-            ['NAICS'])[targetsectorsourcename].transform('count'))
-    cw_replacement_2 = cw_replacement_2.assign(
-        allocation_ratio=1/cw_replacement_2['naics_count'])
+    # Calculate allocation ratios for each length from 6 to 2
+    for length in range(6, 1, -1):
+        # Truncate both NAICS and NAICS_2017_Code to the current string length
+        df['source'] = df[f'{sectorsourcename}'].str[:length]
+        df['target'] = df[f'{targetsectorsourcename}'].str[:length]
 
-    return cw_replacement_2
+        # Group by the truncated NAICS codes
+        df_grouped = df.groupby(['source', 'target']).size().reset_index(name='naics_count')
 
+        # Calculate the allocation ratios
+        df_grouped['allocation_ratio'] = df_grouped.groupby('source')['naics_count'].transform(lambda x: x / x.sum())
+
+        # Add the length to the results
+        df_grouped['length'] = length
+
+        # Collect the results
+        all_ratios.append(df_grouped)
+
+    # Combine all ratios into a single DataFrame
+    ratios_df = pd.concat(all_ratios, ignore_index=True)
+    ratios_df = ratios_df.rename(columns={'source': 'NAICS',
+                                          'target': f'{targetsectorsourcename}'
+                                          })
+
+    return ratios_df
 
 def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
                        dfname):
     """
-    Replace any non sectors with sectors.
+    Convert sector year
     :param df_load: df with sector columns or sector-like activities
     :param sectorsourcename: str, sector source name (ex. NAICS_2012_Code)
     :param dfname: str, name of data source
-    :return: df, with non-sectors replaced with sectors
+    :return: df, with sectors replaced with new sector year
     """
     # todo: update this function to work better with recursive method
 
     # load the mastercrosswalk and subset by sectorsourcename,
     # save values to list
     if targetsectorsourcename == sectorsourcename:
-        cw_load = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')[[
-        targetsectorsourcename]]
+        return df_load
     else:
         log.info(f"Converting {sectorsourcename} to "
                  f"{targetsectorsourcename} in {dfname}")
         cw_load = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')[[
             targetsectorsourcename, sectorsourcename]]
-    cw = cw_load[targetsectorsourcename].drop_duplicates().tolist()
+        cw = cw_load[targetsectorsourcename].drop_duplicates().tolist()
 
-    # load melted crosswalk
-    cw_melt = melt_naics_crosswalk(targetsectorsourcename)
-    # drop the count column
-    cw_melt = cw_melt.drop(columns='naics_count')
+        # load conversion crosswalk
+        cw_melt = generate_naics_crosswalk_conversion_ratios(sectorsourcename, targetsectorsourcename)
+        # drop the count column
+        cw_melt = cw_melt.drop(columns=['naics_count', 'length'])
 
-    # determine which headers are in the df
-    column_headers = ['ActivityProducedBy', 'ActivityConsumedBy']
-    if 'SectorConsumedBy' in df_load:
-        column_headers = ['SectorProducedBy', 'SectorConsumedBy']
+        # determine which headers are in the df
+        column_headers = ['ActivityProducedBy', 'ActivityConsumedBy']
+        if 'SectorConsumedBy' in df_load:
+            column_headers = ['SectorProducedBy', 'SectorConsumedBy']
 
-    # check if there are any sectors that are not in the naics 2012 crosswalk
-    non_naics = check_if_sectors_are_naics(df_load, cw, column_headers)
+        # check if there are any sectors that are not in the naics 2012 crosswalk
+        non_naics = check_if_sectors_are_naics(df_load, cw, column_headers)
 
-    # loop through the df headers and determine if value is
-    # not in crosswalk list
-    df = df_load.copy()
-    if len(non_naics) != 0:
-        log.info('Checking if sectors represent a different '
-                 f'NAICS year, if so, replace with {targetsectorsourcename}')
-        for c in column_headers:
-            if df[c].isna().all():
-                continue
-            # merge df with the melted sector crosswalk
-            df = df.merge(cw_melt, left_on=c, right_on='NAICS', how='left')
-            # if there is a value in the sectorsourcename column,
-            # use that value to replace sector in column c if value in
-            # column c is in the non_naics list
-            df[c] = np.where(
-                (df[c] == df['NAICS']) & (df[c].isin(non_naics)),
-                df[targetsectorsourcename], df[c])
-            # multiply the FlowAmount col by allocation_ratio
-            df.loc[df[c] == df[targetsectorsourcename],
-                   'FlowAmount'] = df['FlowAmount'] * df['allocation_ratio']
-            # drop columns
-            df = df.drop(
-                columns=[targetsectorsourcename, 'NAICS', 'allocation_ratio'])
-        log.info(f'Replaced NAICS with {targetsectorsourcename}')
-        # replace the sector year in the sectorsourcename column
-        df['SectorSourceName'] = targetsectorsourcename
-
-        # check if there are any sectors that are not in
-        # the target sector crosswalk and if so, drop those sectors
-        log.info('Checking for unconverted NAICS - determine if rows should '
-                 'be dropped.')
-        nonsectors = check_if_sectors_are_naics(df, cw, column_headers)
-        if len(nonsectors) != 0:
-            vlog.debug('Dropping non-NAICS from dataframe')
+        # loop through the df headers and determine if value is
+        # not in crosswalk list
+        df = df_load.copy()
+        if len(non_naics) != 0:
+            log.info('Checking if sectors represent a different '
+                     f'NAICS year, if so, replace with {targetsectorsourcename}')
             for c in column_headers:
                 if df[c].isna().all():
                     continue
-                # drop rows where column value is in the nonnaics list
-                df = df[~df[c].isin(nonsectors)]
-        # aggregate data
-        if hasattr(df, 'aggregate_flowby'):
-            df = (df.aggregate_flowby()
-                    .reset_index(drop=True).reset_index()
-                    .rename(columns={'index': 'group_id'}))
-        else:
-            # todo: drop else statement once all dataframes are converted
-            #  to classes
-            possible_column_headers = \
-                ('FlowAmount', 'Spread', 'Min', 'Max', 'DataReliability',
-                 'TemporalCorrelation', 'GeographicalCorrelation',
-                 'TechnologicalCorrelation', 'DataCollection', 'Description')
-            # list of column headers to group aggregation by
-            groupby_cols = [e for e in df.columns.values.tolist()
-                            if e not in possible_column_headers]
-            df = aggregator(df, groupby_cols)
+                # merge df with the melted sector crosswalk
+                df = df.merge(cw_melt, left_on=c, right_on='NAICS', how='left')
+                # if there is a value in the sectorsourcename column,
+                # use that value to replace sector in column c if value in
+                # column c is in the non_naics list
+                df[c] = np.where(
+                    (df[c] == df['NAICS']) & (df[c].isin(non_naics)),
+                    df[targetsectorsourcename], df[c])
+                # multiply the FlowAmount col by allocation_ratio
+                df.loc[df[c] == df[targetsectorsourcename],
+                       'FlowAmount'] = df['FlowAmount'] * df['allocation_ratio']
+                # drop columns
+                df = df.drop(
+                    columns=[targetsectorsourcename, 'NAICS', 'allocation_ratio'])
+            log.info(f'Replaced NAICS with {targetsectorsourcename}')
+            # replace the sector year in the sectorsourcename column
+            df['SectorSourceName'] = targetsectorsourcename
 
-    return df
+            # check if there are any sectors that are not in
+            # the target sector crosswalk and if so, drop those sectors
+            log.info('Checking for unconverted NAICS - determine if rows should '
+                     'be dropped.')
+            nonsectors = check_if_sectors_are_naics(df, cw, column_headers)
+            if len(nonsectors) != 0:
+                vlog.debug('Dropping non-NAICS from dataframe')
+                for c in column_headers:
+                    if df[c].isna().all():
+                        continue
+                    # drop rows where column value is in the nonnaics list
+                    df = df[~df[c].isin(nonsectors)]
+            # aggregate data
+            if hasattr(df, 'aggregate_flowby'):
+                df = (df.aggregate_flowby()
+                        .reset_index(drop=True).reset_index()
+                        .rename(columns={'index': 'group_id'}))
+            else:
+                # todo: drop else statement once all dataframes are converted
+                #  to classes
+                possible_column_headers = \
+                    ('FlowAmount', 'Spread', 'Min', 'Max', 'DataReliability',
+                     'TemporalCorrelation', 'GeographicalCorrelation',
+                     'TechnologicalCorrelation', 'DataCollection', 'Description')
+                # list of column headers to group aggregation by
+                groupby_cols = [e for e in df.columns.values.tolist()
+                                if e not in possible_column_headers]
+                df = aggregator(df, groupby_cols)
+
+        return df
+
+def return_max_sector_level(
+    industry_spec: dict,
+) -> pd.DataFrame:
+    """
+    Return max sector length/level based on industry spec.
+
+    The industry_spec is a (possibly nested) dictionary formatted as in this
+    example:
+
+    industry_spec = {'default': 'NAICS_3',
+                     'NAICS_4': ['112', '113'],
+                     'NAICS_6': ['1129']
+                     }
+    """
+    # list of keys in industry spec
+    level_list = list(industry_spec.keys())
+    # append default sector level
+    level_list.append(industry_spec['default'])
+
+    n = []
+    for string in level_list:
+        # Convert each found number to an integer and extend the result into the list n
+        n.extend(map(int, re.findall(r'\d+', string)))
+
+    max_level = max(n)
+
+    return max_level
