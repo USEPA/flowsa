@@ -624,12 +624,12 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
         # if sectors were found to represent a different naics year, use those values to map to target naics
         if len(cw_melt) > 0:
             df = replace_sectors_with_targetsectors(df, nonsectors, cw_melt, column_headers, targetsectorsourcename)
+        # check if there are any sectors that are not in
+        # the target sector crosswalk and if so, drop those sectors
+        log.info('Checking for unconverted NAICS - determine if rows should '
+                 'be dropped.')
+        nonsectors = check_if_sectors_are_naics(df, cw_list, column_headers)
 
-    # check if there are any sectors that are not in
-    # the target sector crosswalk and if so, drop those sectors
-    log.info('Checking for unconverted NAICS - determine if rows should '
-             'be dropped.')
-    nonsectors = check_if_sectors_are_naics(df, cw_list, column_headers)
     if len(nonsectors) != 0:
         log.info(f'Dropping non {targetsectorsourcename}s from dataframe: {nonsectors}')
         for c in column_headers:
@@ -639,9 +639,8 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
             df = df[~df[c].isin(nonsectors)]
     # aggregate data
     if hasattr(df, 'aggregate_flowby'):
-        df = (df.aggregate_flowby()
-                .reset_index(drop=True).reset_index()
-                .rename(columns={'index': 'group_id'}))
+        df = df.aggregate_flowby(columns_to_group_by=df.groupby_cols+['group_id'])
+
     else:
         # todo: drop else statement once all dataframes are converted
         #  to classes
