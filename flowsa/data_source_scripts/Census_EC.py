@@ -130,7 +130,76 @@ def census_EC_parse(*, df_list, year, **_):
     df['Compartment'] = None
     return df
 
+
+def census_EC_PxI_parse(*, df_list, year, **_):
+    """
+    Combine, parse, and format the provided dataframes
+    :param df_list: list of dataframes to concat and format
+    :param year: year
+    :return: df, parsed and partially formatted to
+        flowbyactivity specifications
+    """
+    # concat dataframes
+    df = pd.concat(df_list, sort=False)
+
+    df = (df
+          .filter([f'NAICS{year}', 'INDGROUP', f'NAPCS{year}',
+                   f'NAPCS{year}_LABEL',
+                   'NAPCSDOL', 'NAPCSDOL_F', 'NAPCSDOL_S',
+                   'GEO_ID', 'YEAR', 'Description'])
+          .rename(columns={f'NAICS{year}': 'Industry',
+                           f'NAPCS{year}': 'Product',
+                           'NAPCSDOL': 'Sales, value of shipments, or revenue',
+                           'NAPCSDOL_F': 'Flag',
+                           'NAPCSDOL_S': 'Relative standard error',
+                           'YEAR': 'Year'})
+          .assign(Location = lambda x: x['GEO_ID'].str[-2:])
+          )
+    prd_by_ind = df['Description'] == 'EC1700NAPCSPRDIND' # Boolean mask
+    df = (df
+          .assign(FlowName = df['Product'])
+          .assign(ActivityConsumedBy = '')
+          .assign(ActivityProducedBy = df['Industry'])
+          ## TODO confirm assignment of FlowName, ACB, APB
+          # .assign(FlowName = np.where(prd_by_ind,
+          #     df['Product'],
+          #     df['Industry']))
+          # .assign(ActivityConsumedBy = np.where(prd_by_ind,
+          #     df['Industry'], ''))
+          # .assign(ActivityProducedBy = np.where(prd_by_ind,
+          #     '', df['Product']))
+          .assign(Description = np.where(prd_by_ind,
+              'Product by Industry',
+              'Industry by Product'))
+          .rename(columns={'Relative standard error': 'Spread',
+                           'Sales, value of shipments, or revenue': 'FlowAmount'})
+          .assign(MeasureofSpread = 'Relative standard error')
+          .assign(FlowAmount = lambda x: x['FlowAmount'].astype(float))
+          )
+
+    # Updated suppressed data field
+    df = (df.assign(
+        Suppressed = np.where(df.Flag.isin(["D", "s", "A", "S"]),
+                              df.Flag, np.nan),
+        FlowAmount = np.where(df.Flag.isin(["D", "s", "A", "S"]),
+                              0, df.FlowAmount))
+            .drop(columns='Flag'))
+
+    df['Location'] = np.where(df['Location'] == 'US', US_FIPS,
+                              df['Location'].str.pad(5, side='right', fillchar='0'))
+
+    df = assign_fips_location_system(df, year)
+    df['Unit'] = 'USD'
+    df['Class'] = 'Money'
+    df['SourceName'] = 'Census_EC_PxI'
+    df['FlowType'] = "ELEMENTARY_FLOW"
+    # Add tmp DQ scores
+    df['DataReliability'] = 5
+    df['DataCollection'] = 5
+    df['Compartment'] = None
+    return df
+
 if __name__ == "__main__":
     import flowsa
-    flowsa.generateflowbyactivity.main(source='Census_EC', year=2017)
-    fba = flowsa.getFlowByActivity('Census_EC', 2017)
+    flowsa.generateflowbyactivity.main(source='Census_EC_PxI', year=2017)
+    fba = flowsa.getFlowByActivity('Census_EC_PxI', 2017)

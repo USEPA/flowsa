@@ -1,0 +1,39 @@
+author: US Census Bureau
+source_name: Economic Census, Products by Industry
+source_url: https://www.census.gov/programs-surveys/economic-census.html
+source_publication_date: ''
+bib_id: Census_EC_PxI
+api_name: Census
+api_key_required: true
+format: json
+url:
+  base_url: http://api.census.gov/data/
+  api_path: __year__/__dataset__?
+  url_params:
+    get: __group__
+    for: "us:*" # or "state:*"
+    key: __apiKey__     # make the __apiKey__ part of the url and substitute in individual api key
+  key_param: key
+url_replace_fxn: !script_function:Census_EC census_EC_URL_helper
+call_response_fxn: !script_function:Census_EC census_EC_call
+parse_response_fxn: !script_function:Census_EC census_EC_PxI_parse
+
+# https://www.census.gov/data/developers/data-sets/economic-census.2017.html
+
+
+datasets:
+  ecnnapcsind: # Economic Census: Industry by Products Statistics for the U.S.: 2017
+    '2017':
+      # All Sectors: Industry by Products for the U.S. and States: 2017
+      - EC1700NAPCSINDPRD
+      # https://api.census.gov/data/2017/ecnnapcsind.html
+
+  ecnnapcsprd: # Economic Census: Products by Industry Statistics for the U.S.: 2017
+    '2017':
+      # All Sectors: Industry by Products for the U.S. and States: 2017
+      - EC1700NAPCSPRDIND
+      # https://api.census.gov/data/2017/ecnnapcsprd.html
+
+years:
+- 2017
+
