@@ -16,7 +16,9 @@ call_all_years: True
 
 tables:
 - U20405      # Table 2.4.5U. Personal Consumption Expenditures by Type of Product
+- T30500      # Table 3.5 Taxes on Production and Imports
 - T30905      # Table 3.9.5. Government Consumption Expenditures and Gross Investment
+- T31300      # Table 3.13. Subsidies
 - U50405      # Table 5.4.5U. Private Fixed Investment in Structures by Type
 - U50505      # Table 5.5.5U. Private Fixed Investment in Equipment by Type
 - T50605      # Table 5.6.5. Private Fixed Investment in Intellectual Property Products by Type
