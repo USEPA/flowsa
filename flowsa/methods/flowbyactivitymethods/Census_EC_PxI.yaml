@@ -22,11 +22,11 @@ parse_response_fxn: !script_function:Census_EC census_EC_PxI_parse
 
 
 datasets:
-  ecnnapcsind: # Economic Census: Industry by Products Statistics for the U.S.: 2017
-    '2017':
-      # All Sectors: Industry by Products for the U.S. and States: 2017
-      - EC1700NAPCSINDPRD
-      # https://api.census.gov/data/2017/ecnnapcsind.html
+  # ecnnapcsind: # Economic Census: Industry by Products Statistics for the U.S.: 2017
+  #   '2017':
+  #     # All Sectors: Industry by Products for the U.S. and States: 2017
+  #     - EC1700NAPCSINDPRD
+  #     # https://api.census.gov/data/2017/ecnnapcsind.html
 
   ecnnapcsprd: # Economic Census: Products by Industry Statistics for the U.S.: 2017
     '2017':
