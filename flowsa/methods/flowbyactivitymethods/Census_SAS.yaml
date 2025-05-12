@@ -11,8 +11,8 @@ url:
 sheets:
   # Table1
   Table 3: Estimated Expense for Employer Firms
-call_response_fxn: !script_function:Census_SAS census_sas_call
-parse_response_fxn: !script_function:Census_SAS census_sas_parse
+call_response_fxn: !script_function:Census_Surveys census_sas_call
+parse_response_fxn: !script_function:Census_Surveys census_sas_parse
 call_all_years: True
 years:
   - 2013

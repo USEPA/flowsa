@@ -1,0 +1,30 @@
+author: US Census Bureau
+source_name: Annual Wholesale Trade Survey (AWTS)
+source_url: https://www.census.gov/programs-surveys/awts.html
+source_publication_date: 2024
+bib_id: Census_AWTS
+api_name: None
+api_key_required: false
+format: xlsx
+url:
+  base_url: https://www2.census.gov/programs-surveys/awts/tables/2022/2022_awts_purchmarg_nomsbo_table4.xlsx
+# Purchases and gross margins for wholesalers
+
+call_response_fxn: !script_function:Census_Surveys census_awts_call
+parse_response_fxn: !script_function:Census_Surveys census_awts_parse
+call_all_years: True
+years:
+  - 2012
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  - 2018
+  - 2019
+  - 2020
+  - 2021
+  - 2022
+
+# Multiple tables available
+# https://www.census.gov/data/tables/2022/econ/awts/annual-reports.html
