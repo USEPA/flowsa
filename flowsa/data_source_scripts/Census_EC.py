@@ -142,20 +142,22 @@ def census_EC_PxI_parse(*, df_list, year, **_):
     # concat dataframes
     df = pd.concat(df_list, sort=False)
 
+    prd_by_ind = df['Description'] == 'EC1700NAPCSPRDIND' # Boolean mask
     df = (df
           .filter([f'NAICS{year}', 'INDGROUP', f'NAPCS{year}',
                    f'NAPCS{year}_LABEL',
                    'NAPCSDOL', 'NAPCSDOL_F', 'NAPCSDOL_S',
-                   'GEO_ID', 'YEAR', 'Description'])
+                   'GEO_ID', 'YEAR'])
           .rename(columns={f'NAICS{year}': 'Industry',
                            f'NAPCS{year}': 'Product',
+                           f'NAPCS{year}_LABEL': 'Description',
                            'NAPCSDOL': 'Sales, value of shipments, or revenue',
                            'NAPCSDOL_F': 'Flag',
                            'NAPCSDOL_S': 'Relative standard error',
                            'YEAR': 'Year'})
           .assign(Location = lambda x: x['GEO_ID'].str[-2:])
           )
-    prd_by_ind = df['Description'] == 'EC1700NAPCSPRDIND' # Boolean mask
+
     df = (df
           .assign(FlowName = df['Product'])
           .assign(ActivityConsumedBy = '')
@@ -168,9 +170,9 @@ def census_EC_PxI_parse(*, df_list, year, **_):
           #     df['Industry'], ''))
           # .assign(ActivityProducedBy = np.where(prd_by_ind,
           #     '', df['Product']))
-          .assign(Description = np.where(prd_by_ind,
-              'Product by Industry',
-              'Industry by Product'))
+          # .assign(Description = np.where(prd_by_ind,
+          #     'Product by Industry',
+          #     'Industry by Product'))
           .rename(columns={'Relative standard error': 'Spread',
                            'Sales, value of shipments, or revenue': 'FlowAmount'})
           .assign(MeasureofSpread = 'Relative standard error')
@@ -182,7 +184,7 @@ def census_EC_PxI_parse(*, df_list, year, **_):
         Suppressed = np.where(df.Flag.isin(["D", "s", "A", "S"]),
                               df.Flag, np.nan),
         FlowAmount = np.where(df.Flag.isin(["D", "s", "A", "S"]),
-                              0, df.FlowAmount))
+                              0, df.FlowAmount * 1000))
             .drop(columns='Flag'))
 
     df['Location'] = np.where(df['Location'] == 'US', US_FIPS,
