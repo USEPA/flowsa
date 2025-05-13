@@ -148,18 +148,19 @@ def census_awts_parse(*, df_list, **_):
     df = pd.concat(df_list, sort=False)
 
     # Drop footnotes
-    row = df[df.iloc[:, 0].str.contains('Notes').fillna(False)].index[0]
+    row = df[df.iloc[:, 0].astype(str).str.contains('Notes').fillna(False)].index[0]
     df = df.iloc[:row]
 
     cols = list(df.columns[0:2])
     df = (df
           .drop(columns=['Kind of Business', 'Type of Operation'])
-          .fillna("NA")
+          # .fillna("NA")
           .melt(id_vars=cols, var_name='Year', value_name='Amount')
           .assign(Year = lambda x: x['Year'].str[0:4])
           .rename(columns = {cols[0]: 'ActivityConsumedBy',
                              cols[1]: 'FlowName'})
           )
+    df['Amount'] = df.Amount.fillna("NA")
 
     # Updated suppressed data field
     df = (df.assign(
@@ -184,6 +185,7 @@ def census_awts_parse(*, df_list, **_):
           .assign(Compartment = None)
           .assign(FlowType = "TECHNOSPHERE_FLOW")
           .assign(Location = US_FIPS)
+          # .assign(Description = '')
           .pipe(assign_fips_location_system, 2024)
           )
 
@@ -207,7 +209,7 @@ def census_arts_parse(*, df_list, **_):
     """
     df = pd.concat(df_list, sort=False)
     # Drop footnotes
-    row = df[df.iloc[:, 0].str.contains('Estimate does not meet').fillna(False)].index[0]
+    row = df[df.iloc[:, 0].astype(str).str.contains('Estimate does not meet').fillna(False)].index[0]
     df = df.iloc[:row]
     df.loc[0, 'NAICS Code'] = "Total"
 
@@ -236,7 +238,9 @@ def census_arts_parse(*, df_list, **_):
           .assign(Unit = 'USD')
           .assign(SourceName = 'Census_AWTS')
           .assign(Compartment = None)
+          # .assign(ActivityProducedBy = '')
           .assign(FlowType = "TECHNOSPHERE_FLOW")
+          # .assign(Description = '')
           .assign(Location = US_FIPS)
           .pipe(assign_fips_location_system, 2024)
           )
