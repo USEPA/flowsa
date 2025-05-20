@@ -39,7 +39,6 @@ source_names:
 
         attribution_method: proportional
         attribution_source:
-          BEA_Detail_Make_BeforeRedef:
+          BEA_Detail_Supply:
             <<: *bea
-            year: 2012 # Update to 2017 once that FBA is available
-    
+            year: 2017
