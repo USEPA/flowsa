@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 from flowsa.location import US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
+from flowsa.flowbyactivity import FlowByActivity
 
 
 def census_EC_URL_helper(*, build_url, year, config, **_):
@@ -200,6 +201,35 @@ def census_EC_PxI_parse(*, df_list, year, **_):
     df['DataCollection'] = 5
     df['Compartment'] = None
     return df
+
+
+def move_flow_to_ACB(fba: FlowByActivity, **_) -> FlowByActivity:
+    """clean_fba_before_activity_sets fxn
+    """
+    ## this moves the flow name (NAPCS code) to ACB and temporarily stores the APB
+    # as the flow name, so that it doesn't get dropped when we try to map
+    # NAPCS to NAICS
+    fba = (fba
+            .query('ActivityProducedBy != "00"')
+            .assign(ActivityConsumedBy = fba['FlowName'])
+            .assign(FlowName = fba['ActivityProducedBy'])
+            .assign(ActivityProducedBy = None)
+            )
+    return fba
+
+def clean_after_attr(fba: FlowByActivity, **_) -> FlowByActivity:
+    """clean_fba_after_attribution
+    """
+    # After mapping NAPCS to NAICS, moves the FlowName (original Census NAICS) back
+    # to SectorConsumedBy with out mapping to leave the original data in place
+    # Also resets the Flowable as the original NAPCS code for posterity
+
+    fba = (fba
+           .assign(SectorProducedBy = fba['Flowable'])
+           .assign(Flowable = fba['ActivityConsumedBy'])
+           )
+
+    return fba
 
 if __name__ == "__main__":
     import flowsa
