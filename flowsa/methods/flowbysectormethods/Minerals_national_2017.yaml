@@ -1,0 +1,23 @@
+# Method for mineral extraction based on USGS NMIC production data
+
+industry_spec:
+  default: NAICS_6
+year: &year 2017
+target_naics_year: 2017
+geoscale: national
+
+
+source_names:
+  USGS_NMIC:
+    fedefl_mapping: USGS_NMIC
+    keep_unmapped_flows: True
+    activity_sets:
+      minerals:
+        selection_fields:
+          ActivityProducedBy:
+            - Primary production, Aluminum
+            - Primary production, Copper
+            - Primary production, Lead
+            - Primary production, Zinc
+            - Production, Iron Ore
+        attribution_method: direct
