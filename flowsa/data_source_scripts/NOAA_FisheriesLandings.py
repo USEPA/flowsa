@@ -83,3 +83,8 @@ def noaa_parse(*, year, **_):
     df4['DataCollection'] = 5  # tmp
 
     return df4
+
+if __name__ == "__main__":
+    import flowsa
+    flowsa.generateflowbyactivity.main(year='2012-2023', source='NOAA_FisheriesLandings')
+    fba = flowsa.getFlowByActivity('NOAA_FisheriesLandings', year=2023)

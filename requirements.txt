@@ -1,4 +1,4 @@
-git+https://github.com/USEPA/Federal-LCA-Commons-Elementary-Flow-List.git@develop#egg=fedelemflowlist
+git+https://github.com/USEPA/fedelemflowlist.git@develop#egg=fedelemflowlist
 git+https://github.com/USEPA/esupy.git@develop#egg=esupy
 git+https://github.com/USEPA/standardizedinventories.git@develop#egg=StEWI
 appdirs >= 1.4.3               # Storing user data
@@ -6,7 +6,7 @@ bibtexparser>=1.2.0            # Generates bibtex
 kaleido == 0.1.0.post1; platform_system == "Windows"  # export plotly.py figures as static images
 kaleido == 0.2.0; platform_system=="Linux" or platform_system=="Darwin"
 matplotlib >= 3.4.3            # Plotting
-numpy>=1.20.1                  # Library used for arrays
+numpy>=1.20.1, <2.0.0          # Library used for arrays
 openpyxl >= 3.0.7              # Extract data from xlsm files
 pandas>=1.4.0, <2.1.0          # Powerful data structures for data analysis, time series, and statistics.
 pip>=9                         # The PyPA recommended tool for installing Python packages.

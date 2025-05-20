@@ -26,8 +26,8 @@ source_names:
     year: *summary_year
     activity_to_sector_mapping: BEA_2012_Summary
     primary_action_type: Consumed # speeds processing
+
     # Drop unneeded codes
-    exclusion_fields:
     exclusion_fields:
       ActivityConsumedBy: ['F02E', 'F02N', 'F02R', 'F02S', 'F030',
                            'F040', 'F050', 'F051', 'F06C', 'F06E', 'F06N', 'F06S',

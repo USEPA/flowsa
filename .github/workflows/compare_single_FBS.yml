@@ -31,6 +31,9 @@ jobs:
 
     # install package & dependencies
     - name: Install package and dependencies
+      env:
+        # Temporary fix to avoid git lfs error in fedelemflowlist install https://github.com/git-lfs/git-lfs/issues/5749
+        GIT_CLONE_PROTECTION_ACTIVE: false
       run: |
         pip install .
 
@@ -43,7 +46,7 @@ jobs:
 
     - name: Upload files
       if: always()
-      uses: actions/upload-artifact@v3.1.1
+      uses: actions/upload-artifact@v4
       with:
         # Artifact name
         name: "${{ github.event.inputs.method }}"

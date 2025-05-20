@@ -1,0 +1,46 @@
+author: US Bureau of Economic Analysis
+source_name: Personal Consumption Expenditures by State
+source_url: https://www.bea.gov/data/consumer-spending/state
+bib_id: BEA
+api_name: BEA
+api_key_required: True
+url:
+  base_url: https://apps.bea.gov/api/data/?
+  api_path: ''
+  url_params:
+    method: GetData
+    DataSetName: Regional
+    TableName: __table__
+    GeoFIPS: __stateFIPS__ # STATE for all states
+    LineCode: ALL # can't use ALL when selecting all states
+    ResultFormat: json
+    Year: __year__
+    UserID: __apiKey__
+    ## See Appendix N of https://apps.bea.gov/api/_pdf/bea_web_service_api_user_guide.pdf
+
+url_replace_fxn: !script_function:BEA_PCE bea_pce_url_helper
+call_response_fxn: !script_function:BEA_PCE bea_pce_call
+parse_response_fxn: !script_function:BEA_PCE bea_pce_parse
+time_delay: 1 # pause 1 second between requests
+## BEA limits to 100 requests per minute / 100 MB data per minute
+## before setting a time-out period of one hour.
+
+tables:
+- SAPCE1 # Personal consumption expenditures by major type of product
+- SAPCE2 # Per capita personal consumption expenditures by major type of product
+- SAPCE3 # Personal consumption expenditures by type of product
+- SAPCE4 # Personal consumption expenditures by function
+
+years: # 1997 - 2023
+- 2012
+- 2013
+- 2014
+- 2015
+- 2016
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023

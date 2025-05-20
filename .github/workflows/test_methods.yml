@@ -29,6 +29,9 @@ jobs:
 
     # install package & dependencies
     - name: Install package and dependencies
+      env:
+        # Temporary fix to avoid git lfs error in fedelemflowlist install https://github.com/git-lfs/git-lfs/issues/5749
+        GIT_CLONE_PROTECTION_ACTIVE: false
       run: |
         pip install .
 
@@ -54,6 +57,9 @@ jobs:
 
     # install package & dependencies
     - name: Install package and dependencies
+      env:
+        # Temporary fix to avoid git lfs error in fedelemflowlist install https://github.com/git-lfs/git-lfs/issues/5749
+        GIT_CLONE_PROTECTION_ACTIVE: false
       run: |
         pip install .
 
@@ -69,7 +75,7 @@ jobs:
     - name: Upload csv files
       # if: steps.FBS.outcome == 'success' # Upload csv only if step succeeds
       if: always()
-      uses: actions/upload-artifact@v3.1.1
+      uses: actions/upload-artifact@v4
       with:
         # Artifact name
         name: FBS diff files

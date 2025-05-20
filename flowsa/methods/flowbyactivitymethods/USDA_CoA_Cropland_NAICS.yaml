@@ -26,12 +26,13 @@ url:
     # __year__ is used to trigger a replace function to substitute in year
     year: __year__
   key_param: key
-url_replace_fxn: !script_function:USDA_CoA_Cropland_NAICS CoA_Cropland_NAICS_URL_helper
-call_response_fxn: !script_function:USDA_CoA_Cropland_NAICS coa_cropland_NAICS_call
-parse_response_fxn: !script_function:USDA_CoA_Cropland_NAICS coa_cropland_NAICS_parse
+url_replace_fxn: !script_function:USDA_CoA CoA_URL_helper
+call_response_fxn: !script_function:USDA_CoA coa_call
+parse_response_fxn: !script_function:USDA_CoA coa_cropland_NAICS_parse
 years:
 - 2012
 - 2017
+- 2022
 agg_levels:
 - NATIONAL
 - STATE

@@ -1,0 +1,108 @@
+author: US Census Bureau
+source_name: American Community Survey
+source_url: https://www.census.gov/programs-surveys/acs.html
+bib_id: Census_ACS
+api_name: Census
+api_key_required: true
+format: json
+url:
+  base_url: http://api.census.gov/data/
+  api_path: __year__/acs/acs5/__param__?
+  url_params:
+    get: __group__
+    for: county:*  # retrieves all county data
+    key: __apiKey__     # make the __apiKey__ part of the url and substitute in individual api key
+  key_param: key
+url_replace_fxn: !script_function:Census_ACS DP_URL_helper
+call_response_fxn: !script_function:Census_ACS DP_call
+parse_response_fxn: !script_function:Census_ACS DP_5yr_parse
+years:
+- 2010
+- 2011
+- 2012
+- 2013
+- 2014
+- 2015
+- 2016
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+
+tables:
+  DP03:
+    param: profile
+    group: group(DP03)
+    variables:
+      DP03_0062E:
+        name: Median Household Income
+        unit: USD
+      DP03_0128PE:
+        name: Percent Below Poverty Line
+        unit: '% of people'
+      DP03_0009PE:
+        name: Unemployment Rate
+        unit: '% of unemployed people'
+
+  DP04:
+    param: profile
+    group: group(DP04)
+    variables:
+      DP04_0046PE:
+        name: Owner-occupied housing
+        unit: '% of homes'
+        years: '2015-2022'
+      DP04_0045PE:
+        name: Owner-occupied housing
+        unit: '% of homes'
+        years: '2010-2014'
+  DP05:
+    param: profile
+    group: group(DP05)
+    variables:
+      DP05_0001E:
+        name: Total Population
+        unit: '# of people'
+  S1501:
+    param: subject
+    group: 'Educational%20Attainment,group(S1501)'
+    variables:
+      S1501_C02_009E:
+        name: High School Degree
+        unit: '% of people'
+        years: '2015-2022'
+      S1501_C02_012E:
+        name: Bachelors Degree
+        unit: '% of people'
+        years: '2015-2022'
+      S1501_C02_013E:
+        name: Graduate Degree
+        unit: '% of people'
+        years: '2015-2022'
+      S1501_C01_009E:
+        name: High School Degree
+        unit: '% of people'
+        years: '2010-2014'
+      S1501_C01_012E:
+        name: Bachelors Degree
+        unit: '% of people'
+        years: '2010-2014'
+      S1501_C01_003E:
+        name: Graduate Degree
+        unit: '% of people'
+        years: '2010-2014'
+        
+  S1401:
+    param: subject
+    group: 'School%20Enrollment,group(S1401)'
+    variables:
+      S1401_C02_003E:
+        name: K12 Enrollment
+        unit: '% of people'
+        years: '2015-2022'
+      S1401_C01_003E:
+        name: K12 Enrollment
+        unit: '# of people'
+        years: '2010-2014'

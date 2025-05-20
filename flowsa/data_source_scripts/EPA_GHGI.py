@@ -7,6 +7,7 @@ https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks
 """
 
 import io
+import re
 import zipfile
 import numpy as np
 import pandas as pd
@@ -41,7 +42,7 @@ ANNEX_ENERGY_TABLES = ["A-" + str(x) for x in list(range(4,16))]
 DROP_COLS = ["Unnamed: 0"] + list(pd.date_range(
     start="1990", end="2010", freq='Y').year.astype(str))
 
-YEARS = list(pd.date_range(start="2010", end="2021", freq='Y').year.astype(str))
+YEARS = list(pd.date_range(start="2010", end="2023", freq='Y').year.astype(str))
 
 
 def ghg_url_helper(*, build_url, config, **_):
@@ -129,6 +130,7 @@ def annex_yearly_tables(data, table=None):
         df = df.drop([0])
     header_name = ""
     newcols = []  # empty list to have new column names
+    dropcols = []
     for i in range(len(df.columns)):
         fuel_type = str(df.iloc[0, i])
         for abbrev, full_name in SECTOR_DICT.items():
@@ -136,6 +138,10 @@ def annex_yearly_tables(data, table=None):
         fuel_type = fuel_type.strip()
 
         col_name = df.columns[i][1]
+        if df.iloc[:, i].isnull().all():
+            # skip over mis aligned columns
+            dropcols.append(i)
+            continue
         if "Unnamed" in col_name:
             column_name = header_name
         elif col_name in ANNEX_HEADERS.keys():
@@ -143,6 +149,7 @@ def annex_yearly_tables(data, table=None):
             header_name = ANNEX_HEADERS[col_name]
 
         newcols.append(f"{column_name} - {fuel_type}")
+    df = df.drop(columns=df.columns[dropcols])
     df.columns = newcols  # assign column names
     df = df.iloc[1:, :]  # exclude first row
     df.dropna(how='all', inplace=True)
@@ -163,89 +170,113 @@ def ghg_call(*, resp, url, year, config, **_):
     with zipfile.ZipFile(io.BytesIO(resp.content), "r") as f:
         frames = []
         if any(x in url for x in ['annex', 'Annex']):
-            is_annex = True
+            opath = config['path']['annex']
             t_tables = config['Annex']
+            annex = True
         else:
-            is_annex = False
+            opath = config['path']['base']
             t_tables = config['Tables']
+            annex = False
         for chapter, tables in t_tables.items():
-            for table in tables:
-                df = None
-                tbl_year = tables[table].get('year')
-                if tbl_year is not None and tbl_year != year:
-                    # Skip tables when the year does not align with target year
-                    continue
-
-                table_name = tables[table].get('table_name', table)
-                if is_annex:
-                    path = config['path']['annex']
-                else:
-                    path = config['path']['base']
-                path = (path.replace('{chapter}', chapter)
-                            .replace('{table_name}', table_name))
-
-                # Handle special case of table 3-22 in external data folder
-                if table == "3-22b":
-                    if str(year) in ['2020']:
-                        # Skip 3-22b for current year (use 3-22 instead)
+            if annex:
+            # Annex tables are in separate folders
+                for table in tables:
+                    df = None
+                    tbl_year = tables[table].get('year')
+                    if tbl_year is not None and tbl_year != year:
+                        # Skip tables when the year does not align with target year
                         continue
-                    else:
-                        df = pd.read_csv(externaldatapath / f"GHGI_Table_{table}.csv",
-                                         skiprows=2, encoding="ISO-8859-1", thousands=",")
-                else:
+                    table_name = tables[table].get('table_name', table)
+                    path = (opath.replace('{table_name}', table_name)
+                                 .replace('{annex}', chapter))
                     try:
-                        data = f.open(path)
+                        data=f.open(path)
                     except KeyError:
                         log.error(f"error reading {table}")
                         continue
+                    if table in ANNEX_ENERGY_TABLES:
+                        df=annex_yearly_tables(data, table)
+                    else:
+                        df=pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
+                                       thousands=",")
                 
-                if table in ['3-10', '5-28', 'A-73', 'A-97']:
-                    # Skip single row
-                    df = pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
-                                     thousands=",", decimal=".")
-                    df = df.rename(columns={'2010a':'2010'})
-                elif table == "3-22":
-                    # Skip first two rows, as usual, but make headers the next 3 rows:
-                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
-                                     header=[0, 1, 2], thousands=",")
-                    # The next two rows are headers and the third is units:
-                    new_headers = []
-                    for col in df.columns:
-                        # unit = col[2]
-                        new_header = 'Unnamed: 0'
-                        if 'Unnamed' not in col[0]:
-                            if 'Unnamed' not in col[1]:
-                                new_header = f'{col[0]} {col[1]}'
+                    if df is not None and len(df.columns) > 1:
+                        years=YEARS.copy()
+                        years.remove(str(year))
+                        df=df.drop(columns=(DROP_COLS + years), errors='ignore')
+                        df["SourceName"]=f"EPA_GHGI_T_{table.replace('-', '_')}"
+                        frames.append(df)
+                    else:
+                        log.warning(f"Error accessing {table}")                
+            
+            else:
+            # Access chapter specific zip files within the main zip
+                chapter_name = f'{chapter}.zip'
+                zfiledata = io.BytesIO(f.read(chapter_name))
+                with zipfile.ZipFile(zfiledata) as f2:
+                    for table in tables:
+                        df = None
+                        tbl_year = tables[table].get('year')
+                        if tbl_year is not None and tbl_year != year:
+                            # Skip tables when the year does not align with target year
+                            continue
+                        table_name = tables[table].get('table_name', table)
+                        path = opath.replace('{table_name}', table_name)
+                        # Handle special case of table 3-24 in external data folder
+                        if table == "3-24b":
+                            if str(year) in ['2022']:
+                                # Skip 3-24b for current year (use 3-24 instead)
+                                continue
                             else:
-                                new_header = col[0]
-                            if 'Unnamed' not in col[2]:
-                                new_header += f' {col[2]}'
-                            # unit = col[2]
-                        elif 'Unnamed' in col[0] and 'Unnamed' not in col[2]:
-                            new_header = col[2]
-                        new_headers.append(new_header)
-                    df.columns = new_headers
-                elif table in ANNEX_ENERGY_TABLES:
-                    df = annex_yearly_tables(data, table)
-                elif table != '3-22b':
-                    # Except for 3-22b already as df, 
-                    # Proceed with default case
-                    df = pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
-                                     thousands=",")
-
-                if table == '3-13':
-                    # remove notes from column headers in some years
-                    cols = [c[:4] for c in list(df.columns[1:])]
-                    df = df.rename(columns=dict(zip(df.columns[1:], cols)))
-
-                if df is not None and len(df.columns) > 1:
-                    years = YEARS.copy()
-                    years.remove(str(year))
-                    df = df.drop(columns=(DROP_COLS + years), errors='ignore')
-                    df["SourceName"] = f"EPA_GHGI_T_{table.replace('-', '_')}"
-                    frames.append(df)
-                else:
-                    log.warning(f"Error in generating {table}")
+                                df=pd.read_csv(externaldatapath / f"GHGI_Table_{table}.csv",
+                                                 skiprows=2, encoding="ISO-8859-1", thousands=",")
+                        else:
+                            try:
+                                data=f2.open(path)
+                            except KeyError:
+                                log.error(f"error reading {table}")
+                                continue
+    
+                        if table in ['4-121']:
+                            # Skip two rows
+                            df=pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
+                                             thousands=",", decimal=".")
+                        elif table == "3-24":
+                            # Skip first row, but make headers the next 2 rows:
+                            df=pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
+                                             header=[0, 1], thousands=",")
+                            # Row 0 is header, row 1 is unit
+                            new_headers=[]
+                            for col in df.columns:
+                                new_header='Unnamed: 0'
+                                if 'Unnamed' not in col[0]:
+                                    if 'Unnamed' not in col[1]:
+                                        new_header=f'{col[0]} {col[1]}'
+                                    else:
+                                        new_header=col[0]
+                                else:
+                                    new_header=col[1]
+                                new_headers.append(new_header)
+                            df.columns=new_headers
+                        elif table != '3-24b':
+                            # Except for 3-24b already as df,
+                            # Proceed with default case
+                            df=pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
+                                             thousands=",")
+    
+                        if table == '3-13':
+                            # remove notes from column headers in some years
+                            cols=[c[:4] for c in list(df.columns[1:])]
+                            df=df.rename(columns=dict(zip(df.columns[1:], cols)))
+    
+                        if df is not None and len(df.columns) > 1:
+                            years=YEARS.copy()
+                            years.remove(str(year))
+                            df=df.drop(columns=(DROP_COLS + years), errors='ignore')
+                            df["SourceName"]=f"EPA_GHGI_T_{table.replace('-', '_')}"
+                            frames.append(df)
+                        else:
+                            log.warning(f"Error accessing {table}")
         return frames
 
 
@@ -287,7 +318,7 @@ def strip_char(text):
     text = text + " "
     notes = ["f, g", " a ", " b ", " c ", " d ", " e ", " f ", " g ",
              " h ", " i ", " j ", " k ", " l ", " b,c ", " h,i ", " f,g ",
-             ")b", ")f", ")k", "b,c", "h,i"]
+             ")a", ")b", ")f", ")k", "b,c", "h,i"]
     for i in notes:
         if i in text:
             text_split = text.split(i)
@@ -338,10 +369,23 @@ def strip_char(text):
                  'Totali': 'Total',
                  'Othersa': 'Others',
                  'N?O': 'N2O',
+                 'Distillate Fuel Oil (Diesel)': 'Distillate Fuel Oil',
                  'Distillate Fuel Oil (Diesel': 'Distillate Fuel Oil',
                  'Natural gas': 'Natural Gas', # Fix capitalization inconsistency
-                 'N2O (Semiconductors)': 'N2O',
                  'HGLb': 'HGL',
+                 'Biofuels-Biodieselh' : 'Biofuels-Biodiesel',
+                 'Biofuels-Ethanolh' : 'Biofuels-Ethanol',
+                 'Commercial Aircraftf' : 'Commercial Aircraft',
+                 'Electricityk': 'Electricity',
+                 'Gasolinea' : 'Gasoline',
+                 'International Bunker Fuelse' : 'International Bunker Fuel',
+                 'Medium- and Heavy-Duty Trucksb' : 'Medium- and Heavy-Duty Trucks',
+                 'Pipelineg' : 'Pipeline',
+                 'Recreational Boatsc' :'Recreational Boats',
+                 'Construction/Mining Equipmentf' : 'Construction/Mining Equipment',
+                 'Non-Roadc' : 'Non-Road',
+                 'HFCsa': 'HFCs',
+                 'HFOsb': 'HFOs',
                  }
     for key in footnotes:
         text = text.replace(key, footnotes[key])
@@ -387,7 +431,7 @@ def ghg_parse(*, df_list, year, config, **_):
 
         meta = get_table_meta(source_name, config)
 
-        if table_name in ['3-22']:
+        if table_name in ['3-24']:
             df = df.melt(id_vars=id_vars,
                          var_name=meta.get('melt_var'),
                          value_name="FlowAmount")
@@ -397,20 +441,6 @@ def ghg_parse(*, df_list, year, config, **_):
             df['FlowName'] = name_unit['names']
             df['Unit'] = name_unit['units']
             df['Year'] = year
-
-        elif table_name in ['4-14', '4-33', '4-50', '4-80']:
-            # When Year is the first column in the table, need to make this correction
-            df = df.rename(columns={'ActivityProducedBy': 'Year',
-                                    'Year': 'ActivityProducedBy'})
-            # Melt on custom defined variable
-            melt_var = meta.get('melt_var')
-            if melt_var in id_vars:
-                id_vars.remove(melt_var)
-            elif 'ActivityProducedBy' not in df:
-                df["ActivityProducedBy"] = 'None'
-            id_vars.append('Year')
-            df = df.melt(id_vars=id_vars, var_name=melt_var,
-                         value_name="FlowAmount")
 
         elif table_name in ANNEX_ENERGY_TABLES:
             df = df.melt(id_vars=id_vars, var_name="FlowName",
@@ -445,22 +475,26 @@ def ghg_parse(*, df_list, year, config, **_):
             df = df.melt(id_vars=id_vars, var_name="Year",
                          value_name="FlowAmount")
 
-        # Dropping all rows with value "+": represents non-zero value
-        df["FlowAmount"].replace("\+", np.nan, inplace=True, regex=True)
-        # Dropping all rows with value "NE"
-        df["FlowAmount"].replace(" NE ", np.nan, inplace=True)
-        df["FlowAmount"].replace("NE", np.nan, inplace=True)
-        # Convert all empty cells to nan cells
-        df["FlowAmount"].replace("", np.nan, inplace=True)
-        # Table 3-10 has some NO (Not Occuring) values, dropping these.
-        df["FlowAmount"].replace(" NO ", np.nan, inplace=True)
-        df["FlowAmount"].replace("NO", np.nan, inplace=True)
-        # Table A-118 has some IE values, dropping these.
-        df["FlowAmount"].replace("IE", np.nan, inplace=True)
-        df["FlowAmount"].replace(r'NO ', np.nan, inplace=True)
-
-        # Drop any nan rows
-        df.dropna(subset=['FlowAmount'], inplace=True)
+        # set suppressed values to 0 but mark as suppressed
+        # otherwise set non-numeric to nan
+        try:
+            df = (df.assign(
+                    Suppressed = np.where(df.FlowAmount.str.strip() == "+", "+",
+                                          np.nan),
+                    FlowAmount = pd.Series(
+                        np.where(df.FlowAmount.str.strip() == "+", 0,
+                                 df.FlowAmount.str.replace(',',''))))
+                )
+            df = (df.assign(
+                    FlowAmount = np.where(pd.to_numeric(
+                        df.FlowAmount, errors='coerce').isnull(),
+                                          np.nan, pd.to_numeric(
+                                              df.FlowAmount, errors='coerce')))
+                .dropna(subset='FlowAmount')
+                )
+        except AttributeError:
+            # if no string in FlowAmount, then proceed
+            df = df.dropna(subset='FlowAmount')
 
         if table_name not in ANNEX_ENERGY_TABLES:
             if 'Unit' not in df:
@@ -492,6 +526,7 @@ def ghg_parse(*, df_list, year, config, **_):
         source_activity_1 = config.get('source_activity_1')
         source_activity_1_fuel = config.get('source_activity_1_fuel')
         source_activity_2 = config.get('source_activity_2')
+        rows_as_flows = config.get('rows_as_flows')
 
         if table_name in multi_chem_names:
             bool_apb = False
@@ -535,7 +570,7 @@ def ghg_parse(*, df_list, year, config, **_):
             for index, row in df.iterrows():
                 unit = row["Unit"]
                 if unit.strip() == "MMT  CO2":
-                        df.loc[index, 'Unit'] = "MMT CO2e"
+                    df.loc[index, 'Unit'] = "MMT CO2e"
                 if df.loc[index, 'Unit'] != "MMT CO2e":
                     df = df.drop(index)
                 else:
@@ -572,15 +607,15 @@ def ghg_parse(*, df_list, year, config, **_):
                 "Fuel Type/Vehicle Type", "Diesel On-Road",
                 "Alternative Fuel On-Road", "Non-Road",
                 "Gasoline On-Road", "Distillate Fuel Oil",
-                "Biofuels-Ethanol", "Biofuels-Biodiesel",
                 ]
             if table_name in source_activity_1:
                 activity_subtotal = activity_subtotal_sector
             else:
                 activity_subtotal = activity_subtotal_fuel
+            after_Total = False
             for index, row in df.iterrows():
                 apb_value = strip_char(row["ActivityProducedBy"])
-                if apb_value in activity_subtotal:
+                if apb_value in activity_subtotal or after_Total:
                     # set the header
                     apbe_value = apb_value
                     df.loc[index, 'ActivityProducedBy'
@@ -597,12 +632,14 @@ def ghg_parse(*, df_list, year, config, **_):
                                ] = f"{apb_txt} {apbe_value}"
                 if apb_value.startswith("Total"):
                     df = df.drop(index)
+                    after_Total = True
 
         elif table_name in source_activity_2:
             bool_apb = False
             apbe_value = ""
             flow_name_list = ["Explorationb", "Production", "Processing",
                               "Transmission and Storage", "Distribution",
+                              "Post-Meter",
                               "Crude Oil Transportation", "Refining",
                               "Exploration", "Mobile AC",
                               "Refrigerated Transport",
@@ -634,7 +671,7 @@ def ghg_parse(*, df_list, year, config, **_):
                 if "Total" == apb_value or "Total " == apb_value:
                     df = df.drop(index)
 
-        elif table_name == "A-73":
+        elif table_name == "A-68":
             fuel_name = ""
             A_79_unit_dict = {'Natural Gas': 'trillion cubic feet',
                               'Electricity': 'million kilowatt-hours'}
@@ -655,25 +692,37 @@ def ghg_parse(*, df_list, year, config, **_):
                     df.loc[index, 'Unit'] = A_79_unit_dict[fuel_name]
 
         else:
-            if table_name in ["4-48"]:
+            if table_name in ["4-55"]:
                 # Assign activity as flow for technosphere flows
                 df.loc[:, 'FlowType'] = 'TECHNOSPHERE_FLOW'
                 df.loc[:, 'FlowName'] = df.loc[:, 'ActivityProducedBy']
 
-            elif table_name in ["4-86", "4-96", "4-100"]:
+            elif table_name in ["4-121", "4-135"]:
+                df = df.iloc[::-1] # reverse the order for assigning APB
+                for index, row in df.iterrows():
+                    apb_value = strip_char(row["ActivityProducedBy"])
+                    if apb_value.startswith('Total'):
+                        # set the header
+                        apbe_value = apb_value.replace('Total ','')
+                        df = df.drop(index)
+                    else:
+                        if apbe_value == 'N2O':
+                            df.loc[index, 'ActivityProducedBy'] = (
+                                re.findall(r'\(.*?\)', apb_value)[0][1:-1])
+                            df.loc[index, 'FlowName'] = 'N2O'
+                        else:
+                            df.loc[index, 'ActivityProducedBy'] = apbe_value
+                            df.loc[index, 'FlowName'] = apb_value
+                df = df.iloc[::-1] # revert the order
+
+            elif table_name in rows_as_flows:
                 # Table with flow names as Rows
                 df.loc[:, 'FlowName'] = (df.loc[:, 'ActivityProducedBy']
                                          .apply(lambda x: strip_char(x)))
                 df = df[~df['FlowName'].str.contains("Total")]
                 df.loc[:, 'ActivityProducedBy'] = meta.get('activity')
 
-            elif table_name in ["4-33", "4-50", "4-80"]:
-                # Table with units or flows as columns
-                df.loc[:, 'ActivityProducedBy'] = meta.get('activity')
-                df.loc[df['Unit'] == 'MMT CO2 Eq.', 'Unit'] = 'MMT CO2e'
-                df.loc[df['Unit'].str.contains('kt'), 'Unit'] = 'kt'
-
-            elif table_name in ["4-14", "4-102", "A-95"]:
+            elif table_name in ["4-16", "4-127"]:
                 # Remove notes from activity names
                 for index, row in df.iterrows():
                     apb_value = strip_char(row["ActivityProducedBy"].split("(")[0])
@@ -693,8 +742,11 @@ def ghg_parse(*, df_list, year, config, **_):
 
         df = df.loc[:, ~df.columns.duplicated()]
         # Remove commas from numbers again in case any were missed:
-        df["FlowAmount"].replace(',', '', regex=True, inplace=True)
-        cleaned_list.append(df)
+        df["FlowAmount"] = df["FlowAmount"].replace(',', '', regex=True)
+        if len(df) == 0:
+            log.warning(f"Error processing {table_name}")
+        else:
+            cleaned_list.append(df)
 
     return cleaned_list
 
@@ -751,7 +803,7 @@ def allocate_industrial_combustion(fba: FlowByActivity, **_) -> FlowByActivity:
     """
     Split industrial combustion emissions into two buckets to be further allocated.
 
-    clean_fba_df_fxn. Calculate the percentage of fuel consumption captured in
+    clean_fba_before_activity_sets. Calculate the percentage of fuel consumption captured in
     EIA MECS relative to EPA GHGI. Create new activities to distinguish those
     which use EIA MECS as allocation source and those that use alternate source.
     """
@@ -779,14 +831,14 @@ def allocate_industrial_combustion(fba: FlowByActivity, **_) -> FlowByActivity:
 
 
 def split_HFCs_by_type(fba: FlowByActivity, **_) -> FlowByActivity:
-    """Speciates HFCs and PFCs for all activities based on T_4_100.
+    """Speciates HFCs and PFCs for all activities based on T_4_125.
     clean_fba_before_mapping_df_fxn"""
 
     attributes_to_save = {
         attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
     }
     original_sum = fba.FlowAmount.sum()
-    tbl = fba.config.get('clean_parameter')['flow_fba'] # 4-100
+    tbl = fba.config.get('clean_parameter')['flow_fba'] # 4-125
     splits = load_fba_w_standardized_units(datasource=tbl,
                                            year=fba['Year'][0],
                                            download_FBA_if_missing=True)
@@ -817,4 +869,6 @@ if __name__ == "__main__":
     import flowsa
     # fba = flowsa.return_FBA('EPA_GHGI_T_4_101', 2016)
     # df = clean_HFC_fba(fba)
-    fba = flowsa.generateflowbyactivity.main(year=2017, source='EPA_GHGI')
+    for y in range(2012, 2023):
+        flowsa.generateflowbyactivity.main(year=y, source='EPA_GHGI')
+        # fba = flowsa.getFlowByActivity('EPA_GHGI_T_2_1', 2022)
