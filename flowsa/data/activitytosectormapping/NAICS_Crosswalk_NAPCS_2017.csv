@@ -1,7 +1,7 @@
 ActivitySourceName,Activity,SectorSourceName,Sector,SectorType,NAPCS_Description,NAICS_2017_Name
 NAPCS_2017,4000025000,NAICS_2017_Code,424420,,Wholesale sales of packaged frozen food,Packaged Frozen Food Merchant Wholesalers
 NAPCS_2017,4000050000,NAICS_2017_Code,424430,,"Wholesale sales of dairy products, except dried, canned, condensed, and evaporated dairy products",Dairy Product (except Dried or Canned) Merchant Wholesalers
-NAPCS_2017,4000075000,NAICS_2017_Code,424410,,"Wholesale sales of eggs and poultry, except canned and frozen poultry products",General Line Grocery Merchant Wholesalers
+NAPCS_2017,4000075000,NAICS_2017_Code,424440,,"Wholesale sales of eggs and poultry, except canned and frozen poultry products",Poultry and Poultry Product Merchant Wholesalers
 NAPCS_2017,4000100000,NAICS_2017_Code,424450,,Wholesale sales of confectionery and snack foods,Confectionery Merchant Wholesalers
 NAPCS_2017,4000125000,NAICS_2017_Code,424490,,"Wholesale sales of cookies, bread, and baked goods",Other Grocery and Related Products Merchant Wholesalers
 NAPCS_2017,4000150000,NAICS_2017_Code,424460,,"Wholesale sales of fish and seafood, except canned and frozen fish and seafood",Fish and Seafood Merchant Wholesalers
@@ -9,7 +9,7 @@ NAPCS_2017,4000175000,NAICS_2017_Code,424470,,"Wholesale sales of fresh meat and
 NAPCS_2017,4000200000,NAICS_2017_Code,424480,,Wholesale sales of fresh fruits and vegetables,Fresh Fruit and Vegetable Merchant Wholesalers
 NAPCS_2017,4000225000,NAICS_2017_Code,424490,,Wholesale sales of baking ingredients,Other Grocery and Related Products Merchant Wholesalers
 NAPCS_2017,4000230000,NAICS_2017_Code,424990,,"Wholesale sales of soybean, cottonseed, linseed, peanut, sunflower seed, and all other oilseed cake and meal",Other Miscellaneous Nondurable Goods Merchant Wholesalers
-NAPCS_2017,4000250000,NAICS_2017_Code,425120,,Wholesale sales of nonperishable (canned and packaged) food,Wholesale Trade Agents and Brokers
+NAPCS_2017,4000250000,NAICS_2017_Code,424490,,Wholesale sales of nonperishable (canned and packaged) food,Other Grocery and Related Products Merchant Wholesalers
 NAPCS_2017,4000275000,NAICS_2017_Code,424490,,Wholesale sales of grocery specialties,Other Grocery and Related Products Merchant Wholesalers
 NAPCS_2017,4000300000,NAICS_2017_Code,424490,,"Wholesale sales of coffee, tea, and powdered drink mixes",Other Grocery and Related Products Merchant Wholesalers
 NAPCS_2017,4000325000,NAICS_2017_Code,424490,,"Wholesale sales of food and beverage basic materials, including flavoring extracts, fruit peel, sausage casings, hop extract, malt, and yeast",Other Grocery and Related Products Merchant Wholesalers
@@ -26,7 +26,7 @@ NAPCS_2017,4000575000,NAICS_2017_Code,423910,,Wholesale sales of athletic unifor
 NAPCS_2017,4000600000,NAICS_2017_Code,424340,,Wholesale sales of footwear and footwear accessories,Footwear Merchant Wholesalers
 NAPCS_2017,4000625000,NAICS_2017_Code,424330,,Wholesale sales of clothing accessories,"Women's, Children's, and Infants' Clothing and Accessories Merchant Wholesalers"
 NAPCS_2017,4000650000,NAICS_2017_Code,423940,,Wholesale sales of costume jewelry,"Jewelry, Watch, Precious Stone, and Precious Metal Merchant Wholesalers"
-NAPCS_2017,4000675000,NAICS_2017_Code,423220,,"Wholesale sales of jewelry, except costume",Home Furnishing Merchant Wholesalers
+NAPCS_2017,4000675000,NAICS_2017_Code,423940,,"Wholesale sales of jewelry, except costume","Jewelry, Watch, Precious Stone, and Precious Metal Merchant Wholesalers"
 NAPCS_2017,4000700000,NAICS_2017_Code,423940,,Wholesale sales of watches and watch parts,"Jewelry, Watch, Precious Stone, and Precious Metal Merchant Wholesalers"
 NAPCS_2017,4000725000,NAICS_2017_Code,453930,,Wholesale sales of manufactured (mobile) homes,Manufactured (Mobile) Home Dealers
 NAPCS_2017,4000750000,NAICS_2017_Code,423210,,Wholesale sales of household and lawn furniture,Furniture Merchant Wholesalers
@@ -38,14 +38,14 @@ NAPCS_2017,4000860000,NAICS_2017_Code,423940,,"Wholesale sales of clocks, trophi
 NAPCS_2017,4000870000,NAICS_2017_Code,424990,,Wholesale sales of canvas awnings,Other Miscellaneous Nondurable Goods Merchant Wholesalers
 NAPCS_2017,4000875000,NAICS_2017_Code,423620,,"Wholesale sales of household appliances, including personal care appliances","Household Appliances, Electric Housewares, and Consumer Electronics Merchant Wholesalers"
 NAPCS_2017,4000900000,NAICS_2017_Code,423220,,"Wholesale sales of tableware, kitchenware, cookware, and glassware, except cutlery and novelty glassware",Home Furnishing Merchant Wholesalers
-NAPCS_2017,4000925000,NAICS_2017_Code,423710,,"Wholesale sales of cutlery, except disposable plastics",Hardware Merchant Wholesalers
-NAPCS_2017,4000950000,NAICS_2017_Code,424990,,Wholesale sales of novelty glassware,Other Miscellaneous Nondurable Goods Merchant Wholesalers
-NAPCS_2017,4000960000,NAICS_2017_Code,425120,,"Wholesale sales of outdoor grills, gas and charcoal",Wholesale Trade Agents and Brokers
+NAPCS_2017,4000925000,NAICS_2017_Code,423220,,"Wholesale sales of cutlery, except disposable plastics",Home Furnishing Merchant Wholesalers
+NAPCS_2017,4000950000,NAICS_2017_Code,423220,,Wholesale sales of novelty glassware,Home Furnishing Merchant Wholesalers
+NAPCS_2017,4000960000,NAICS_2017_Code,423620,,"Wholesale sales of outdoor grills, gas and charcoal","Household Appliances, Electric Housewares, and Consumer Electronics Merchant Wholesalers"
 NAPCS_2017,4000975000,NAICS_2017_Code,423820,,"Wholesale sales of home lawn and garden equipment, tools, and supplies, except fresh flowers, florists' supplies, live trees, plants, and nursery stock",Farm and Garden Machinery and Equipment Merchant Wholesalers
 NAPCS_2017,4000985000,NAICS_2017_Code,425120,,Wholesale sales of swimming pools and swimming pool supplies,Wholesale Trade Agents and Brokers
 NAPCS_2017,4001000000,NAICS_2017_Code,424930,,"Wholesale sales of fresh flowers, florists' supplies, live trees, plants, and nursery stock","Flower, Nursery Stock, and Florists' Supplies Merchant Wholesalers"
 NAPCS_2017,4001025000,NAICS_2017_Code,424130,,"Wholesale sales of household paper and plastic products, not elsewhere classified",Industrial and Personal Service Paper Merchant Wholesalers
-NAPCS_2017,4001050000,NAICS_2017_Code,425120,,"Wholesale sales of televisions, home audio and visual equipment",Wholesale Trade Agents and Brokers
+NAPCS_2017,4001050000,NAICS_2017_Code,423620,,"Wholesale sales of televisions, home audio and visual equipment","Household Appliances, Electric Housewares, and Consumer Electronics Merchant Wholesalers"
 NAPCS_2017,4001075000,NAICS_2017_Code,423410,,"Wholesale sales of still picture photographic equipment, digital and film cameras, household type",Photographic Equipment and Supplies Merchant Wholesalers
 NAPCS_2017,4001100000,NAICS_2017_Code,423990,,Wholesale sales of audio and video recordings,Other Miscellaneous Durable Goods Merchant Wholesalers
 NAPCS_2017,4001125000,NAICS_2017_Code,424120,,Wholesale sales of greeting cards,Stationery and Office Supplies Merchant Wholesalers
@@ -53,9 +53,9 @@ NAPCS_2017,4001150000,NAICS_2017_Code,424920,,"Wholesale sales of newspapers, pe
 NAPCS_2017,4001175000,NAICS_2017_Code,423910,,Wholesale sales of sporting and recreational equipment,Sporting and Recreational Goods and Supplies Merchant Wholesalers
 NAPCS_2017,4001200000,NAICS_2017_Code,423920,,"Wholesale sales of toys, games, and hobby goods",Toy and Hobby Goods and Supplies Merchant Wholesalers
 NAPCS_2017,4001225000,NAICS_2017_Code,423910,,Wholesale sales of boats and go-carts,Sporting and Recreational Goods and Supplies Merchant Wholesalers
-NAPCS_2017,4001250000,NAICS_2017_Code,425120,,Wholesale sales of motorcycles and other sports vehicles,Wholesale Trade Agents and Brokers
+NAPCS_2017,4001250000,NAICS_2017_Code,423110,,Wholesale sales of motorcycles and other sports vehicles,Automobile and Other Motor Vehicle Merchant Wholesalers
 NAPCS_2017,4001275000,NAICS_2017_Code,423990,,Wholesale sales of musical instruments,Other Miscellaneous Durable Goods Merchant Wholesalers
-NAPCS_2017,4001300000,NAICS_2017_Code,424490,,"Wholesale sales of household pets, pet foods, and pet supplies",Other Grocery and Related Products Merchant Wholesalers
+NAPCS_2017,4001300000,NAICS_2017_Code,423990,,"Wholesale sales of household pets, pet foods, and pet supplies",Other Miscellaneous Durable Goods Merchant Wholesalers
 NAPCS_2017,4001325000,NAICS_2017_Code,423110,,Wholesale sales of new and used automobiles ,Automobile and Other Motor Vehicle Merchant Wholesalers
 NAPCS_2017,4001350000,NAICS_2017_Code,423110,,"Wholesale sales of new and used light trucks, 14,000 lb. or less, including vans, cargo vans, and SUVs ",Automobile and Other Motor Vehicle Merchant Wholesalers
 NAPCS_2017,4001375000,NAICS_2017_Code,423110,,"Wholesale sales of motor homes, travel trailers, and campers",Automobile and Other Motor Vehicle Merchant Wholesalers
