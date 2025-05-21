@@ -37,8 +37,8 @@ source_names:
         # Moves the FlowName back to the SPB (with no mappings/adjustments)
         # And also stores the original NAPCS code back as the flowname
 
-        attribution_method: proportional
-        attribution_source:
-          BEA_Detail_Supply:
-            <<: *bea
-            year: 2017
+        attribution_method: direct
+        # attribution_source:
+        #   BEA_Detail_Supply:
+        #     <<: *bea
+        #     year: 2017
