@@ -60,16 +60,16 @@ NAPCS_2017,4001325000,NAICS_2017_Code,423110,,Wholesale sales of new and used au
 NAPCS_2017,4001350000,NAICS_2017_Code,423110,,"Wholesale sales of new and used light trucks, 14,000 lb. or less, including vans, cargo vans, and SUVs ",Automobile and Other Motor Vehicle Merchant Wholesalers
 NAPCS_2017,4001375000,NAICS_2017_Code,423110,,"Wholesale sales of motor homes, travel trailers, and campers",Automobile and Other Motor Vehicle Merchant Wholesalers
 NAPCS_2017,4001400000,NAICS_2017_Code,423990,,"Wholesale sales of luggage, including backpacks",Other Miscellaneous Durable Goods Merchant Wholesalers
-NAPCS_2017,4001425000,NAICS_2017_Code,425120,,Wholesale sales of prescription drugs and antibiotics,Wholesale Trade Agents and Brokers
-NAPCS_2017,4001450000,NAICS_2017_Code,425120,,Wholesale sales of nonprescription drugs and over-the-counter medications,Wholesale Trade Agents and Brokers
+NAPCS_2017,4001425000,NAICS_2017_Code,424210,,Wholesale sales of prescription drugs and antibiotics,Drugs and Druggists' Sundries Merchant Wholesalers
+NAPCS_2017,4001450000,NAICS_2017_Code,424210,,Wholesale sales of nonprescription drugs and over-the-counter medications,Drugs and Druggists' Sundries Merchant Wholesalers
 NAPCS_2017,4001475000,NAICS_2017_Code,424210,,Wholesale sales of vitamins and nutritional and herbal supplements,Drugs and Druggists' Sundries Merchant Wholesalers
 NAPCS_2017,4001500000,NAICS_2017_Code,423460,,Wholesale sales of optical and ophthalmic goods and supplies,Ophthalmic Goods Merchant Wholesalers
 NAPCS_2017,4001525000,NAICS_2017_Code,423450,,"Wholesale sales of orthopedic and prosthetic appliances and supplies, including wheelchairs, walkers, crutches, canes, and hearing aids","Medical, Dental, and Hospital Equipment and Supplies Merchant Wholesalers"
-NAPCS_2017,4001550000,NAICS_2017_Code,424210,,Wholesale sales of health aids and first aid supplies,Drugs and Druggists' Sundries Merchant Wholesalers
+NAPCS_2017,4001550000,NAICS_2017_Code,423450,,Wholesale sales of health aids and first aid supplies,"Medical, Dental, and Hospital Equipment and Supplies Merchant Wholesalers"
 NAPCS_2017,4001575000,NAICS_2017_Code,424210,,"Wholesale sales of cosmetics, beauty supplies, perfumes and colognes, including hair preparations and hair brushes ",Drugs and Druggists' Sundries Merchant Wholesalers
 NAPCS_2017,4001600000,NAICS_2017_Code,424210,,"Wholesale sales of bath, facial, and hand soaps",Drugs and Druggists' Sundries Merchant Wholesalers
 NAPCS_2017,4001625000,NAICS_2017_Code,424130,,"Wholesale sales of personal care paper products, including disposable diapers, feminine hygiene products, and similar",Industrial and Personal Service Paper Merchant Wholesalers
-NAPCS_2017,4001650000,NAICS_2017_Code,425120,,"Wholesale sales of other personal care supplies, including toothbrushes (except electric), razor blades, and razors (except electric)",Wholesale Trade Agents and Brokers
+NAPCS_2017,4001650000,NAICS_2017_Code,424210,,"Wholesale sales of other personal care supplies, including toothbrushes (except electric), razor blades, and razors (except electric)",Drugs and Druggists' Sundries Merchant Wholesalers
 NAPCS_2017,4001675000,NAICS_2017_Code,423850,,Wholesale sales of caskets and other funeral goods,Service Establishment Equipment and Supplies Merchant Wholesalers
 NAPCS_2017,4001700000,NAICS_2017_Code,423610,,"Wholesale sales of batteries, except automotive","Electrical Apparatus and Equipment, Wiring Supplies, and Related Equipment Merchant Wholesalers"
 NAPCS_2017,4001725000,NAICS_2017_Code,423490,,Wholesale sales of religious supplies,Other Professional Equipment and Supplies Merchant Wholesalers
@@ -103,19 +103,19 @@ NAPCS_2017,4002375000,NAICS_2017_Code,423830,,Wholesale sales of new materials h
 NAPCS_2017,4002400000,NAICS_2017_Code,423610,,"Wholesale sales of electricity generation, control, and storage equipment","Electrical Apparatus and Equipment, Wiring Supplies, and Related Equipment Merchant Wholesalers"
 NAPCS_2017,4002425000,NAICS_2017_Code,423830,,"Wholesale sales of new industrial machinery and equipment, not elsewhere classified, including storage tanks, pumps and scales",Industrial Machinery and Equipment Merchant Wholesalers
 NAPCS_2017,4002450000,NAICS_2017_Code,423830,,Wholesale sales of used industrial machinery and equipment,Industrial Machinery and Equipment Merchant Wholesalers
-NAPCS_2017,4002475000,NAICS_2017_Code,423490,,Wholesale sales of navigational and measuring equipment,Other Professional Equipment and Supplies Merchant Wholesalers
-NAPCS_2017,4002485000,NAICS_2017_Code,423830,,"Wholesale sales of new controlling, recording, and indicating instruments and accessories",Industrial Machinery and Equipment Merchant Wholesalers
+NAPCS_2017,4002475000,NAICS_2017_Code,423860,,Wholesale sales of navigational and measuring equipment,Transportation Equipment and Supplies (except Motor Vehicle) Merchant Wholesalers
+NAPCS_2017,4002485000,NAICS_2017_Code,423490,,"Wholesale sales of new controlling, recording, and indicating instruments and accessories","Instruments, professional and scientific, merchant wholesalers"
 NAPCS_2017,4002500000,NAICS_2017_Code,423740,,Wholesale sales of refrigeration equipment,Refrigeration Equipment and Supplies Merchant Wholesalers
 NAPCS_2017,4002525000,NAICS_2017_Code,423450,,"Wholesale sales of medical, dental, and veterinary equipment","Medical, Dental, and Hospital Equipment and Supplies Merchant Wholesalers"
 NAPCS_2017,4002550000,NAICS_2017_Code,423210,,Wholesale sales of commercial furniture,Furniture Merchant Wholesalers
-NAPCS_2017,4002560000,NAICS_2017_Code,425120,,"Wholesale sales of restaurant, commercial food service and hotel equipment ",Wholesale Trade Agents and Brokers
+NAPCS_2017,4002560000,NAICS_2017_Code,423440,,"Wholesale sales of restaurant, commercial food service and hotel equipment ",Other Commercial Equipment Merchant Wholesalers
 NAPCS_2017,4002575000,NAICS_2017_Code,423440,,Wholesale sales of store equipment,Other Commercial Equipment Merchant Wholesalers
 NAPCS_2017,4002600000,NAICS_2017_Code,423850,,Wholesale sales of commercial and service industry equipment,Service Establishment Equipment and Supplies Merchant Wholesalers
 NAPCS_2017,4002625000,NAICS_2017_Code,423410,,Wholesale sales of commercial photography and motion picture equipment,Photographic Equipment and Supplies Merchant Wholesalers
-NAPCS_2017,4002650000,NAICS_2017_Code,423440,,Wholesale sales of nonelectric signs and coin-operated games,Other Commercial Equipment Merchant Wholesalers
+NAPCS_2017,4002650000,NAICS_2017_Code,423990,,Wholesale sales of nonelectric signs and coin-operated games,Other Miscellaneous Durable Goods Merchant Wholesalers
 NAPCS_2017,4002675000,NAICS_2017_Code,423120,,Wholesale sales of petroleum products marketing equipment,Motor Vehicle Supplies and New Parts Merchant Wholesalers
 NAPCS_2017,4002700000,NAICS_2017_Code,423910,,Wholesale sales of exercise/fitness equipment,Sporting and Recreational Goods and Supplies Merchant Wholesalers
-NAPCS_2017,4002725000,NAICS_2017_Code,425120,,Wholesale sales of binoculars,Wholesale Trade Agents and Brokers
+NAPCS_2017,4002725000,NAICS_2017_Code,423460,,Wholesale sales of binoculars,Ophthalmic Goods Merchant Wholesalers
 NAPCS_2017,4002750000,NAICS_2017_Code,423830,,Wholesale sales of industrial water treatment equipment,Industrial Machinery and Equipment Merchant Wholesalers
 NAPCS_2017,4002775000,NAICS_2017_Code,424710,,"Wholesale sales of refined petroleum products, except liquefied petroleum (LP)",Petroleum Bulk Stations and Terminals
 NAPCS_2017,4002780000,NAICS_2017_Code,423420,,Wholesale sales of safes and vaults,Office Equipment Merchant Wholesalers
@@ -123,13 +123,13 @@ NAPCS_2017,4002800000,NAICS_2017_Code,423520,,Wholesale sales of coal,Coal and O
 NAPCS_2017,4002825000,NAICS_2017_Code,423990,,Wholesale sales of cordwood and firewood,Other Miscellaneous Durable Goods Merchant Wholesalers
 NAPCS_2017,4002830000,NAICS_2017_Code,424990,,Wholesale sales of charcoal,Other Miscellaneous Nondurable Goods Merchant Wholesalers
 NAPCS_2017,4002850000,NAICS_2017_Code,424720,,"Wholesale sales of other fuels, not elsewhere classified",Petroleum and Petroleum Products Merchant Wholesalers (except Bulk Stations and Terminals)
-NAPCS_2017,4002875000,NAICS_2017_Code,425120,,"Wholesale sales of grains, beans, and seeds",Wholesale Trade Agents and Brokers
+NAPCS_2017,4002875000,NAICS_2017_Code,424510,,"Wholesale sales of grains, beans, and seeds",Grain and Field Bean Merchant Wholesalers
 NAPCS_2017,4002925000,NAICS_2017_Code,424430,,Wholesale sales of raw milk and cream,Dairy Product (except Dried or Canned) Merchant Wholesalers
 NAPCS_2017,4002950000,NAICS_2017_Code,424810,,Wholesale sales of brewers' products,Beer and Ale Merchant Wholesalers
-NAPCS_2017,4002970000,NAICS_2017_Code,425120,,"Wholesale sales of inedible animal or vegetable greases and oil, including linseed and cottonseed oil",Wholesale Trade Agents and Brokers
+NAPCS_2017,4002970000,NAICS_2017_Code,424990,,"Wholesale sales of inedible animal or vegetable greases and oil, including linseed and cottonseed oil",Other Miscellaneous Nondurable Goods Merchant Wholesalers
 NAPCS_2017,4002975000,NAICS_2017_Code,424590,,Wholesale sales of raw sugar and other raw farm products used in food production,Other Farm Product Raw Material Merchant Wholesalers
 NAPCS_2017,4003000000,NAICS_2017_Code,424440,,Wholesale sales of live poultry,Poultry and Poultry Product Merchant Wholesalers
-NAPCS_2017,4003025000,NAICS_2017_Code,425120,,Wholesale sales of livestock,Wholesale Trade Agents and Brokers
+NAPCS_2017,4003025000,NAICS_2017_Code,424520,,Wholesale sales of livestock,Livestock Merchant Wholesalers
 NAPCS_2017,4003050000,NAICS_2017_Code,424590,,Wholesale sales of materials and supplies for tobacco manufacturing,Other Farm Product Raw Material Merchant Wholesalers
 NAPCS_2017,4003075000,NAICS_2017_Code,424990,,Wholesale sales of yarns,Other Miscellaneous Nondurable Goods Merchant Wholesalers
 NAPCS_2017,4003100000,NAICS_2017_Code,423930,,"Wholesale sales of recyclable textiles, including rags and textile scraps",Recyclable Material Merchant Wholesalers
@@ -137,12 +137,12 @@ NAPCS_2017,4003125000,NAICS_2017_Code,424590,,Wholesale sales of other materials
 NAPCS_2017,4003150000,NAICS_2017_Code,424310,,Wholesale sales of knit and woven piece goods,"Piece Goods, Notions, and Other Dry Goods Merchant Wholesalers"
 NAPCS_2017,4003175000,NAICS_2017_Code,424310,,"Wholesale sales of notions, including buttons, ribbons, lace, sewing accessories, zippers, and bindings","Piece Goods, Notions, and Other Dry Goods Merchant Wholesalers"
 NAPCS_2017,4003200000,NAICS_2017_Code,424590,,"Wholesale sales of hides, skins, and pelts",Other Farm Product Raw Material Merchant Wholesalers
-NAPCS_2017,4003210000,NAICS_2017_Code,423940,,Wholesale sales of leather cut stock for shoes and boots,"Jewelry, Watch, Precious Stone, and Precious Metal Merchant Wholesalers"
+NAPCS_2017,4003210000,NAICS_2017_Code,424340,,Wholesale sales of leather cut stock for shoes and boots,Footwear Merchant Wholesalers
 NAPCS_2017,4003225000,NAICS_2017_Code,423990,,Wholesale sales of pulpwood,Other Miscellaneous Durable Goods Merchant Wholesalers
 NAPCS_2017,4003250000,NAICS_2017_Code,424990,,Wholesale sales of wood pulp,Other Miscellaneous Nondurable Goods Merchant Wholesalers
 NAPCS_2017,4003275000,NAICS_2017_Code,423930,,Wholesale sales of recyclable paper and paperboard,Recyclable Material Merchant Wholesalers
 NAPCS_2017,4003300000,NAICS_2017_Code,424110,,Wholesale sales of printing paper,Printing and Writing Paper Merchant Wholesalers
-NAPCS_2017,4003310000,NAICS_2017_Code,423830,,"Wholesale sales of ink and printing trades supplies, except paper",Industrial Machinery and Equipment Merchant Wholesalers
+NAPCS_2017,4003310000,NAICS_2017_Code,423840,,"Wholesale sales of ink and printing trades supplies, except paper",Industrial Supplies Merchant Wholesalers
 NAPCS_2017,4003325000,NAICS_2017_Code,424720,,Wholesale sales of crude oil,Petroleum and Petroleum Products Merchant Wholesalers (except Bulk Stations and Terminals)
 NAPCS_2017,4003350000,NAICS_2017_Code,424720,,"Wholesale sales of other petroleum products, including asphalt, road oil, and wax",Petroleum and Petroleum Products Merchant Wholesalers (except Bulk Stations and Terminals)
 NAPCS_2017,4003375000,NAICS_2017_Code,424690,,"Wholesale sales of chemicals, except explosives and automotive, drillers, and sanitation chemicals",Other Chemical and Allied Products Merchant Wholesalers
@@ -152,14 +152,14 @@ NAPCS_2017,4003450000,NAICS_2017_Code,424690,,Wholesale sales of acetylene and o
 NAPCS_2017,4003475000,NAICS_2017_Code,424690,,Wholesale sales of oxygen,Other Chemical and Allied Products Merchant Wholesalers
 NAPCS_2017,4003500000,NAICS_2017_Code,424610,,"Wholesale sales of laminates, plastic raw materials, and crude rubber",Plastics Materials and Basic Forms and Shapes Merchant Wholesalers
 NAPCS_2017,4003510000,NAICS_2017_Code,424690,,Wholesale sales of synthetic resins,Other Chemical and Allied Products Merchant Wholesalers
-NAPCS_2017,4003520000,NAICS_2017_Code,425120,,Wholesale sales of recyclable plastics and rubber,Wholesale Trade Agents and Brokers
+NAPCS_2017,4003520000,NAICS_2017_Code,423930,,Wholesale sales of recyclable plastics and rubber,Recyclable Material Merchant Wholesalers
 NAPCS_2017,4003525000,NAICS_2017_Code,423520,,"Wholesale sales of nonmetallic minerals, except crude petroleum and minerals used in construction and fertilizer",Coal and Other Mineral and Ore Merchant Wholesalers
-NAPCS_2017,4003550000,NAICS_2017_Code,423930,,Wholesale sales of materials and supplies for glass products manufacturing,Recyclable Material Merchant Wholesalers
+NAPCS_2017,4003550000,NAICS_2017_Code,423840,,Wholesale sales of materials and supplies for glass products manufacturing,Industrial Supplies Merchant Wholesalers
 NAPCS_2017,4003575000,NAICS_2017_Code,423520,,"Wholesale sales of ores, except coal, gemstones, and crude oil",Coal and Other Mineral and Ore Merchant Wholesalers
-NAPCS_2017,4003600000,NAICS_2017_Code,423930,,"Wholesale sales of nonferrous metals, including magnesium, nickel, tin, lead, and zinc, except gemstones",Recyclable Material Merchant Wholesalers
-NAPCS_2017,4003625000,NAICS_2017_Code,423940,,Wholesale sales of precious metals,"Jewelry, Watch, Precious Stone, and Precious Metal Merchant Wholesalers"
+NAPCS_2017,4003600000,NAICS_2017_Code,423510,,"Wholesale sales of nonferrous metals, including magnesium, nickel, tin, lead, and zinc, except gemstones",Metal Service Centers and Other Metal Merchant Wholesalers
+NAPCS_2017,4003625000,NAICS_2017_Code,423520,,Wholesale sales of precious metals,Coal and Other Mineral and Ore Merchant Wholesalers
 NAPCS_2017,4003650000,NAICS_2017_Code,423930,,Wholesale sales of recyclable ferrous metal scrap,Recyclable Material Merchant Wholesalers
-NAPCS_2017,4003675000,NAICS_2017_Code,423510,,Wholesale sales of recyclable nonferrous metal scrap,Metal Service Centers and Other Metal Merchant Wholesalers
+NAPCS_2017,4003675000,NAICS_2017_Code,423930,,Wholesale sales of recyclable nonferrous metal scrap,Recyclable Material Merchant Wholesalers
 NAPCS_2017,4003700000,NAICS_2017_Code,423520,,Wholesale sales of coke,Coal and Other Mineral and Ore Merchant Wholesalers
 NAPCS_2017,4003725000,NAICS_2017_Code,423510,,Wholesale sales of semi-finished iron and steel products,Metal Service Centers and Other Metal Merchant Wholesalers
 NAPCS_2017,4003750000,NAICS_2017_Code,423510,,Wholesale sales of flat iron and steel products,Metal Service Centers and Other Metal Merchant Wholesalers
@@ -169,9 +169,9 @@ NAPCS_2017,4003825000,NAICS_2017_Code,423510,,Wholesale sales of alloy steel,Met
 NAPCS_2017,4003850000,NAICS_2017_Code,423510,,Wholesale sales of stainless steel,Metal Service Centers and Other Metal Merchant Wholesalers
 NAPCS_2017,4003875000,NAICS_2017_Code,423510,,"Wholesale sales of primary, secondary and alloyed aluminum in primary and mill shapes ",Metal Service Centers and Other Metal Merchant Wholesalers
 NAPCS_2017,4003900000,NAICS_2017_Code,423510,,"Wholesale sales of primary, secondary and alloyed copper and brass in primary and mill shapes, except pipe and tube",Metal Service Centers and Other Metal Merchant Wholesalers
-NAPCS_2017,4003925000,NAICS_2017_Code,425120,,"Wholesale sales of other primary, secondary and alloyed nonferrous metals in primary and mill shapes",Wholesale Trade Agents and Brokers
-NAPCS_2017,4003950000,NAICS_2017_Code,425120,,"Wholesale sales of metal castings, forgings, and stampings",Wholesale Trade Agents and Brokers
-NAPCS_2017,4003975000,NAICS_2017_Code,425120,,"Wholesale sales of wire, including plain, coated, barbed, and twisted",Wholesale Trade Agents and Brokers
+NAPCS_2017,4003925000,NAICS_2017_Code,423510,,"Wholesale sales of other primary, secondary and alloyed nonferrous metals in primary and mill shapes",Metal Service Centers and Other Metal Merchant Wholesalers
+NAPCS_2017,4003950000,NAICS_2017_Code,423510,,"Wholesale sales of metal castings, forgings, and stampings",Metal Service Centers and Other Metal Merchant Wholesalers
+NAPCS_2017,4003975000,NAICS_2017_Code,423510,,"Wholesale sales of wire, including plain, coated, barbed, and twisted",Metal Service Centers and Other Metal Merchant Wholesalers
 NAPCS_2017,4004000000,NAICS_2017_Code,423840,,Wholesale sales of mechanical power transmission supplies,Industrial Supplies Merchant Wholesalers
 NAPCS_2017,4004025000,NAICS_2017_Code,423830,,Wholesale sales of hydraulic and pneumatic valves,Industrial Machinery and Equipment Merchant Wholesalers
 NAPCS_2017,4004050000,NAICS_2017_Code,423830,,Wholesale sales of hydraulic and pneumatic cylinders and rotary actuators,Industrial Machinery and Equipment Merchant Wholesalers
@@ -180,9 +180,9 @@ NAPCS_2017,4004100000,NAICS_2017_Code,423830,,"Wholesale sales of hydraulic and 
 NAPCS_2017,4004125000,NAICS_2017_Code,423830,,"Wholesale sales of hydraulic and pneumatic pumps, motors, and parts",Industrial Machinery and Equipment Merchant Wholesalers
 NAPCS_2017,4004150000,NAICS_2017_Code,423130,,Wholesale sales of tires and tubes,Tire and Tube Merchant Wholesalers
 NAPCS_2017,4004175000,NAICS_2017_Code,423120,,"Wholesale sales of new and rebuilt automotive parts and supplies, and trailer parts and supplies, except automotive bodies and chemicals",Motor Vehicle Supplies and New Parts Merchant Wholesalers
-NAPCS_2017,4004195000,NAICS_2017_Code,423140,,"Wholesale sales of car stereos, tape players, and CD players",Motor Vehicle Parts (Used) Merchant Wholesalers
+NAPCS_2017,4004195000,NAICS_2017_Code,423620,,"Wholesale sales of car stereos, tape players, and CD players","Household Appliances, Electric Housewares, and Consumer Electronics Merchant Wholesalers"
 NAPCS_2017,4004200000,NAICS_2017_Code,423110,,"Wholesale sales of new light truck, van, and SUV bodies",Automobile and Other Motor Vehicle Merchant Wholesalers
-NAPCS_2017,4004225000,NAICS_2017_Code,423120,,"Wholesale sales of automotive chemicals, including polishes and cleaners, fuel and oil additives, and antifreeze",Motor Vehicle Supplies and New Parts Merchant Wholesalers
+NAPCS_2017,4004225000,NAICS_2017_Code,424690,,"Wholesale sales of automotive chemicals, including polishes and cleaners, fuel and oil additives, and antifreeze",Other Chemical and Allied Products Merchant Wholesalers
 NAPCS_2017,4004250000,NAICS_2017_Code,423140,,Wholesale sales of used automotive parts and accessories,Motor Vehicle Parts (Used) Merchant Wholesalers
 NAPCS_2017,4004275000,NAICS_2017_Code,423860,,Wholesale sales of marine propulsion machinery and equipment and marine supplies,Transportation Equipment and Supplies (except Motor Vehicle) Merchant Wholesalers
 NAPCS_2017,4004300000,NAICS_2017_Code,423860,,"Wholesale sales of aircraft equipment and supplies, including engines and engine parts",Transportation Equipment and Supplies (except Motor Vehicle) Merchant Wholesalers
@@ -197,15 +197,15 @@ NAPCS_2017,4004500000,NAICS_2017_Code,424720,,Wholesale sales of lubricating oil
 NAPCS_2017,4004525000,NAICS_2017_Code,423690,,"Wholesale sales of materials and supplies for electronic and electrical equipment, appliances, and component manufacturing",Other Electronic Parts and Equipment Merchant Wholesalers
 NAPCS_2017,4004550000,NAICS_2017_Code,424910,,"Wholesale sales of farm supplies, including agricultural chemicals, feed, and fertilizers",Farm Supplies Merchant Wholesalers
 NAPCS_2017,4004575000,NAICS_2017_Code,424590,,Wholesale sales of inedible farm products,Other Farm Product Raw Material Merchant Wholesalers
-NAPCS_2017,4004600000,NAICS_2017_Code,423850,,Wholesale sales of nonagricultural insecticides,Service Establishment Equipment and Supplies Merchant Wholesalers
-NAPCS_2017,4004625000,NAICS_2017_Code,425120,,"Wholesale sales of textile bags, bagging and burlap",Wholesale Trade Agents and Brokers
+NAPCS_2017,4004600000,NAICS_2017_Code,424690,,Wholesale sales of nonagricultural insecticides,Other Chemical and Allied Products Merchant Wholesalers
+NAPCS_2017,4004625000,NAICS_2017_Code,424990,,"Wholesale sales of textile bags, bagging and burlap",Other Miscellaneous Nondurable Goods Merchant Wholesalers
 NAPCS_2017,4004650000,NAICS_2017_Code,423510,,Wholesale sales of metal structural products,Metal Service Centers and Other Metal Merchant Wholesalers
 NAPCS_2017,4004660000,NAICS_2017_Code,424690,,Wholesale sales of chemically blown closed cell rubber sponge,Other Chemical and Allied Products Merchant Wholesalers
 NAPCS_2017,4004675000,NAICS_2017_Code,423330,,"Wholesale sales of nonwood roofing, siding, and insulation products ","Roofing, Siding, and Insulation Material Merchant Wholesalers"
-NAPCS_2017,4004700000,NAICS_2017_Code,423330,,Wholesale sales of building and construction polystyrene and polyurethane foam products ,"Roofing, Siding, and Insulation Material Merchant Wholesalers"
+NAPCS_2017,4004700000,NAICS_2017_Code,423390,,Wholesale sales of building and construction polystyrene and polyurethane foam products ,Other Construction Material Merchant Wholesalers
 NAPCS_2017,4004725000,NAICS_2017_Code,423310,,"Wholesale sales of rough, dressed, and finished dimensional lumber, plywood and panels","Lumber, Plywood, Millwork, and Wood Panel Merchant Wholesalers"
 NAPCS_2017,4004775000,NAICS_2017_Code,423310,,Wholesale sales of millwork,"Lumber, Plywood, Millwork, and Wood Panel Merchant Wholesalers"
-NAPCS_2017,4004800000,NAICS_2017_Code,423220,,Wholesale sales of flooring and floor coverings,Home Furnishing Merchant Wholesalers
+NAPCS_2017,4004800000,NAICS_2017_Code,423310,,Wholesale sales of flooring and floor coverings,"Lumber, Plywood, Millwork, and Wood Panel Merchant Wholesalers"
 NAPCS_2017,4004810000,NAICS_2017_Code,423720,,Wholesale sales of plastic plumbing pipes and tubing,Plumbing and Heating Equipment and Supplies (Hydronics) Merchant Wholesalers
 NAPCS_2017,4004820000,NAICS_2017_Code,423720,,Wholesale sales of copper plumbing pipes and tubing,Plumbing and Heating Equipment and Supplies (Hydronics) Merchant Wholesalers
 NAPCS_2017,4004825000,NAICS_2017_Code,423720,,"Wholesale sales of plumbing equipment, except pipes and tubing",Plumbing and Heating Equipment and Supplies (Hydronics) Merchant Wholesalers
@@ -217,7 +217,7 @@ NAPCS_2017,4004900000,NAICS_2017_Code,423320,,"Wholesale sales of concrete, ceme
 NAPCS_2017,4004910000,NAICS_2017_Code,423710,,"Wholesale sales of bolts, nuts, rivets, and other fasteners, except nails",Hardware Merchant Wholesalers
 NAPCS_2017,4004915000,NAICS_2017_Code,423510,,"Wholesale sales of nails, wire rope, strand, strapping and reinforcement mesh",Metal Service Centers and Other Metal Merchant Wholesalers
 NAPCS_2017,4004925000,NAICS_2017_Code,423390,,Wholesale sales of other construction materials and supplies,Other Construction Material Merchant Wholesalers
-NAPCS_2017,4004950000,NAICS_2017_Code,423710,,Wholesale sales of fire extinguishers and fire safety equipment,Hardware Merchant Wholesalers
+NAPCS_2017,4004950000,NAICS_2017_Code,423850,,Wholesale sales of fire extinguishers and fire safety equipment,Service Establishment Equipment and Supplies Merchant Wholesalers
 NAPCS_2017,4004975000,NAICS_2017_Code,423850,,Wholesale sales of fire sprinkler devices,Service Establishment Equipment and Supplies Merchant Wholesalers
 NAPCS_2017,4005000000,NAICS_2017_Code,424690,,Wholesale sales of explosives and drillers chemicals,Other Chemical and Allied Products Merchant Wholesalers
 NAPCS_2017,4005025000,NAICS_2017_Code,424610,,"Wholesale sales of plastic pipes, rods, tubes, and shapes, except plastic plumbing pipes",Plastics Materials and Basic Forms and Shapes Merchant Wholesalers
@@ -226,20 +226,20 @@ NAPCS_2017,4005075000,NAICS_2017_Code,423840,,"Wholesale sales of industrial val
 NAPCS_2017,4005100000,NAICS_2017_Code,423710,,Wholesale sales of nonpower driven hand tools,Hardware Merchant Wholesalers
 NAPCS_2017,4005110000,NAICS_2017_Code,423810,,Wholesale sales of scaffolding and ladders,Construction and Mining (except Oil Well) Machinery and Equipment Merchant Wholesalers
 NAPCS_2017,4005125000,NAICS_2017_Code,424210,,"Wholesale sales of specialty pharmaceuticals, including vaccines, laboratory diagnostic reagents, and similar",Drugs and Druggists' Sundries Merchant Wholesalers
-NAPCS_2017,4005150000,NAICS_2017_Code,425120,,Wholesale sales of veterinary and pet medicines,Wholesale Trade Agents and Brokers
+NAPCS_2017,4005150000,NAICS_2017_Code,424210,,Wholesale sales of veterinary and pet medicines,Drugs and Druggists' Sundries Merchant Wholesalers
 NAPCS_2017,4005175000,NAICS_2017_Code,423450,,"Wholesale sales of medical, dental, and veterinary instruments and supplies","Medical, Dental, and Hospital Equipment and Supplies Merchant Wholesalers"
 NAPCS_2017,4005200000,NAICS_2017_Code,423410,,Wholesale sales of photographic supplies,Photographic Equipment and Supplies Merchant Wholesalers
 NAPCS_2017,4005225000,NAICS_2017_Code,423850,,Wholesale sales of janitorial supplies and nonpower janitorial equipment,Service Establishment Equipment and Supplies Merchant Wholesalers
 NAPCS_2017,4005230000,NAICS_2017_Code,424690,,Wholesale sales of cleaning chemicals,Other Chemical and Allied Products Merchant Wholesalers
 NAPCS_2017,4005240000,NAICS_2017_Code,423220,,"Wholesale sales of household cleaning supplies, including mops and brooms",Home Furnishing Merchant Wholesalers
-NAPCS_2017,4005250000,NAICS_2017_Code,423820,,Wholesale sales of harness and saddlery equipment,Farm and Garden Machinery and Equipment Merchant Wholesalers
+NAPCS_2017,4005250000,NAICS_2017_Code,424910,,Wholesale sales of harness and saddlery equipment,Farm Supplies Merchant Wholesalers
 NAPCS_2017,4005275000,NAICS_2017_Code,424130,,Wholesale sales of disposable paper and plastic products,Industrial and Personal Service Paper Merchant Wholesalers
 NAPCS_2017,4005300000,NAICS_2017_Code,423920,,Wholesale sales of fireworks and firecrackers,Toy and Hobby Goods and Supplies Merchant Wholesalers
 NAPCS_2017,4005310000,NAICS_2017_Code,423850,,Wholesale sales of laundry and dry-cleaning supplies,Service Establishment Equipment and Supplies Merchant Wholesalers
 NAPCS_2017,4005325000,NAICS_2017_Code,423490,,"Wholesale sales of materials and supplies for professional and service industries, not elsewhere classified",Other Professional Equipment and Supplies Merchant Wholesalers
 NAPCS_2017,4005330000,NAICS_2017_Code,423830,,Wholesale sales of pallets and skids,Industrial Machinery and Equipment Merchant Wholesalers
 NAPCS_2017,4005350000,NAICS_2017_Code,423840,,Wholesale sales of industrial containers and supplies,Industrial Supplies Merchant Wholesalers
-NAPCS_2017,4005355000,NAICS_2017_Code,424130,,Wholesale sales of packing and packaging materials and supplies,Industrial and Personal Service Paper Merchant Wholesalers
+NAPCS_2017,4005355000,NAICS_2017_Code,423840,,Wholesale sales of packing and packaging materials and supplies,Industrial Supplies Merchant Wholesalers
 NAPCS_2017,4005358000,NAICS_2017_Code,423840,,Wholesale sales of strapping and tape,Industrial Supplies Merchant Wholesalers
 NAPCS_2017,4005360000,NAICS_2017_Code,424120,,Wholesale sales of gift wrap,Stationery and Office Supplies Merchant Wholesalers
 NAPCS_2017,4005375000,NAICS_2017_Code,424120,,Wholesale sales of office supplies,Stationery and Office Supplies Merchant Wholesalers
@@ -253,7 +253,7 @@ NAPCS_2017,4005490000,NAICS_2017_Code,423930,,"Wholesale sales of other recyclab
 NAPCS_2017,4005491000,NAICS_2017_Code,424990,,"Wholesale sales of live bait, chamois, natural sponges, plant food, rennet, and sawdust",Other Miscellaneous Nondurable Goods Merchant Wholesalers
 NAPCS_2017,4005492000,NAICS_2017_Code,423990,,Wholesale sales of safety equipment,Other Miscellaneous Durable Goods Merchant Wholesalers
 NAPCS_2017,4005494000,NAICS_2017_Code,423610,,Wholesale sales of electric light bulbs,"Electrical Apparatus and Equipment, Wiring Supplies, and Related Equipment Merchant Wholesalers"
-NAPCS_2017,4005495000,NAICS_2017_Code,423310,,"Wholesale sales of nonlumber forest products, including hewn posts, poles, and railroad ties","Lumber, Plywood, Millwork, and Wood Panel Merchant Wholesalers"
+NAPCS_2017,4005495000,NAICS_2017_Code,423990,,"Wholesale sales of nonlumber forest products, including hewn posts, poles, and railroad ties",Other Miscellaneous Durable Goods Merchant Wholesalers
 NAPCS_2017,4005496000,NAICS_2017_Code,423990,,"Wholesale sales of military and other firearms and ammunition, except small arms",Other Miscellaneous Durable Goods Merchant Wholesalers
 NAPCS_2017,4005497000,NAICS_2017_Code,423990,,Wholesale sales of gas lighting fixtures and equipment,Other Miscellaneous Durable Goods Merchant Wholesalers
 NAPCS_2017,4005498000,NAICS_2017_Code,424990,,Wholesale sales of wigs and hairpieces,Other Miscellaneous Nondurable Goods Merchant Wholesalers
@@ -266,30 +266,30 @@ NAPCS_2017,5000100000,NAICS_2017_Code,445110,,Retail sales of eggs and dairy (ex
 NAPCS_2017,5000125000,NAICS_2017_Code,445110,,Retail sales of baked goods,Supermarkets and Other Grocery (except Convenience) Stores
 NAPCS_2017,5000150000,NAICS_2017_Code,445110,,Retail sales of perishable prepared foods,Supermarkets and Other Grocery (except Convenience) Stores
 NAPCS_2017,5000175000,NAICS_2017_Code,445110,,Retail sales of frozen foods,Supermarkets and Other Grocery (except Convenience) Stores
-NAPCS_2017,5000200000,NAICS_2017_Code,452311,,"Retail sales of candy, prepackaged cookies, and snack foods",Warehouse Clubs and Supercenters
+NAPCS_2017,5000200000,NAICS_2017_Code,445292,,"Retail sales of candy, prepackaged cookies, and snack foods",Confectionery and Nut Stores
 NAPCS_2017,5000225000,NAICS_2017_Code,445110,,Retail sales of food dry goods and other foods purchased for future consumption,Supermarkets and Other Grocery (except Convenience) Stores
-NAPCS_2017,5000250000,NAICS_2017_Code,445110,,Retail sales of soft drinks and nonalcoholic beverages,Supermarkets and Other Grocery (except Convenience) Stores
+NAPCS_2017,5000250000,NAICS_2017_Code,445299,,Retail sales of soft drinks and nonalcoholic beverages,All Other Specialty Food Stores
 NAPCS_2017,5000275000,NAICS_2017_Code,445110,,Retail sales of ice,Supermarkets and Other Grocery (except Convenience) Stores
 NAPCS_2017,5000300000,NAICS_2017_Code,445310,,Retail sales of alcoholic beverages,"Beer, Wine, and Liquor Stores"
-NAPCS_2017,5000325000,NAICS_2017_Code,447110,,Retail sales of tobacco products and smoking accessories,Gasoline Stations with Convenience Stores
-NAPCS_2017,5000350000,NAICS_2017_Code,448140,,Retail sales of men's clothing,Family Clothing Stores
-NAPCS_2017,5000375000,NAICS_2017_Code,448140,,Retail sales of women's clothing,Family Clothing Stores
-NAPCS_2017,5000400000,NAICS_2017_Code,448140,,"Retail sales of children's wear, including boys', girls', and infants' and toddlers' clothing and accessories",Family Clothing Stores
-NAPCS_2017,5000425000,NAICS_2017_Code,454110,,"Retail sales of costumes, vestments, and unisex clothing",Electronic Shopping and Mail-Order Houses
-NAPCS_2017,5000450000,NAICS_2017_Code,454110,,Retail sales of men's and women's accessories (except costume jewelry),Electronic Shopping and Mail-Order Houses
+NAPCS_2017,5000325000,NAICS_2017_Code,453991,,Retail sales of tobacco products and smoking accessories,Tobacco Stores
+NAPCS_2017,5000350000,NAICS_2017_Code,448110,,Retail sales of men's clothing,Men's Clothing Stores
+NAPCS_2017,5000375000,NAICS_2017_Code,448120,,Retail sales of women's clothing,Women's Clothing Stores
+NAPCS_2017,5000400000,NAICS_2017_Code,448130,,"Retail sales of children's wear, including boys', girls', and infants' and toddlers' clothing and accessories",Children's and Infants' Clothing Stores
+NAPCS_2017,5000425000,NAICS_2017_Code,448190,,"Retail sales of costumes, vestments, and unisex clothing",Other Clothing Stores
+NAPCS_2017,5000450000,NAICS_2017_Code,448150,,Retail sales of men's and women's accessories (except costume jewelry),Clothing Accessories Stores
 NAPCS_2017,5000455000,NAICS_2017_Code,448150,,Retail sales of costume and novelty jewelry,Clothing Accessories Stores
 NAPCS_2017,5000475000,NAICS_2017_Code,448210,,Retail sales of footwear and footwear accessories,Shoe Stores
-NAPCS_2017,5000500000,NAICS_2017_Code,454110,,Retail sales of fine jewelry and watches ,Electronic Shopping and Mail-Order Houses
+NAPCS_2017,5000500000,NAICS_2017_Code,448310,,Retail sales of fine jewelry and watches ,Jewelry Stores
 NAPCS_2017,5000525000,NAICS_2017_Code,453930,,Retail sales of manufactured (mobile) homes,Manufactured (Mobile) Home Dealers
 NAPCS_2017,5000550000,NAICS_2017_Code,442110,,Retail sales of indoor home furniture,Furniture Stores
-NAPCS_2017,5000575000,NAICS_2017_Code,452311,,Retail sales of outdoor/ patio furniture,Warehouse Clubs and Supercenters
+NAPCS_2017,5000575000,NAICS_2017_Code,442110,,Retail sales of outdoor/ patio furniture,Furniture Stores
 NAPCS_2017,5000600000,NAICS_2017_Code,442110,,"Retail sales of mattresses, box springs, and air mattresses",Furniture Stores
-NAPCS_2017,5000625000,NAICS_2017_Code,444110,,"Retail sales of window treatments, including rods, poles, and fixtures",Home Centers
-NAPCS_2017,5000650000,NAICS_2017_Code,452311,,Retail sales of domestics and other textile home furnishings (except carpet and rugs),Warehouse Clubs and Supercenters
+NAPCS_2017,5000625000,NAICS_2017_Code,442291,,"Retail sales of window treatments, including rods, poles, and fixtures",Window Treatment Stores
+NAPCS_2017,5000650000,NAICS_2017_Code,442299,,Retail sales of domestics and other textile home furnishings (except carpet and rugs),All Other Home Furnishings Stores
 NAPCS_2017,5000675000,NAICS_2017_Code,442299,,Retail sales of other home furnishings and accessories,All Other Home Furnishings Stores
-NAPCS_2017,5000700000,NAICS_2017_Code,444110,,Retail sales of major household appliances and related parts and accessories,Home Centers
-NAPCS_2017,5000725000,NAICS_2017_Code,454110,,"Retail sales of small household appliances, including mixers; blenders; can openers; toasters; coffee makers; frypans; personal care appliances, such as hair dryers, curling irons, and shavers; tap water purifiers and filters; etc.",Electronic Shopping and Mail-Order Houses
-NAPCS_2017,5000750000,NAICS_2017_Code,452311,,"Retail sales of tableware, kitchenware, cookware, glassware",Warehouse Clubs and Supercenters
+NAPCS_2017,5000700000,NAICS_2017_Code,443141,,Retail sales of major household appliances and related parts and accessories,Household Appliance Stores
+NAPCS_2017,5000725000,NAICS_2017_Code,443141,,"Retail sales of small household appliances, including mixers; blenders; can openers; toasters; coffee makers; frypans; personal care appliances, such as hair dryers, curling irons, and shavers; tap water purifiers and filters; etc.",Household Appliance Stores
+NAPCS_2017,5000750000,NAICS_2017_Code,442299,,"Retail sales of tableware, kitchenware, cookware, glassware",All Other Home Furnishings Stores
 NAPCS_2017,5000775000,NAICS_2017_Code,452311,,Retail sales of household cleaning supplies,Warehouse Clubs and Supercenters
 NAPCS_2017,5000800000,NAICS_2017_Code,444110,,Retail sales of home lawn and garden goods,Home Centers
 NAPCS_2017,5000825000,NAICS_2017_Code,452311,,"Retail sales of household paper and plastic products, except tableware",Warehouse Clubs and Supercenters
@@ -298,14 +298,14 @@ NAPCS_2017,5000860000,NAICS_2017_Code,452311,,"Retail sales of household and per
 NAPCS_2017,5000875000,NAICS_2017_Code,443142,,"Retail sales of televisions, audio and video equipment",Electronics Stores
 NAPCS_2017,5000900000,NAICS_2017_Code,443142,,Retail sales of photographic equipment and supplies,Electronics Stores
 NAPCS_2017,5000925000,NAICS_2017_Code,451211,,Retail sales of books,Book Stores
-NAPCS_2017,5000950000,NAICS_2017_Code,445110,,"Retail sales of magazines and newspapers, including issue format comic books",Supermarkets and Other Grocery (except Convenience) Stores
-NAPCS_2017,5000975000,NAICS_2017_Code,452311,,"Retail sales of other publications, including greeting cards and calendars",Warehouse Clubs and Supercenters
+NAPCS_2017,5000950000,NAICS_2017_Code,451212,,"Retail sales of magazines and newspapers, including issue format comic books",News Dealers and Newsstands
+NAPCS_2017,5000975000,NAICS_2017_Code,453220,,"Retail sales of other publications, including greeting cards and calendars","Gift, Novelty, and Souvenir Stores"
 NAPCS_2017,5001000000,NAICS_2017_Code,443142,,"Retail sales of audio and video recordings, including purchased downloads",Electronics Stores
 NAPCS_2017,5001025000,NAICS_2017_Code,451110,,"Retail sales of bicycles and other cycles, all types, except children's sidewalk bikes, and parts and accessories",Sporting Goods Stores
 NAPCS_2017,5001050000,NAICS_2017_Code,451110,,Retail sales of golf equipment,Sporting Goods Stores
 NAPCS_2017,5001075000,NAICS_2017_Code,451110,,"Retail sales of hunting, fishing, hiking, and camping equipment",Sporting Goods Stores
 NAPCS_2017,5001100000,NAICS_2017_Code,451110,,"Retail sales of other sporting goods and equipment, excluding sport vehicles",Sporting Goods Stores
-NAPCS_2017,5001125000,NAICS_2017_Code,452311,,"Retail sales of toys, games, and hobby and craft supplies",Warehouse Clubs and Supercenters
+NAPCS_2017,5001125000,NAICS_2017_Code,451120,,"Retail sales of toys, games, and hobby and craft supplies","Hobby, Toy, and Game Stores"
 NAPCS_2017,5001150000,NAICS_2017_Code,441228,,"Retail sales of motorcycles, motor scooters, motor bikes, including parts and accessories ","Motorcycle, ATV, and All Other Motor Vehicle Dealers"
 NAPCS_2017,5001175000,NAICS_2017_Code,441222,,Retail sales of boats and other sports vehicles,Boat Dealers
 NAPCS_2017,5001200000,NAICS_2017_Code,451140,,"Retail sales of musical instruments, sheet music, and related items",Musical Instrument and Supplies Stores
@@ -320,8 +320,8 @@ NAPCS_2017,5001400000,NAICS_2017_Code,446130,,Retail sales of glasses and contac
 NAPCS_2017,5001425000,NAICS_2017_Code,452311,,Retail sales of personal hygiene supplies,Warehouse Clubs and Supercenters
 NAPCS_2017,5001450000,NAICS_2017_Code,446120,,Retail sales of cosmetics and fragrances,"Cosmetics, Beauty Supplies, and Perfume Stores"
 NAPCS_2017,5001475000,NAICS_2017_Code,453998,,"Retail sales of caskets, monuments, grave markers, and other funeral goods",All Other Miscellaneous Store Retailers (except Tobacco Stores)
-NAPCS_2017,5001525000,NAICS_2017_Code,454110,,Retail sales of office equipment and furniture (except computers),Electronic Shopping and Mail-Order Houses
-NAPCS_2017,5001550000,NAICS_2017_Code,454110,,"Retail sales of computers and peripheral equipment, communications equipment, and related products",Electronic Shopping and Mail-Order Houses
+NAPCS_2017,5001525000,NAICS_2017_Code,453210,,Retail sales of office equipment and furniture (except computers),Office Supplies and Stationery Stores
+NAPCS_2017,5001550000,NAICS_2017_Code,443142,,"Retail sales of computers and peripheral equipment, communications equipment, and related products",Electronics Stores
 NAPCS_2017,5001575000,NAICS_2017_Code,443142,,Retail sales of computer software,Electronics Stores
 NAPCS_2017,5001625000,NAICS_2017_Code,441228,,"Retail sales of new and used aircraft, engines, and parts and accessories","Motorcycle, ATV, and All Other Motor Vehicle Dealers"
 NAPCS_2017,5001650000,NAICS_2017_Code,444210,,"Retail sales of farm machinery, equipment, and parts",Outdoor Power Equipment Stores
@@ -333,7 +333,7 @@ NAPCS_2017,5001750000,NAICS_2017_Code,454310,,"Retail sales of household fuels, 
 NAPCS_2017,5001775000,NAICS_2017_Code,451130,,"Retail sales of fabrics, yarns, and other sewing materials and supplies","Sewing, Needlework, and Piece Goods Stores"
 NAPCS_2017,5001800000,NAICS_2017_Code,444220,,Retail sales of farm and agricultural supplies,"Nursery, Garden Center, and Farm Supply Stores"
 NAPCS_2017,5001825000,NAICS_2017_Code,444120,,Retail sales of wallpaper and other flexible wallcoverings,Paint and Wallpaper Stores
-NAPCS_2017,5001850000,NAICS_2017_Code,444110,,Retail sales of paint and sundries,Home Centers
+NAPCS_2017,5001850000,NAICS_2017_Code,444120,,Retail sales of paint and sundries,Paint and Wallpaper Stores
 NAPCS_2017,5001875000,NAICS_2017_Code,442210,,Retail sales of flooring and floor coverings,Floor Covering Stores
 NAPCS_2017,5001900000,NAICS_2017_Code,444110,,"Retail sales of plumbing, electrical, and HVAC supplies",Home Centers
 NAPCS_2017,5001925000,NAICS_2017_Code,444190,,"Retail sales of hardware, nonpower hand tools, and other building materials and supplies",Other Building Material Dealers
