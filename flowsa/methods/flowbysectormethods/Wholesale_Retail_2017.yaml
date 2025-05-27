@@ -1,3 +1,6 @@
+## FBS method for Product x Industry production from Census focused only on
+## wholesale or retail products (NAPCS)
+
 !include:BEA_detail_target.yaml
 # industry_spec:
 #   default: NAICS_6
@@ -25,14 +28,16 @@ source_names:
     clean_fba_before_activity_sets: !script_function:Census_EC move_flow_to_ACB
     ## ^^ this moves the flow name to ACB and temporarily stores the APB
     # as the flow name
-    
+
     ## instead could we tweak things so that we map on a diff column
     # (e.g. map to flowName instead of Activity)?
     activity_sets:
       sectors:
-        # exclusion_fields: # This is done in the clean function instead
-        #   ActivityProducedBy: '00'
+        exclusion_fields:
+          FlowName: '00' # Formerly the APB
         activity_to_sector_mapping: NAPCS_2017
+        clean_fba: !script_function:Census_EC keep_wholesale_retail
+        # Keep only NAPCS that start with 4 (Wholesale) or 5 (Retail)
         clean_fba_w_sec: !script_function:Census_EC clean_after_attr
         # Moves the FlowName back to the SPB (with no mappings/adjustments)
         # And also stores the original NAPCS code back as the flowname

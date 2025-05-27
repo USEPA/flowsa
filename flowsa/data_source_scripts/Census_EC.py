@@ -210,12 +210,24 @@ def move_flow_to_ACB(fba: FlowByActivity, **_) -> FlowByActivity:
     # as the flow name, so that it doesn't get dropped when we try to map
     # NAPCS to NAICS
     fba = (fba
-            .query('ActivityProducedBy != "00"')
+            # .query('ActivityProducedBy != "00"') # done in method yaml
             .assign(ActivityConsumedBy = fba['FlowName'])
             .assign(FlowName = fba['ActivityProducedBy'])
             .assign(ActivityProducedBy = None)
             )
     return fba
+
+def keep_wholesale_retail(fba: FlowByActivity, **_) -> FlowByActivity:
+    """clean_fba
+    """
+    # Keep only those NAPCS codes that start with 4 (Wholesale) or 5 (Retail)
+    keep_sectors = ("4", "5")
+    fba = (fba
+           .query('ActivityConsumedBy.str.startswith(@keep_sectors)')
+           )
+
+    return fba
+
 
 def clean_after_attr(fba: FlowByActivity, **_) -> FlowByActivity:
     """clean_fba_after_attribution
@@ -230,6 +242,7 @@ def clean_after_attr(fba: FlowByActivity, **_) -> FlowByActivity:
            )
 
     return fba
+
 
 if __name__ == "__main__":
     import flowsa
