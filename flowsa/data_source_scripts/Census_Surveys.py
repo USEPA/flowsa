@@ -34,6 +34,25 @@ def census_sas_call(*, resp, config, **_):
     return df_list
 
 
+def census_arts_url_helper(*, build_url, config, **_):
+    """
+    This helper function uses the "build_url" input from generateflowbyactivity.py,
+    which is a base url for data imports that requires parts of the url text
+    string to be replaced with info specific to the data year. This function
+    does not parse the data, only modifies the urls from which data is
+    obtained.
+    :param build_url: string, base url
+    :param config: dictionary, items in FBA method yaml
+    :return: list, urls to call, concat, parse, format into Flow-By-Activity
+        format
+    """
+    urls = []
+    for file in config.get('files').values():
+        urls.append(build_url.replace('__file__', file))
+
+    return urls
+
+
 def census_awts_call(*, resp, config, **_):
     """
     Convert response for calling url to pandas dataframe,
@@ -207,16 +226,20 @@ def census_arts_parse(*, df_list, **_):
     :return: df, parsed and partially formatted to
         flowbyactivity specifications
     """
-    df = pd.concat(df_list, sort=False)
-    # Drop footnotes
-    row = df[df.iloc[:, 0].astype(str).str.contains('Estimate does not meet').fillna(False)].index[0]
-    df = df.iloc[:row]
-    df.loc[0, 'NAICS Code'] = "Total"
+    df_list1 = []
+    for df in df_list:
+        # Drop footnotes
+        df = df.dropna(subset='Kind of Business')
+        df.loc[0, 'NAICS Code'] = "Total"
+        name = df.loc[0, 'Kind of Business'].split(',')[0]
+        df = df.assign(FlowName = name)
+        df_list1.append(df)
+    df = pd.concat(df_list1, sort=False)
 
     df = (df
           .dropna(subset='NAICS Code')
           .drop(columns=['Kind of Business'])
-          .melt(id_vars='NAICS Code', var_name='Year', value_name='Amount')
+          .melt(id_vars=['NAICS Code', 'FlowName'], var_name='Year', value_name='Amount')
           .rename(columns = {'NAICS Code': 'ActivityConsumedBy'})
           .assign(Year = lambda x: x['Year'].astype(str))
           )
@@ -229,13 +252,15 @@ def census_arts_parse(*, df_list, **_):
                               0, df.Amount))
         )
 
-    df['FlowAmount'] = df['FlowAmount'].astype(float) * 1000000
+    df['FlowAmount'] = np.where(df['FlowName'].str.contains('percentage'),
+                                df['FlowAmount'].astype(float),
+                                df['FlowAmount'].astype(float) * 1000000)
 
     df = (df
           .drop(columns=['Amount'])
-          .assign(FlowName = 'Gross Margins')
           .assign(Class = "Money")
-          .assign(Unit = 'USD')
+          .assign(Unit = np.where(df['FlowName'].str.contains('percentage'),
+                                  'percent', 'USD'))
           .assign(SourceName = 'Census_AWTS')
           .assign(Compartment = None)
           # .assign(ActivityProducedBy = '')

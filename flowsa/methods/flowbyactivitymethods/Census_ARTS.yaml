@@ -7,9 +7,13 @@ api_name: None
 api_key_required: false
 format: xlsx
 url:
-  base_url: https://www2.census.gov/programs-surveys/arts/tables/2022restated/gm.xlsx
-## Gross Margin table
+  base_url: https://www2.census.gov/programs-surveys/arts/tables/2022restated/__file__
+files:
+  Gross margins: gm.xlsx
+  Gross margins as a percent of sales: gmper.xlsx
+  Sales: sales.xlsx
 
+url_replace_fxn: !script_function:Census_Surveys census_arts_url_helper
 call_response_fxn: !script_function:Census_Surveys census_arts_call
 parse_response_fxn: !script_function:Census_Surveys census_arts_parse
 call_all_years: True
