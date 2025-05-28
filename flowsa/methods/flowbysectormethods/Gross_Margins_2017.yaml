@@ -1,7 +1,7 @@
 # Annual wholesale and retail gross margins from Census AWTS and ARTS
 
 !include:BEA_detail_target.yaml
-year: 2017
+year: &year 2017
 target_naics_year: 2017
 geoscale: national
 activity_schema: None
@@ -9,7 +9,7 @@ activity_schema: None
 source_names:
   Census_AWTS:
     geoscale: national
-    year: 2017
+    year: *year
     data_format: FBA
     activity_schema: NAICS_2017_Code
     selection_fields:
@@ -40,7 +40,7 @@ source_names:
 
   Census_ARTS:
     geoscale: national
-    year: 2017
+    year: *year
     data_format: FBA
     activity_schema: NAICS_2017_Code
     selection_fields:

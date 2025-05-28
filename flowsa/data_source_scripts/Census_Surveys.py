@@ -261,7 +261,7 @@ def census_arts_parse(*, df_list, **_):
           .assign(Class = "Money")
           .assign(Unit = np.where(df['FlowName'].str.contains('percentage'),
                                   'percent', 'USD'))
-          .assign(SourceName = 'Census_AWTS')
+          .assign(SourceName = 'Census_ARTS')
           .assign(Compartment = None)
           # .assign(ActivityProducedBy = '')
           .assign(FlowType = "TECHNOSPHERE_FLOW")
