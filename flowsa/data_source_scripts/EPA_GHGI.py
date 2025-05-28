@@ -189,7 +189,7 @@ def ghg_call(*, resp, url, year, config, **_):
             if annex:
             # Annex tables are in separate folders
                 for table in tables:
-                    print(table)
+                    # print(table)
                     df = None
                     tbl_year = tables[table].get('year')
                     if tbl_year is not None and tbl_year != year:
@@ -923,14 +923,21 @@ if __name__ == "__main__":
     import flowsa
     # fba = flowsa.return_FBA('EPA_GHGI_T_4_101', 2016)
     # df = clean_HFC_fba(fba)
-    for y in range(2023, 2024):
+    tbl_list = ["2-1", "3-7", "3-8","3-9","3-13","3-14","3-15",#"3-25","3-25b",
+                "3-106","3-45","3-47","3-49","3-64","3-66","3-68","3-102",
+                "4-16","4-39","4-59","4-100","4-55","4-57","4-63","4-64","4-106", "4-118",
+                "4-122","4-124","4-132",
+                "5-3","5-7","5-18","5-19","5-29",
+                # "A-5"
+                ]
+    fba_list = []
+    for y in range(2019, 2024):
         flowsa.generateflowbyactivity.main(year=y, source='EPA_GHGI')
-        fba = pd.concat([flowsa.getFlowByActivity(f'EPA_GHGI_T_{str(t).replace("-","_")}', 2023)
-                         for t in
-                         ["2-1", "3-7", "3-8","3-9","3-13","3-14","3-15","3-25",#"3-25b",
-                          "3-106","3-45","3-47","3-49","3-64","3-66","3-68","3-102",
-                          "4-16","4-39","4-59","4-100","4-55","4-57","4-63","4-64","4-106", "4-118",
-                          "4-122","4-124","4-132",
-                          "5-3","5-7","5-18","5-19","5-29",
-                          "A-5"
-                          ]])
+        if y == 2023:
+            ls = tbl_list + ['3-25', 'A-5']
+        else:
+            ls = tbl_list + ['3-25b'] + [f'A-{2028-y}']
+        fba = pd.concat([flowsa.getFlowByActivity(f'EPA_GHGI_T_{str(t).replace("-","_")}', y)
+                         for t in ls])
+        fba_list.append(fba)
+    fba_all = pd.concat(fba_list, ignore_index=True)

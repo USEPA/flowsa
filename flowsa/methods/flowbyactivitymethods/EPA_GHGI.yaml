@@ -102,7 +102,7 @@ Tables:
         "compartment": "air"
         "flow": "CO2"
         "activity": "2022 Adjusted Non-Energy Use Fossil Fuel - __type__"
-        "desc": "Table 3-25:  2022 Adjusted Non-Energy Use Fossil Fuel Consumption, Storage, and Emissions"
+        "desc": "Table 3-25:  2023 Adjusted Non-Energy Use Fossil Fuel Consumption, Storage, and Emissions"
         "year": "2023"
         "melt_var": "FlowName"
 
