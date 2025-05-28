@@ -50,6 +50,6 @@ if __name__ == '__main__':
     df = cw[col_order]
 
     # save as csv
-    df.to_csv(f"{datapath}/activitytosectormapping/NAICS_Crosswalk_NAPCS_2017.csv",
+    df.to_csv(f"{datapath}/activitytosectormapping/NAICS_Crosswalk_NAPCS_primary_wholesale_2017.csv",
               index=False)
 
