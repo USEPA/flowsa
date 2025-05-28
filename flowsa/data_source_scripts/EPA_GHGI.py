@@ -147,8 +147,15 @@ def annex_yearly_tables(data, table=None):
         elif col_name in ANNEX_HEADERS.keys():
             column_name = ANNEX_HEADERS[col_name]
             header_name = ANNEX_HEADERS[col_name]
+        else:
+        # Fallback assignment if col_name is not in ANNEX_HEADERS
+            column_name = col_name.strip()
+            header_name = column_name  # update the header_name for potential Unnamed columns later
 
         newcols.append(f"{column_name} - {fuel_type}")
+        if "Unnamed" not in col_name and col_name not in ANNEX_HEADERS:
+            log.warning(f"Unknown column header encountered: {col_name}")
+            
     df = df.drop(columns=df.columns[dropcols])
     df.columns = newcols  # assign column names
     df = df.iloc[1:, :]  # exclude first row
@@ -240,11 +247,11 @@ def ghg_call(*, resp, url, year, config, **_):
                                 log.error(f"error reading {table}")
                                 continue
     
-                        if table in ['4-121']:
+                        if table in ['4-118']:
                             # Skip two rows
                             df=pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
                                              thousands=",", decimal=".")
-                        elif table == "3-24":
+                        elif table == "3-25":
                             # Skip first row, but make headers the next 2 rows:
                             df=pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
                                              header=[0, 1], thousands=",")
@@ -389,7 +396,44 @@ def strip_char(text):
                  'Non-Roadc' : 'Non-Road',
                  'HFCsa': 'HFCs',
                  'HFOsb': 'HFOs',
-                 }
+                 'CO_{2}': 'CO2',
+                 'CH?^{c}': 'CH4',
+                 'N_{2} O^{c}': 'N2O',
+                 'N_{2} O': 'N2O',
+                 'International Bunker Fuels^{b}': 'International Bunker Fuels',
+                 'SF?': 'SF6',
+                 'NF?': 'NF3',
+                 'LULUCF Emissions^{c}': 'LULUCF Emissions',
+                 'CH_{4}': 'CH4',
+                 'LULUCF Carbon Stock Change^{e}': 'LULUCF Carbon Stock Change',
+                 'LULUCF Sector Net Total^{f}': 'LULUCF Sector Net Total',
+                 'Gasoline^{a}': 'Gasoline',
+                 'Recreational Boats^{c}': 'Recreational Boats',
+                 'Medium- and Heavy-Duty Trucks^{b}': 'Medium- and Heavy-Duty Trucks',
+                 'Ships and Non-Recreational Boats^{d}': 'Ships and Non-Recreational Boats',
+                 'International Bunker Fuels^{e}': 'International Bunker Fuels',
+                 'Commercial Aircraft^{f}': 'Commercial Aircraft',
+                 'Ships and Non-Recreational Boats^{e}': 'Ships and Non-Recreational Boats',
+                 'Natural Gas^{g}': 'Natural Gas',
+                 'Pipeline^{h}': 'Pipeline',
+                 'LPG^{g}': 'LPG',
+                 'Electricity^{I}': 'Electricity',
+                 'Total e,j': 'Total',
+                 'Gasoline On-Road^{b}': 'Gasoline On-Road',
+                 'Diesel On-Road^{b}': 'Diesel On-Road',
+                 'Non-Road^{c}': 'Non-Road',
+                 'Rail^{d}': 'Rail',
+                 'Agricultural Equipment^{e}': 'Agricultural Equipment',
+                 'Construction/Mining Equipment^{f}': 'Construction/Mining Equipment',
+                 'Other^{g}': 'Other',
+                 'HGL^{b}': 'HGL',
+                 'Natural Gasoline^{c}': 'Natural Gasoline',
+                 'Naphtha (<401Â° F)': 'Naphtha (<401° F)',
+                 'Other Oil (>401Â° F)': 'Other Oil (>401° F)',
+                 'Other Uses of Soda Ash^{a}': 'Other Uses of Soda Ash',
+                 'Other HFCs^{a}': 'Other HFCs',
+                                                
+                                  }
     for key in footnotes:
         text = text.replace(key, footnotes[key])
 
@@ -441,7 +485,7 @@ def ghg_parse(*, df_list, year, config, **_):
 
         meta = get_table_meta(source_name, config)
 
-        if table_name in ['3-24']:
+        if table_name in ['3-25']:
             df = df.melt(id_vars=id_vars,
                          var_name=meta.get('melt_var'),
                          value_name="FlowAmount")
@@ -681,7 +725,7 @@ def ghg_parse(*, df_list, year, config, **_):
                 if "Total" == apb_value or "Total " == apb_value:
                     df = df.drop(index)
 
-        elif table_name == "A-68":
+        elif table_name == "A-69":
             fuel_name = ""
             A_79_unit_dict = {'Natural Gas': 'trillion cubic feet',
                               'Electricity': 'million kilowatt-hours'}
@@ -707,7 +751,7 @@ def ghg_parse(*, df_list, year, config, **_):
                 df.loc[:, 'FlowType'] = 'TECHNOSPHERE_FLOW'
                 df.loc[:, 'FlowName'] = df.loc[:, 'ActivityProducedBy']
 
-            elif table_name in ["4-121", "4-135"]:
+            elif table_name in ["4-118", "4-132"]:
                 df = df.iloc[::-1] # reverse the order for assigning APB
                 for index, row in df.iterrows():
                     apb_value = strip_char(row["ActivityProducedBy"])
@@ -732,7 +776,7 @@ def ghg_parse(*, df_list, year, config, **_):
                 df = df[~df['FlowName'].str.contains("Total")]
                 df.loc[:, 'ActivityProducedBy'] = meta.get('activity')
 
-            elif table_name in ["4-16", "4-127"]:
+            elif table_name in ["4-16", "4-124"]:
                 # Remove notes from activity names
                 for index, row in df.iterrows():
                     apb_value = strip_char(row["ActivityProducedBy"].split("(")[0])
