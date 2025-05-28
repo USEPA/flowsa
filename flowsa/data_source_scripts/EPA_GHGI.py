@@ -57,8 +57,9 @@ def ghg_url_helper(*, build_url, config, **_):
     :return: list, urls to call, concat, parse, format into Flow-By-Activity
         format
     """
-    annex_url = config['url']['annex_url']
-    return [build_url, annex_url]
+    main_url = f"{build_url}{config['url'].get('main_zip')}"
+    annex_url = f"{build_url}{config['url'].get('annex_zip')}"
+    return [main_url, annex_url]
 
 
 def cell_get_name(value, default_flow_name):
@@ -224,7 +225,7 @@ def ghg_call(*, resp, url, year, config, **_):
                 # zfiledata = io.BytesIO(f.read(chapter_name))
                 # with zipfile.ZipFile(zfiledata) as f2:
                 for table in tables:
-                        print(table)
+                        # print(table)
                         df = None
                         tbl_year = tables[table].get('year')
                         if tbl_year is not None and tbl_year != year:
@@ -400,40 +401,15 @@ def strip_char(text):
                  'CH?^{c}': 'CH4',
                  'N_{2} O^{c}': 'N2O',
                  'N_{2} O': 'N2O',
-                 'International Bunker Fuels^{b}': 'International Bunker Fuels',
                  'SF?': 'SF6',
                  'NF?': 'NF3',
-                 'LULUCF Emissions^{c}': 'LULUCF Emissions',
                  'CH_{4}': 'CH4',
-                 'LULUCF Carbon Stock Change^{e}': 'LULUCF Carbon Stock Change',
-                 'LULUCF Sector Net Total^{f}': 'LULUCF Sector Net Total',
-                 'Gasoline^{a}': 'Gasoline',
-                 'Recreational Boats^{c}': 'Recreational Boats',
-                 'Medium- and Heavy-Duty Trucks^{b}': 'Medium- and Heavy-Duty Trucks',
-                 'Ships and Non-Recreational Boats^{d}': 'Ships and Non-Recreational Boats',
-                 'International Bunker Fuels^{e}': 'International Bunker Fuels',
-                 'Commercial Aircraft^{f}': 'Commercial Aircraft',
-                 'Ships and Non-Recreational Boats^{e}': 'Ships and Non-Recreational Boats',
-                 'Natural Gas^{g}': 'Natural Gas',
-                 'Pipeline^{h}': 'Pipeline',
-                 'LPG^{g}': 'LPG',
-                 'Electricity^{I}': 'Electricity',
                  'Total e,j': 'Total',
-                 'Gasoline On-Road^{b}': 'Gasoline On-Road',
-                 'Diesel On-Road^{b}': 'Diesel On-Road',
-                 'Non-Road^{c}': 'Non-Road',
-                 'Rail^{d}': 'Rail',
-                 'Agricultural Equipment^{e}': 'Agricultural Equipment',
-                 'Construction/Mining Equipment^{f}': 'Construction/Mining Equipment',
-                 'Other^{g}': 'Other',
-                 'HGL^{b}': 'HGL',
-                 'Natural Gasoline^{c}': 'Natural Gasoline',
                  'Naphtha (<401Â° F)': 'Naphtha (<401° F)',
                  'Other Oil (>401Â° F)': 'Other Oil (>401° F)',
-                 'Other Uses of Soda Ash^{a}': 'Other Uses of Soda Ash',
-                 'Other HFCs^{a}': 'Other HFCs',
-                                                
-                                  }
+                 }
+    text = re.sub(r"\^\{[a-zA-Z]\}", "", text)
+
     for key in footnotes:
         text = text.replace(key, footnotes[key])
 

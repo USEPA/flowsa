@@ -1,15 +1,16 @@
 author: US Environmental Protection Agency
-source_name: 'Inventory of US Greenhouse Gas Emissions and Sinks: 1990-2022'
-source_url: https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks-1990-2022
+source_name: 'Inventory of US Greenhouse Gas Emissions and Sinks: 1990-2023'
+source_url: https://www.edf.org/freedom-information-act-documents-epas-greenhouse-gas-inventory
 bib_id: EPA_GHGI
 format: csv
 # url:
-#   base_url: https://www.epa.gov/system/files/other-files/2024-05/main-text.zip
-#   annex_url: https://www.epa.gov/system/files/other-files/2024-06/2024-annex-tables.zip
+#   base_url: https://dmap-data-commons-ord.s3.amazonaws.com/flowsa/FlowByActivity/
+#   main_zip: GHGI_2025-main-text.zip
+#   annex_zip: GHGI_2025-annex-tables.zip
 path:
   base: "Table {table_name}.csv"
   annex: "Annex/Table {table_name}.csv"
-# local_file: "DraftGHGI-90-22_CSVs.zip"
+
 url_replace_fxn: !script_function:EPA_GHGI ghg_url_helper
 call_response_fxn: !script_function:EPA_GHGI ghg_call
 parse_response_fxn: !script_function:EPA_GHGI ghg_parse
