@@ -6,17 +6,6 @@ target_naics_year: 2017
 geoscale: national
 activity_schema: None
 
-_attribution_sources:
-  BEA: &bea # 2017 Make and Use tables
-    year: 2017
-    activity_to_sector_mapping: BEA_2017_Detail
-    exclusion_fields:
-      # Drop irrelevant final demand and total sectors
-      ActivityConsumedBy: ['T001', 'T004', 'T007', 'T019']
-      ActivityProducedBy: ['T007', 'T013', 'T015', 'T016', 'TOP',
-                           'MCIF']
-    attribution_method: equal
-
 source_names:
   Census_AWTS:
     geoscale: national
@@ -24,25 +13,52 @@ source_names:
     data_format: FBA
     activity_schema: NAICS_2017_Code
     selection_fields:
-      FlowName: {'Gross margins': 'Wholesale margins'}
-    # attribution_method: direct
-    attribution_method: proportional
-    attribution_source:
-      BEA_Detail_Use_SUT:
-        <<: *bea
-        selection_fields:
-          ActivityConsumedBy: {'F01000': ''}
+      FlowName:
+        Gross margins as a percent of sales: Gross margins as a percent of sales
+        Gross margins: Gross margins
+        Purchases: Sales
+      PrimaryActivity:
+       - "4231"
+       - "4232"
+       - "4233"
+       - "4234"
+       - "4235"
+       - "4236"
+       - "4237"
+       - "4238"
+       - "4239"
+       - "4241"
+       - "4242"
+       - "4243"
+       - "4244"
+       - "4245"
+       - "4246"
+       - "4247"
+       - "4248"
+       - "4249"
+    attribution_method: direct
+
   Census_ARTS:
     geoscale: national
     year: 2017
     data_format: FBA
     activity_schema: NAICS_2017_Code
     selection_fields:
-      FlowName: {'Gross Margins': 'Retail marigns'}
-    # attribution_method: direct
-    attribution_method: proportional
-    attribution_source:
-      BEA_Detail_Use_SUT:
-        <<: *bea
-        selection_fields:
-          ActivityConsumedBy: {'F01000': ''}
+      FlowName:
+        Retail gross margin as a percentage of sales: Gross margins as a percent of sales
+        Retail gross margin: Gross margins
+        Retail sales: Sales
+      PrimaryActivity:
+       - "441"
+       - "442"
+       - "443"
+       - "444"
+       - "445"
+       - "446"
+       - "447"
+       - "448"
+       - "451"
+       - "452"
+       - "453"
+       - "454"
+    attribution_method: direct
