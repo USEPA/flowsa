@@ -6,7 +6,7 @@
 # is available at the detail level and uses the GHGI as the primary source
 
 !include:USEEIOv2_detail_target.yaml
-# year: &ghgi_year 2019
+# year: &ghgi_year 2023
 target_naics_year: 2017
 geoscale: national
 
@@ -133,8 +133,8 @@ source_names:
       fertilizer_use: # allocated based on fertilizer use
         selection_fields:
           MetaSources:
-            - 'EPA_GHGI_T_5_17.fertilizer_use'
             - 'EPA_GHGI_T_5_18.fertilizer_use'
+            - 'EPA_GHGI_T_5_19.fertilizer_use'
         attribution_method: proportional
         attribution_source:
           Detail_Use_YEAR: ## Update year
@@ -143,15 +143,15 @@ source_names:
 
       cropland: # allocated based on USDA land area harvested
         selection_fields:
-          MetaSources: 'EPA_GHGI_T_5_17.cropland'
+          MetaSources: 'EPA_GHGI_T_5_18.cropland'
         attribution_method: proportional
         attribution_source: *cropland_allocation
 
       pasture: # allocated based on USDA Animal operation land (acres)
         selection_fields:
           MetaSources:
-            - 'EPA_GHGI_T_5_17.pasture'
             - 'EPA_GHGI_T_5_18.pasture'
+            - 'EPA_GHGI_T_5_19.pasture'
         attribution_method: proportional
         attribution_source: *animal_land_allocation
 
@@ -415,8 +415,8 @@ source_names:
       petroleum_neu: # consumed petroleum products
         selection_fields:
           MetaSources:
-            - 'EPA_GHGI_T_3_24.petroleum_neu'
-            - 'EPA_GHGI_T_3_24b.petroleum_neu'
+            - 'EPA_GHGI_T_3_25.petroleum_neu'
+            - 'EPA_GHGI_T_3_25b.petroleum_neu'
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -436,8 +436,8 @@ source_names:
       natural_gas_neu: # consumed nat gas to chemical plants
         selection_fields:
           MetaSources:
-            - 'EPA_GHGI_T_3_24.natural_gas_neu'
-            - 'EPA_GHGI_T_3_24b.natural_gas_neu'
+            - 'EPA_GHGI_T_3_25.natural_gas_neu'
+            - 'EPA_GHGI_T_3_25b.natural_gas_neu'
         attribution_method: proportional
         attribution_source:
           EIA_MECS_Energy:
@@ -454,8 +454,8 @@ source_names:
       transportation_lubricants:
         selection_fields:
           MetaSources:
-            - 'EPA_GHGI_T_3_24.transportation_lubricants'
-            - 'EPA_GHGI_T_3_24b.transportation_lubricants'
+            - 'EPA_GHGI_T_3_25.transportation_lubricants'
+            - 'EPA_GHGI_T_3_25b.transportation_lubricants'
         attribution_method: proportional
         attribution_source:
           Detail_Use_YEAR: ## Update year
@@ -465,7 +465,7 @@ source_names:
 
       refrigerants:
         selection_fields:
-          MetaSources: 'EPA_GHGI_T_4_127.refrigerants'
+          MetaSources: 'EPA_GHGI_T_4_124.refrigerants'
         attribution_method: proportional
         attribution_source:
           Detail_Use_YEAR: ## Update year
@@ -474,7 +474,7 @@ source_names:
 
       air_conditioning:
         selection_fields:
-          MetaSources: 'EPA_GHGI_T_4_127.air_conditioning'
+          MetaSources: 'EPA_GHGI_T_4_124.air_conditioning'
         attribution_method: proportional
         attribution_source:
           Detail_Use_YEAR: ## Update year
@@ -483,7 +483,7 @@ source_names:
 
       foams:
         selection_fields:
-          MetaSources: 'EPA_GHGI_T_4_127.foams'
+          MetaSources: 'EPA_GHGI_T_4_124.foams'
         attribution_method: proportional
         attribution_source:
           Detail_Use_YEAR: ## Update year
@@ -495,7 +495,7 @@ source_names:
 
       magnesium:
         selection_fields:
-          MetaSources: 'EPA_GHGI_T_4_109'
+          MetaSources: 'EPA_GHGI_T_4_106'
         attribution_method: proportional
         attribution_source:
           BEA_Detail_GrossOutput_IO:
@@ -530,27 +530,27 @@ source_names:
 
 
 ## Fossil Fuels
-  EPA_GHGI_T_3_73: #CH4 from Natural Gas Systems
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_73
-  EPA_GHGI_T_3_75: #CO2 from Natural Gas Systems mimics CH4
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_75
-  EPA_GHGI_T_3_77: #N2O from Natural Gas Systems, not used in original method, mimics CH4
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_77
+  EPA_GHGI_T_3_64: #CH4 from Natural Gas Systems
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_64
+  EPA_GHGI_T_3_66: #CO2 from Natural Gas Systems mimics CH4
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_66
+  EPA_GHGI_T_3_68: #N2O from Natural Gas Systems, not used in original method, mimics CH4
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_68
 
-  EPA_GHGI_T_3_44: #CH4 from Petroleum Systems
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_44
-  EPA_GHGI_T_3_46: #CO2 from Petroleum Systems mimics CH4
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_46
-  EPA_GHGI_T_3_48: #N2O from Petroleum Systems, not in prior method, mimics CH4
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_48
+  EPA_GHGI_T_3_45: #CH4 from Petroleum Systems
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_45
+  EPA_GHGI_T_3_47: #CO2 from Petroleum Systems mimics CH4
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_47
+  EPA_GHGI_T_3_49: #N2O from Petroleum Systems, not in prior method, mimics CH4
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_3_49
 
 ## Agriculture
-  EPA_GHGI_T_5_28: #CH4, N2O, CO and NOx from field burning of residues
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_5_28
+  EPA_GHGI_T_5_29: #CH4, N2O, CO and NOx from field burning of residues
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_5_29
   EPA_GHGI_T_5_3:  #CH4 from Enteric Fermentation
     !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_5_3
-  EPA_GHGI_T_5_6: #CH4 and N2O from manure, mimics enteric fermentation
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_5_6
+  EPA_GHGI_T_5_7: #CH4 and N2O from manure, mimics enteric fermentation
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_5_7
 
 ## Mobile Sources
   EPA_GHGI_T_3_13: #CO2 from mobile combustion
@@ -607,20 +607,20 @@ source_names:
   EPA_GHGI_T_4_64: # Fluorochemical production (in MT)
     !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_64
 
-  EPA_GHGI_T_4_121: # HFCs and other emissions from electronics manufacture
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_121
+  EPA_GHGI_T_4_118: # HFCs and other emissions from electronics manufacture
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_118
 
-  EPA_GHGI_T_4_135: # SF6 and PFCs from Other Product Use
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_135
+  EPA_GHGI_T_4_132: # SF6 and PFCs from Other Product Use
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_132
 
-  EPA_GHGI_T_4_127: # HFCs and PFCs from ODS Substitutes
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_127
+  EPA_GHGI_T_4_124: # HFCs and PFCs from ODS Substitutes
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_124
     activity_sets:
       households:
-        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_127:activity_sets:households
+        !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_124:activity_sets:households
 
-  EPA_GHGI_T_A_89: # HFCs from Transportation
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_A_89
+  EPA_GHGI_T_A_90: # HFCs from Transportation
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_A_90
 
-  EPA_GHGI_T_4_103: # PFCs from aluminum production
-    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_103
+  EPA_GHGI_T_4_100: # PFCs from aluminum production
+    !include:GHG_national_m1_common.yaml:source_names:EPA_GHGI_T_4_100

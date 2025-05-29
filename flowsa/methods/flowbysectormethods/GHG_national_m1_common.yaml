@@ -5,7 +5,7 @@
 
 
 !include:USEEIO_summary_target.yaml
-# year: &ghgi_year 2022
+# year: &ghgi_year 2023
 target_naics_year: 2017
 geoscale: national
 
@@ -155,7 +155,7 @@ source_names:
 
 
 ## Fossil Fuels
-  EPA_GHGI_T_3_73: &natgas #CH4 from Natural Gas Systems
+  EPA_GHGI_T_3_64: &natgas #CH4 from Natural Gas Systems
     # year: # override this
     fedefl_mapping: GHGI_AR5_100
     selection_fields:
@@ -167,10 +167,10 @@ source_names:
         - Production
         - Transmission and Storage
     attribution_method: direct
-  EPA_GHGI_T_3_75: *natgas #CO2 from Natural Gas Systems mimics CH4
-  EPA_GHGI_T_3_77: *natgas #N2O from Natural Gas Systems, not used in original method, mimics CH4
+  EPA_GHGI_T_3_66: *natgas #CO2 from Natural Gas Systems mimics CH4
+  EPA_GHGI_T_3_68: *natgas #N2O from Natural Gas Systems, not used in original method, mimics CH4
 
-  EPA_GHGI_T_3_44: &petroleum #CH4 from Petroleum Systems
+  EPA_GHGI_T_3_45: &petroleum #CH4 from Petroleum Systems
     # year: # override this
     fedefl_mapping: GHGI_AR5_100
     selection_fields:
@@ -182,11 +182,11 @@ source_names:
         - Refining
         - Crude Refining
     attribution_method: direct
-  EPA_GHGI_T_3_46: *petroleum #CO2 from Petroleum Systems mimics CH4
-  EPA_GHGI_T_3_48: *petroleum #N2O from Petroleum Systems, not in prior method, mimics CH4
+  EPA_GHGI_T_3_47: *petroleum #CO2 from Petroleum Systems mimics CH4
+  EPA_GHGI_T_3_49: *petroleum #N2O from Petroleum Systems, not in prior method, mimics CH4
 
 ## Agriculture
-  EPA_GHGI_T_5_28: #CH4, N2O, CO and NOx from field burning of residues
+  EPA_GHGI_T_5_29: #CH4, N2O, CO and NOx from field burning of residues
     # year: # override this
     fedefl_mapping: GHGI_AR5_100
     selection_fields:
@@ -213,9 +213,9 @@ source_names:
         - Swine
         - Poultry
     attribution_method: direct
-  EPA_GHGI_T_5_6: *animals #CH4 and N2O from manure, mimics enteric fermentation
+  EPA_GHGI_T_5_7: *animals #CH4 and N2O from manure, mimics enteric fermentation
 
-  EPA_GHGI_T_5_17: #Direct N2O emissions from agricultural soils
+  EPA_GHGI_T_5_18: #Direct N2O emissions from agricultural soils
     # year: # override this
     fedefl_mapping: GHGI_AR5_100
     activity_sets:
@@ -241,7 +241,7 @@ source_names:
         attribution_method: equal
 
 
-  EPA_GHGI_T_5_18: #Indirect N2O emissions from agricultural soils
+  EPA_GHGI_T_5_19: #Indirect N2O emissions from agricultural soils
     # year: # override this
     fedefl_mapping: GHGI_AR5_100
     activity_sets:
@@ -395,7 +395,7 @@ source_names:
     clean_parameter: # Override each year for use in allocate_industrial_combustion
         energy_fba: 'EIA_MECS_Energy'
         year: *mecs_year
-        ghg_fba: 'EPA_GHGI_T_A_9' # 2018 Table
+        ghg_fba: 'EPA_GHGI_T_A_10' # 2018 Table
     activity_sets:
       direct_attribution: #direct allocation
         selection_fields:
@@ -478,7 +478,7 @@ source_names:
     clean_parameter: # Override each year for use in allocate_industrial_combustion
         energy_fba: 'EIA_MECS_Energy'
         year: *mecs_year
-        ghg_fba: 'EPA_GHGI_T_A_9' # 2018 Table
+        ghg_fba: 'EPA_GHGI_T_A_10' # 2018 Table
     fedefl_mapping: GHGI_AR5_100
     activity_sets:
       residential:
@@ -685,7 +685,7 @@ source_names:
       FlowName: ["Other PFCs", "Other HFCs"]
     attribution_method: direct
 
-  EPA_GHGI_T_4_121: # HFCs and other emissions from electronics manufacture
+  EPA_GHGI_T_4_118: # HFCs and other emissions from electronics manufacture
     # year: # override with ghgi_year
     fedefl_mapping: GHGI_AR5_100
     selection_fields:
@@ -696,16 +696,16 @@ source_names:
         - MEMS
     attribution_method: direct
 
-  EPA_GHGI_T_4_135: # SF6 and PFCs from Other Product Use
+  EPA_GHGI_T_4_132: # SF6 and PFCs from Other Product Use
     # year: # override with ghgi_year
     fedefl_mapping: GHGI_AR5_100
     attribution_method: direct
 
-  EPA_GHGI_T_4_127: # HFCs and PFCs from ODS Substitutes
+  EPA_GHGI_T_4_124: # HFCs and PFCs from ODS Substitutes
     clean_fba_before_activity_sets: !script_function:EPA_GHGI split_HFCs_by_type
     clean_parameter:
         # Proportions of specific HFCs are assigned based on national total
-        flow_fba: EPA_GHGI_T_4_125
+        flow_fba: EPA_GHGI_T_4_122
     # year: # override with ghgi_year
     fedefl_mapping: GHGI_AR5_100
     activity_sets:
@@ -750,12 +750,12 @@ source_names:
                 '32615': '' # Urethane and other foam (326150)
 
 
-  EPA_GHGI_T_A_89: # HFCs from Transportation
+  EPA_GHGI_T_A_90: # HFCs from Transportation
     # year: # override with ghgi_year
     clean_fba_before_mapping: !script_function:EPA_GHGI split_HFCs_by_type
     clean_parameter:
         # Proportions of specific HFCs are assigned based on national total
-        flow_fba: EPA_GHGI_T_4_125
+        flow_fba: EPA_GHGI_T_4_122
     fedefl_mapping: GHGI_AR5_100
     selection_fields:
       PrimaryActivity:
@@ -771,7 +771,7 @@ source_names:
     attribution_method: direct
 
 
-  EPA_GHGI_T_4_103: # PFCs from aluminum production
+  EPA_GHGI_T_4_100: # PFCs from aluminum production
     # year: # override with ghgi_year
     fedefl_mapping: GHGI_AR5_100
     selection_fields:
@@ -779,7 +779,7 @@ source_names:
     attribution_method: direct
 
 
-  EPA_GHGI_T_4_109: # HFCs, SF6, CO2 from magnesium production
+  EPA_GHGI_T_4_106: # HFCs, SF6, CO2 from magnesium production
     # year: # override with ghgi_year
     fedefl_mapping: GHGI_AR5_100
     selection_fields:
