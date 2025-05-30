@@ -1,7 +1,7 @@
 author: U.S. Bureau of Economic Analysis
 source_name: Summary Supply
 source_url: 'https://www.bea.gov/industry/input-output-accounts-data#supplemental-estimate-tables'
-original_data_download_date: '2024-05-23'
+original_data_download_date: '2024-11-05'
 bib_id: BEA_Summary_Supply
 format: csv
 url: None
@@ -18,3 +18,4 @@ years:
   - 2020
   - 2021
   - 2022
+  - 2023
