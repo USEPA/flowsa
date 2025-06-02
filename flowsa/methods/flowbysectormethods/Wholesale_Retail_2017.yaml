@@ -35,7 +35,7 @@ source_names:
       sectors:
         exclusion_fields:
           FlowName: '00' # Formerly the APB
-        activity_to_sector_mapping: NAPCS_primary_wholesale_2017
+        activity_to_sector_mapping: Census_PxI_WholesaleRetail_primary_wholesale
         clean_fba: !script_function:Census_EC keep_wholesale_retail
         # Keep only NAPCS that start with 4 (Wholesale) or 5 (Retail)
         clean_fba_w_sec: !script_function:Census_EC clean_after_attr

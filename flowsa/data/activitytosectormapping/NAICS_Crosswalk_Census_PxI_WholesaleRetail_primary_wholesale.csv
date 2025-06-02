@@ -1,0 +1,342 @@
+ActivitySourceName,Activity,SectorSourceName,Sector,SectorType,NAPCS_Description,NAICS_2017_Name
+Census PROD_IND,4000025000,NAICS_2017_Code,424420,,Wholesale sales of packaged frozen food,Packaged Frozen Food Merchant Wholesalers
+Census PROD_IND,4000050000,NAICS_2017_Code,424430,,"Wholesale sales of dairy products, except dried, canned, condensed, and evaporated dairy products",Dairy Product (except Dried or Canned) Merchant Wholesalers
+Census PROD_IND,4000075000,NAICS_2017_Code,424440,,"Wholesale sales of eggs and poultry, except canned and frozen poultry products",Poultry and Poultry Product Merchant Wholesalers
+Census PROD_IND,4000100000,NAICS_2017_Code,424450,,Wholesale sales of confectionery and snack foods,Confectionery Merchant Wholesalers
+Census PROD_IND,4000125000,NAICS_2017_Code,424490,,"Wholesale sales of cookies, bread, and baked goods",Other Grocery and Related Products Merchant Wholesalers
+Census PROD_IND,4000150000,NAICS_2017_Code,424460,,"Wholesale sales of fish and seafood, except canned and frozen fish and seafood",Fish and Seafood Merchant Wholesalers
+Census PROD_IND,4000175000,NAICS_2017_Code,424470,,"Wholesale sales of fresh meat and meat products, except canned and frozen",Meat and Meat Product Merchant Wholesalers
+Census PROD_IND,4000200000,NAICS_2017_Code,424480,,Wholesale sales of fresh fruits and vegetables,Fresh Fruit and Vegetable Merchant Wholesalers
+Census PROD_IND,4000225000,NAICS_2017_Code,424490,,Wholesale sales of baking ingredients,Other Grocery and Related Products Merchant Wholesalers
+Census PROD_IND,4000230000,NAICS_2017_Code,424990,,"Wholesale sales of soybean, cottonseed, linseed, peanut, sunflower seed, and all other oilseed cake and meal",Other Miscellaneous Nondurable Goods Merchant Wholesalers
+Census PROD_IND,4000250000,NAICS_2017_Code,424490,,Wholesale sales of nonperishable (canned and packaged) food,Other Grocery and Related Products Merchant Wholesalers
+Census PROD_IND,4000275000,NAICS_2017_Code,424490,,Wholesale sales of grocery specialties,Other Grocery and Related Products Merchant Wholesalers
+Census PROD_IND,4000300000,NAICS_2017_Code,424490,,"Wholesale sales of coffee, tea, and powdered drink mixes",Other Grocery and Related Products Merchant Wholesalers
+Census PROD_IND,4000325000,NAICS_2017_Code,424490,,"Wholesale sales of food and beverage basic materials, including flavoring extracts, fruit peel, sausage casings, hop extract, malt, and yeast",Other Grocery and Related Products Merchant Wholesalers
+Census PROD_IND,4000350000,NAICS_2017_Code,424490,,"Wholesale sales of soft drinks, bottled water, juices, and nonalcoholic beverages",Other Grocery and Related Products Merchant Wholesalers
+Census PROD_IND,4000375000,NAICS_2017_Code,424810,,Wholesale sales of beer and ale,Beer and Ale Merchant Wholesalers
+Census PROD_IND,4000400000,NAICS_2017_Code,424820,,"Wholesale sales of wine and distilled liquor, including premixed alcoholic drinks",Wine and Distilled Alcoholic Beverage Merchant Wholesalers
+Census PROD_IND,4000425000,NAICS_2017_Code,424990,,Wholesale sales of ice,Other Miscellaneous Nondurable Goods Merchant Wholesalers
+Census PROD_IND,4000450000,NAICS_2017_Code,424940,,Wholesale sales of tobacco products and electronic cigarettes,Tobacco and Tobacco Product Merchant Wholesalers
+Census PROD_IND,4000475000,NAICS_2017_Code,424990,,Wholesale sales of smoking accessories,Other Miscellaneous Nondurable Goods Merchant Wholesalers
+Census PROD_IND,4000500000,NAICS_2017_Code,424320,,Wholesale sales of men's and boys' clothing,Men's and Boys' Clothing and Furnishings Merchant Wholesalers
+Census PROD_IND,4000525000,NAICS_2017_Code,424330,,"Wholesale sales of women's, misses', and girls' clothing ","Women's, Children's, and Infants' Clothing and Accessories Merchant Wholesalers"
+Census PROD_IND,4000550000,NAICS_2017_Code,424330,,"Wholesale sales of infants' and children's clothing, to size 6X, including accessories","Women's, Children's, and Infants' Clothing and Accessories Merchant Wholesalers"
+Census PROD_IND,4000575000,NAICS_2017_Code,423910,,Wholesale sales of athletic uniforms,Sporting and Recreational Goods and Supplies Merchant Wholesalers
+Census PROD_IND,4000600000,NAICS_2017_Code,424340,,Wholesale sales of footwear and footwear accessories,Footwear Merchant Wholesalers
+Census PROD_IND,4000625000,NAICS_2017_Code,424330,,Wholesale sales of clothing accessories,"Women's, Children's, and Infants' Clothing and Accessories Merchant Wholesalers"
+Census PROD_IND,4000650000,NAICS_2017_Code,423940,,Wholesale sales of costume jewelry,"Jewelry, Watch, Precious Stone, and Precious Metal Merchant Wholesalers"
+Census PROD_IND,4000675000,NAICS_2017_Code,423940,,"Wholesale sales of jewelry, except costume","Jewelry, Watch, Precious Stone, and Precious Metal Merchant Wholesalers"
+Census PROD_IND,4000700000,NAICS_2017_Code,423940,,Wholesale sales of watches and watch parts,"Jewelry, Watch, Precious Stone, and Precious Metal Merchant Wholesalers"
+Census PROD_IND,4000725000,NAICS_2017_Code,453930,,Wholesale sales of manufactured (mobile) homes,Manufactured (Mobile) Home Dealers
+Census PROD_IND,4000750000,NAICS_2017_Code,423210,,Wholesale sales of household and lawn furniture,Furniture Merchant Wholesalers
+Census PROD_IND,4000775000,NAICS_2017_Code,423220,,Wholesale sales of window treatments,Home Furnishing Merchant Wholesalers
+Census PROD_IND,4000800000,NAICS_2017_Code,423220,,"Wholesale sales of other textile house furnishings, except floor coverings",Home Furnishing Merchant Wholesalers
+Census PROD_IND,4000825000,NAICS_2017_Code,424930,,"Wholesale sales of artificial flowers, plants, and trees","Flower, Nursery Stock, and Florists' Supplies Merchant Wholesalers"
+Census PROD_IND,4000850000,NAICS_2017_Code,423220,,"Wholesale sales of household furnishings, except artificial flowers, plants, and trees",Home Furnishing Merchant Wholesalers
+Census PROD_IND,4000860000,NAICS_2017_Code,423940,,"Wholesale sales of clocks, trophies, and works of art","Jewelry, Watch, Precious Stone, and Precious Metal Merchant Wholesalers"
+Census PROD_IND,4000870000,NAICS_2017_Code,424990,,Wholesale sales of canvas awnings,Other Miscellaneous Nondurable Goods Merchant Wholesalers
+Census PROD_IND,4000875000,NAICS_2017_Code,423620,,"Wholesale sales of household appliances, including personal care appliances","Household Appliances, Electric Housewares, and Consumer Electronics Merchant Wholesalers"
+Census PROD_IND,4000900000,NAICS_2017_Code,423220,,"Wholesale sales of tableware, kitchenware, cookware, and glassware, except cutlery and novelty glassware",Home Furnishing Merchant Wholesalers
+Census PROD_IND,4000925000,NAICS_2017_Code,423220,,"Wholesale sales of cutlery, except disposable plastics",Home Furnishing Merchant Wholesalers
+Census PROD_IND,4000950000,NAICS_2017_Code,423220,,Wholesale sales of novelty glassware,Home Furnishing Merchant Wholesalers
+Census PROD_IND,4000960000,NAICS_2017_Code,423620,,"Wholesale sales of outdoor grills, gas and charcoal","Household Appliances, Electric Housewares, and Consumer Electronics Merchant Wholesalers"
+Census PROD_IND,4000975000,NAICS_2017_Code,423820,,"Wholesale sales of home lawn and garden equipment, tools, and supplies, except fresh flowers, florists' supplies, live trees, plants, and nursery stock",Farm and Garden Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4000985000,NAICS_2017_Code,425120,,Wholesale sales of swimming pools and swimming pool supplies,Wholesale Trade Agents and Brokers
+Census PROD_IND,4001000000,NAICS_2017_Code,424930,,"Wholesale sales of fresh flowers, florists' supplies, live trees, plants, and nursery stock","Flower, Nursery Stock, and Florists' Supplies Merchant Wholesalers"
+Census PROD_IND,4001025000,NAICS_2017_Code,424130,,"Wholesale sales of household paper and plastic products, not elsewhere classified",Industrial and Personal Service Paper Merchant Wholesalers
+Census PROD_IND,4001050000,NAICS_2017_Code,423620,,"Wholesale sales of televisions, home audio and visual equipment","Household Appliances, Electric Housewares, and Consumer Electronics Merchant Wholesalers"
+Census PROD_IND,4001075000,NAICS_2017_Code,423410,,"Wholesale sales of still picture photographic equipment, digital and film cameras, household type",Photographic Equipment and Supplies Merchant Wholesalers
+Census PROD_IND,4001100000,NAICS_2017_Code,423990,,Wholesale sales of audio and video recordings,Other Miscellaneous Durable Goods Merchant Wholesalers
+Census PROD_IND,4001125000,NAICS_2017_Code,424120,,Wholesale sales of greeting cards,Stationery and Office Supplies Merchant Wholesalers
+Census PROD_IND,4001150000,NAICS_2017_Code,424920,,"Wholesale sales of newspapers, periodicals, books and other publications, except greeting cards","Book, Periodical, and Newspaper Merchant Wholesalers"
+Census PROD_IND,4001175000,NAICS_2017_Code,423910,,Wholesale sales of sporting and recreational equipment,Sporting and Recreational Goods and Supplies Merchant Wholesalers
+Census PROD_IND,4001200000,NAICS_2017_Code,423920,,"Wholesale sales of toys, games, and hobby goods",Toy and Hobby Goods and Supplies Merchant Wholesalers
+Census PROD_IND,4001225000,NAICS_2017_Code,423910,,Wholesale sales of boats and go-carts,Sporting and Recreational Goods and Supplies Merchant Wholesalers
+Census PROD_IND,4001250000,NAICS_2017_Code,423110,,Wholesale sales of motorcycles and other sports vehicles,Automobile and Other Motor Vehicle Merchant Wholesalers
+Census PROD_IND,4001275000,NAICS_2017_Code,423990,,Wholesale sales of musical instruments,Other Miscellaneous Durable Goods Merchant Wholesalers
+Census PROD_IND,4001300000,NAICS_2017_Code,423990,,"Wholesale sales of household pets, pet foods, and pet supplies",Other Miscellaneous Durable Goods Merchant Wholesalers
+Census PROD_IND,4001325000,NAICS_2017_Code,423110,,Wholesale sales of new and used automobiles ,Automobile and Other Motor Vehicle Merchant Wholesalers
+Census PROD_IND,4001350000,NAICS_2017_Code,423110,,"Wholesale sales of new and used light trucks, 14,000 lb. or less, including vans, cargo vans, and SUVs ",Automobile and Other Motor Vehicle Merchant Wholesalers
+Census PROD_IND,4001375000,NAICS_2017_Code,423110,,"Wholesale sales of motor homes, travel trailers, and campers",Automobile and Other Motor Vehicle Merchant Wholesalers
+Census PROD_IND,4001400000,NAICS_2017_Code,423990,,"Wholesale sales of luggage, including backpacks",Other Miscellaneous Durable Goods Merchant Wholesalers
+Census PROD_IND,4001425000,NAICS_2017_Code,424210,,Wholesale sales of prescription drugs and antibiotics,Drugs and Druggists' Sundries Merchant Wholesalers
+Census PROD_IND,4001450000,NAICS_2017_Code,424210,,Wholesale sales of nonprescription drugs and over-the-counter medications,Drugs and Druggists' Sundries Merchant Wholesalers
+Census PROD_IND,4001475000,NAICS_2017_Code,424210,,Wholesale sales of vitamins and nutritional and herbal supplements,Drugs and Druggists' Sundries Merchant Wholesalers
+Census PROD_IND,4001500000,NAICS_2017_Code,423460,,Wholesale sales of optical and ophthalmic goods and supplies,Ophthalmic Goods Merchant Wholesalers
+Census PROD_IND,4001525000,NAICS_2017_Code,423450,,"Wholesale sales of orthopedic and prosthetic appliances and supplies, including wheelchairs, walkers, crutches, canes, and hearing aids","Medical, Dental, and Hospital Equipment and Supplies Merchant Wholesalers"
+Census PROD_IND,4001550000,NAICS_2017_Code,423450,,Wholesale sales of health aids and first aid supplies,"Medical, Dental, and Hospital Equipment and Supplies Merchant Wholesalers"
+Census PROD_IND,4001575000,NAICS_2017_Code,424210,,"Wholesale sales of cosmetics, beauty supplies, perfumes and colognes, including hair preparations and hair brushes ",Drugs and Druggists' Sundries Merchant Wholesalers
+Census PROD_IND,4001600000,NAICS_2017_Code,424210,,"Wholesale sales of bath, facial, and hand soaps",Drugs and Druggists' Sundries Merchant Wholesalers
+Census PROD_IND,4001625000,NAICS_2017_Code,424130,,"Wholesale sales of personal care paper products, including disposable diapers, feminine hygiene products, and similar",Industrial and Personal Service Paper Merchant Wholesalers
+Census PROD_IND,4001650000,NAICS_2017_Code,424210,,"Wholesale sales of other personal care supplies, including toothbrushes (except electric), razor blades, and razors (except electric)",Drugs and Druggists' Sundries Merchant Wholesalers
+Census PROD_IND,4001675000,NAICS_2017_Code,423850,,Wholesale sales of caskets and other funeral goods,Service Establishment Equipment and Supplies Merchant Wholesalers
+Census PROD_IND,4001700000,NAICS_2017_Code,423610,,"Wholesale sales of batteries, except automotive","Electrical Apparatus and Equipment, Wiring Supplies, and Related Equipment Merchant Wholesalers"
+Census PROD_IND,4001725000,NAICS_2017_Code,423490,,Wholesale sales of religious supplies,Other Professional Equipment and Supplies Merchant Wholesalers
+Census PROD_IND,4001750000,NAICS_2017_Code,424990,,"Wholesale sales of novelties and souvenirs, except novelty glassware",Other Miscellaneous Nondurable Goods Merchant Wholesalers
+Census PROD_IND,4001775000,NAICS_2017_Code,424330,,Wholesale sales of infants' goods and accessories,"Women's, Children's, and Infants' Clothing and Accessories Merchant Wholesalers"
+Census PROD_IND,4001785000,NAICS_2017_Code,424990,,Wholesale sales of gift cards,Other Miscellaneous Nondurable Goods Merchant Wholesalers
+Census PROD_IND,4001800000,NAICS_2017_Code,423420,,"Wholesale sales of office equipment, except computers",Office Equipment Merchant Wholesalers
+Census PROD_IND,4001825000,NAICS_2017_Code,423210,,Wholesale sales of office furniture,Furniture Merchant Wholesalers
+Census PROD_IND,4001850000,NAICS_2017_Code,423430,,"Wholesale sales of computers and peripheral equipment, except computer components",Computer and Computer Peripheral Equipment and Software Merchant Wholesalers
+Census PROD_IND,4001875000,NAICS_2017_Code,423690,,Wholesale sales of communications equipment,Other Electronic Parts and Equipment Merchant Wholesalers
+Census PROD_IND,4001900000,NAICS_2017_Code,423430,,Wholesale sales of computer software,Computer and Computer Peripheral Equipment and Software Merchant Wholesalers
+Census PROD_IND,4001925000,NAICS_2017_Code,423110,,Wholesale sales of buses,Automobile and Other Motor Vehicle Merchant Wholesalers
+Census PROD_IND,4001950000,NAICS_2017_Code,423110,,"Wholesale sales of medium trucks and tractors, 14,001 lb. to 33,000 lb.",Automobile and Other Motor Vehicle Merchant Wholesalers
+Census PROD_IND,4001975000,NAICS_2017_Code,423110,,"Wholesale sales of heavy trucks, trailers, and road tractors, more than 33,000 lb.",Automobile and Other Motor Vehicle Merchant Wholesalers
+Census PROD_IND,4002000000,NAICS_2017_Code,423860,,Wholesale sales of aircraft and aeronautical equipment,Transportation Equipment and Supplies (except Motor Vehicle) Merchant Wholesalers
+Census PROD_IND,4002025000,NAICS_2017_Code,423860,,Wholesale sales of marine machinery and equipment,Transportation Equipment and Supplies (except Motor Vehicle) Merchant Wholesalers
+Census PROD_IND,4002050000,NAICS_2017_Code,423860,,Wholesale sales of other transportation equipment ,Transportation Equipment and Supplies (except Motor Vehicle) Merchant Wholesalers
+Census PROD_IND,4002075000,NAICS_2017_Code,423820,,Wholesale sales of farm machinery and equipment,Farm and Garden Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4002100000,NAICS_2017_Code,423810,,"Wholesale sales of construction, forestry, and mining machinery and equipment, including attachments",Construction and Mining (except Oil Well) Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4002125000,NAICS_2017_Code,423830,,Wholesale sales of oil well and pipeline machinery and equipment,Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4002150000,NAICS_2017_Code,423830,,Wholesale sales of new woodworking machinery,Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4002175000,NAICS_2017_Code,423830,,Wholesale sales of new printing trades machinery and equipment,Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4002200000,NAICS_2017_Code,423830,,Wholesale sales of new food-processing machinery and equipment,Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4002225000,NAICS_2017_Code,423830,,Wholesale sales of new metal smelting and refining machinery and equipment,Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4002250000,NAICS_2017_Code,423830,,Wholesale sales of new oil refinery machinery and equipment,Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4002275000,NAICS_2017_Code,423830,,Wholesale sales of new textile and sewing machinery and equipment,Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4002300000,NAICS_2017_Code,423830,,"Wholesale sales of specialized industrial machinery and equipment, including welding, not elsewhere classified",Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4002325000,NAICS_2017_Code,423830,,"Wholesale sales of metalworking machinery and equipment, except welding equipment",Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4002350000,NAICS_2017_Code,423710,,"Wholesale sales of hand tools, power driven ",Hardware Merchant Wholesalers
+Census PROD_IND,4002375000,NAICS_2017_Code,423830,,Wholesale sales of new materials handling machinery and equipment,Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4002400000,NAICS_2017_Code,423610,,"Wholesale sales of electricity generation, control, and storage equipment","Electrical Apparatus and Equipment, Wiring Supplies, and Related Equipment Merchant Wholesalers"
+Census PROD_IND,4002425000,NAICS_2017_Code,423830,,"Wholesale sales of new industrial machinery and equipment, not elsewhere classified, including storage tanks, pumps and scales",Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4002450000,NAICS_2017_Code,423830,,Wholesale sales of used industrial machinery and equipment,Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4002475000,NAICS_2017_Code,423860,,Wholesale sales of navigational and measuring equipment,Transportation Equipment and Supplies (except Motor Vehicle) Merchant Wholesalers
+Census PROD_IND,4002485000,NAICS_2017_Code,423490,,"Wholesale sales of new controlling, recording, and indicating instruments and accessories","Instruments, professional and scientific, merchant wholesalers"
+Census PROD_IND,4002500000,NAICS_2017_Code,423740,,Wholesale sales of refrigeration equipment,Refrigeration Equipment and Supplies Merchant Wholesalers
+Census PROD_IND,4002525000,NAICS_2017_Code,423450,,"Wholesale sales of medical, dental, and veterinary equipment","Medical, Dental, and Hospital Equipment and Supplies Merchant Wholesalers"
+Census PROD_IND,4002550000,NAICS_2017_Code,423210,,Wholesale sales of commercial furniture,Furniture Merchant Wholesalers
+Census PROD_IND,4002560000,NAICS_2017_Code,423440,,"Wholesale sales of restaurant, commercial food service and hotel equipment ",Other Commercial Equipment Merchant Wholesalers
+Census PROD_IND,4002575000,NAICS_2017_Code,423440,,Wholesale sales of store equipment,Other Commercial Equipment Merchant Wholesalers
+Census PROD_IND,4002600000,NAICS_2017_Code,423850,,Wholesale sales of commercial and service industry equipment,Service Establishment Equipment and Supplies Merchant Wholesalers
+Census PROD_IND,4002625000,NAICS_2017_Code,423410,,Wholesale sales of commercial photography and motion picture equipment,Photographic Equipment and Supplies Merchant Wholesalers
+Census PROD_IND,4002650000,NAICS_2017_Code,423990,,Wholesale sales of nonelectric signs and coin-operated games,Other Miscellaneous Durable Goods Merchant Wholesalers
+Census PROD_IND,4002675000,NAICS_2017_Code,423120,,Wholesale sales of petroleum products marketing equipment,Motor Vehicle Supplies and New Parts Merchant Wholesalers
+Census PROD_IND,4002700000,NAICS_2017_Code,423910,,Wholesale sales of exercise/fitness equipment,Sporting and Recreational Goods and Supplies Merchant Wholesalers
+Census PROD_IND,4002725000,NAICS_2017_Code,423460,,Wholesale sales of binoculars,Ophthalmic Goods Merchant Wholesalers
+Census PROD_IND,4002750000,NAICS_2017_Code,423830,,Wholesale sales of industrial water treatment equipment,Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4002775000,NAICS_2017_Code,424710,,"Wholesale sales of refined petroleum products, except liquefied petroleum (LP)",Petroleum Bulk Stations and Terminals
+Census PROD_IND,4002780000,NAICS_2017_Code,423420,,Wholesale sales of safes and vaults,Office Equipment Merchant Wholesalers
+Census PROD_IND,4002800000,NAICS_2017_Code,423520,,Wholesale sales of coal,Coal and Other Mineral and Ore Merchant Wholesalers
+Census PROD_IND,4002825000,NAICS_2017_Code,423990,,Wholesale sales of cordwood and firewood,Other Miscellaneous Durable Goods Merchant Wholesalers
+Census PROD_IND,4002830000,NAICS_2017_Code,424990,,Wholesale sales of charcoal,Other Miscellaneous Nondurable Goods Merchant Wholesalers
+Census PROD_IND,4002850000,NAICS_2017_Code,424720,,"Wholesale sales of other fuels, not elsewhere classified",Petroleum and Petroleum Products Merchant Wholesalers (except Bulk Stations and Terminals)
+Census PROD_IND,4002875000,NAICS_2017_Code,424510,,"Wholesale sales of grains, beans, and seeds",Grain and Field Bean Merchant Wholesalers
+Census PROD_IND,4002925000,NAICS_2017_Code,424430,,Wholesale sales of raw milk and cream,Dairy Product (except Dried or Canned) Merchant Wholesalers
+Census PROD_IND,4002950000,NAICS_2017_Code,424810,,Wholesale sales of brewers' products,Beer and Ale Merchant Wholesalers
+Census PROD_IND,4002970000,NAICS_2017_Code,424990,,"Wholesale sales of inedible animal or vegetable greases and oil, including linseed and cottonseed oil",Other Miscellaneous Nondurable Goods Merchant Wholesalers
+Census PROD_IND,4002975000,NAICS_2017_Code,424590,,Wholesale sales of raw sugar and other raw farm products used in food production,Other Farm Product Raw Material Merchant Wholesalers
+Census PROD_IND,4003000000,NAICS_2017_Code,424440,,Wholesale sales of live poultry,Poultry and Poultry Product Merchant Wholesalers
+Census PROD_IND,4003025000,NAICS_2017_Code,424520,,Wholesale sales of livestock,Livestock Merchant Wholesalers
+Census PROD_IND,4003050000,NAICS_2017_Code,424590,,Wholesale sales of materials and supplies for tobacco manufacturing,Other Farm Product Raw Material Merchant Wholesalers
+Census PROD_IND,4003075000,NAICS_2017_Code,424990,,Wholesale sales of yarns,Other Miscellaneous Nondurable Goods Merchant Wholesalers
+Census PROD_IND,4003100000,NAICS_2017_Code,423930,,"Wholesale sales of recyclable textiles, including rags and textile scraps",Recyclable Material Merchant Wholesalers
+Census PROD_IND,4003125000,NAICS_2017_Code,424590,,Wholesale sales of other materials and supplies for textile mills,Other Farm Product Raw Material Merchant Wholesalers
+Census PROD_IND,4003150000,NAICS_2017_Code,424310,,Wholesale sales of knit and woven piece goods,"Piece Goods, Notions, and Other Dry Goods Merchant Wholesalers"
+Census PROD_IND,4003175000,NAICS_2017_Code,424310,,"Wholesale sales of notions, including buttons, ribbons, lace, sewing accessories, zippers, and bindings","Piece Goods, Notions, and Other Dry Goods Merchant Wholesalers"
+Census PROD_IND,4003200000,NAICS_2017_Code,424590,,"Wholesale sales of hides, skins, and pelts",Other Farm Product Raw Material Merchant Wholesalers
+Census PROD_IND,4003210000,NAICS_2017_Code,424340,,Wholesale sales of leather cut stock for shoes and boots,Footwear Merchant Wholesalers
+Census PROD_IND,4003225000,NAICS_2017_Code,423990,,Wholesale sales of pulpwood,Other Miscellaneous Durable Goods Merchant Wholesalers
+Census PROD_IND,4003250000,NAICS_2017_Code,424990,,Wholesale sales of wood pulp,Other Miscellaneous Nondurable Goods Merchant Wholesalers
+Census PROD_IND,4003275000,NAICS_2017_Code,423930,,Wholesale sales of recyclable paper and paperboard,Recyclable Material Merchant Wholesalers
+Census PROD_IND,4003300000,NAICS_2017_Code,424110,,Wholesale sales of printing paper,Printing and Writing Paper Merchant Wholesalers
+Census PROD_IND,4003310000,NAICS_2017_Code,423840,,"Wholesale sales of ink and printing trades supplies, except paper",Industrial Supplies Merchant Wholesalers
+Census PROD_IND,4003325000,NAICS_2017_Code,424720,,Wholesale sales of crude oil,Petroleum and Petroleum Products Merchant Wholesalers (except Bulk Stations and Terminals)
+Census PROD_IND,4003350000,NAICS_2017_Code,424720,,"Wholesale sales of other petroleum products, including asphalt, road oil, and wax",Petroleum and Petroleum Products Merchant Wholesalers (except Bulk Stations and Terminals)
+Census PROD_IND,4003375000,NAICS_2017_Code,424690,,"Wholesale sales of chemicals, except explosives and automotive, drillers, and sanitation chemicals",Other Chemical and Allied Products Merchant Wholesalers
+Census PROD_IND,4003400000,NAICS_2017_Code,424720,,Wholesale sales of liquefied petroleum (LP),Petroleum and Petroleum Products Merchant Wholesalers (except Bulk Stations and Terminals)
+Census PROD_IND,4003425000,NAICS_2017_Code,424690,,"Wholesale sales of industrial gases, except oxygen, acetylene and other welding gases",Other Chemical and Allied Products Merchant Wholesalers
+Census PROD_IND,4003450000,NAICS_2017_Code,424690,,Wholesale sales of acetylene and other welding gases,Other Chemical and Allied Products Merchant Wholesalers
+Census PROD_IND,4003475000,NAICS_2017_Code,424690,,Wholesale sales of oxygen,Other Chemical and Allied Products Merchant Wholesalers
+Census PROD_IND,4003500000,NAICS_2017_Code,424610,,"Wholesale sales of laminates, plastic raw materials, and crude rubber",Plastics Materials and Basic Forms and Shapes Merchant Wholesalers
+Census PROD_IND,4003510000,NAICS_2017_Code,424690,,Wholesale sales of synthetic resins,Other Chemical and Allied Products Merchant Wholesalers
+Census PROD_IND,4003520000,NAICS_2017_Code,423930,,Wholesale sales of recyclable plastics and rubber,Recyclable Material Merchant Wholesalers
+Census PROD_IND,4003525000,NAICS_2017_Code,423520,,"Wholesale sales of nonmetallic minerals, except crude petroleum and minerals used in construction and fertilizer",Coal and Other Mineral and Ore Merchant Wholesalers
+Census PROD_IND,4003550000,NAICS_2017_Code,423840,,Wholesale sales of materials and supplies for glass products manufacturing,Industrial Supplies Merchant Wholesalers
+Census PROD_IND,4003575000,NAICS_2017_Code,423520,,"Wholesale sales of ores, except coal, gemstones, and crude oil",Coal and Other Mineral and Ore Merchant Wholesalers
+Census PROD_IND,4003600000,NAICS_2017_Code,423510,,"Wholesale sales of nonferrous metals, including magnesium, nickel, tin, lead, and zinc, except gemstones",Metal Service Centers and Other Metal Merchant Wholesalers
+Census PROD_IND,4003625000,NAICS_2017_Code,423520,,Wholesale sales of precious metals,Coal and Other Mineral and Ore Merchant Wholesalers
+Census PROD_IND,4003650000,NAICS_2017_Code,423930,,Wholesale sales of recyclable ferrous metal scrap,Recyclable Material Merchant Wholesalers
+Census PROD_IND,4003675000,NAICS_2017_Code,423930,,Wholesale sales of recyclable nonferrous metal scrap,Recyclable Material Merchant Wholesalers
+Census PROD_IND,4003700000,NAICS_2017_Code,423520,,Wholesale sales of coke,Coal and Other Mineral and Ore Merchant Wholesalers
+Census PROD_IND,4003725000,NAICS_2017_Code,423510,,Wholesale sales of semi-finished iron and steel products,Metal Service Centers and Other Metal Merchant Wholesalers
+Census PROD_IND,4003750000,NAICS_2017_Code,423510,,Wholesale sales of flat iron and steel products,Metal Service Centers and Other Metal Merchant Wholesalers
+Census PROD_IND,4003775000,NAICS_2017_Code,423510,,Wholesale sales of iron and steel pipes and tubing,Metal Service Centers and Other Metal Merchant Wholesalers
+Census PROD_IND,4003800000,NAICS_2017_Code,423510,,"Wholesale sales of iron and steel bars and bar-size shapes, except reinforcement bars",Metal Service Centers and Other Metal Merchant Wholesalers
+Census PROD_IND,4003825000,NAICS_2017_Code,423510,,Wholesale sales of alloy steel,Metal Service Centers and Other Metal Merchant Wholesalers
+Census PROD_IND,4003850000,NAICS_2017_Code,423510,,Wholesale sales of stainless steel,Metal Service Centers and Other Metal Merchant Wholesalers
+Census PROD_IND,4003875000,NAICS_2017_Code,423510,,"Wholesale sales of primary, secondary and alloyed aluminum in primary and mill shapes ",Metal Service Centers and Other Metal Merchant Wholesalers
+Census PROD_IND,4003900000,NAICS_2017_Code,423510,,"Wholesale sales of primary, secondary and alloyed copper and brass in primary and mill shapes, except pipe and tube",Metal Service Centers and Other Metal Merchant Wholesalers
+Census PROD_IND,4003925000,NAICS_2017_Code,423510,,"Wholesale sales of other primary, secondary and alloyed nonferrous metals in primary and mill shapes",Metal Service Centers and Other Metal Merchant Wholesalers
+Census PROD_IND,4003950000,NAICS_2017_Code,423510,,"Wholesale sales of metal castings, forgings, and stampings",Metal Service Centers and Other Metal Merchant Wholesalers
+Census PROD_IND,4003975000,NAICS_2017_Code,423510,,"Wholesale sales of wire, including plain, coated, barbed, and twisted",Metal Service Centers and Other Metal Merchant Wholesalers
+Census PROD_IND,4004000000,NAICS_2017_Code,423840,,Wholesale sales of mechanical power transmission supplies,Industrial Supplies Merchant Wholesalers
+Census PROD_IND,4004025000,NAICS_2017_Code,423830,,Wholesale sales of hydraulic and pneumatic valves,Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4004050000,NAICS_2017_Code,423830,,Wholesale sales of hydraulic and pneumatic cylinders and rotary actuators,Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4004075000,NAICS_2017_Code,423830,,Wholesale sales of hydraulic and pneumatic connectors and assemblies,Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4004100000,NAICS_2017_Code,423830,,"Wholesale sales of hydraulic and pneumatic components, accessories, and parts",Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4004125000,NAICS_2017_Code,423830,,"Wholesale sales of hydraulic and pneumatic pumps, motors, and parts",Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4004150000,NAICS_2017_Code,423130,,Wholesale sales of tires and tubes,Tire and Tube Merchant Wholesalers
+Census PROD_IND,4004175000,NAICS_2017_Code,423120,,"Wholesale sales of new and rebuilt automotive parts and supplies, and trailer parts and supplies, except automotive bodies and chemicals",Motor Vehicle Supplies and New Parts Merchant Wholesalers
+Census PROD_IND,4004195000,NAICS_2017_Code,423620,,"Wholesale sales of car stereos, tape players, and CD players","Household Appliances, Electric Housewares, and Consumer Electronics Merchant Wholesalers"
+Census PROD_IND,4004200000,NAICS_2017_Code,423110,,"Wholesale sales of new light truck, van, and SUV bodies",Automobile and Other Motor Vehicle Merchant Wholesalers
+Census PROD_IND,4004225000,NAICS_2017_Code,424690,,"Wholesale sales of automotive chemicals, including polishes and cleaners, fuel and oil additives, and antifreeze",Other Chemical and Allied Products Merchant Wholesalers
+Census PROD_IND,4004250000,NAICS_2017_Code,423140,,Wholesale sales of used automotive parts and accessories,Motor Vehicle Parts (Used) Merchant Wholesalers
+Census PROD_IND,4004275000,NAICS_2017_Code,423860,,Wholesale sales of marine propulsion machinery and equipment and marine supplies,Transportation Equipment and Supplies (except Motor Vehicle) Merchant Wholesalers
+Census PROD_IND,4004300000,NAICS_2017_Code,423860,,"Wholesale sales of aircraft equipment and supplies, including engines and engine parts",Transportation Equipment and Supplies (except Motor Vehicle) Merchant Wholesalers
+Census PROD_IND,4004325000,NAICS_2017_Code,423110,,Wholesale sales of new medium truck bodies,Automobile and Other Motor Vehicle Merchant Wholesalers
+Census PROD_IND,4004350000,NAICS_2017_Code,423110,,Wholesale sales of new heavy truck bodies,Automobile and Other Motor Vehicle Merchant Wholesalers
+Census PROD_IND,4004375000,NAICS_2017_Code,423820,,Wholesale sales of farm machinery parts and supplies,Farm and Garden Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4004400000,NAICS_2017_Code,423810,,"Wholesale sales of construction, forestry, and mining machinery parts and supplies",Construction and Mining (except Oil Well) Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4004425000,NAICS_2017_Code,423830,,Wholesale sales of oil well and pipeline machinery parts and supplies,Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4004450000,NAICS_2017_Code,423830,,Wholesale sales of industrial engines,Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4004475000,NAICS_2017_Code,423830,,"Wholesale sales of industrial, commercial, and service industry machinery parts and supplies",Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4004500000,NAICS_2017_Code,424720,,Wholesale sales of lubricating oil and greases,Petroleum and Petroleum Products Merchant Wholesalers (except Bulk Stations and Terminals)
+Census PROD_IND,4004525000,NAICS_2017_Code,423690,,"Wholesale sales of materials and supplies for electronic and electrical equipment, appliances, and component manufacturing",Other Electronic Parts and Equipment Merchant Wholesalers
+Census PROD_IND,4004550000,NAICS_2017_Code,424910,,"Wholesale sales of farm supplies, including agricultural chemicals, feed, and fertilizers",Farm Supplies Merchant Wholesalers
+Census PROD_IND,4004575000,NAICS_2017_Code,424590,,Wholesale sales of inedible farm products,Other Farm Product Raw Material Merchant Wholesalers
+Census PROD_IND,4004600000,NAICS_2017_Code,424690,,Wholesale sales of nonagricultural insecticides,Other Chemical and Allied Products Merchant Wholesalers
+Census PROD_IND,4004625000,NAICS_2017_Code,424990,,"Wholesale sales of textile bags, bagging and burlap",Other Miscellaneous Nondurable Goods Merchant Wholesalers
+Census PROD_IND,4004650000,NAICS_2017_Code,423510,,Wholesale sales of metal structural products,Metal Service Centers and Other Metal Merchant Wholesalers
+Census PROD_IND,4004660000,NAICS_2017_Code,424690,,Wholesale sales of chemically blown closed cell rubber sponge,Other Chemical and Allied Products Merchant Wholesalers
+Census PROD_IND,4004675000,NAICS_2017_Code,423330,,"Wholesale sales of nonwood roofing, siding, and insulation products ","Roofing, Siding, and Insulation Material Merchant Wholesalers"
+Census PROD_IND,4004700000,NAICS_2017_Code,423390,,Wholesale sales of building and construction polystyrene and polyurethane foam products ,Other Construction Material Merchant Wholesalers
+Census PROD_IND,4004725000,NAICS_2017_Code,423310,,"Wholesale sales of rough, dressed, and finished dimensional lumber, plywood and panels","Lumber, Plywood, Millwork, and Wood Panel Merchant Wholesalers"
+Census PROD_IND,4004775000,NAICS_2017_Code,423310,,Wholesale sales of millwork,"Lumber, Plywood, Millwork, and Wood Panel Merchant Wholesalers"
+Census PROD_IND,4004800000,NAICS_2017_Code,423310,,Wholesale sales of flooring and floor coverings,"Lumber, Plywood, Millwork, and Wood Panel Merchant Wholesalers"
+Census PROD_IND,4004810000,NAICS_2017_Code,423720,,Wholesale sales of plastic plumbing pipes and tubing,Plumbing and Heating Equipment and Supplies (Hydronics) Merchant Wholesalers
+Census PROD_IND,4004820000,NAICS_2017_Code,423720,,Wholesale sales of copper plumbing pipes and tubing,Plumbing and Heating Equipment and Supplies (Hydronics) Merchant Wholesalers
+Census PROD_IND,4004825000,NAICS_2017_Code,423720,,"Wholesale sales of plumbing equipment, except pipes and tubing",Plumbing and Heating Equipment and Supplies (Hydronics) Merchant Wholesalers
+Census PROD_IND,4004830000,NAICS_2017_Code,423740,,Wholesale sales of condensing units for commercial refrigerators,Refrigeration Equipment and Supplies Merchant Wholesalers
+Census PROD_IND,4004840000,NAICS_2017_Code,423730,,Wholesale sales of heating and HVAC equipment,Warm Air Heating and Air-Conditioning Equipment and Supplies Merchant Wholesalers
+Census PROD_IND,4004850000,NAICS_2017_Code,423610,,"Wholesale sales of electrical, communication, and lighting system products","Electrical Apparatus and Equipment, Wiring Supplies, and Related Equipment Merchant Wholesalers"
+Census PROD_IND,4004875000,NAICS_2017_Code,424950,,"Wholesale sales of paint, paint supplies, and wallpaper and supplies","Paint, Varnish, and Supplies Merchant Wholesalers"
+Census PROD_IND,4004900000,NAICS_2017_Code,423320,,"Wholesale sales of concrete, cement, sand, gravel, stone, brick, block, and tile ","Brick, Stone, and Related Construction Material Merchant Wholesalers"
+Census PROD_IND,4004910000,NAICS_2017_Code,423710,,"Wholesale sales of bolts, nuts, rivets, and other fasteners, except nails",Hardware Merchant Wholesalers
+Census PROD_IND,4004915000,NAICS_2017_Code,423510,,"Wholesale sales of nails, wire rope, strand, strapping and reinforcement mesh",Metal Service Centers and Other Metal Merchant Wholesalers
+Census PROD_IND,4004925000,NAICS_2017_Code,423390,,Wholesale sales of other construction materials and supplies,Other Construction Material Merchant Wholesalers
+Census PROD_IND,4004950000,NAICS_2017_Code,423850,,Wholesale sales of fire extinguishers and fire safety equipment,Service Establishment Equipment and Supplies Merchant Wholesalers
+Census PROD_IND,4004975000,NAICS_2017_Code,423850,,Wholesale sales of fire sprinkler devices,Service Establishment Equipment and Supplies Merchant Wholesalers
+Census PROD_IND,4005000000,NAICS_2017_Code,424690,,Wholesale sales of explosives and drillers chemicals,Other Chemical and Allied Products Merchant Wholesalers
+Census PROD_IND,4005025000,NAICS_2017_Code,424610,,"Wholesale sales of plastic pipes, rods, tubes, and shapes, except plastic plumbing pipes",Plastics Materials and Basic Forms and Shapes Merchant Wholesalers
+Census PROD_IND,4005050000,NAICS_2017_Code,423820,,Wholesale sales of new irrigation equipment and parts,Farm and Garden Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4005075000,NAICS_2017_Code,423840,,"Wholesale sales of industrial valves and fittings, except hydraulic valves and fittings",Industrial Supplies Merchant Wholesalers
+Census PROD_IND,4005100000,NAICS_2017_Code,423710,,Wholesale sales of nonpower driven hand tools,Hardware Merchant Wholesalers
+Census PROD_IND,4005110000,NAICS_2017_Code,423810,,Wholesale sales of scaffolding and ladders,Construction and Mining (except Oil Well) Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4005125000,NAICS_2017_Code,424210,,"Wholesale sales of specialty pharmaceuticals, including vaccines, laboratory diagnostic reagents, and similar",Drugs and Druggists' Sundries Merchant Wholesalers
+Census PROD_IND,4005150000,NAICS_2017_Code,424210,,Wholesale sales of veterinary and pet medicines,Drugs and Druggists' Sundries Merchant Wholesalers
+Census PROD_IND,4005175000,NAICS_2017_Code,423450,,"Wholesale sales of medical, dental, and veterinary instruments and supplies","Medical, Dental, and Hospital Equipment and Supplies Merchant Wholesalers"
+Census PROD_IND,4005200000,NAICS_2017_Code,423410,,Wholesale sales of photographic supplies,Photographic Equipment and Supplies Merchant Wholesalers
+Census PROD_IND,4005225000,NAICS_2017_Code,423850,,Wholesale sales of janitorial supplies and nonpower janitorial equipment,Service Establishment Equipment and Supplies Merchant Wholesalers
+Census PROD_IND,4005230000,NAICS_2017_Code,424690,,Wholesale sales of cleaning chemicals,Other Chemical and Allied Products Merchant Wholesalers
+Census PROD_IND,4005240000,NAICS_2017_Code,423220,,"Wholesale sales of household cleaning supplies, including mops and brooms",Home Furnishing Merchant Wholesalers
+Census PROD_IND,4005250000,NAICS_2017_Code,424910,,Wholesale sales of harness and saddlery equipment,Farm Supplies Merchant Wholesalers
+Census PROD_IND,4005275000,NAICS_2017_Code,424130,,Wholesale sales of disposable paper and plastic products,Industrial and Personal Service Paper Merchant Wholesalers
+Census PROD_IND,4005300000,NAICS_2017_Code,423920,,Wholesale sales of fireworks and firecrackers,Toy and Hobby Goods and Supplies Merchant Wholesalers
+Census PROD_IND,4005310000,NAICS_2017_Code,423850,,Wholesale sales of laundry and dry-cleaning supplies,Service Establishment Equipment and Supplies Merchant Wholesalers
+Census PROD_IND,4005325000,NAICS_2017_Code,423490,,"Wholesale sales of materials and supplies for professional and service industries, not elsewhere classified",Other Professional Equipment and Supplies Merchant Wholesalers
+Census PROD_IND,4005330000,NAICS_2017_Code,423830,,Wholesale sales of pallets and skids,Industrial Machinery and Equipment Merchant Wholesalers
+Census PROD_IND,4005350000,NAICS_2017_Code,423840,,Wholesale sales of industrial containers and supplies,Industrial Supplies Merchant Wholesalers
+Census PROD_IND,4005355000,NAICS_2017_Code,423840,,Wholesale sales of packing and packaging materials and supplies,Industrial Supplies Merchant Wholesalers
+Census PROD_IND,4005358000,NAICS_2017_Code,423840,,Wholesale sales of strapping and tape,Industrial Supplies Merchant Wholesalers
+Census PROD_IND,4005360000,NAICS_2017_Code,424120,,Wholesale sales of gift wrap,Stationery and Office Supplies Merchant Wholesalers
+Census PROD_IND,4005375000,NAICS_2017_Code,424120,,Wholesale sales of office supplies,Stationery and Office Supplies Merchant Wholesalers
+Census PROD_IND,4005400000,NAICS_2017_Code,423490,,Wholesale sales of school supplies,Other Professional Equipment and Supplies Merchant Wholesalers
+Census PROD_IND,4005425000,NAICS_2017_Code,424990,,Wholesale sales of art supplies,Other Miscellaneous Nondurable Goods Merchant Wholesalers
+Census PROD_IND,4005450000,NAICS_2017_Code,423690,,"Wholesale sales of blank CDs, DVDs, and other recordable media",Other Electronic Parts and Equipment Merchant Wholesalers
+Census PROD_IND,4005475000,NAICS_2017_Code,424130,,Wholesale sales of nonpackaging paper and plastic,Industrial and Personal Service Paper Merchant Wholesalers
+Census PROD_IND,4005480000,NAICS_2017_Code,423840,,"Wholesale sales of other industrial materials and supplies, including abrasives and welding supplies",Industrial Supplies Merchant Wholesalers
+Census PROD_IND,4005485000,NAICS_2017_Code,424610,,"Wholesale sales of miscellaneous chemicals and supplies, including adhesives, dry ice and plastic materials",Plastics Materials and Basic Forms and Shapes Merchant Wholesalers
+Census PROD_IND,4005490000,NAICS_2017_Code,423930,,"Wholesale sales of other recyclable materials, excluding paper, metal, textiles, plastic, rubber and glass",Recyclable Material Merchant Wholesalers
+Census PROD_IND,4005491000,NAICS_2017_Code,424990,,"Wholesale sales of live bait, chamois, natural sponges, plant food, rennet, and sawdust",Other Miscellaneous Nondurable Goods Merchant Wholesalers
+Census PROD_IND,4005492000,NAICS_2017_Code,423990,,Wholesale sales of safety equipment,Other Miscellaneous Durable Goods Merchant Wholesalers
+Census PROD_IND,4005494000,NAICS_2017_Code,423610,,Wholesale sales of electric light bulbs,"Electrical Apparatus and Equipment, Wiring Supplies, and Related Equipment Merchant Wholesalers"
+Census PROD_IND,4005495000,NAICS_2017_Code,423990,,"Wholesale sales of nonlumber forest products, including hewn posts, poles, and railroad ties",Other Miscellaneous Durable Goods Merchant Wholesalers
+Census PROD_IND,4005496000,NAICS_2017_Code,423990,,"Wholesale sales of military and other firearms and ammunition, except small arms",Other Miscellaneous Durable Goods Merchant Wholesalers
+Census PROD_IND,4005497000,NAICS_2017_Code,423990,,Wholesale sales of gas lighting fixtures and equipment,Other Miscellaneous Durable Goods Merchant Wholesalers
+Census PROD_IND,4005498000,NAICS_2017_Code,424990,,Wholesale sales of wigs and hairpieces,Other Miscellaneous Nondurable Goods Merchant Wholesalers
+Census PROD_IND,4005499000,NAICS_2017_Code,424990,,"Wholesale sales of balloons, clothes hangers, foam mats, lawn ornaments, and jewelry boxes",Other Miscellaneous Nondurable Goods Merchant Wholesalers
+Census PROD_IND,4005500000,NAICS_2017_Code,424410,,"Wholesale sales of other goods, not elsewhere classified",General Line Grocery Merchant Wholesalers
+Census PROD_IND,5000025000,NAICS_2017_Code,445110,,Retail sales of fresh meat and poultry,Supermarkets and Other Grocery (except Convenience) Stores
+Census PROD_IND,5000050000,NAICS_2017_Code,445110,,Retail sales of fresh fish and seafood,Supermarkets and Other Grocery (except Convenience) Stores
+Census PROD_IND,5000075000,NAICS_2017_Code,445110,,Retail sales of fresh fruit and vegetables,Supermarkets and Other Grocery (except Convenience) Stores
+Census PROD_IND,5000100000,NAICS_2017_Code,445110,,Retail sales of eggs and dairy (except ice cream),Supermarkets and Other Grocery (except Convenience) Stores
+Census PROD_IND,5000125000,NAICS_2017_Code,445110,,Retail sales of baked goods,Supermarkets and Other Grocery (except Convenience) Stores
+Census PROD_IND,5000150000,NAICS_2017_Code,445110,,Retail sales of perishable prepared foods,Supermarkets and Other Grocery (except Convenience) Stores
+Census PROD_IND,5000175000,NAICS_2017_Code,445110,,Retail sales of frozen foods,Supermarkets and Other Grocery (except Convenience) Stores
+Census PROD_IND,5000200000,NAICS_2017_Code,445292,,"Retail sales of candy, prepackaged cookies, and snack foods",Confectionery and Nut Stores
+Census PROD_IND,5000225000,NAICS_2017_Code,445110,,Retail sales of food dry goods and other foods purchased for future consumption,Supermarkets and Other Grocery (except Convenience) Stores
+Census PROD_IND,5000250000,NAICS_2017_Code,445299,,Retail sales of soft drinks and nonalcoholic beverages,All Other Specialty Food Stores
+Census PROD_IND,5000275000,NAICS_2017_Code,445110,,Retail sales of ice,Supermarkets and Other Grocery (except Convenience) Stores
+Census PROD_IND,5000300000,NAICS_2017_Code,445310,,Retail sales of alcoholic beverages,"Beer, Wine, and Liquor Stores"
+Census PROD_IND,5000325000,NAICS_2017_Code,453991,,Retail sales of tobacco products and smoking accessories,Tobacco Stores
+Census PROD_IND,5000350000,NAICS_2017_Code,448110,,Retail sales of men's clothing,Men's Clothing Stores
+Census PROD_IND,5000375000,NAICS_2017_Code,448120,,Retail sales of women's clothing,Women's Clothing Stores
+Census PROD_IND,5000400000,NAICS_2017_Code,448130,,"Retail sales of children's wear, including boys', girls', and infants' and toddlers' clothing and accessories",Children's and Infants' Clothing Stores
+Census PROD_IND,5000425000,NAICS_2017_Code,448190,,"Retail sales of costumes, vestments, and unisex clothing",Other Clothing Stores
+Census PROD_IND,5000450000,NAICS_2017_Code,448150,,Retail sales of men's and women's accessories (except costume jewelry),Clothing Accessories Stores
+Census PROD_IND,5000455000,NAICS_2017_Code,448150,,Retail sales of costume and novelty jewelry,Clothing Accessories Stores
+Census PROD_IND,5000475000,NAICS_2017_Code,448210,,Retail sales of footwear and footwear accessories,Shoe Stores
+Census PROD_IND,5000500000,NAICS_2017_Code,448310,,Retail sales of fine jewelry and watches ,Jewelry Stores
+Census PROD_IND,5000525000,NAICS_2017_Code,453930,,Retail sales of manufactured (mobile) homes,Manufactured (Mobile) Home Dealers
+Census PROD_IND,5000550000,NAICS_2017_Code,442110,,Retail sales of indoor home furniture,Furniture Stores
+Census PROD_IND,5000575000,NAICS_2017_Code,442110,,Retail sales of outdoor/ patio furniture,Furniture Stores
+Census PROD_IND,5000600000,NAICS_2017_Code,442110,,"Retail sales of mattresses, box springs, and air mattresses",Furniture Stores
+Census PROD_IND,5000625000,NAICS_2017_Code,442291,,"Retail sales of window treatments, including rods, poles, and fixtures",Window Treatment Stores
+Census PROD_IND,5000650000,NAICS_2017_Code,442299,,Retail sales of domestics and other textile home furnishings (except carpet and rugs),All Other Home Furnishings Stores
+Census PROD_IND,5000675000,NAICS_2017_Code,442299,,Retail sales of other home furnishings and accessories,All Other Home Furnishings Stores
+Census PROD_IND,5000700000,NAICS_2017_Code,443141,,Retail sales of major household appliances and related parts and accessories,Household Appliance Stores
+Census PROD_IND,5000725000,NAICS_2017_Code,443141,,"Retail sales of small household appliances, including mixers; blenders; can openers; toasters; coffee makers; frypans; personal care appliances, such as hair dryers, curling irons, and shavers; tap water purifiers and filters; etc.",Household Appliance Stores
+Census PROD_IND,5000750000,NAICS_2017_Code,442299,,"Retail sales of tableware, kitchenware, cookware, glassware",All Other Home Furnishings Stores
+Census PROD_IND,5000775000,NAICS_2017_Code,452311,,Retail sales of household cleaning supplies,Warehouse Clubs and Supercenters
+Census PROD_IND,5000800000,NAICS_2017_Code,444110,,Retail sales of home lawn and garden goods,Home Centers
+Census PROD_IND,5000825000,NAICS_2017_Code,452311,,"Retail sales of household paper and plastic products, except tableware",Warehouse Clubs and Supercenters
+Census PROD_IND,5000850000,NAICS_2017_Code,453310,,"Retail sales of antiques, collectibles, art works, and other used goods (except transportation and machinery goods) ",Used Merchandise Stores
+Census PROD_IND,5000860000,NAICS_2017_Code,452311,,"Retail sales of household and personal goods, not elsewhere classified",Warehouse Clubs and Supercenters
+Census PROD_IND,5000875000,NAICS_2017_Code,443142,,"Retail sales of televisions, audio and video equipment",Electronics Stores
+Census PROD_IND,5000900000,NAICS_2017_Code,443142,,Retail sales of photographic equipment and supplies,Electronics Stores
+Census PROD_IND,5000925000,NAICS_2017_Code,451211,,Retail sales of books,Book Stores
+Census PROD_IND,5000950000,NAICS_2017_Code,451212,,"Retail sales of magazines and newspapers, including issue format comic books",News Dealers and Newsstands
+Census PROD_IND,5000975000,NAICS_2017_Code,453220,,"Retail sales of other publications, including greeting cards and calendars","Gift, Novelty, and Souvenir Stores"
+Census PROD_IND,5001000000,NAICS_2017_Code,443142,,"Retail sales of audio and video recordings, including purchased downloads",Electronics Stores
+Census PROD_IND,5001025000,NAICS_2017_Code,451110,,"Retail sales of bicycles and other cycles, all types, except children's sidewalk bikes, and parts and accessories",Sporting Goods Stores
+Census PROD_IND,5001050000,NAICS_2017_Code,451110,,Retail sales of golf equipment,Sporting Goods Stores
+Census PROD_IND,5001075000,NAICS_2017_Code,451110,,"Retail sales of hunting, fishing, hiking, and camping equipment",Sporting Goods Stores
+Census PROD_IND,5001100000,NAICS_2017_Code,451110,,"Retail sales of other sporting goods and equipment, excluding sport vehicles",Sporting Goods Stores
+Census PROD_IND,5001125000,NAICS_2017_Code,451120,,"Retail sales of toys, games, and hobby and craft supplies","Hobby, Toy, and Game Stores"
+Census PROD_IND,5001150000,NAICS_2017_Code,441228,,"Retail sales of motorcycles, motor scooters, motor bikes, including parts and accessories ","Motorcycle, ATV, and All Other Motor Vehicle Dealers"
+Census PROD_IND,5001175000,NAICS_2017_Code,441222,,Retail sales of boats and other sports vehicles,Boat Dealers
+Census PROD_IND,5001200000,NAICS_2017_Code,451140,,"Retail sales of musical instruments, sheet music, and related items",Musical Instrument and Supplies Stores
+Census PROD_IND,5001225000,NAICS_2017_Code,453910,,"Retail sales of pets, including fish",Pet and Pet Supplies Stores
+Census PROD_IND,5001250000,NAICS_2017_Code,453910,,Retail sales of pet foods and supplies,Pet and Pet Supplies Stores
+Census PROD_IND,5001275000,NAICS_2017_Code,441110,,Retail sales of automobiles and light-duty trucks,New Car Dealers
+Census PROD_IND,5001300000,NAICS_2017_Code,441210,,"Retail sales of motor homes, travel trailers, and campers ",Recreational Vehicle Dealers
+Census PROD_IND,5001325000,NAICS_2017_Code,448320,,"Retail sales of luggage and leather goods, including briefcases",Luggage and Leather Goods Stores
+Census PROD_IND,5001350000,NAICS_2017_Code,446110,,"Retail sales of medicines, vitamins, minerals, and supplements",Pharmacies and Drug Stores
+Census PROD_IND,5001375000,NAICS_2017_Code,446199,,Retail sales of home health care equipment and supplies,All Other Health and Personal Care Stores
+Census PROD_IND,5001400000,NAICS_2017_Code,446130,,Retail sales of glasses and contact lenses,Optical Goods Stores
+Census PROD_IND,5001425000,NAICS_2017_Code,452311,,Retail sales of personal hygiene supplies,Warehouse Clubs and Supercenters
+Census PROD_IND,5001450000,NAICS_2017_Code,446120,,Retail sales of cosmetics and fragrances,"Cosmetics, Beauty Supplies, and Perfume Stores"
+Census PROD_IND,5001475000,NAICS_2017_Code,453998,,"Retail sales of caskets, monuments, grave markers, and other funeral goods",All Other Miscellaneous Store Retailers (except Tobacco Stores)
+Census PROD_IND,5001525000,NAICS_2017_Code,453210,,Retail sales of office equipment and furniture (except computers),Office Supplies and Stationery Stores
+Census PROD_IND,5001550000,NAICS_2017_Code,443142,,"Retail sales of computers and peripheral equipment, communications equipment, and related products",Electronics Stores
+Census PROD_IND,5001575000,NAICS_2017_Code,443142,,Retail sales of computer software,Electronics Stores
+Census PROD_IND,5001625000,NAICS_2017_Code,441228,,"Retail sales of new and used aircraft, engines, and parts and accessories","Motorcycle, ATV, and All Other Motor Vehicle Dealers"
+Census PROD_IND,5001650000,NAICS_2017_Code,444210,,"Retail sales of farm machinery, equipment, and parts",Outdoor Power Equipment Stores
+Census PROD_IND,5001675000,NAICS_2017_Code,444110,,"Retail sales of power tools and equipment, including portable electric power tools, power air tools, stationary/bench top power tools, and accessories (blades, bits, etc.)",Home Centers
+Census PROD_IND,5001700000,NAICS_2017_Code,454110,,Retail sales of exercise/fitness equipment,Electronic Shopping and Mail-Order Houses
+Census PROD_IND,5001710000,NAICS_2017_Code,444110,,Retail sales of safes and vaults,Home Centers
+Census PROD_IND,5001725000,NAICS_2017_Code,447110,,Retail sales of automotive fuels,Gasoline Stations with Convenience Stores
+Census PROD_IND,5001750000,NAICS_2017_Code,454310,,"Retail sales of household fuels, including oil, LP gas, wood, coal",Fuel Dealers
+Census PROD_IND,5001775000,NAICS_2017_Code,451130,,"Retail sales of fabrics, yarns, and other sewing materials and supplies","Sewing, Needlework, and Piece Goods Stores"
+Census PROD_IND,5001800000,NAICS_2017_Code,444220,,Retail sales of farm and agricultural supplies,"Nursery, Garden Center, and Farm Supply Stores"
+Census PROD_IND,5001825000,NAICS_2017_Code,444120,,Retail sales of wallpaper and other flexible wallcoverings,Paint and Wallpaper Stores
+Census PROD_IND,5001850000,NAICS_2017_Code,444120,,Retail sales of paint and sundries,Paint and Wallpaper Stores
+Census PROD_IND,5001875000,NAICS_2017_Code,442210,,Retail sales of flooring and floor coverings,Floor Covering Stores
+Census PROD_IND,5001900000,NAICS_2017_Code,444110,,"Retail sales of plumbing, electrical, and HVAC supplies",Home Centers
+Census PROD_IND,5001925000,NAICS_2017_Code,444190,,"Retail sales of hardware, nonpower hand tools, and other building materials and supplies",Other Building Material Dealers
+Census PROD_IND,5001935000,NAICS_2017_Code,454110,,"Retail sales of office and school supplies, packaging and packing materials and supplies, and other general industry and miscellaneous materials and supplies",Electronic Shopping and Mail-Order Houses
+Census PROD_IND,5001950000,NAICS_2017_Code,441310,,Retail sales of automotive parts and supplies,Automotive Parts and Accessories Stores
+Census PROD_IND,5002000000,NAICS_2017_Code,452311,,"Retail sales of other goods, not elsewhere classified",Warehouse Clubs and Supercenters
