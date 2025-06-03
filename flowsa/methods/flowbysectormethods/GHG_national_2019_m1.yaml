@@ -229,7 +229,7 @@ source_names:
 
 
 ### Major CO2 Sources
-  "EPA_GHGI_T_A_10":  # CO2 emissions from stationary combustion. This table number varies by GHG year.
+  "EPA_GHGI_T_A_9":  # CO2 emissions from stationary combustion. This table number varies by GHG year.
     !include:GHG_national_m1_common.yaml:source_names:GHGI_CO2_stationary_combustion
     year: *ghgi_year
     clean_parameter: *industrial_dict
