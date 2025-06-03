@@ -2,7 +2,7 @@
 # All parameters add year specific data when needed to implement for 2023
 # GHGI FBA table names match the 2025 GHGI Report
 # MECS year is 2018
-# CoA year is 2023
+# CoA year is 2022
 
 !include:GHG_national_m2_common.yaml
 ghgi_year: &ghgi_year 2023
