@@ -1,8 +1,10 @@
 from typing import Literal
 import pandas as pd
 import numpy as np
+import re
 from flowsa.flowbyfunctions import aggregator
 from flowsa.flowsa_log import vlog, log
+from flowsa.dqi import adjust_dqi_reliability_collection_scores
 from . import (common, settings)
 
 
@@ -91,6 +93,165 @@ def industry_spec_key(
                  )
 
     return naics_key
+
+
+def subset_sector_key(flowbyactivity, activitycol, sector_source_year, primary_sector_key, secondary_sector_key=None):
+    """
+    Subset the sector key to return an industry that most closely maps source sectors to target
+    sectors by matching on sector length, based on the sectors that are in the FBA
+
+    @param flowbyactivity: FBA (if activities are sector like) or df of activity to sector mapping
+    (if activities are text based) that contains activity data
+    @param activitycol:
+    @param primary_sector_key:
+    @param secondary_sector_key:
+    @return:
+    """
+
+    # if the primary sector key is the activity to sector crosswalk, which is the case for FBAs with non-sector-like
+    # activities, merge with the secondary sector key (the naics industry key) to pull in target sectors and tech
+    # corr scoring
+    group_cols = ["target_naics", "Class", "Flowable", "Context"]
+    merge_col = "source_naics"
+    drop_col = activitycol
+    if "Activity" in primary_sector_key.columns:
+        group_cols = group_cols + ["Activity"]
+        merge_col = "Activity"
+        drop_col = "source_naics"
+
+        primary_sector_key = (primary_sector_key.merge(
+            secondary_sector_key,
+            how='left',
+            left_on='Sector',
+            right_on='source_naics',
+        ))
+        # print where values are not mapped
+        unmapped = primary_sector_key.query('source_naics.isnull()')
+        if len(unmapped) > 0:
+            log.warning('Activities are unmapped for %s',
+                        set(zip(unmapped['Activity'], unmapped['Sector'])))
+        # drop null values and sector col
+        primary_sector_key = (primary_sector_key
+                              .dropna(subset=['source_naics'])
+                              .drop(columns=['Sector']))
+    # else, if activities are sector-like
+    else:
+        # if activities end in ".0", strip characters from activity (noted in some data pulled from stewi)
+        flowbyactivity[activitycol] = flowbyactivity[activitycol].str.replace(".0", "")
+        # if activities are sector-like, drop all sectors that are not in sector crosswalk, due to datasets such as
+        # BLS QCEW which often has non-traditional NAICS6, but the parent NAICS5 do map correctly to sectors
+        flowbyactivity = flowbyactivity[flowbyactivity[
+            activitycol].isin(primary_sector_key["source_naics"].values)]
+
+    # drop rows of data where activitycol value is null - no mapping required
+    flowbyactivity = flowbyactivity.query(f'~{activitycol}.isnull()')
+    # want to best match class/flowable/context/activities combos with target sectors, retain both activity columns
+    # for situations where an activity can be listed in both columns for different circumstances
+    subset_cols = ['Class', 'Flowable', 'Context', 'ActivityProducedBy',
+                   'ActivityConsumedBy', 'DataReliability', 'DataCollection']
+    if "DataReliability" not in flowbyactivity.columns:
+        subset_cols = ['Class', 'Flowable', 'Context', 'ActivityProducedBy', 'ActivityConsumedBy']
+    # ensure dq column decimals do not cause errors with dropping duplicates, without this statement, rows often
+    # duplicated
+    flowbyactivity.loc[:, ['DataReliability', 'DataCollection']] = (
+        flowbyactivity.loc[:, ['DataReliability', 'DataCollection']].round(decimals=5))
+    flowbyactivity = flowbyactivity[subset_cols].drop_duplicates()
+
+    # drop parent sectors if parent-completechild
+    if flowbyactivity.config.get('sector_hierarchy') == 'parent-completeChild':
+        # Drop duplicates and group by Class, Flowable, Context
+        flowbyactivity_sub = flowbyactivity[['Class', 'Flowable', 'Context', activitycol]].drop_duplicates()
+        existing_sectors_df = pd.DataFrame([])
+        # subset the df by grouping cols
+        for _, df_sub in flowbyactivity_sub.groupby(['Class', 'Flowable', 'Context'], dropna=False):
+            for i in df_sub[activitycol]:
+                n = df_sub[df_sub[activitycol].apply(
+                    lambda x: str(x).startswith(str(i)))]
+                if len(n) == 1:
+                    existing_sectors_df = pd.concat(
+                        [existing_sectors_df, n])
+
+        flowbyactivity = flowbyactivity.merge(existing_sectors_df, on=existing_sectors_df.columns.tolist())
+
+    primary_sector_key_2 = pd.DataFrame(flowbyactivity.merge(
+        primary_sector_key,
+        how='left',
+        left_on=activitycol,
+        right_on=merge_col,
+    )).dropna(subset=[merge_col]).drop(columns=activitycol)
+
+
+    # modify dqi scores for data reliability and collection based on mapping
+    if "DataReliability" in flowbyactivity.columns:
+        primary_sector_key_2 = adjust_dqi_reliability_collection_scores(primary_sector_key_2, sector_source_year)
+
+    # Keep rows where source = target
+    df_keep = primary_sector_key_2[primary_sector_key_2["source_naics"] ==
+                                 primary_sector_key_2["target_naics"]].reset_index(drop=True)
+
+    # subset df to all remaining target sectors and Activity if present by dropping the one to one matches
+    df_remaining = primary_sector_key_2[primary_sector_key_2["source_naics"] !=
+                                        primary_sector_key_2["target_naics"]].reset_index(drop=True)
+    # df_remaining = primary_sector_key_2.merge(
+    #     df_keep[group_cols + [merge_col]],
+    #     on=group_cols + [merge_col],
+    #     how='left',
+    #     indicator=True
+    # ).query('_merge == "left_only"').drop('_merge', axis=1)
+
+    # function to identify which source naics most closely match to the target naics
+    def subset_target_sectors_by_source_sectors(group):
+        target = group["target_naics"].iloc[0]
+        target_length = len(target)
+
+        # first check for length source > length target
+        group_filtered_greater = group[group["source_naics"].apply(len) > target_length]
+        if not group_filtered_greater.empty:
+            # keep rows where source length is smallest greater length
+            min_source_length = min(group_filtered_greater["source_naics"].apply(len))
+            result_greater = group_filtered_greater[group_filtered_greater["source_naics"].apply(len)
+                                                    == min_source_length]
+            # drop the greater data from the remainder df before looking for shorter lengths
+            if "Activity" in group.columns:
+                group = group[~((group["target_naics"].isin(result_greater["target_naics"])) &
+                                (group["Activity"].isin(result_greater["Activity"])))]
+            else:
+                group = group[~group["target_naics"].isin(result_greater["target_naics"])]
+        else:
+            result_greater = pd.DataFrame()
+
+        # if there are no source length greater than target, check for source values shorter
+        group_filtered_shorter = group[group["source_naics"].apply(len) < target_length]
+        if not group_filtered_shorter.empty:
+            # keep rows where source length is smallest smaller length
+            max_source_length = max(group_filtered_shorter["source_naics"].apply(len))
+            result_shorter = group_filtered_shorter[
+                group_filtered_shorter["source_naics"].apply(len) == max_source_length]
+        else:
+            result_shorter = pd.DataFrame()
+        return pd.concat([result_greater, result_shorter], ignore_index=True)
+
+    df_remaining_mapped = (df_remaining
+                       .groupby(group_cols, dropna=False)
+                       .apply(subset_target_sectors_by_source_sectors)
+                       .reset_index(drop=True)
+                       )
+
+    mapping = pd.concat([df_keep, df_remaining_mapped], ignore_index=True)
+
+    # depending on if activities are naics-like or not determines which column to drop,
+    # if text based activities, drop duplicates.
+    # Necessary when source activities initially map to a finer resolution NAICS level
+    mapping = (mapping
+               .drop(columns=drop_col, errors='ignore') # if activities naics-like, already dropped col
+               .drop_duplicates()
+               .reset_index(drop=True)
+               # rename activity column back to original name
+               .rename(columns={'Activity': f'{activitycol}',
+                                'source_naics': f'{activitycol}'}, errors='ignore')
+               )
+
+    return mapping
 
 
 def map_target_sectors_to_less_aggregated_sectors(
@@ -215,10 +376,9 @@ def map_source_sectors_to_less_aggregated_sectors(
 
     return cw_melt
 
-
 def year_crosswalk(
-    source_year: Literal[2002, 2007, 2012, 2017],
-    target_year: Literal[2002, 2007, 2012, 2017]
+    source_year: Literal[2002, 2007, 2012, 2017, 2022],
+    target_year: Literal[2002, 2007, 2012, 2017, 2022]
 ) -> pd.DataFrame:
     '''
     Provides a key for switching between years of the NAICS specification.
@@ -273,17 +433,15 @@ def check_if_sectors_are_naics(df_load, crosswalk_list, column_headers):
         non_sectors = ns_list['NonSectors'].drop_duplicates().tolist()
         vlog.debug('There are sectors that are not target NAICS Codes')
         vlog.debug(non_sectors)
-    else:
-        log.info('Sectors are all in the target NAICS year and do not require '
-                 'conversion')
 
     return non_sectors
 
 
-def melt_naics_crosswalk(targetsectorsourcename):
+def generate_naics_crosswalk_conversion_ratios(sectorsourcename, targetsectorsourcename):
     """
-    Create a melt version of the naics 07 to 17 crosswalk to map
-    naics to naics 2012
+    Create a melt version of the source naics source years crosswalk to map
+    naics to naics target year
+    :param sectorsourcename: str, the source sector year
     :param targetsectorsourcename: str, the target sector year, such as
     "NAICS_2012_Code"
     :return: df, naics crosswalk melted
@@ -291,127 +449,236 @@ def melt_naics_crosswalk(targetsectorsourcename):
 
     # load the mastercroswalk and subset by sectorsourcename,
     # save values to list
-    cw_load = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')
+    df = common.load_crosswalk('NAICS_Year_Concordance')[[sectorsourcename,
+                                                               targetsectorsourcename]].drop_duplicates()
 
-    # create melt table of possible naics from other years that can
-    # be mapped to target naics year
-    cw_melt = cw_load.melt(
-        id_vars=targetsectorsourcename, var_name='NAICS_year', value_name='NAICS')
-    # drop the naics year because not relevant for replacement purposes
-    cw_replacement = cw_melt.dropna(how='any')
-    cw_replacement = cw_replacement[
-        [targetsectorsourcename, 'NAICS']].drop_duplicates()
-    # drop rows where contents are equal
-    cw_replacement = cw_replacement[
-        cw_replacement[targetsectorsourcename] != cw_replacement['NAICS']]
-    # drop rows where length > 6
-    cw_replacement = cw_replacement[cw_replacement[targetsectorsourcename].apply(
-        lambda x: len(x) < 7)].reset_index(drop=True)
-    # order by naics target tear
-    cw_replacement = cw_replacement.sort_values(
-        ['NAICS', targetsectorsourcename]).reset_index(drop=True)
+    all_ratios = []
 
-    # create allocation ratios by determining number of
-    # NAICS year to other naics when not a 1:1 ratio
-    cw_replacement_2 = cw_replacement.assign(
-        naics_count=cw_replacement.groupby(
-            ['NAICS'])[targetsectorsourcename].transform('count'))
-    cw_replacement_2 = cw_replacement_2.assign(
-        allocation_ratio=1/cw_replacement_2['naics_count'])
+    # Calculate allocation ratios for each length
+    for length in range(6, 1, -1):
+        # Truncate both NAICS and NAICS_2017_Code to the current string length
+        df['source'] = df[f'{sectorsourcename}'].str[:length]
+        df['target'] = df[f'{targetsectorsourcename}'].str[:length]
 
-    return cw_replacement_2
+        # Group by the truncated NAICS codes
+        df_grouped = df.groupby(['source', 'target']).size().reset_index(name='naics_count')
 
+        # Calculate the allocation ratios
+        df_grouped['allocation_ratio'] = df_grouped.groupby('source')['naics_count'].transform(lambda x: x / x.sum())
+
+        # Add the length to the results
+        df_grouped['length'] = length
+
+        # Collect the results
+        all_ratios.append(df_grouped)
+
+    # Combine all ratios into a single DataFrame
+    ratios_df = pd.concat(all_ratios, ignore_index=True)
+
+
+    # TODO: modify how unofficial sectors are added - ensure correct mapping between years
+    # append the unofficial sector codes
+    year_df = common.load_sector_length_cw_melt(re.search(r'\d+', sectorsourcename).group())
+    year_df = year_df[year_df['SectorLength'] > 6]
+    year_df = year_df.rename(columns={'Sector': 'source', 'SectorLength': 'length'})
+    year_df['target'] = year_df['source']
+    year_df['naics_count'] = 1
+    year_df['allocation_ratio'] = 1
+
+    # add unofficial sectors
+    ratios_df = pd.concat([ratios_df, year_df], ignore_index=True)
+
+    # rename cols
+    ratios_df = ratios_df.rename(columns={'source': 'NAICS',
+                                          'target': f'{targetsectorsourcename}'
+                                          })
+
+    # drop gov and household codes by length
+    ratios_df = ratios_df[~((ratios_df['NAICS'].str.startswith('F0')) &
+                            (ratios_df['NAICS'].str.len() < 4))]
+    ratios_df = ratios_df[~((ratios_df['NAICS'].str.startswith('S0')) &
+                            (ratios_df['NAICS'].str.len() < 6))]
+
+    return ratios_df
+
+def return_closest_naics_year(nonsectors, mapping, targetsectorsourcename):
+    """
+    Match sectors to the closest NAICS year to target naics using naics timeseries.
+    """
+    naics_years = mapping.columns
+    sector_year_match = {}
+    for sector in nonsectors:
+        closest_year = ''
+        min_difference = 100
+        for year in naics_years:
+            if year in mapping.columns and sector in mapping[year].values:
+                difference = abs(int(year.split('_')[1]) - int(targetsectorsourcename.split('_')[1]))
+                if difference < min_difference:
+                    closest_year = year
+                    min_difference = difference
+
+        sector_year_match[sector] = closest_year
+
+    return sector_year_match
+
+
+def replace_sectors_with_targetsectors(df, non_naics, cw_melt, column_headers, targetsectorsourcename):
+    """
+    Replacing sectors with those of the target yeear
+    :param df:
+    :param non_naics:
+    :param cw_melt:
+    :param column_headers:
+    :param targetsectorsourcename:
+    :return:
+    """
+    for c in column_headers:
+        if df[c].isna().all():
+            continue
+        # merge df with the melted sector crosswalk
+        df = df.merge(cw_melt, left_on=c, right_on='NAICS', how='left')
+        # if there is a value in the sectorsourcename column,
+        # use that value to replace sector in column c if value in
+        # column c is in the non_naics list
+        df[c] = np.where(
+            (df[c] == df['NAICS']) & (df[c].isin(non_naics)),
+            df[targetsectorsourcename], df[c])
+        # multiply the FlowAmount col by allocation_ratio
+        df.loc[df[c] == df[targetsectorsourcename],
+        'FlowAmount'] = df['FlowAmount'] * df['allocation_ratio']
+        # drop columns
+        df = df.drop(
+            columns=[targetsectorsourcename, 'NAICS', 'allocation_ratio'])
+    # replace the sector year in the sectorsourcename column
+    df['SectorSourceName'] = targetsectorsourcename
+
+    return df
 
 def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
                        dfname):
     """
-    Replace any non sectors with sectors.
+    Convert sector year
     :param df_load: df with sector columns or sector-like activities
     :param sectorsourcename: str, sector source name (ex. NAICS_2012_Code)
     :param dfname: str, name of data source
-    :return: df, with non-sectors replaced with sectors
+    :return: df, with sectors replaced with new sector year
     """
     # todo: update this function to work better with recursive method
 
-    # load the mastercrosswalk and subset by sectorsourcename,
-    # save values to list
-    if targetsectorsourcename == sectorsourcename:
-        cw_load = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')[[
-        targetsectorsourcename]]
-    else:
-        log.info(f"Converting {sectorsourcename} to "
-                 f"{targetsectorsourcename} in {dfname}")
-        cw_load = common.load_crosswalk('NAICS_Crosswalk_TimeSeries')[[
-            targetsectorsourcename, sectorsourcename]]
-    cw = cw_load[targetsectorsourcename].drop_duplicates().tolist()
-
-    # load melted crosswalk
-    cw_melt = melt_naics_crosswalk(targetsectorsourcename)
-    # drop the count column
-    cw_melt = cw_melt.drop(columns='naics_count')
+    # todo: ensure non-naics (7-digits, etc are converted)
 
     # determine which headers are in the df
     column_headers = ['ActivityProducedBy', 'ActivityConsumedBy']
     if 'SectorConsumedBy' in df_load:
         column_headers = ['SectorProducedBy', 'SectorConsumedBy']
+    if 'Sector' in df_load:
+        column_headers = ['Sector']
 
-    # check if there are any sectors that are not in the naics 2012 crosswalk
-    non_naics = check_if_sectors_are_naics(df_load, cw, column_headers)
+    # load the mastercrosswalk and subset by sectorsourcename,
+    # save values to list
+    if targetsectorsourcename == sectorsourcename:
+        df = df_load.copy()
+        cw_list = common.load_crosswalk(f"NAICS_Crosswalk_TimeSeries"
+                                        )[targetsectorsourcename].drop_duplicates().tolist()
+    else:
+        log.info(f"Converting {sectorsourcename} to "
+                 f"{targetsectorsourcename} in {dfname}")
 
-    # loop through the df headers and determine if value is
-    # not in crosswalk list
-    df = df_load.copy()
-    if len(non_naics) != 0:
+        # load conversion crosswalk
+        cw_melt = generate_naics_crosswalk_conversion_ratios(sectorsourcename, targetsectorsourcename)
+        # drop the count column
+        cw_melt = cw_melt.drop(columns=['naics_count', 'length'])
+        cw_list = cw_melt[targetsectorsourcename].drop_duplicates().tolist()
+
+        # check if there are any sectors that are not in the naics annual crosswalk
+        non_naics = check_if_sectors_are_naics(df_load, cw_list, column_headers)
+
+        # loop through the df headers and determine if value is
+        # not in crosswalk list
+        df = df_load.copy()
+        if len(non_naics) != 0:
+            df = replace_sectors_with_targetsectors(df, non_naics, cw_melt, column_headers, targetsectorsourcename)
+
+    # regardless of if sector year = target sector year, check if there are any non naics that are naics in another
+    # naics year. Checking for other years as data out of stewi not always assigned correctly
+    nonsectors = check_if_sectors_are_naics(df, cw_list, column_headers)
+    # Determine closest NAICS year for non_naics sectors
+    if len(nonsectors) > 0:
         log.info('Checking if sectors represent a different '
                  f'NAICS year, if so, replace with {targetsectorsourcename}')
-        for c in column_headers:
-            if df[c].isna().all():
-                continue
-            # merge df with the melted sector crosswalk
-            df = df.merge(cw_melt, left_on=c, right_on='NAICS', how='left')
-            # if there is a value in the sectorsourcename column,
-            # use that value to replace sector in column c if value in
-            # column c is in the non_naics list
-            df[c] = np.where(
-                (df[c] == df['NAICS']) & (df[c].isin(non_naics)),
-                df[targetsectorsourcename], df[c])
-            # multiply the FlowAmount col by allocation_ratio
-            df.loc[df[c] == df[targetsectorsourcename],
-                   'FlowAmount'] = df['FlowAmount'] * df['allocation_ratio']
-            # drop columns
-            df = df.drop(
-                columns=[targetsectorsourcename, 'NAICS', 'allocation_ratio'])
-        log.info(f'Replaced NAICS with {targetsectorsourcename}')
-        # replace the sector year in the sectorsourcename column
-        df['SectorSourceName'] = targetsectorsourcename
+        # load entire naics year crosswalk to determine if nonsectors belong to another naics year
+        mapping = common.load_crosswalk("NAICS_Crosswalk_TimeSeries")
+        sector_year_mapping = return_closest_naics_year(nonsectors, mapping, targetsectorsourcename)
 
+        # Generate multiple crosswalks based on found NAICS years
+        cw_melt_list = []
+        for sector, year in sector_year_mapping.items():
+            if year:
+                cw_melt = generate_naics_crosswalk_conversion_ratios(year, targetsectorsourcename)
+                cw_melt = cw_melt[cw_melt['NAICS'] == sector].drop(columns=['naics_count', 'length'])
+                cw_melt_list.append(cw_melt)
+
+        # Merge generated crosswalks
+        cw_melt = pd.concat(cw_melt_list, ignore_index=True)
+
+        # if sectors were found to represent a different naics year, use those values to map to target naics
+        if len(cw_melt) > 0:
+            df = replace_sectors_with_targetsectors(df, nonsectors, cw_melt, column_headers, targetsectorsourcename)
         # check if there are any sectors that are not in
         # the target sector crosswalk and if so, drop those sectors
         log.info('Checking for unconverted NAICS - determine if rows should '
                  'be dropped.')
-        nonsectors = check_if_sectors_are_naics(df, cw, column_headers)
-        if len(nonsectors) != 0:
-            vlog.debug('Dropping non-NAICS from dataframe')
-            for c in column_headers:
-                if df[c].isna().all():
-                    continue
-                # drop rows where column value is in the nonnaics list
-                df = df[~df[c].isin(nonsectors)]
-        # aggregate data
-        if hasattr(df, 'aggregate_flowby'):
-            df = (df.aggregate_flowby()
-                    .reset_index(drop=True).reset_index()
-                    .rename(columns={'index': 'group_id'}))
-        else:
-            # todo: drop else statement once all dataframes are converted
-            #  to classes
-            possible_column_headers = \
-                ('FlowAmount', 'Spread', 'Min', 'Max', 'DataReliability',
-                 'TemporalCorrelation', 'GeographicalCorrelation',
-                 'TechnologicalCorrelation', 'DataCollection', 'Description')
-            # list of column headers to group aggregation by
-            groupby_cols = [e for e in df.columns.values.tolist()
-                            if e not in possible_column_headers]
-            df = aggregator(df, groupby_cols)
+        nonsectors = check_if_sectors_are_naics(df, cw_list, column_headers)
+
+    if len(nonsectors) != 0:
+        log.info(f'Dropping non {targetsectorsourcename}s from dataframe: {nonsectors}')
+        for c in column_headers:
+            if df[c].isna().all():
+                continue
+            # drop rows where column value is in the nonnaics list
+            df = df[~df[c].isin(nonsectors)]
+    # aggregate data
+    if hasattr(df, 'aggregate_flowby'):
+        df = df.aggregate_flowby(columns_to_group_by=df.groupby_cols+['group_id'])
+
+    else:
+        # todo: drop else statement once all dataframes are converted
+        #  to classes
+        possible_column_headers = \
+            ('FlowAmount', 'Spread', 'Min', 'Max', 'DataReliability',
+             'TemporalCorrelation', 'GeographicalCorrelation',
+             'TechnologicalCorrelation', 'DataCollection', 'Description')
+        # list of column headers to group aggregation by
+        groupby_cols = [e for e in df.columns.values.tolist()
+                        if e not in possible_column_headers]
+        df = aggregator(df, groupby_cols)
 
     return df
+
+def return_max_sector_level(
+    industry_spec: dict,
+) -> pd.DataFrame:
+    """
+    Return max sector length/level based on industry spec.
+
+    The industry_spec is a (possibly nested) dictionary formatted as in this
+    example:
+
+    industry_spec = {'default': 'NAICS_3',
+                     'NAICS_4': ['112', '113'],
+                     'NAICS_6': ['1129']
+                     }
+    """
+    # list of keys in industry spec
+    level_list = list(industry_spec.keys())
+    # append default sector level
+    level_list.append(industry_spec['default'])
+
+    n = []
+    for string in level_list:
+        # Convert each found number to an integer and extend the result into the list n
+        n.extend(map(int, re.findall(r'\d+', string)))
+
+    max_level = max(n)
+
+    return max_level

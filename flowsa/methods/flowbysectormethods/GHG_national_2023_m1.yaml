@@ -5,7 +5,7 @@
 # MECS year is 2018
 
 !include:GHG_national_m1_common.yaml
-ghgi_year: &ghgi_year 2023
+year: &ghgi_year 2023
 mecs_year: &mecs_year 2018
 
 _industrial_allocation_dict: &industrial_dict

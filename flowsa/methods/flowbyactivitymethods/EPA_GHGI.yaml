@@ -60,18 +60,21 @@ Tables:
         "compartment": "air"
         "flow": "CO2"
         "desc": "Table 3-7:  CO2 Emissions from Stationary Fossil Fuel Combustion (MMT CO2 Eq.)"
+        "data_reliability": 4
       "3-8":
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "CH4"
         "desc": "Table 3-8:  CH4 Emissions from Stationary Combustion (MMT CO2 Eq.)"
+        "data_reliability": 4
       "3-9":
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "N2O"
         "desc": "Table 3-9:  N2O Emissions from Stationary Combustion (MMT CO2 Eq.)"
+        "data_reliability": 4
 
       #"3-10": # Not a primary emissions datasource
        # "class": "Chemicals"
@@ -86,18 +89,21 @@ Tables:
         "compartment": "air"
         "flow": "CO2"
         "desc": "Table 3-13:  CO2 Emissions from Fossil Fuel Combustion in Transportation End-Use Sector"
+        "data_reliability": 4
       "3-14":
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "CH4"
         "desc": "Table 3-14:  CH4 Emissions from Mobile Combustion (MMT CO2 Eq.)"
+        "data_reliability": 4
       "3-15":
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "N2O"
         "desc": "Table 3-15:  N2O Emissions from Mobile Combustion (MMT CO2 Eq.)"
+        "data_reliability": 4
 
       "3-25":
         "class": "Chemicals"
@@ -108,6 +114,7 @@ Tables:
         "desc": "Table 3-25:  2023 Adjusted Non-Energy Use Fossil Fuel Consumption, Storage, and Emissions"
         "year": "2023"
         "melt_var": "FlowName"
+        "data_reliability": 4
 
       "3-25b": # Represents historical dataset for table 3-25 for non-current years
         "class": "Chemicals"
@@ -115,6 +122,7 @@ Tables:
         "compartment": "air"
         "flow": "CO2"
         "desc": "Table 3-25b:  Adjusted Non-Energy Use Fossil Fuel Emissions"
+        "data_reliability": 4
 
       "3-106":
         "class": "Chemicals"
@@ -130,18 +138,21 @@ Tables:
         "compartment": "air"
         "flow": "CH4"
         "desc": "Table 3-45:  CH4 Emissions from Petroleum Systems (MMT CO2 Eq.)"
+        "data_reliability": 4
       "3-47":
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "CO2"
         "desc": "Table 3-47:  CO2 Emissions from Petroleum Systems (MMT CO2)"
+        "data_reliability": 2
       "3-49":
         "class": "Chemicals"
         "unit": "MT CO2e"
         "compartment": "air"
         "flow": "N2O"
         "desc": "Table 3-49:  N2O Emissions from Petroleum Systems (Metric Tons CO2 Eq.)"
+        "data_reliability": 4
 
 # Natural Gas Systems
       "3-64":
@@ -150,18 +161,21 @@ Tables:
         "compartment": "air"
         "flow": "CH4"
         "desc": "Table 3-64:  CH4 Emissions from Natural Gas Systems (MMT CO2 Eq.)"
+        "data_reliability": 4
       "3-66":
         "class": "Chemicals"
         "unit": "MMT CO2e"
         "compartment": "air"
         "flow": "CO2"
         "desc": "Table 3-66:  CO2 Emissions from Natural Gas Systems (MMT)"
+        "data_reliability": 4
       "3-68":
         "class": "Chemicals"
         "unit": "MT CO2e"
         "compartment": "air"
         "flow": "N2O"
         "desc": "Table 3-68: N2O Emissions from Natural Gas Systems (Metric Tons CO2 Eq.)"
+        "data_reliability": 4
 
 # International Bunker Fuels
       "3-102":
@@ -270,6 +284,7 @@ Tables:
         "compartment": "air"
         "flow": "CH4"
         "desc": "Table 5-3:  CH4 Emissions from Enteric Fermentation (MMT CO2 Eq.)"
+        "data_reliability": 4
       "5-7":
         "class": "Chemicals"
         "unit": "MMT CO2e"
