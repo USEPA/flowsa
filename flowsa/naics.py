@@ -231,11 +231,14 @@ def subset_sector_key(flowbyactivity, activitycol, sector_source_year, primary_s
             result_shorter = pd.DataFrame()
         return pd.concat([result_greater, result_shorter], ignore_index=True)
 
-    df_remaining_mapped = (df_remaining
-                       .groupby(group_cols, dropna=False)
-                       .apply(subset_target_sectors_by_source_sectors)
-                       .reset_index(drop=True)
-                       )
+    if flowbyactivity.config.get('sector_hierarchy') == 'parent-incompleteChild':
+        df_remaining_mapped = df_remaining.copy()
+    else:
+        df_remaining_mapped = (df_remaining
+                           .groupby(group_cols, dropna=False)
+                           .apply(subset_target_sectors_by_source_sectors)
+                           .reset_index(drop=True)
+                           )
 
     mapping = pd.concat([df_keep, df_remaining_mapped], ignore_index=True)
 
