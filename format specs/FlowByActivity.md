@@ -22,5 +22,6 @@ Max | Numeric | N | The maximum FlowAmount, if provided for the data range.
 DataReliability | Numeric | Y | A score of data reliability based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../docs/DataQualityPedigreeMatrix.md)
 DataCollection | Numeric | Y | A score of data collection based on reporting values associated with the amount. See [Data Quality Pedigree Matrix](../docs/DataQualityPedigreeMatrix.md)
 Description | String | Y | Original description of the flow
+Suppressed | String | N | Indicates if the data in a row are suppressed, often uses the source symbols for suppressed data, such as `*` or `D`. 
 
 *At minimum, either ActivityProducedBy or ActivityConsumedBy must be present. If there is a transfer between activities, both must be present.
