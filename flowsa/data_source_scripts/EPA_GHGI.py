@@ -221,68 +221,68 @@ def ghg_call(*, resp, url, year, config, **_):
             else:
             # Access chapter specific folders within the main zip
                 for table in tables:
-                        # print(table)
-                        df = None
-                        tbl_year = tables[table].get('year')
-                        if tbl_year is not None and tbl_year != year:
-                            # Skip tables when the year does not align with target year
+                    # print(table)
+                    df = None
+                    tbl_year = tables[table].get('year')
+                    if tbl_year is not None and tbl_year != year:
+                        # Skip tables when the year does not align with target year
+                        continue
+                    table_name = tables[table].get('table_name', table)
+                    path = f"{chapter}/{opath.replace('{table_name}', table_name)}"
+                    # Handle special case of table 3-25 in external data folder
+                    if table == "3-25b":
+                        if str(year) in ['2023']:
+                            # Skip 3-25b for current year (use 3-25 instead)
                             continue
-                        table_name = tables[table].get('table_name', table)
-                        path = f"{chapter}/{opath.replace('{table_name}', table_name)}"
-                        # Handle special case of table 3-25 in external data folder
-                        if table == "3-25b":
-                            if str(year) in ['2023']:
-                                # Skip 3-25b for current year (use 3-25 instead)
-                                continue
-                            else:
-                                df=pd.read_csv(externaldatapath / f"GHGI_Table_{table}.csv",
-                                                 skiprows=2, encoding="ISO-8859-1", thousands=",")
                         else:
-                            try:
-                                data=f.open(path)
-                            except KeyError:
-                                log.error(f"error reading {table}")
-                                continue
-                        if table in ['4-118']:
-                            # Skip two rows
-                            df=pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
-                                             thousands=",", decimal=".")
-                        elif table == "3-25":
-                            # Skip first row, but make headers the next 2 rows:
-                            df=pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
-                                             header=[0, 1], thousands=",")
-                            # Row 0 is header, row 1 is unit
-                            new_headers=[]
-                            for col in df.columns:
-                                new_header='Unnamed: 0'
-                                if 'Unnamed' not in col[0]:
-                                    if 'Unnamed' not in col[1]:
-                                        new_header=f'{col[0]} {col[1]}'
-                                    else:
-                                        new_header=col[0]
+                            df=pd.read_csv(externaldatapath / f"GHGI_Table_{table}.csv",
+                                             skiprows=2, encoding="ISO-8859-1", thousands=",")
+                    else:
+                        try:
+                            data=f.open(path)
+                        except KeyError:
+                            log.error(f"error reading {table}")
+                            continue
+                    if table in ['4-118']:
+                        # Skip two rows
+                        df=pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
+                                         thousands=",", decimal=".")
+                    elif table == "3-25":
+                        # Skip first row, but make headers the next 2 rows:
+                        df=pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
+                                         header=[0, 1], thousands=",")
+                        # Row 0 is header, row 1 is unit
+                        new_headers=[]
+                        for col in df.columns:
+                            new_header='Unnamed: 0'
+                            if 'Unnamed' not in col[0]:
+                                if 'Unnamed' not in col[1]:
+                                    new_header=f'{col[0]} {col[1]}'
                                 else:
-                                    new_header=col[1]
-                                new_headers.append(new_header)
-                            df.columns=new_headers
-                        elif table != '3-25b':
-                            # Except for 3-25b already as df,
-                            # Proceed with default case
-                            df=pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
-                                             thousands=",")
+                                    new_header=col[0]
+                            else:
+                                new_header=col[1]
+                            new_headers.append(new_header)
+                        df.columns=new_headers
+                    elif table != '3-25b':
+                        # Except for 3-25b already as df,
+                        # Proceed with default case
+                        df=pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
+                                         thousands=",")
 
-                        if table == '3-13':
-                            # remove notes from column headers in some years
-                            cols=[c[:4] for c in list(df.columns[1:])]
-                            df=df.rename(columns=dict(zip(df.columns[1:], cols)))
+                    if table == '3-13':
+                        # remove notes from column headers in some years
+                        cols=[c[:4] for c in list(df.columns[1:])]
+                        df=df.rename(columns=dict(zip(df.columns[1:], cols)))
 
-                        if df is not None and len(df.columns) > 1:
-                            years=YEARS.copy()
-                            years.remove(str(year))
-                            df=df.drop(columns=(DROP_COLS + years), errors='ignore')
-                            df["SourceName"]=f"EPA_GHGI_T_{table.replace('-', '_')}"
-                            frames.append(df)
-                        else:
-                            log.warning(f"Error accessing {table}")
+                    if df is not None and len(df.columns) > 1:
+                        years=YEARS.copy()
+                        years.remove(str(year))
+                        df=df.drop(columns=(DROP_COLS + years), errors='ignore')
+                        df["SourceName"]=f"EPA_GHGI_T_{table.replace('-', '_')}"
+                        frames.append(df)
+                    else:
+                        log.warning(f"Error accessing {table}")
         return frames
 
 
