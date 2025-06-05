@@ -175,8 +175,7 @@ def ghg_call(*, resp, url, year, config, **_):
     :param config: dictionary, items in FBA method yaml
     :return: pandas dataframe of original source data
     """
-    # with zipfile.ZipFile(io.BytesIO(resp.content), "r") as f:
-    with zipfile.ZipFile(resp, "r") as f:
+    with zipfile.ZipFile(io.BytesIO(resp.content), "r") as f:
         frames = []
         if any(x in url for x in ['annex', 'Annex']):
             opath = config['path']['annex']
@@ -220,10 +219,7 @@ def ghg_call(*, resp, url, year, config, **_):
                         log.warning(f"Error accessing {table}")
 
             else:
-            # Access chapter specific zip files within the main zip
-                chapter_name = f'{chapter}.zip'
-                # zfiledata = io.BytesIO(f.read(chapter_name))
-                # with zipfile.ZipFile(zfiledata) as f2:
+            # Access chapter specific folders within the main zip
                 for table in tables:
                         # print(table)
                         df = None
@@ -425,13 +421,6 @@ def ghg_parse(*, df_list, year, config, **_):
     :return: df, parsed and partially formatted to flowbyactivity
         specifications
     """
-
-    # bypass the url call and call these functions directly, once each for the
-    # "main" tables and "annex" tables
-    ls1 = ghg_call(resp=externaldatapath / 'GHG.zip', url='main', year=year, config=config)
-    ls2 = ghg_call(resp=externaldatapath / 'GHG.zip', url='annex', year=year, config=config)
-    df_list = ls1 + ls2
-
     cleaned_list = []
     for df in df_list:
         source_name = df["SourceName"][0]

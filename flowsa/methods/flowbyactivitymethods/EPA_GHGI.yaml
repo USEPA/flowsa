@@ -3,10 +3,10 @@ source_name: 'Inventory of US Greenhouse Gas Emissions and Sinks: 1990-2023'
 source_url: https://www.edf.org/freedom-information-act-documents-epas-greenhouse-gas-inventory
 bib_id: EPA_GHGI
 format: csv
-# url:
-#   base_url: https://dmap-data-commons-ord.s3.amazonaws.com/flowsa/FlowByActivity/
-#   main_zip: GHGI_2025-main-text.zip
-#   annex_zip: GHGI_2025-annex-tables.zip
+url:
+  base_url: https://dmap-data-commons-ord.s3.amazonaws.com/flowsa/FlowByActivity/
+  main_zip: US_GHGI_2025_SelectedTables_main_text.zip
+  annex_zip: US_GHGI_2025_SelectedTables_annex.zip
 path:
   base: "Table {table_name}.csv"
   annex: "Annex/Table {table_name}.csv"
