@@ -199,7 +199,7 @@ def ghg_call(*, resp, url, year, config, **_):
                     else:
                         df=pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
                                        thousands=",")
-                
+
                     if df is not None and len(df.columns) > 1:
                         years=YEARS.copy()
                         years.remove(str(year))
@@ -207,8 +207,8 @@ def ghg_call(*, resp, url, year, config, **_):
                         df["SourceName"]=f"EPA_GHGI_T_{table.replace('-', '_')}"
                         frames.append(df)
                     else:
-                        log.warning(f"Error accessing {table}")                
-            
+                        log.warning(f"Error accessing {table}")
+
             else:
             # Access chapter specific zip files within the main zip
               chapter_name = f'{chapter}.zip'
@@ -238,7 +238,7 @@ def ghg_call(*, resp, url, year, config, **_):
                             except KeyError:
                                 log.error(f"error reading {table}")
                                 continue
-    
+
                         if table in ['4-121']:
                             # Skip two rows
                             df=pd.read_csv(data, skiprows=2, encoding="ISO-8859-1",
@@ -265,12 +265,12 @@ def ghg_call(*, resp, url, year, config, **_):
                             # Proceed with default case
                             df=pd.read_csv(data, skiprows=1, encoding="ISO-8859-1",
                                              thousands=",")
-    
+
                         if table == '3-13':
                             # remove notes from column headers in some years
                             cols=[c[:4] for c in list(df.columns[1:])]
                             df=df.rename(columns=dict(zip(df.columns[1:], cols)))
-    
+
                         if df is not None and len(df.columns) > 1:
                             years=YEARS.copy()
                             years.remove(str(year))
@@ -514,8 +514,8 @@ def ghg_parse(*, df_list, year, config, **_):
             df = df[df['Year'].astype(str).isin([year])]
 
         # Add DQ scores
-        df["DataReliability"] = 5  # tmp
-        df["DataCollection"] = 5  # tmp
+        df["DataReliability"] = meta.get("data_reliability", 5)
+        df["DataCollection"] = 1
         # Fill in the rest of the Flow by fields so they show "None" instead of nan
         df["MeasureofSpread"] = 'None'
         df["DistributionType"] = 'None'

@@ -19,9 +19,10 @@ from flowsa.common import clean_str_and_capitalize
 
 US_FIPS = "00000"
 
-fips_number_key = {"national": 0,
+# see geo.py for assignments
+fips_number_key = {"national": 5,
                    "state": 2,
-                   "county": 5}
+                   "county": 1}
 
 
 def apply_county_FIPS(df, year='2015', source_state_abbrev=True):
@@ -93,7 +94,7 @@ def get_state_FIPS(year='2015', abbrev=False):
         fips['State'] = (fips['State'].str.title()
                          .replace(us_state_abbrev)
                          .replace({'District Of Columbia': 'DC'}))
-    return fips
+    return fips.drop(columns='FIPS_Scale')
 
 
 def get_county_FIPS(year='2015'):
@@ -105,7 +106,7 @@ def get_county_FIPS(year='2015'):
     fips = get_all_fips(year)
     fips = fips.drop_duplicates(subset='FIPS')
     fips = fips[fips['County'].notnull()]
-    return fips
+    return fips.drop(columns='FIPS_Scale')
 
 
 def get_all_state_FIPS_2(year='2015'):

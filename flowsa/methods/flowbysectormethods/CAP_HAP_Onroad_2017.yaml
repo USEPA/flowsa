@@ -4,6 +4,7 @@
 
 !include:BEA_detail_target.yaml
 target_naics_year: 2012
+target_geoscale: state  # used for geographical correlation
 geoscale: state
 
 _emission_year: &year 2017

@@ -6,12 +6,14 @@ FlowByActivity and FlowBySector classes.
 from typing import List, Literal, TypeVar, TYPE_CHECKING
 import pandas as pd
 import numpy as np
+import re
 from functools import partial, reduce
 from copy import deepcopy
 from flowsa import (settings, literature_values, flowsa_yaml, geo, schema,
                     naics)
 from flowsa.common import get_catalog_info
 from flowsa.flowsa_log import log, vlog
+from flowsa.location import fips_number_key
 import esupy.processed_data_mgmt
 import esupy.dqi
 
@@ -617,11 +619,11 @@ class _FlowBy(pd.DataFrame):
         # check flowamounts equal after aggregating
         self_flow = self['FlowAmount'].sum()
         agg_flow = aggregated['FlowAmount'].sum()
-        percent_diff = int(((agg_flow - self_flow) * 100) / self_flow)
-        if percent_diff > 0:
+        percent_inc = int(((agg_flow - self_flow) * 100) / self_flow)
+        if percent_inc > 0:
             log.warning(f'There is an error in aggregating dataframe, as new '
                         'flow totals do not match original dataframe '
-                        'flowtotals, there is a {percent_diff}% difference.')
+                        'flowtotals, there is a {percent_inc}% difference.')
 
         return aggregated
 
@@ -657,7 +659,7 @@ class _FlowBy(pd.DataFrame):
                 self
                 .reset_index(drop=True).reset_index()
                 .rename(columns={'index': 'group_id'})
-                .assign(group_total=self.FlowAmount)
+                .assign(group_total=lambda x: x.FlowAmount)
             )
             if len(grouped) == 0:
                 log.warning(f'No data remaining in {self.full_name}.')
@@ -936,6 +938,9 @@ class _FlowBy(pd.DataFrame):
         fb_geoscale = geo.scale.from_string(self.config['geoscale'])
         other_geoscale = geo.scale.from_string(other.config['geoscale'])
 
+        log.info(f"Harmonizing {self.full_name} {self.config['geoscale']} data "
+                 f"with {other.full_name} {other.config['geoscale']} data")
+
         fill_cols = self.config.get('fill_columns')
         if fill_cols and 'Location' in fill_cols:
             # Don't harmonize geoscales when updating Location
@@ -1096,9 +1101,18 @@ class _FlowBy(pd.DataFrame):
             left_on = attribute_cols + ['temp_location' if 'temp_location'
                                         in fb else 'Location']
             right_on = attribute_cols + ['Location']
-            for l in (left_on, right_on):
-                if 'Location' in self.config.get('fill_columns', []):
+            # if replacing df location with "other" location, drop location from merge columns
+            if 'Location' in self.config.get('fill_columns', []):
+                for l in (left_on, right_on):
                     l.remove('Location')
+                # if merging state with county data, merge on first 2 digits of location column using
+                # temporary "temp_location" col
+                if (self.config['geoscale'] == 'state') & (other.config['geoscale'] == 'county'):
+                    fb['temp_location'] = fb['Location'].str[:2]
+                    other['temp_location'] = other['Location'].str[:2]
+                    for l in (left_on, right_on):
+                        l.append('temp_location')
+
             merged = (
                 fb
                 .merge(other,
@@ -1127,7 +1141,8 @@ class _FlowBy(pd.DataFrame):
                     unattributable.full_name,
                     other.full_name,
                     sorted(set(zip(unattributable.SectorProducedBy.fillna('N/A'),
-                                   unattributable.SectorConsumedBy.fillna('N/A'))))
+                                   unattributable.SectorConsumedBy.fillna('N/A'),
+                                   unattributable.Location)))
                 )
                 vlog.debug(
                     'Unattributed activities: \n {}'.format(
@@ -1391,6 +1406,86 @@ class _FlowBy(pd.DataFrame):
             columns=['PrimarySector', 'SecondarySector',
                      *[f'_unique_naics_{n}_by_group' for n in range(2, 8)]]
         )
+
+    def assign_temporal_correlation(
+            self: FB,
+            target_year = None,
+            **kwargs
+    ) -> FB:
+
+        fbs = self.copy()
+        if not target_year:
+            target_year = int((re.search(r"\d{4}", fbs.full_name)).group())
+        if 'TemporalCorrelation' not in fbs:
+            fbs['TemporalCorrelation'] = 1
+        fbs = esupy.dqi.adjust_dqi_scores(fbs, abs(fbs['Year'] - target_year),
+                                         'TemporalCorrelation')
+        fbs['Year'] = target_year
+        return(fbs)
+
+    def assign_geographic_correlation(
+            self: FB,
+            target_geoscale = None,
+            fbs_method_name = None,
+            **kwargs
+    ) -> FB:
+
+        fbs = self.copy()
+
+        # if target_geoscale not assigned, pull target from FBS name
+        if not target_geoscale:
+            try:
+                # function to extract target geoscale from fbs name
+                def extract_target_geoscale(text):
+                    # Match "national," "state," or "county" (case-insensitive)
+                    if re.search(r"_national_", text, re.IGNORECASE):
+                        return "national"
+                    elif re.search(r"_state_", text, re.IGNORECASE):
+                        return "state"
+                    elif re.search(r"_county_", text, re.IGNORECASE):
+                        return "county"
+                    return None
+
+                # if target geoscale not defined, first try pulling from config, else pull from method name
+                target_geoscale = (self.config.get('target_geoscale') or
+                                   extract_target_geoscale(fbs_method_name))
+                log.info(f"Assigning geographical correlation data quality score for {self.full_name}")
+            except:
+                # if there isn't a target geoscale or method name, return FBS without appending geo correlation
+                return self
+
+        # if all Geo Corr scores in the FBS are 0, drop the column and reassign values
+        if ('GeographicalCorrelation' in fbs and
+            (fbs['GeographicalCorrelation'] == 0).all()):
+            fbs = fbs.drop(columns=['GeographicalCorrelation'])
+
+        # if Geo Corr column is missing from the df or if all Geo Corr column is all 0s, add score based on fips
+        if 'GeographicalCorrelation' not in fbs:
+            if fbs['LocationSystem'][0] == 'Census_Region':
+                fbs = fbs.assign(GeographicalCorrelation = 4)
+            elif fbs['LocationSystem'][0] == 'Census_Division':
+                fbs = fbs.assign(GeographicalCorrelation = 3)
+            else:
+                # assign geo corr score by FIPS year
+                try:
+                    fips = (geo
+                            .get_all_fips(int((re.search(r"\d{4}", fbs['LocationSystem'][0])).group()))
+                            .rename(columns={'FIPS': 'Location',
+                                             'FIPS_Scale':'GeographicalCorrelation'})
+                            )
+                # if FIPS year not defined, assume default year of 2015
+                except AttributeError:
+                    fips = (geo.get_all_fips()
+                            .rename(columns={'FIPS': 'Location',
+                                             'FIPS_Scale':'GeographicalCorrelation'})
+                            )
+                fbs = fbs.merge(fips[['Location', 'GeographicalCorrelation']])
+        fbs['GeographicalCorrelation'] = fbs['GeographicalCorrelation'].astype(int)
+        fbs['GeographicalCorrelation'] = fbs['GeographicalCorrelation'] - fips_number_key[target_geoscale]
+        fbs = esupy.dqi.adjust_dqi_scores(fbs,
+                                          fbs['GeographicalCorrelation'],
+                                         'GeographicalCorrelation')
+        return fbs
 
     def add_primary_secondary_columns(
         self: FB,

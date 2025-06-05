@@ -32,7 +32,8 @@ sector_level_key = {"NAICS_2": 2,
                     "NAICS_3": 3,
                     "NAICS_4": 4,
                     "NAICS_5": 5,
-                    "NAICS_6": 6}
+                    "NAICS_6": 6,
+                    "NAICS_7": 7}
 
 # withdrawn keyword changed to "none" over "W"
 # because unable to run calculation functions with text string
@@ -72,10 +73,9 @@ def load_crosswalk(crosswalk_name):
     """
     Used to load the crosswalks:
 
-    'NAICS_Crosswalk_TimeSeries', 'NAICS_2012_Crosswalk',
-    'Sector_2012_Names', 'Sector_2017_Names','Household_SectorCodes',
+    'NAICS_2012_Crosswalk', 'Sector_2012_Names', 'Sector_2017_Names','Household_SectorCodes',
     'Government_SectorCodes', 'NAICS_to_BEA_Crosswalk_2012',
-    'NAICS_to_BEA_Crosswalk_2017'
+    'NAICS_to_BEA_Crosswalk_2017', 'NAICS_Year_Concordance'
 
     as a dataframe
 
@@ -143,6 +143,9 @@ def load_yaml_dict(filename, flowbytype=None, filepath=None, **kwargs):
         if path.exists(path.join(str(filepath), f'{filename}.yaml')):
             log.info(f'Loading {filename} from {filepath}')
             folder = filepath
+        elif path.exists(path.join(str(filepath), 'flowbysectormethods/', f'{filename}.yaml')):
+            log.info(f'Loading {filename} from {filepath}flowbysectormethods/')
+            folder = f'{filepath}flowbysectormethods/'
         else:
             if filepath is not None:
                 log.warning(f'{filename} not found in {filepath}. '
