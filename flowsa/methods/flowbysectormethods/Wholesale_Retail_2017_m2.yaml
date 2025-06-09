@@ -39,9 +39,10 @@ source_names:
         activity_to_sector_mapping: Census_PxI_WholesaleRetail_Commodity
         clean_fba: !script_function:Census_EC keep_wholesale_retail
         # Keep only NAPCS that start with 4 (Wholesale) or 5 (Retail)
-        clean_fba_w_sec: !script_function:Census_EC clean_after_attr
+        clean_fba_w_sec: !script_function:Census_EC clean_after_attr_m2
         # Moves the FlowName back to the SPB (with no mappings/adjustments)
         # And also stores the original NAPCS code back as the flowname
+        # attribution_method: equal
         attribution_method: proportional
         attribution_source:
           BEA_Detail_Supply:

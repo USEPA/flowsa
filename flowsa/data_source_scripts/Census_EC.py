@@ -229,11 +229,11 @@ def keep_wholesale_retail(fba: FlowByActivity, **_) -> FlowByActivity:
     return fba
 
 
-def clean_after_attr(fba: FlowByActivity, **_) -> FlowByActivity:
+def clean_after_attr_m1(fba: FlowByActivity, **_) -> FlowByActivity:
     """clean_fba_after_attribution
     """
-    # After mapping NAPCS to NAICS, moves the FlowName (original Census NAICS) back
-    # to SectorConsumedBy with out mapping to leave the original data in place
+    # After mapping Census product code to NAICS, moves the FlowName (original Census NAICS) back
+    # to SectorProducedBy with out mapping to leave the original data in place
     # Also resets the Flowable as the original NAPCS code for posterity
 
     fba = (fba
@@ -242,6 +242,26 @@ def clean_after_attr(fba: FlowByActivity, **_) -> FlowByActivity:
            )
 
     return fba
+
+def clean_after_attr_m2(fba: FlowByActivity, **_) -> FlowByActivity:
+    """clean_fba_after_attribution
+    """
+    # After mapping Census product code to NAICS, moves the FlowName (original Census NAICS) back
+    # to SectorProducedBy with out mapping to leave the original data in place
+    # Also moves the SCB back to the Flowable before resetting SCB
+    # Flags context as Wholesale or Retail based on Census product code
+
+    fba = (fba
+           .assign(SectorProducedBy = fba['Flowable'])
+           .assign(Flowable = fba['SectorConsumedBy'])
+           .assign(SectorConsumedBy = np.nan)
+           .assign(Context = lambda x: np.where(
+               x['ActivityConsumedBy'].str.startswith('4'),
+               'Wholesale','Retail'))
+           )
+
+    return fba
+
 
 
 if __name__ == "__main__":
