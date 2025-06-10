@@ -1,22 +1,22 @@
 git+https://github.com/USEPA/fedelemflowlist.git@develop#egg=fedelemflowlist
 git+https://github.com/USEPA/esupy.git@develop#egg=esupy
 git+https://github.com/USEPA/standardizedinventories.git@develop#egg=StEWI
-appdirs >= 1.4.3               # Storing user data
-bibtexparser>=1.2.0            # Generates bibtex
+appdirs >= 1.4.4               # Storing user data
+bibtexparser>=1.4.3            # Generates bibtex
 kaleido == 0.1.0.post1; platform_system == "Windows"  # export plotly.py figures as static images
 kaleido == 0.2.0; platform_system=="Linux" or platform_system=="Darwin"
-matplotlib >= 3.4.3            # Plotting
-numpy>=1.20.1, <2.0.0          # Library used for arrays
-openpyxl >= 3.0.7              # Extract data from xlsm files
+matplotlib >= 3.10.3           # Plotting
+numpy>=2.3.0                   # Library used for arrays
+openpyxl >= 3.1.5              # Extract data from xlsm files
 pandas==2.2.2                  # Powerful data structures for data analysis, time series, and statistics.
-pip>=9                         # The PyPA recommended tool for installing Python packages.
-plotly >= 5.10.0               # Plotting
-pycountry >= 19.8.18           # ISO country codes
-python-dotenv >= 0.19.1        # Reads .env files
-pyyaml>=5.3                    # Yaml for python
-requests >=2.22.0              # Web service calls
+pip>=25.1.1                    # The PyPA recommended tool for installing Python packages.
+plotly >= 6.1.2                # Plotting
+pycountry >= 24.6.1            # ISO country codes
+python-dotenv >= 1.1.0         # Reads .env files
+pyyaml>=6.0.2                  # Yaml for python
+requests >=2.32.4              # Web service calls
 requests_ftp == 0.3.1          # Requests implementation for FTP
-seaborn >= 0.11.2              # Plotting
-setuptools>=41                 # Fully-featured library designed to facilitate packaging Python projects.
-tabula-py >= 2.1.1             # PDF reader
+seaborn >= 0.13.2              # Plotting
+setuptools>=80.9.0             # Fully-featured library designed to facilitate packaging Python projects.
+tabula-py >= 2.10.0            # PDF reader
 xlrd >= 2.0.1                  # Extract data from xls files
