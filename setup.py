@@ -20,7 +20,7 @@ setup(
         "kaleido==0.1.0.post1;platform_system=='Windows'",
         "kaleido==0.2.0;platform_system=='Linux' or platform_system=='Darwin'",
         'matplotlib>=3.4.3',
-        'numpy>=2.3.0',
+        'numpy<2.1.0',
         'openpyxl>=3.0.7',
         'pandas==2.2.2',
         'pip>=9',

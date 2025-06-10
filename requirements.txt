@@ -6,7 +6,7 @@ bibtexparser>=1.4.3            # Generates bibtex
 kaleido == 0.1.0.post1; platform_system == "Windows"  # export plotly.py figures as static images
 kaleido == 0.2.0; platform_system=="Linux" or platform_system=="Darwin"
 matplotlib >= 3.10.3           # Plotting
-numpy>=2.3.0                   # Library used for arrays
+numpy<2.1.0                   # Library used for arrays
 openpyxl >= 3.1.5              # Extract data from xlsm files
 pandas==2.2.2                  # Powerful data structures for data analysis, time series, and statistics.
 pip>=25.1.1                    # The PyPA recommended tool for installing Python packages.
