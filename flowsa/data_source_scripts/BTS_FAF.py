@@ -68,7 +68,10 @@ def faf_parse(*, df_list, **_):
 
     tables2 = tabula.read_pdf(externaldatapath / pdf, pages=7)
     modes = tables2[0] if tables2 else pd.DataFrame()
-    modes = modes.dropna(subset='Code')
+    modes = (modes
+             .dropna(subset='Code')
+             .replace('Multiple Modes and', 'Multiple Modes and Mail')
+             )
 
     df0 = pd.concat(df_list)
     # https://faf.ornl.gov/faf5/data/FAF5%20User%20Guide.pdf

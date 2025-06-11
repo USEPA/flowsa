@@ -17,8 +17,9 @@ source_names:
     data_format: FBA
     clean_fba_before_activity_sets: !script_function:BTS_FAF move_flow_to_ACB
     ## ^^ this moves the flow name to ACB
-
+    selection_fields:
+      Unit: ton-miles
     activity_sets:
       sectors:
         activity_to_sector_mapping: FAF_Mode_and_SCTG
-        attribution_method: direct
+        attribution_method: equal
