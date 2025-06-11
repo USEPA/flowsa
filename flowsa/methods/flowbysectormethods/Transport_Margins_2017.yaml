@@ -13,7 +13,7 @@ activity_schema: None
 source_names:
   BTS_FAF:
     geoscale: national
-    year: 2018
+    year: 2017
     data_format: FBA
     clean_fba_before_activity_sets: !script_function:BTS_FAF move_flow_to_ACB
     ## ^^ this moves the flow name to ACB

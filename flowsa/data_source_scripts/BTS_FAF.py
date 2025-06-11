@@ -24,9 +24,7 @@ def faf_call(*, resp, config, **_):
     :param resp: df, response from url call
     :return: pandas dataframe of original source data
     """
-    zipf = "FAF5.6.1_State_2018-2023.zip"
-    file = 'FAF5.6.1_State_2018-2023.csv'
-
+    df_list = []
     ## do we need the state database?
     # url = 'https://www.bts.gov/sites/bts.dot.gov/files/2024-03/FAF4.5.1_csv_2013-2018.zip'
     # year = 2016
@@ -37,14 +35,25 @@ def faf_call(*, resp, config, **_):
     #     with zf.open(file) as csvf:
     #         df = pd.read_csv(csvf)
 
+    # zipf = "FAF5.6.1_State_2018-2023.zip"
+    # file = 'FAF5.6.1_State_2018-2023.csv'
+    # with zipfile.ZipFile(externaldatapath / zipf, "r") as zf:
+    #     with zf.open(file) as csvf:
+    #         df = pd.read_csv(csvf)
+    # df_list.append(df)
+
+    # url = https://faf.ornl.gov/faf5/Data/Download_Files/FAF5.6.1_State.zip
+    zipf = "FAF5.6.1_State.zip"
+    file = "FAF5.6.1_State.csv"
     with zipfile.ZipFile(externaldatapath / zipf, "r") as zf:
         with zf.open(file) as csvf:
             df = pd.read_csv(csvf)
+    df_list.append(df)
 
-    return [df]
+    return df_list
 
 
-def faf_parse(*, df_list, **_):
+def faf_parse(*, df_list, year, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
@@ -76,13 +85,20 @@ def faf_parse(*, df_list, **_):
     df0 = pd.concat(df_list)
     # https://faf.ornl.gov/faf5/data/FAF5%20User%20Guide.pdf
     df_list=[]
-    for year in range(2018, 2024):
+    for year in range(2017, 2024):
+        col_list = [
+             # 'fr_orig', 'dms_origst', 'dms_destst', 'fr_dest',
+             # 'fr_inmode', 'fr_outmode', 'dist_band',
+             'dms_mode', 'sctg2', 'trade_type',
+             f'tons_{year}', f'current_value_{year}', f'tmiles_{year}']
+        if year == 2017:
+            col_list.append('value_2017')
+            col_list.remove('current_value_2017')
+            value_var = 'value_2017'
+        else:
+            value_var = f'current_value_{year}'
         df1 = (df0
-               .filter([
-                    # 'fr_orig', 'dms_origst', 'dms_destst', 'fr_dest',
-                    # 'fr_inmode', 'fr_outmode', 'dist_band',
-                    'dms_mode', 'sctg2', 'trade_type',
-                    f'tons_{year}', f'current_value_{year}', f'tmiles_{year}'])
+               .filter(col_list)
                .query('trade_type == 1') # Domestic only
                )
 
@@ -97,12 +113,12 @@ def faf_parse(*, df_list, **_):
                )
         df1 = (df1
                .melt(id_vars=['sctg2', 'dms_mode', 'Mode', 'Commodity Description'],
-                     value_vars=[f'tons_{year}', f'current_value_{year}', f'tmiles_{year}'],
+                     value_vars=[f'tons_{year}', value_var, f'tmiles_{year}'],
                      value_name='FlowAmount')
                .assign(Year = str(year))
                .assign(Unit = lambda x: x['variable'].replace(
                    {f'tons_{year}': 'tons',
-                    f'current_value_{year}': 'current value',
+                    value_var: 'current value',
                     f'tmiles_{year}': "ton-miles"}))
                .drop(columns=['variable'])
                .rename(columns={'Commodity Description': 'FlowName',
@@ -139,5 +155,5 @@ def move_flow_to_ACB(fba: FlowByActivity, **_) -> FlowByActivity:
 
 if __name__ == "__main__":
     import flowsa
-    flowsa.generateflowbyactivity.main(source='BTS_FAF', year='2018-2023')
-    fba = flowsa.getFlowByActivity('BTS_FAF', 2022)
+    flowsa.generateflowbyactivity.main(source='BTS_FAF', year='2017-2023')
+    fba = flowsa.getFlowByActivity('BTS_FAF', 2017)
