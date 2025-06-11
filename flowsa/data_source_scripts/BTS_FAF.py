@@ -12,10 +12,10 @@ import tabula
 import io
 import requests
 from esupy.remote import make_url_request
-from flowsa.settings import externaldatapath
+from flowsa.flowbyactivity import FlowByActivity
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.location import US_FIPS
-
+from flowsa.settings import externaldatapath
 
 def faf_call(*, resp, config, **_):
     """
@@ -123,6 +123,16 @@ def faf_parse(*, df_list, **_):
           )
 
     return df
+
+def move_flow_to_ACB(fba: FlowByActivity, **_) -> FlowByActivity:
+    """clean_fba_before_activity_sets fxn
+    """
+    ## this moves the flow name (SCTG description) to ACB
+    fba = (fba
+            .assign(ActivityConsumedBy = fba['FlowName'])
+            )
+    return fba
+
 
 if __name__ == "__main__":
     import flowsa

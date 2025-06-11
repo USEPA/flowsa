@@ -1,0 +1,305 @@
+ActivitySourceName,Activity,Activity_Description,SectorSourceName,Sector,SectorType,Note
+FAF_Mode,Truck,Includes private and for-hire trucks. Does not include truck that is part of Multiple Modes and Mail or truck moves in conjunction with domestic air cargo.,NAICS_2017_Code,484,,
+FAF_Mode,Rail,Includes any common carrier or private railroad. Does not include rail that is part of Multiple Modes and Mail.,NAICS_2017_Code,482,,
+FAF_Mode,Water,"Includes shallow draft, deep draft, Great Lakes, and intra-port shipments. Does not include water that is part of Multiple Modes and Mail",NAICS_2017_Code,483,,
+FAF_Mode,Air (includes truck-air),"Includes shipments move by air or a combination of truck and air in commercial or private aircraft. Includes air freight and air express. In the case of imports and exports by air, domestic moves by ground to and from the port of entry or exit are categorized with Truck.",NAICS_2017_Code,481,,
+FAF_Mode,Multiple Modes and Mail,"Includes shipments by multiple modes and by parcel delivery services, U.S. Postal Service, or couriers (capped at 150 pounds). This category is not limited to containerized or trailer-on-flatcar shipments.",NAICS_2017_Code,491,,
+FAF_Mode,Pipeline,"Includes crude petroleum, natural gas, and product pipelines. Note: Does include flows from offshore wells to land, which are counted as Water moves by the U.S. Army Corps of Engineers. Does not include pipeline that is part of Multiple Modes and Mail",NAICS_2017_Code,486,,
+FAF_Mode,Other and Unknown,"Includes movements not elsewhere classified such as flyaway aircraft, and shipments for which the mode cannot be determined.",NAICS_2017_Code,487,,
+FAF_Mode,Other and Unknown,"Includes movements not elsewhere classified such as flyaway aircraft, and shipments for which the mode cannot be determined.",NAICS_2017_Code,488,,
+FAF_Mode,Other and Unknown,"Includes movements not elsewhere classified such as flyaway aircraft, and shipments for which the mode cannot be determined.",NAICS_2017_Code,492,,
+FAF_Mode,No Domestic Mode,"Includes shipments that have an international mode, but no domestic mode and is limited to import shipments of crude petroleum transferred directly from inbound ships to a U.S. refinery at the zone of entry. This classification enables a proper accounting of flows that do not utilize any domestic transportation network.",NAICS_2017_Code,,,
+FAF_SCTG,Animals and Fish (live),,NAICS_2017_Code,112,,1121A0
+FAF_SCTG,Animals and Fish (live),,NAICS_2017_Code,112,,112A00
+FAF_SCTG,Animals and Fish (live),,NAICS_2017_Code,114,,114000
+FAF_SCTG,Cereal Grains (includes seed),,NAICS_2017_Code,11113,,1111B0
+FAF_SCTG,Cereal Grains (includes seed),,NAICS_2017_Code,11114,,1111B0
+FAF_SCTG,Cereal Grains (includes seed),,NAICS_2017_Code,11115,,1111B0
+FAF_SCTG,Cereal Grains (includes seed),,NAICS_2017_Code,11116,,1111B0
+FAF_SCTG,Cereal Grains (includes seed),,NAICS_2017_Code,11119,,1111B0
+FAF_SCTG,"Agricultural Products (excludes Animal Feed, Cereal Grains, and Forage Products)",,NAICS_2017_Code,11111,,1111A0
+FAF_SCTG,"Agricultural Products (excludes Animal Feed, Cereal Grains, and Forage Products)",,NAICS_2017_Code,11112,,1111A0
+FAF_SCTG,"Agricultural Products (excludes Animal Feed, Cereal Grains, and Forage Products)",,NAICS_2017_Code,1112,,111200
+FAF_SCTG,"Agricultural Products (excludes Animal Feed, Cereal Grains, and Forage Products)",,NAICS_2017_Code,1113,,111300
+FAF_SCTG,"Agricultural Products (excludes Animal Feed, Cereal Grains, and Forage Products)",,NAICS_2017_Code,1114,,111400
+FAF_SCTG,"Agricultural Products (excludes Animal Feed, Cereal Grains, and Forage Products)",,NAICS_2017_Code,1119,,111900
+FAF_SCTG,"Animal Feed, Eggs, Honey, and Other Products of Animal Origin",,NAICS_2017_Code,1123,,112300
+FAF_SCTG,"Animal Feed, Eggs, Honey, and Other Products of Animal Origin",,NAICS_2017_Code,311111,,311111
+FAF_SCTG,"Animal Feed, Eggs, Honey, and Other Products of Animal Origin",,NAICS_2017_Code,311119,,311119
+FAF_SCTG,"Meat, Poultry, Fish, Seafood, and Their Preparations",,NAICS_2017_Code,1123,,112300
+FAF_SCTG,"Meat, Poultry, Fish, Seafood, and Their Preparations",,NAICS_2017_Code,311615,,311615
+FAF_SCTG,"Meat, Poultry, Fish, Seafood, and Their Preparations",,NAICS_2017_Code,311611,,31161A
+FAF_SCTG,"Meat, Poultry, Fish, Seafood, and Their Preparations",,NAICS_2017_Code,311612,,31161A
+FAF_SCTG,"Meat, Poultry, Fish, Seafood, and Their Preparations",,NAICS_2017_Code,311613,,31161A
+FAF_SCTG,"Meat, Poultry, Fish, Seafood, and Their Preparations",,NAICS_2017_Code,3117,,311700
+FAF_SCTG,"Milled Grain Products and Preparations, and Bakery Products",,NAICS_2017_Code,11212,,112120
+FAF_SCTG,"Milled Grain Products and Preparations, and Bakery Products",,NAICS_2017_Code,31121,,311210
+FAF_SCTG,"Milled Grain Products and Preparations, and Bakery Products",,NAICS_2017_Code,311221,,311221
+FAF_SCTG,"Milled Grain Products and Preparations, and Bakery Products",,NAICS_2017_Code,31123,,311230
+FAF_SCTG,"Milled Grain Products and Preparations, and Bakery Products",,NAICS_2017_Code,31181,,311810
+FAF_SCTG,"Milled Grain Products and Preparations, and Bakery Products",,NAICS_2017_Code,31182,,3118A0
+FAF_SCTG,"Milled Grain Products and Preparations, and Bakery Products",,NAICS_2017_Code,31183,,3118A0
+FAF_SCTG,"Other Prepared Foodstuffs, Fats and Oils",,NAICS_2017_Code,311225,,311225
+FAF_SCTG,"Other Prepared Foodstuffs, Fats and Oils",,NAICS_2017_Code,3113,,311300
+FAF_SCTG,"Other Prepared Foodstuffs, Fats and Oils",,NAICS_2017_Code,31141,,311410
+FAF_SCTG,"Other Prepared Foodstuffs, Fats and Oils",,NAICS_2017_Code,31142,,311420
+FAF_SCTG,"Other Prepared Foodstuffs, Fats and Oils",,NAICS_2017_Code,311513,,311513
+FAF_SCTG,"Other Prepared Foodstuffs, Fats and Oils",,NAICS_2017_Code,311514,,311514
+FAF_SCTG,"Other Prepared Foodstuffs, Fats and Oils",,NAICS_2017_Code,311511,,31151A
+FAF_SCTG,"Other Prepared Foodstuffs, Fats and Oils",,NAICS_2017_Code,311512,,31151A
+FAF_SCTG,"Other Prepared Foodstuffs, Fats and Oils",,NAICS_2017_Code,31152,,311520
+FAF_SCTG,"Other Prepared Foodstuffs, Fats and Oils",,NAICS_2017_Code,31191,,311910
+FAF_SCTG,"Other Prepared Foodstuffs, Fats and Oils",,NAICS_2017_Code,31192,,311920
+FAF_SCTG,"Other Prepared Foodstuffs, Fats and Oils",,NAICS_2017_Code,31193,,311930
+FAF_SCTG,"Other Prepared Foodstuffs, Fats and Oils",,NAICS_2017_Code,31194,,311940
+FAF_SCTG,"Other Prepared Foodstuffs, Fats and Oils",,NAICS_2017_Code,31199,,311990
+FAF_SCTG,"Other Prepared Foodstuffs, Fats and Oils",,NAICS_2017_Code,31211,,312110
+FAF_SCTG,Alcoholic Beverages and Denatured Alcohol,,NAICS_2017_Code,31212,,312120
+FAF_SCTG,Alcoholic Beverages and Denatured Alcohol,,NAICS_2017_Code,31213,,312130
+FAF_SCTG,Alcoholic Beverages and Denatured Alcohol,,NAICS_2017_Code,31214,,312140
+FAF_SCTG,Tobacco Products,,NAICS_2017_Code,3122,,312200
+FAF_SCTG,Monumental or Building Stone,,NAICS_2017_Code,21231,,212310
+FAF_SCTG,Natural Sands,,NAICS_2017_Code,21231,,212310
+FAF_SCTG,Gravel and Crushed Stone (excludes Dolomite and Slate),,NAICS_2017_Code,21231,,212310
+FAF_SCTG,Other Non-Metallic Minerals not elsewhere classified,,NAICS_2017_Code,21232,,2123A0
+FAF_SCTG,Other Non-Metallic Minerals not elsewhere classified,,NAICS_2017_Code,21239,,2123A0
+FAF_SCTG,Metallic Ores and Concentrates,,NAICS_2017_Code,21223,,212230
+FAF_SCTG,Metallic Ores and Concentrates,,NAICS_2017_Code,21222,,2122A0
+FAF_SCTG,Metallic Ores and Concentrates,,NAICS_2017_Code,21229,,2122A0
+FAF_SCTG,Coal,,NAICS_2017_Code,2121,,212100
+FAF_SCTG,Crude Petroleum,,NAICS_2017_Code,211,,211000
+FAF_SCTG,"Gasoline, Aviation Turbine Fuel, and Ethanol (includes Kerosene, and Fuel Alcohols)",,NAICS_2017_Code,32411,,324110
+FAF_SCTG,"Gasoline, Aviation Turbine Fuel, and Ethanol (includes Kerosene, and Fuel Alcohols)",,NAICS_2017_Code,324121,,324121
+FAF_SCTG,"Gasoline, Aviation Turbine Fuel, and Ethanol (includes Kerosene, and Fuel Alcohols)",,NAICS_2017_Code,324122,,324122
+FAF_SCTG,"Fuel Oils (includes Diesel, Bunker C, and Biodiesel)",,NAICS_2017_Code,32411,,324110
+FAF_SCTG,"Other Coal and Petroleum Products, not elsewhere classified",,NAICS_2017_Code,32419,,324190
+FAF_SCTG,Basic Chemicals,,NAICS_2017_Code,32511,,325110
+FAF_SCTG,Basic Chemicals,,NAICS_2017_Code,32512,,325120
+FAF_SCTG,Basic Chemicals,,NAICS_2017_Code,32513,,325130
+FAF_SCTG,Basic Chemicals,,NAICS_2017_Code,32518,,325180
+FAF_SCTG,Basic Chemicals,,NAICS_2017_Code,32519,,325190
+FAF_SCTG,Pharmaceutical Products,,NAICS_2017_Code,325411,,325411
+FAF_SCTG,Pharmaceutical Products,,NAICS_2017_Code,325412,,325412
+FAF_SCTG,Pharmaceutical Products,,NAICS_2017_Code,325413,,325413
+FAF_SCTG,Pharmaceutical Products,,NAICS_2017_Code,325414,,325414
+FAF_SCTG,Fertilizers,,NAICS_2017_Code,32531,,325310
+FAF_SCTG,Other Chemical Products and Preparations,,NAICS_2017_Code,32532,,325320
+FAF_SCTG,Other Chemical Products and Preparations,,NAICS_2017_Code,32551,,325510
+FAF_SCTG,Other Chemical Products and Preparations,,NAICS_2017_Code,32552,,325520
+FAF_SCTG,Other Chemical Products and Preparations,,NAICS_2017_Code,32561,,325610
+FAF_SCTG,Other Chemical Products and Preparations,,NAICS_2017_Code,32562,,325620
+FAF_SCTG,Other Chemical Products and Preparations,,NAICS_2017_Code,32591,,325910
+FAF_SCTG,Other Chemical Products and Preparations,,NAICS_2017_Code,32592,,3259A0
+FAF_SCTG,Other Chemical Products and Preparations,,NAICS_2017_Code,32599,,3259A0
+FAF_SCTG,Plastics and Rubber,,NAICS_2017_Code,325211,,325211
+FAF_SCTG,Plastics and Rubber,,NAICS_2017_Code,325212,,3252A0
+FAF_SCTG,Plastics and Rubber,,NAICS_2017_Code,32522,,3252A0
+FAF_SCTG,Plastics and Rubber,,NAICS_2017_Code,32611,,326110
+FAF_SCTG,Plastics and Rubber,,NAICS_2017_Code,32612,,326120
+FAF_SCTG,Plastics and Rubber,,NAICS_2017_Code,32613,,326130
+FAF_SCTG,Plastics and Rubber,,NAICS_2017_Code,32614,,326140
+FAF_SCTG,Plastics and Rubber,,NAICS_2017_Code,32615,,326150
+FAF_SCTG,Plastics and Rubber,,NAICS_2017_Code,32616,,326160
+FAF_SCTG,Plastics and Rubber,,NAICS_2017_Code,32619,,326190
+FAF_SCTG,Plastics and Rubber,,NAICS_2017_Code,32621,,326210
+FAF_SCTG,Plastics and Rubber,,NAICS_2017_Code,32622,,326220
+FAF_SCTG,Plastics and Rubber,,NAICS_2017_Code,32629,,326290
+FAF_SCTG,Logs and Other Wood in the Rough,,NAICS_2017_Code,113,,113000
+FAF_SCTG,Wood Products,,NAICS_2017_Code,3211,,321100
+FAF_SCTG,Wood Products,,NAICS_2017_Code,3212,,321200
+FAF_SCTG,Wood Products,,NAICS_2017_Code,32191,,321910
+FAF_SCTG,Wood Products,,NAICS_2017_Code,32192,,3219A0
+FAF_SCTG,Wood Products,,NAICS_2017_Code,32199,,3219A0
+FAF_SCTG,"Pulp, Newsprint, Paper, and Paperboard",,NAICS_2017_Code,32211,,322110
+FAF_SCTG,"Pulp, Newsprint, Paper, and Paperboard",,NAICS_2017_Code,32212,,322120
+FAF_SCTG,"Pulp, Newsprint, Paper, and Paperboard",,NAICS_2017_Code,32213,,322130
+FAF_SCTG,Paper or Paperboard Articles,,NAICS_2017_Code,32221,,322210
+FAF_SCTG,Paper or Paperboard Articles,,NAICS_2017_Code,32222,,322220
+FAF_SCTG,Paper or Paperboard Articles,,NAICS_2017_Code,32223,,322230
+FAF_SCTG,Paper or Paperboard Articles,,NAICS_2017_Code,322291,,322291
+FAF_SCTG,Paper or Paperboard Articles,,NAICS_2017_Code,322299,,322299
+FAF_SCTG,Printed Products,,NAICS_2017_Code,51111,,511110
+FAF_SCTG,Printed Products,,NAICS_2017_Code,51112,,511120
+FAF_SCTG,Printed Products,,NAICS_2017_Code,51113,,511130
+FAF_SCTG,Printed Products,,NAICS_2017_Code,51114,,5111A0
+FAF_SCTG,Printed Products,,NAICS_2017_Code,51119,,5111A0
+FAF_SCTG,"Textiles, Leather, and Articles of Textiles or Leather",,NAICS_2017_Code,3131,,313100
+FAF_SCTG,"Textiles, Leather, and Articles of Textiles or Leather",,NAICS_2017_Code,3132,,313200
+FAF_SCTG,"Textiles, Leather, and Articles of Textiles or Leather",,NAICS_2017_Code,3133,,313300
+FAF_SCTG,"Textiles, Leather, and Articles of Textiles or Leather",,NAICS_2017_Code,31411,,314110
+FAF_SCTG,"Textiles, Leather, and Articles of Textiles or Leather",,NAICS_2017_Code,31412,,314120
+FAF_SCTG,"Textiles, Leather, and Articles of Textiles or Leather",,NAICS_2017_Code,3149,,314900
+FAF_SCTG,"Textiles, Leather, and Articles of Textiles or Leather",,NAICS_2017_Code,315,,315000
+FAF_SCTG,"Textiles, Leather, and Articles of Textiles or Leather",,NAICS_2017_Code,316,,316000
+FAF_SCTG,Non-Metallic Mineral Products,,NAICS_2017_Code,3271,,327100
+FAF_SCTG,Non-Metallic Mineral Products,,NAICS_2017_Code,3272,,327200
+FAF_SCTG,Non-Metallic Mineral Products,,NAICS_2017_Code,32731,,327310
+FAF_SCTG,Non-Metallic Mineral Products,,NAICS_2017_Code,32732,,327320
+FAF_SCTG,Non-Metallic Mineral Products,,NAICS_2017_Code,32733,,327330
+FAF_SCTG,Non-Metallic Mineral Products,,NAICS_2017_Code,32739,,327390
+FAF_SCTG,Non-Metallic Mineral Products,,NAICS_2017_Code,3274,,327400
+FAF_SCTG,Non-Metallic Mineral Products,,NAICS_2017_Code,32791,,327910
+FAF_SCTG,Non-Metallic Mineral Products,,NAICS_2017_Code,327991,,327991
+FAF_SCTG,Non-Metallic Mineral Products,,NAICS_2017_Code,327992,,327992
+FAF_SCTG,Non-Metallic Mineral Products,,NAICS_2017_Code,327993,,327993
+FAF_SCTG,Non-Metallic Mineral Products,,NAICS_2017_Code,327999,,327999
+FAF_SCTG,Base Metal in Primary or Semi-Finished Forms and in Finished Basic Shapes,,NAICS_2017_Code,33111,,331110
+FAF_SCTG,Base Metal in Primary or Semi-Finished Forms and in Finished Basic Shapes,,NAICS_2017_Code,3312,,331200
+FAF_SCTG,Base Metal in Primary or Semi-Finished Forms and in Finished Basic Shapes,,NAICS_2017_Code,331313,,331313
+FAF_SCTG,Base Metal in Primary or Semi-Finished Forms and in Finished Basic Shapes,,NAICS_2017_Code,331314,,331314
+FAF_SCTG,Base Metal in Primary or Semi-Finished Forms and in Finished Basic Shapes,,NAICS_2017_Code,331315,,33131B
+FAF_SCTG,Base Metal in Primary or Semi-Finished Forms and in Finished Basic Shapes,,NAICS_2017_Code,331318,,33131B
+FAF_SCTG,Base Metal in Primary or Semi-Finished Forms and in Finished Basic Shapes,,NAICS_2017_Code,33141,,331410
+FAF_SCTG,Base Metal in Primary or Semi-Finished Forms and in Finished Basic Shapes,,NAICS_2017_Code,33142,,331420
+FAF_SCTG,Base Metal in Primary or Semi-Finished Forms and in Finished Basic Shapes,,NAICS_2017_Code,33149,,331490
+FAF_SCTG,Base Metal in Primary or Semi-Finished Forms and in Finished Basic Shapes,,NAICS_2017_Code,33151,,331510
+FAF_SCTG,Base Metal in Primary or Semi-Finished Forms and in Finished Basic Shapes,,NAICS_2017_Code,33152,,331520
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,332114,,332114
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,332111,,33211A
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,332112,,33211A
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,332117,,33211A
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,3322,,332200
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,33231,,332310
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,33232,,332320
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,33241,,332410
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,33242,,332420
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,33243,,332430
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,3325,,332500
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,3326,,332600
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,33271,,332710
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,33272,,332720
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,3328,,332800
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,332913,,332913
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,332911,,33291A
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,332912,,33291A
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,332919,,33291A
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,332991,,332991
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,332996,,332996
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,332992,,33299A
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,332993,,33299A
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,332994,,33299A
+FAF_SCTG,Machinery,,NAICS_2017_Code,333111,,333111
+FAF_SCTG,Machinery,,NAICS_2017_Code,333112,,333112
+FAF_SCTG,Machinery,,NAICS_2017_Code,333120,,333120
+FAF_SCTG,Machinery,,NAICS_2017_Code,333130,,333130
+FAF_SCTG,Machinery,,NAICS_2017_Code,333291,,33329A
+FAF_SCTG,Machinery,,NAICS_2017_Code,333293,,33329A
+FAF_SCTG,Machinery,,NAICS_2017_Code,333294,,33329A
+FAF_SCTG,Machinery,,NAICS_2017_Code,333299,,33329A
+FAF_SCTG,Machinery,,NAICS_2017_Code,333314,,333314
+FAF_SCTG,Machinery,,NAICS_2017_Code,333316,,333316
+FAF_SCTG,Machinery,,NAICS_2017_Code,333318,,333318
+FAF_SCTG,Machinery,,NAICS_2017_Code,333413,,333413
+FAF_SCTG,Machinery,,NAICS_2017_Code,333414,,333414
+FAF_SCTG,Machinery,,NAICS_2017_Code,333415,,333415
+FAF_SCTG,Machinery,,NAICS_2017_Code,333511,,333511
+FAF_SCTG,Machinery,,NAICS_2017_Code,333514,,333514
+FAF_SCTG,Machinery,,NAICS_2017_Code,333517,,333517
+FAF_SCTG,Machinery,,NAICS_2017_Code,333515,,33351B
+FAF_SCTG,Machinery,,NAICS_2017_Code,333519,,33351B
+FAF_SCTG,Machinery,,NAICS_2017_Code,333611,,333611
+FAF_SCTG,Machinery,,NAICS_2017_Code,333612,,333612
+FAF_SCTG,Machinery,,NAICS_2017_Code,333613,,333613
+FAF_SCTG,Machinery,,NAICS_2017_Code,333618,,333618
+FAF_SCTG,Machinery,,NAICS_2017_Code,333912,,333912
+FAF_SCTG,Machinery,,NAICS_2017_Code,333914,,33391A
+FAF_SCTG,Machinery,,NAICS_2017_Code,33392,,333920
+FAF_SCTG,Machinery,,NAICS_2017_Code,333991,,333991
+FAF_SCTG,Machinery,,NAICS_2017_Code,333993,,333993
+FAF_SCTG,Machinery,,NAICS_2017_Code,333994,,333994
+FAF_SCTG,Machinery,,NAICS_2017_Code,333992,,33399A
+FAF_SCTG,Machinery,,NAICS_2017_Code,333997,,33399A
+FAF_SCTG,Machinery,,NAICS_2017_Code,333999,,33399A
+FAF_SCTG,Machinery,,NAICS_2017_Code,333995,,33399B
+FAF_SCTG,Machinery,,NAICS_2017_Code,333996,,33399B
+FAF_SCTG,Machinery,,NAICS_2017_Code,335222,,335222
+FAF_SCTG,Machinery,,NAICS_2017_Code,335224,,335224
+FAF_SCTG,Machinery,,NAICS_2017_Code,335228,,335228
+FAF_SCTG,Machinery,,NAICS_2017_Code,33631,,336310
+FAF_SCTG,Machinery,,NAICS_2017_Code,33635,,336350
+FAF_SCTG,Machinery,,NAICS_2017_Code,336412,,336412
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,334111,,334111
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,334112,,334112
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,334118,,334118
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,33421,,334210
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,33422,,334220
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,33429,,334290
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,3343,,334300
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,334413,,334413
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,334418,,334418
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,334412,,33441A
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,334416,,33441A
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,334417,,33441A
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,334419,,33441A
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,33521,,335210
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,335221,,335221
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,335311,,335311
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,335312,,335312
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,335313,,335313
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,335911,,335911
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,335912,,335912
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,33592,,335920
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,33593,,335930
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,335991,,335991
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,335999,,335999
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,33632,,336320
+FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,336111,,336111
+FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,336112,,336112
+FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,33612,,336120
+FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,336211,,336211
+FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,336212,,336212
+FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,336213,,336213
+FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,336214,,336214
+FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,33636,,336360
+FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,33637,,336370
+FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,33639,,336390
+FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,33633,,3363A0
+FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,33634,,3363A0
+FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,336991,,336991
+FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,336992,,336992
+FAF_SCTG,"Transportation Equipment, not elsewhere classified",,NAICS_2017_Code,336411,,336411
+FAF_SCTG,"Transportation Equipment, not elsewhere classified",,NAICS_2017_Code,336413,,336413
+FAF_SCTG,"Transportation Equipment, not elsewhere classified",,NAICS_2017_Code,336414,,336414
+FAF_SCTG,"Transportation Equipment, not elsewhere classified",,NAICS_2017_Code,336415,,33641A
+FAF_SCTG,"Transportation Equipment, not elsewhere classified",,NAICS_2017_Code,336419,,33641A
+FAF_SCTG,"Transportation Equipment, not elsewhere classified",,NAICS_2017_Code,3365,,336500
+FAF_SCTG,"Transportation Equipment, not elsewhere classified",,NAICS_2017_Code,336611,,336611
+FAF_SCTG,"Transportation Equipment, not elsewhere classified",,NAICS_2017_Code,336612,,336612
+FAF_SCTG,"Transportation Equipment, not elsewhere classified",,NAICS_2017_Code,336999,,336999
+FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,33451,,334510
+FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,334511,,334511
+FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,334512,,334512
+FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,334513,,334513
+FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,334514,,334514
+FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,334515,,334515
+FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,334516,,334516
+FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,334517,,334517
+FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,334519,,33451A
+FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,33461,,334610
+FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,335314,,335314
+FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,339112,,339112
+FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,339113,,339113
+FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,339114,,339114
+FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,339115,,339115
+FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,339116,,339116
+FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings, and Illuminated Signs",,NAICS_2017_Code,33511,,335110
+FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings, and Illuminated Signs",,NAICS_2017_Code,33512,,335120
+FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings, and Illuminated Signs",,NAICS_2017_Code,33711,,337110
+FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings, and Illuminated Signs",,NAICS_2017_Code,337121,,337121
+FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings, and Illuminated Signs",,NAICS_2017_Code,337122,,337122
+FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings, and Illuminated Signs",,NAICS_2017_Code,337127,,337127
+FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings, and Illuminated Signs",,NAICS_2017_Code,337124,,33712N
+FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings, and Illuminated Signs",,NAICS_2017_Code,337125,,33712N
+FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings, and Illuminated Signs",,NAICS_2017_Code,337215,,337215
+FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings, and Illuminated Signs",,NAICS_2017_Code,337211,,33721A
+FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings, and Illuminated Signs",,NAICS_2017_Code,337212,,33721A
+FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings, and Illuminated Signs",,NAICS_2017_Code,337214,,33721A
+FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings, and Illuminated Signs",,NAICS_2017_Code,3379,,337900
+FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings, and Illuminated Signs",,NAICS_2017_Code,33995,,339950
+FAF_SCTG,Miscellaneous Manufactured Products,,NAICS_2017_Code,336414,,336414
+FAF_SCTG,Miscellaneous Manufactured Products,,NAICS_2017_Code,33991,,339910
+FAF_SCTG,Miscellaneous Manufactured Products,,NAICS_2017_Code,33992,,339920
+FAF_SCTG,Miscellaneous Manufactured Products,,NAICS_2017_Code,33993,,339930
+FAF_SCTG,Miscellaneous Manufactured Products,,NAICS_2017_Code,33999,,339990
+FAF_SCTG,Waste and Scrap (excludes of agriculture or food),,NAICS_2017_Code,562,,562000
+FAF_SCTG,Mixed Freight,,NAICS_2017_Code,33994,,339940
