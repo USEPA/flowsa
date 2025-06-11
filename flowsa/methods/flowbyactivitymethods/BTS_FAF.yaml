@@ -1,0 +1,22 @@
+author: US Bureau of Transportation Statistics
+source_name: Freight Analysis Framework (FAF)
+source_url: https://faf.ornl.gov/faf5
+source_publication_date: 2024
+bib_id: BTS_FAF
+api_name: None
+api_key_required: false
+format: xlsx
+# url:
+#   base_url: https://faf.ornl.gov/faf5/Data/Download_Files/FAF5.6.1_2018-2023.zip
+
+# call_response_fxn: !script_function:BTS_FAF faf_call
+parse_response_fxn: !script_function:BTS_FAF faf_parse
+call_all_years: True
+years:
+  - 2017
+  - 2018
+  - 2019
+  - 2020
+  - 2021
+  - 2022
+  - 2023
