@@ -7,9 +7,10 @@ api_name: USDA_ERS_MLU
 api_key_required: false
 format: csv
 url:
-  base_url: https://www.ers.usda.gov/webdocs/DataFiles/52096/MajorLandUse.csv?v=438
+  base_url: https://ers.usda.gov/sites/default/files/_laserfiche/DataFiles/52096/MajorLandUse.csv?v=98158
 call_response_fxn: !script_function:USDA_ERS_MLU mlu_call
 parse_response_fxn: !script_function:USDA_ERS_MLU mlu_parse
 years:
-- 2007
-- 2012
+  - 2007
+  - 2012
+  - 2017

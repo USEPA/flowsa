@@ -26,6 +26,11 @@ EPA_SIT:
     Status: Private data
     Type: FileNotFoundError
 
+EPA_WFR:
+    Active: True
+    Status: Report removed from EPA website
+    Type: HTTPError
+
 StateGHGI_ME:
     Active: True
     Status: Private data

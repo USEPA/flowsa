@@ -160,7 +160,8 @@ class FlowBySector(_FlowBy):
                     download_sources_ok=download_sources_ok
                 ).prepare_fbs(external_config_path=external_config_path,
                               download_sources_ok=download_sources_ok,
-                              retain_activity_columns=retain_activity_columns
+                              retain_activity_columns=retain_activity_columns,
+                              fbs_method_name=method,
                               )
             )
             # ^^^ This is done with a for loop instead of a dict comprehension
@@ -183,14 +184,15 @@ class FlowBySector(_FlowBy):
                 download_sources_ok=download_sources_ok
             ).prepare_fbs(external_config_path=external_config_path,
                           download_sources_ok=download_sources_ok,
-                          retain_activity_columns=retain_activity_columns
+                          retain_activity_columns=retain_activity_columns,
+                          fbs_method_name=method,
                           )
             for source_name, config in sources.items()
         ])
 
         fbs.full_name = method
         fbs.config = method_config
-
+        fbs = fbs.assign_temporal_correlation()
         # drop year from LocationSystem for FBS use with USEEIO
         fbs['LocationSystem'] = fbs['LocationSystem'].str.split('_').str[0]
         # aggregate to target geoscale
@@ -204,11 +206,7 @@ class FlowBySector(_FlowBy):
         fbs = fbs.sector_aggregation()
 
         # set all data quality fields to none until implemented fully
-        log.info('Reset all data quality fields to None')
-        dq_cols = ['Spread', 'Min', 'Max',
-                   'DataReliability', 'TemporalCorrelation',
-                   'GeographicalCorrelation', 'TechnologicalCorrelation',
-                   'DataCollection']
+        dq_cols = ['Spread', 'Min', 'Max']
         fbs = fbs.assign(**dict.fromkeys(dq_cols, None))
 
         # append the sector names to the FBS if specified
@@ -282,6 +280,7 @@ class FlowBySector(_FlowBy):
             self: 'FlowBySector',
             external_config_path: str = None,
             download_sources_ok: bool = True,
+            fbs_method_name: str = None,
             **kwargs
     ) -> 'FlowBySector':
 
@@ -304,6 +303,7 @@ class FlowBySector(_FlowBy):
             self
             .function_socket('clean_fbs')
             .select_by_fields()
+            .assign_geographic_correlation(fbs_method_name=fbs_method_name)
             .convert_fips_to_geoscale()
             .attribute_flows_to_sectors(external_config_path=external_config_path,
                                         download_sources_ok=download_sources_ok)

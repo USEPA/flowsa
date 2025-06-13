@@ -20,7 +20,7 @@ from flowsa.location import US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
 from flowsa.flowbyactivity import FlowByActivity
 from flowsa.flowsa_log import log
-from flowsa.naics import industry_spec_key
+from flowsa.naics import industry_spec_key, return_max_sector_level
 
 
 def BLS_QCEW_URL_helper(*, build_url, year, **_):
@@ -199,7 +199,7 @@ def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
     if fba.config.get('geoscale') == 'national':
         fba = fba.query('Location == "00000"')
     else:
-        log.critical('At a subnational scale, this will take a long time.')
+        log.critical('At a subnational scale, this might take a long time.')
 
     fba2 = (fba
             .assign(Unattributed=fba.FlowAmount.copy(),
@@ -210,9 +210,24 @@ def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
                                              '48-49': '4Y'}})
             )
 
-    for level in [5, 4, 3, 2]:
+    # subset the bls data to only keep parent-child sectors up to the target sector level,
+    # does not drop non-naics because we want to keep all data, as some suppressed
+    # data will be attributed to these non-naics
+
+    # determine max sector length for estimating suppressed data
+    max_level = return_max_sector_level(fba.config['industry_spec'])
+
+    # subset BLS data to drop all child naics after target sector level
+    fba3 = (
+        fba2
+        .query(f'ActivityProducedBy.str.len() <= {max_level}')
+        .reset_index(drop=True)
+    )
+
+    for level in range(max_level-1, 1, -1):
+        log.info(f"Identifying sector descendants for NAICS {level}")
         descendants = pd.DataFrame(
-            fba2
+            fba3
             .drop(columns='descendants')
             .query(f'ActivityProducedBy.str.len() > {level}')
             .assign(
@@ -235,8 +250,8 @@ def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
                              'parent': 'ActivityProducedBy'})
         )
 
-        fba2 = (
-            fba2
+        fba3 = (
+            fba3
             .merge(descendants,
                    how='left',
                    on=['FlowName', 'Location', 'ActivityProducedBy'],
@@ -253,17 +268,17 @@ def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
             )
             .drop(columns=['descendant_flows', 'descendants_y'])
         )
-    fba2 = fba2.drop(columns=['descendants'])
+    fba3 = fba3.drop(columns=['descendants'])
 
     indexed = (
-        fba2
-        .assign(n2=fba2.ActivityProducedBy.str.slice(stop=2),
-                n3=fba2.ActivityProducedBy.str.slice(stop=3),
-                n4=fba2.ActivityProducedBy.str.slice(stop=4),
-                n5=fba2.ActivityProducedBy.str.slice(stop=5),
-                n6=fba2.ActivityProducedBy.str.slice(stop=6),
-                location=fba2.Location,
-                category=fba2.FlowName)
+        fba3
+        .assign(n2=fba3.ActivityProducedBy.str.slice(stop=2),
+                n3=fba3.ActivityProducedBy.str.slice(stop=3),
+                n4=fba3.ActivityProducedBy.str.slice(stop=4),
+                n5=fba3.ActivityProducedBy.str.slice(stop=5),
+                n6=fba3.ActivityProducedBy.str.slice(stop=6),
+                location=fba3.Location,
+                category=fba3.FlowName)
         .replace({'FlowAmount': {0: np.nan},
                   'n2': {'31': '3X', '32': '3X', '33': '3X',
                          '44': '4X', '45': '4X',
@@ -295,7 +310,8 @@ def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
             return flows
 
     unsuppressed = indexed.copy()
-    for level in [2, 3, 4, 5, 6]:
+    for level in range(2, max_level, 1):
+        log.info(f"Estimating suppressed NAICS {level + 1}")
         groupcols = ["{}{}".format("n", i) for i in range(2, level+1)] + [
             'location', 'category']
         unsuppressed = unsuppressed.groupby(
