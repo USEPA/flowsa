@@ -6,6 +6,7 @@ Pulls ORNL Freight Analysis Framework dataset
 """
 
 import pandas as pd
+import numpy as np
 import zipfile
 import tabula
 
@@ -120,6 +121,9 @@ def faf_parse(*, df_list, year, **_):
                    {f'tons_{year}': 'tons',
                     value_var: 'current value',
                     f'tmiles_{year}': "ton-miles"}))
+               # Dollars and ton miles in millions, tons in thousands
+               .assign(FlowAmount = lambda x: np.where(x.Unit == "tons",
+                    x.FlowAmount * 1000, x.FlowAmount * 1000000))
                .drop(columns=['variable'])
                .rename(columns={'Commodity Description': 'FlowName',
                                 'Mode': 'ActivityProducedBy'})
