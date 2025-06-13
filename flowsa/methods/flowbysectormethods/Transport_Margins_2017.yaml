@@ -44,6 +44,12 @@ source_names:
           BTS_FAF:
             selection_fields:
               Unit: ton-miles
+              ActivityProducedBy:
+                - Truck
+                - Rail
+                - Water
+                - Air (includes truck-air)
+                - Pipeline
             year: 2017
             geoscale: national
             activity_to_sector_mapping: FAF_Mode_and_SCTG
