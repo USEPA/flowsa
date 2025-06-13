@@ -102,6 +102,9 @@ BLS_QCEW:
 BTS_Airlines:
   data_format: FBA
   activity_schema: None
+BTS_FAF:
+  data_format: FBA
+  activity_schema: None
 BTS_TSA:
   data_format: FBA
   activity_schema: None

@@ -7,7 +7,7 @@ api_name: None
 api_key_required: false
 format: xlsx
 # url:
-#   base_url: https://faf.ornl.gov/faf5/Data/Download_Files/FAF5.6.1_2018-2023.zip
+#   base_url: https://faf.ornl.gov/faf5/Data/Download_Files/FAF5.6.1_State.zip
 
 # call_response_fxn: !script_function:BTS_FAF faf_call
 parse_response_fxn: !script_function:BTS_FAF faf_parse
