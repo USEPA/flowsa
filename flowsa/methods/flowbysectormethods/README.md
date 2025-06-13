@@ -169,6 +169,8 @@ Some functions allow for extra named parameters.
 - _clean_fba_after_attribution_: applied after activities are attributed to 
   sectors, but before applying any additional attribution methods
 - _clean_fbs_: applied prior to attributing data to sectors for a FBS.
+- _clean_fbs_before_aggregation_: applied to an FBS before aggregation
+- _clean_fbs_after_aggregation_: applied to an FBS after aggregation
 
 ##### Defined cleaning functions
 - _attribute_national_to_states()_: Propogates national data to all states 

@@ -156,6 +156,15 @@ def move_flow_to_ACB(fba: FlowByActivity, **_) -> FlowByActivity:
             )
     return fba
 
+def move_SCB_to_flow(fbs, **_):
+    """clean_fbs fxn"""
+    fbs = (fbs
+            .assign(Flowable = fbs['SectorConsumedBy'])
+            .assign(SectorConsumedBy = np.nan)
+            )
+
+    return fbs
+
 
 if __name__ == "__main__":
     import flowsa

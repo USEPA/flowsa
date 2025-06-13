@@ -739,6 +739,7 @@ class FlowByActivity(_FlowBy):
             .attribute_flows_to_sectors(external_config_path=external_config_path,
                                         download_sources_ok=download_sources_ok)  # recursive call to prepare_fbs
             .drop(columns=drop_cols)
+            .function_socket('clean_fbs_before_aggregation')
             .aggregate_flowby()
             .function_socket('clean_fbs_after_aggregation')
         )
