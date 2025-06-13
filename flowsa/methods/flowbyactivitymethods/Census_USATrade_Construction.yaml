@@ -1,0 +1,59 @@
+author: US Census Bureau
+source_name: USA Trade
+source_url: https://usatrade.census.gov/
+bib_id: Census
+api_key_required: False
+format: json
+url:
+  base_url: http://api.census.gov/data/timeseries/intltrade/__flows__/statenaics?
+  flows:
+    - imports
+    - exports
+  naics: # NAICS by state data available for 2-,3-, or 4-digit NAICS
+  - '3273'  # Cement and Concrete Product Manufacturing
+  - '3272'  # Glass & Glass Products
+  - '3311'  # Iron & Steel & Ferroalloy
+  
+  url_params:
+    get: __get_params__
+    YEAR: __year__  # 4-character YEAR
+    MONTH: "12"  # 2-character MONTH
+    NAICS: __naics__  # 2-,3-, or 4-digit NAICS
+  get_params:
+    import_params:
+      - CTY_CODE  # 4-character COUNTRY CODE
+      - CTY_NAME  # 50-character COUNTRY NAME
+      - CON_VAL_YR  # YEAR-TO-DATE imports for CONSUMPTION, TOTAL VALUE
+      - STATE  # 2-character STATE of destination, "XX" = unidentified
+    export_params: 
+      - CTY_CODE  # 4-character COUNTRY CODE
+      - CTY_NAME  # 50-character COUNTRY NAME
+      - ALL_VAL_YR  # YEAR-TO-DATE TOTAL VALUE
+      - STATE  # 2-character STATE of origin of movement
+
+url_replace_fxn: !script_function:Census_USATrade_Construction census_url_helper
+call_response_fxn: !script_function:Census_USATrade_Construction census_usatrade_call
+parse_response_fxn: !script_function:Census_USATrade_Construction census_usatrade_parse
+
+# the most recent 10 years for which data are available
+years:
+- 2015
+- 2013
+- 2014
+- 2015
+- 2016
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
+
+
+
+
+# Start with imports
+# http://api.census.gov/data/timeseries/intltrade/imports/statenaics?get=CTY_CODE%2CCTY_NAME%2CCON_VAL_YR%2CSTATE&YEAR=2024&MONTH=12&NAICS=3273
+# Do this for all years, 2015 - 2024
