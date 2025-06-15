@@ -61,9 +61,11 @@ def add_missing_flow_by_fields(flowby_partial_df, flowbyfields):
             else:
                 flowby_partial_df[k] = flowby_partial_df[k].fillna(0)
     # convert all None, 'nan' to np.nan
-    flowby_partial_df = (flowby_partial_df
-                         .replace('None', np.nan)
-                         .replace('nan', np.nan))
+    with pd.option_context('future.no_silent_downcasting', True):
+        flowby_partial_df = (flowby_partial_df
+                             .replace({'None': np.nan, 'nan': np.nan})
+                             .infer_objects(copy=False)
+                             )
     # Resort it so order is correct
     cols = [e for e in flowbyfields.keys() if e in flowby_partial_df.columns]
     flowby_df = flowby_partial_df[cols]
