@@ -144,10 +144,13 @@ class _FlowBy(pd.DataFrame):
                 for field, dtype in fields.items() if dtype == 'object'
             }
 
-            data = (data
-                    .fillna(fill_na_dict)
-                    .replace(null_string_dict)
-                    .astype(fields))
+            # avoid warning: "Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated
+            # and will change in a future version"
+            with pd.option_context('future.no_silent_downcasting', True):
+                data = (data
+                        .fillna(fill_na_dict)
+                        .replace(null_string_dict)
+                        .astype(fields))
 
         if isinstance(data, pd.DataFrame) and column_order is not None:
             data = data[[c for c in column_order if c in data.columns]
@@ -293,17 +296,19 @@ class _FlowBy(pd.DataFrame):
                        'new_unit': 'USD',
                        'conversion_factor': 1 / exchange_rate}).to_frame().T
         ])
-
-        standardized = (
-            self
-            .assign(Unit=self.Unit.str.strip())
-            .merge(conversion_table, how='left',
-                   left_on='Unit', right_on='old_unit')
-            .assign(Unit=lambda x: x.new_unit.mask(x.new_unit.isna(), x.Unit),
-                    conversion_factor=lambda x: x.conversion_factor.fillna(1),
-                    FlowAmount=lambda x: x.FlowAmount * x.conversion_factor)
-            .drop(columns=['old_unit', 'new_unit', 'conversion_factor'])
-        )
+        # avoid warning: "Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated
+        # and will change in a future version"
+        with pd.option_context('future.no_silent_downcasting', True):
+            standardized = (
+                self
+                .assign(Unit=self.Unit.str.strip())
+                .merge(conversion_table, how='left',
+                       left_on='Unit', right_on='old_unit')
+                .assign(Unit=lambda x: x.new_unit.mask(x.new_unit.isna(), x.Unit),
+                        conversion_factor=lambda x: x.conversion_factor.fillna(1),
+                        FlowAmount=lambda x: x.FlowAmount * x.conversion_factor)
+                .drop(columns=['old_unit', 'new_unit', 'conversion_factor'])
+            )
 
         standardized_units = list(conversion_table.new_unit.unique())
 
