@@ -662,8 +662,8 @@ class _FlowBy(pd.DataFrame):
             validate = True
             grouped: 'FB' = (
                 self
-                .reset_index(drop=True).reset_index()
-                .rename(columns={'index': 'group_id'})
+                .reset_index(drop=True)
+                .reset_index(names='group_id')
                 .assign(group_total=lambda x: x.FlowAmount)
             )
             if len(grouped) == 0:
