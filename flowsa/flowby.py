@@ -105,7 +105,7 @@ class _FlowBy(pd.DataFrame):
     ) -> None:
         '''
         Extends pandas DataFrame. Attaches metadata if provided as kwargs and
-        ensures that all columns described in  flowby_config.yaml are present
+        ensures that all columns described in flowby_config.yaml are present
         and of the correct datatype.
 
         All args and kwargs not specified above or in FBA/FBS metadata are
@@ -853,7 +853,8 @@ class _FlowBy(pd.DataFrame):
                          if k not in ['activity_sets',
                                       'clean_fba_before_activity_sets']
                          and not k.startswith('_')}
-        parent_df = self.reset_index().rename(columns={'index': 'row'})
+        parent_df = (self
+                     .reset_index(names='row'))
 
         child_df_list = []
         assigned_rows = set()

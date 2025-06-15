@@ -256,8 +256,8 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
         allocated_urban_areas_df
         .drop(columns=['group_id', 'group_total', 'rurl_res', 'total_area'],
               errors='ignore')
-        .reset_index(drop=True).reset_index()
-        .rename(columns={'index': 'group_id'})
+        .reset_index(drop=True)
+        .reset_index(names='group_id')
         .assign(group_total=allocated_urban_areas_df.FlowAmount)
     )
 
@@ -341,8 +341,8 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(
     allocated_rural_trans = (
         allocated_rural_trans
         .drop(columns=['group_id', 'group_total'])
-        .reset_index(drop=True).reset_index()
-        .rename(columns={'index': 'group_id'})
+        .reset_index(drop=True)
+        .reset_index(names='group_id')
         .assign(group_total=allocated_rural_trans.FlowAmount)
     )
 

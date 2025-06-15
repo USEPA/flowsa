@@ -120,8 +120,8 @@ def weighted_average(
 
     # reset dropped information
     wt_flow = (wt_flow
-               .reset_index(drop=True).reset_index()
-               .rename(columns={'index': 'group_id'})
+               .reset_index(drop=True)
+               .reset_index(names='group_id')
                .assign(group_total=wt_flow.FlowAmount)
                )
 
@@ -179,8 +179,8 @@ def substitute_nonexistent_values(
     merged = (merged
               .drop(merged.filter(regex='_y').columns, axis=1)
               .drop(columns=['group_id'])
-              .reset_index(drop=True).reset_index()
-              .rename(columns={'index': 'group_id'})
+              .reset_index(drop=True)
+              .reset_index(names='group_id')
               .assign(group_total=merged.FlowAmount)
               )
 
@@ -394,8 +394,8 @@ def attribute_national_to_states(fba: FlowByActivity, **_) -> FlowByActivity:
     fba = (
         fba
         .drop(columns=['group_id', 'group_total'])
-        .reset_index(drop=True).reset_index()
-        .rename(columns={'index': 'group_id'})
+        .reset_index(drop=True)
+        .reset_index(names='group_id')
         .assign(group_total=fba.FlowAmount)
     )
 
@@ -612,8 +612,8 @@ def proxy_sector_data(
     # break each sector into separate line
     fba3 = (fba2
             .explode(col)
-            .reset_index(drop=True).reset_index()
-            .rename(columns={'index': 'group_id'})
+            .reset_index(drop=True)
+            .reset_index(names='group_id')
             )
 
     return fba3

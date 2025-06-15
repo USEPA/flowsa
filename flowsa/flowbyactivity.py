@@ -634,7 +634,9 @@ class FlowByActivity(_FlowBy):
                          if k not in ['activity_sets',
                                       'clean_fba_before_activity_sets']
                          and not k.startswith('_')}
-        parent_fba = self.reset_index().rename(columns={'index': 'row'})
+        parent_fba = (self
+                      .reset_index(names='row')
+                      )
 
         child_fba_list = []
         assigned_rows = set()
