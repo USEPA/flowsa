@@ -67,7 +67,7 @@ def get_flowby_from_config(
             external_data_path=external_data_path
         )
     elif config.get('data_format') == 'FBS_outside_flowsa':
-        return FlowBySector(
+        return FlowBySector(  # todo: add convert_df_to_flowby=True?
             config['FBS_datapull_fxn'](
                 config=config,
                 external_config_path=external_config_path,
@@ -97,6 +97,8 @@ class _FlowBy(pd.DataFrame):
         self,
         data: pd.DataFrame or '_FlowBy' = None,
         *args,
+        # needs to initially be false bc otherwise all internal pandas fxns (.assign(), .copy()) trigger the code to run
+        convert_df_to_flowby: bool = False,
         add_missing_columns: bool = True,
         fields: dict = None,
         column_order: List[str] = None,
@@ -124,9 +126,9 @@ class _FlowBy(pd.DataFrame):
                                        self.__annotations__.get(attribute,
                                                                 None)()))
                 )
-
+        # only runs if truly a pandas df and not retriggered due to .copy() or .assign()
         if isinstance(data, pd.DataFrame) and fields is not None:
-            if add_missing_columns:
+            if convert_df_to_flowby and add_missing_columns:
                 data = data.assign(**{field: None
                                       for field in fields
                                       if field not in data.columns})
@@ -152,7 +154,7 @@ class _FlowBy(pd.DataFrame):
                         .replace(null_string_dict)
                         .astype(fields))
 
-        if isinstance(data, pd.DataFrame) and column_order is not None:
+        if isinstance(data, pd.DataFrame) and column_order is not None and convert_df_to_flowby:
             data = data[[c for c in column_order if c in data.columns]
                         + [c for c in data.columns if c not in column_order]]
         super().__init__(data, *args, **kwargs)
@@ -267,7 +269,7 @@ class _FlowBy(pd.DataFrame):
         else:
             log.error(f'{file_metadata.name_data} {file_metadata.category} '
                       f'could not be found locally, downloaded, or generated')
-        fb = cls(df, full_name=full_name or '', config=config or {})
+        fb = cls(df, full_name=full_name or '', config=config or {}, convert_df_to_flowby=True)
         return fb
 
     def convert_daily_to_annual(self: FB) -> FB:
@@ -1606,7 +1608,7 @@ class _FlowBy(pd.DataFrame):
         metadata = {attribute: self.__getattr__(attribute)
                     for attribute in self._metadata}
         df = pd.DataFrame(self).astype(*args, **kwargs)
-        fb = type(self)(df, add_missing_columns=False, **metadata)
+        fb = type(self)(df, convert_df_to_flowby=True, add_missing_columns=False, **metadata)
 
         return fb
 

@@ -592,7 +592,7 @@ class FlowByActivity(_FlowBy):
                     .reset_index(drop=True)
                 )
             except ValueError:
-                return FlowBySector(pd.DataFrame())
+                return FlowBySector(pd.DataFrame(), convert_df_to_flowby=True)
         log.info(f'Processing FlowBySector for {self.full_name}')
         # Primary FlowBySector generation approach:
         return FlowBySector(
@@ -611,7 +611,8 @@ class FlowByActivity(_FlowBy):
                                         download_sources_ok=download_sources_ok)  # recursive call to prepare_fbs
             .drop(columns=drop_cols)
             .aggregate_flowby()
-            .function_socket('clean_fbs_after_aggregation')
+            .function_socket('clean_fbs_after_aggregation'),
+            convert_df_to_flowby=True
         )
 
     def activity_sets(self) -> List['FlowByActivity']:

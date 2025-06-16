@@ -298,7 +298,7 @@ class FlowBySector(_FlowBy):
                     .reset_index(drop=True)
                 )
             except ValueError:
-                return FlowBySector(pd.DataFrame())
+                return FlowBySector(pd.DataFrame(), convert_df_to_flowby=True)
         return (
             self
             .function_socket('clean_fbs')
