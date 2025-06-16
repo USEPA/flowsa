@@ -541,7 +541,7 @@ def define_parentincompletechild_descendants(
     fba = (fba
            .drop(columns='group_total')
            .merge((fba.groupby('group_id')
-                      .agg({'FlowAmount':sum})
+                      .agg({'FlowAmount': "sum"})
                       .rename(columns={'FlowAmount': 'group_total'})
                       ),
                   on='group_id', how='left', validate='m:1')

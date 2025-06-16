@@ -77,7 +77,7 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
                            'Unit', 'geoscale']
     dfagg = dfs.groupby(
         agg_cols, dropna=False, as_index=False).agg(
-        {'FlowAmount_Original': sum, 'FlowAmount_Modified': sum})
+        {'FlowAmount_Original': "sum", 'FlowAmount_Modified': "sum"})
     # column calculating difference
     dfagg['FlowAmount_Difference'] = \
         dfagg['FlowAmount_Modified'] - dfagg['FlowAmount_Original']
@@ -95,7 +95,7 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
             'FlowAmount_Difference', 'Percent_Increase'])
         dfagg4 = dfagg3.groupby(flowcols + ['Unit', 'geoscale'],
             dropna=False, as_index=False).agg(
-            {'FlowAmount_Original': sum, 'FlowAmount_Modified': sum})
+            {'FlowAmount_Original': "sum", 'FlowAmount_Modified': "sum"})
         # column calculating difference
         dfagg4['FlowAmount_Difference'] = \
             dfagg4['FlowAmount_Modified'] - dfagg4['FlowAmount_Original']

@@ -201,7 +201,7 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
         df_non_urban_transport_area[['Location', 'Unit', 'FlowAmount']]
     non_urban_transport_area_sum = df_non_urban_transport_area.groupby(
             ['Location', 'Unit'], as_index=False).agg(
-        {'FlowAmount': sum}).rename(columns={'FlowAmount': 'NonTransport'})
+        {'FlowAmount': "sum"}).rename(columns={'FlowAmount': 'NonTransport'})
     # compare units
     compare_df_units(fba, df_non_urban_transport_area)
     # calculate total urban transportation by subtracting
@@ -232,7 +232,7 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
     air_rail_area = air_rail_area[['Location', 'Unit', 'FlowAmount']]
     air_rail_area_sum = air_rail_area.groupby(
         ['Location', 'Unit'], as_index=False).agg(
-        {'FlowAmount': sum}).rename(columns={'FlowAmount': 'AirRail'})
+        {'FlowAmount': "sum"}).rename(columns={'FlowAmount': 'AirRail'})
 
     df_highway = df_transport.merge(air_rail_area_sum, how='left')
     df_highway = df_highway.assign(
@@ -317,7 +317,7 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(
     air_rail_area = air_rail_area[['Location', 'Unit', 'FlowAmount']]
     air_rail_area_sum = air_rail_area.groupby(
         ['Location', 'Unit'], as_index=False).agg(
-        {'FlowAmount': sum}).rename(columns={'FlowAmount': 'AirRail'})
+        {'FlowAmount': "sum"}).rename(columns={'FlowAmount': 'AirRail'})
 
     # compare units
     compare_df_units(fba, air_rail_area)

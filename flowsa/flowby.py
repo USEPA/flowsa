@@ -596,7 +596,7 @@ class _FlowBy(pd.DataFrame):
                     **{f'_{c}_weights': fb.FlowAmount * fb[c].notnull()
                     for c in columns_to_average})
             .groupby(columns_to_group_by, dropna=False)
-            .agg(sum)
+            .agg("sum")
             .reset_index()
         )
         aggregated = (
