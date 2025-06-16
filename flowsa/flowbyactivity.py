@@ -284,19 +284,19 @@ class FlowByActivity(_FlowBy):
                  f'{self.full_name}; target geoscale is '
                  f'{target_geoscale.name.lower()}')
 
-        # convert to df, otherwise assumes it is an FBA which requires 23 columns and we are outputting a df with 5 cols
         highest_reporting_level_by_geoscale = [
-            (pd.DataFrame(self
+            (self
              .merge(geoscale_by_fips, how='inner')
              .query('geoscale <= @scale')
-             # use as_index=False to avoid errors when anActivity column is entirely np.nan
              .groupby(['ActivityProducedBy', 'ActivityConsumedBy']
                       + [s.name.title() for s in geo.scale
                          if s.has_fips_level and s >= scale],
-                      dropna=False, as_index=False)
-             .agg({'geoscale': 'max'})).rename(columns={
-                'geoscale': f'highest_reporting_level_by_{scale.name.title()}'
-            }, errors='ignore'))  # ignore error when df is empty
+                      dropna=False)
+             .agg({'geoscale': 'max'})
+             .reset_index()
+             .rename(columns={
+                 'geoscale': f'highest_reporting_level_by_{scale.name.title()}'
+                 }))
             for scale in geo.scale
             if scale.has_fips_level and scale <= target_geoscale
         ]
@@ -320,14 +320,6 @@ class FlowByActivity(_FlowBy):
             for s in geo.scale if s.has_fips_level and s <= target_geoscale
         ]
 
-
-        # drop rows where all reporting level columns are null
-        fba_with_reporting_levels = (
-            fba_with_reporting_levels[fba_with_reporting_levels['geoscale']
-            .apply(lambda s: s.has_fips_level and s <= target_geoscale)]
-            .reset_index(drop=True)
-        )
-
         fba_at_source_geoscale = (
             fba_with_reporting_levels
             .assign(source_geoscale=
@@ -338,7 +330,7 @@ class FlowByActivity(_FlowBy):
             .drop(columns=(['geoscale',
                             *geoscale_name_columns,
                             *reporting_level_columns]))
-        )
+        ).reset_index(drop=True)
 
         if len(fba_at_source_geoscale.source_geoscale.unique()) > 1:
             log.warning(f"{fba_at_source_geoscale.full_name} has multiple "
@@ -377,7 +369,7 @@ class FlowByActivity(_FlowBy):
                 # ^^^ TODO: Rewrite validation to use fb metadata
             )
 
-        return fba_at_target_geoscale
+        return fba_at_target_geoscale.reset_index(drop=True)
 
     def map_to_sectors(
             self: 'FlowByActivity',

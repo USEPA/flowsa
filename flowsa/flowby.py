@@ -499,7 +499,7 @@ class _FlowBy(pd.DataFrame):
             if k not in ['Activity', 'Sector']
         }
 
-        filtered_fb = self
+        filtered_fb = self.copy()
         for field, values in special_fields.items():
             check_values = ([*values.keys(), *values.values()]
                             if isinstance(values, dict) else values)

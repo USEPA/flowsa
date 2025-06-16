@@ -56,7 +56,7 @@ def load_prepare_clean_source(
                 **config},
         download_sources_ok=download_sources_ok
         ).prepare_fbs(download_sources_ok=download_sources_ok)
-    return clean_fbs
+    return clean_fbs.reset_index(drop=True)
 
 
 def weighted_average(
