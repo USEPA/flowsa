@@ -86,14 +86,17 @@ def weighted_average(
                      else 'Location'],
                      right_on=['PrimarySector', 'Location'],
                      suffixes=[None, '_other'])
-              .fillna({'FlowAmount_other': fba['FlowAmount']})
               )
+    merged['FlowAmount_other'] = merged['FlowAmount_other'].mask(
+        merged['FlowAmount_other'] == 0, merged['FlowAmount'])
+
     # drop rows where flow is 0
     merged = merged[merged['FlowAmount'] != 0]
     # replace terms
     for original, replacement in fba.config.get(
             'replacement_dictionary').items():
-        merged = merged.replace({original: replacement})
+        with pd.option_context('future.no_silent_downcasting', True):
+            merged = merged.replace({original: replacement})
 
     wt_flow = (merged
                .groupby(['Class', 'Flowable', 'Unit',
@@ -147,19 +150,23 @@ def substitute_nonexistent_values(
     state_geo = pd.concat([
         (geo.filtered_fips(fb.config['geoscale'])[['FIPS']]
          .assign(Location=location.US_FIPS))
-    ])
+    ]).reset_index(drop=True)
 
-    other = (other
+    other2 = pd.DataFrame(other
              .merge(state_geo)
              .drop(columns=['Location', 'FlowUUID'])
              .rename(columns={'FIPS': 'Location'})
              )
 
+    # todo: revise these check merge cols, expand
     merged = (fb
-              .merge(other,
-                     on=list(other.select_dtypes(
-                         include=['object', 'int']).columns),
-                     how='outer',
+              .merge(other2[['Year', 'Location', 'SectorProducedBy', 'SectorConsumedBy',
+                           'SectorSourceName', 'Context', 'FlowAmount']],
+                     # on=list(other2.select_dtypes(
+                     #     include=['object', 'int']).columns),
+                     on = ['Year', 'Location', 'SectorProducedBy', 'SectorConsumedBy',
+                           'SectorSourceName', 'Context'],
+                     how='left',
                      suffixes=(None, '_y'))
               .fillna({'FlowAmount': 0})
               )
