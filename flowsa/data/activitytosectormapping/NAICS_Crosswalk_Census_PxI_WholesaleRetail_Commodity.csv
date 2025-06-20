@@ -9,6 +9,7 @@ Census PROD_IND,4000075000,"Wholesale sales of eggs and poultry, except canned a
 Census PROD_IND,4000075000,"Wholesale sales of eggs and poultry, except canned and frozen poultry products",NAICS_2017_Code,311615,Poultry Processing,C
 Census PROD_IND,4000100000,Wholesale sales of confectionery and snack foods,NAICS_2017_Code,3113,Sugar and Confectionery Product Manufacturing,C
 Census PROD_IND,4000125000,"Wholesale sales of cookies, bread, and baked goods",NAICS_2017_Code,31181,Bread and Bakery Product Manufacturing,C
+Census PROD_IND,4000125000,"Wholesale sales of cookies, bread, and baked goods",NAICS_2017_Code,31182,"Cookie, Cracker, and Pasta Manufacturing",C
 Census PROD_IND,4000150000,"Wholesale sales of fish and seafood, except canned and frozen fish and seafood",NAICS_2017_Code,1141,Fishing,C
 Census PROD_IND,4000150001,"Wholesale sales of fish and seafood, except canned and frozen fish and seafood",NAICS_2017_Code,3117,Seafood Product Preparation and Packaging,C
 Census PROD_IND,4000150002,"Wholesale sales of fish and seafood, except canned and frozen fish and seafood",NAICS_2017_Code,1125,Aquaculture,C
@@ -22,12 +23,14 @@ Census PROD_IND,4000200000,Wholesale sales of fresh fruits and vegetables,NAICS_
 Census PROD_IND,4000200001,Wholesale sales of fresh fruits and vegetables,NAICS_2017_Code,1113,Fruit and Tree Nut Farming,C
 Census PROD_IND,4000225000,Wholesale sales of baking ingredients,NAICS_2017_Code,31121,Flour Milling and Malt Manufacturing,C
 Census PROD_IND,4000225000,Wholesale sales of baking ingredients,NAICS_2017_Code,31122,Starch and Vegetable Fats and Oils Manufacturing,C
+Census PROD_IND,4000230000,"Wholesale sales of soybean, cottonseed, linseed, peanut, sunflower seed, and all other oilseed cake and meal",NAICS_2017_Code,1119,Other Crop Farming,C
 Census PROD_IND,4000230000,"Wholesale sales of soybean, cottonseed, linseed, peanut, sunflower seed, and all other oilseed cake and meal",NAICS_2017_Code,311224,Soybean and Other Oilseed Processing,C
 Census PROD_IND,4000230000,"Wholesale sales of soybean, cottonseed, linseed, peanut, sunflower seed, and all other oilseed cake and meal",NAICS_2017_Code,311225,Fats and Oils Refining and Blending,C
 Census PROD_IND,4000250000,Wholesale sales of nonperishable (canned and packaged) food,NAICS_2017_Code,31191,Snack Food Manufacturing,C
 Census PROD_IND,4000250000,Wholesale sales of nonperishable (canned and packaged) food,NAICS_2017_Code,311514,"Dry, Condensed, and Evaporated Dairy Product Manufacturing",C
 Census PROD_IND,4000250000,Wholesale sales of nonperishable (canned and packaged) food,NAICS_2017_Code,31142,"Fruit and Vegetable Canning, Pickling, and Drying",C
 Census PROD_IND,4000250000,Wholesale sales of nonperishable (canned and packaged) food,NAICS_2017_Code,31194,Seasoning and Dressing Manufacturing,C
+Census PROD_IND,4000250000,Wholesale sales of nonperishable (canned and packaged) food,NAICS_2017_Code,311230,Breakfast Cereal Manufacturing,C
 Census PROD_IND,4000250000,Wholesale sales of nonperishable (canned and packaged) food,NAICS_2017_Code,311999,All Other Miscellaneous Food Manufacturing,C
 Census PROD_IND,4000275000,Wholesale sales of grocery specialties,NAICS_2017_Code,311991,Perishable Prepared Food Manufacturing,C
 Census PROD_IND,4000300000,"Wholesale sales of coffee, tea, and powdered drink mixes",NAICS_2017_Code,31192,Coffee and Tea Manufacturing,C
@@ -36,6 +39,7 @@ Census PROD_IND,4000350000,"Wholesale sales of soft drinks, bottled water, juice
 Census PROD_IND,4000350001,"Wholesale sales of soft drinks, bottled water, juices, and nonalcoholic beverages",NAICS_2017_Code,312112,Bottled Water Manufacturing,C
 Census PROD_IND,4000375000,Wholesale sales of beer and ale,NAICS_2017_Code,31212,Breweries,C
 Census PROD_IND,4000400000,"Wholesale sales of wine and distilled liquor, including premixed alcoholic drinks",NAICS_2017_Code,31213,Wineries,C
+Census PROD_IND,4000400000,"Wholesale sales of wine and distilled liquor, including premixed alcoholic drinks",NAICS_2017_Code,31214,Distilleries,C
 Census PROD_IND,4000425000,Wholesale sales of ice,NAICS_2017_Code,312113,Ice Manufacturing,C
 Census PROD_IND,4000450000,Wholesale sales of tobacco products and electronic cigarettes,NAICS_2017_Code,3122,Tobacco Manufacturing,C
 Census PROD_IND,4000475000,Wholesale sales of smoking accessories,NAICS_2017_Code,339999,All Other Miscellaneous Manufacturing,C
@@ -47,75 +51,130 @@ Census PROD_IND,4000600000,Wholesale sales of footwear and footwear accessories,
 Census PROD_IND,4000625000,Wholesale sales of clothing accessories,NAICS_2017_Code,3159,Apparel Accessories and Other Apparel Manufacturing,C
 Census PROD_IND,4000650000,Wholesale sales of costume jewelry,NAICS_2017_Code,33991,Jewelry and Silverware Manufacturing,C
 Census PROD_IND,4000675000,"Wholesale sales of jewelry, except costume",NAICS_2017_Code,33991,Jewelry and Silverware Manufacturing,C
+Census PROD_IND,4000700000,Wholesale sales of watches and watch parts,NAICS_2017_Code,33991,Jewelry and Silverware Manufacturing,C
+Census PROD_IND,4000725000,Wholesale sales of manufactured (mobile) homes,NAICS_2017_Code,321991,Manufactured Home (Mobile Home) Manufacturing,C
 Census PROD_IND,4000750000,Wholesale sales of household and lawn furniture,NAICS_2017_Code,3371,Household and Institutional Furniture and Kitchen Cabinet Manufacturing,C
 Census PROD_IND,4000775000,Wholesale sales of window treatments,NAICS_2017_Code,33792,Blind and Shade Manufacturing,C
 Census PROD_IND,4000800000,"Wholesale sales of other textile house furnishings, except floor coverings",NAICS_2017_Code,3141,Textile Furnishings Mills,C
+Census PROD_IND,4000800000,"Wholesale sales of other textile house furnishings, except floor coverings",NAICS_2017_Code,31412,Curtain and Linen Mills,C
 Census PROD_IND,4000825000,"Wholesale sales of artificial flowers, plants, and trees",NAICS_2017_Code,339999,All Other Miscellaneous Manufacturing,C
 Census PROD_IND,4000850000,"Wholesale sales of household furnishings, except artificial flowers, plants, and trees",NAICS_2017_Code,33712,Household and Institutional Furniture Manufacturing,C
 Census PROD_IND,4000860000,"Wholesale sales of clocks, trophies, and works of art",NAICS_2017_Code,332999,All Other Miscellaneous Fabricated Metal Product Manufacturing,C
 Census PROD_IND,4000860000,"Wholesale sales of clocks, trophies, and works of art",NAICS_2017_Code,334519,Other Measuring and Controlling Device Manufacturing,C
 Census PROD_IND,4000870000,Wholesale sales of canvas awnings,NAICS_2017_Code,314910,Textile Bag and Canvas Mills,C
 Census PROD_IND,4000875000,"Wholesale sales of household appliances, including personal care appliances",NAICS_2017_Code,335220,Major Household Appliance Manufacturing,C
+Census PROD_IND,4000875000,"Wholesale sales of household appliances, including personal care appliances",NAICS_2017_Code,335210,Small Electrical Appliance Manufacturing,C
 Census PROD_IND,4000900000,"Wholesale sales of tableware, kitchenware, cookware, and glassware, except cutlery and novelty glassware",NAICS_2017_Code,327110,"Pottery, Ceramics, and Plumbing Fixture Manufacturing",C
 Census PROD_IND,4000925000,"Wholesale sales of cutlery, except disposable plastics",NAICS_2017_Code,339910,Jewelry and Silverware Manufacturing,C
+Census PROD_IND,4000950000,Wholesale sales of novelty glassware,NAICS_2017_Code,327212,Other Pressed and Blown Glass and Glassware Manufacturing,C
+Census PROD_IND,4000960000,"Wholesale sales of outdoor grills, gas and charcoal",NAICS_2017_Code,33522,Major Household Appliance Manufacturing,C
 Census PROD_IND,4000975000,"Wholesale sales of home lawn and garden equipment, tools, and supplies, except fresh flowers, florists' supplies, live trees, plants, and nursery stock",NAICS_2017_Code,333112,Lawn and Garden Tractor and Home Lawn and Garden Equipment Manufacturing,C
 Census PROD_IND,4000985000,Wholesale sales of swimming pools and swimming pool supplies,NAICS_2017_Code,339920,Sporting and Athletic Goods Manufacturing,C
 Census PROD_IND,4001000000,"Wholesale sales of fresh flowers, florists' supplies, live trees, plants, and nursery stock",NAICS_2017_Code,111421,Nursery and Tree Production,C
 Census PROD_IND,4001025000,"Wholesale sales of household paper and plastic products, not elsewhere classified",NAICS_2017_Code,3222,Converted Paper Product Manufacturing,C
+Census PROD_IND,4001025000,"Wholesale sales of household paper and plastic products, not elsewhere classified",NAICS_2017_Code,322299,All Other Converted Paper Product Manufacturing,C
 Census PROD_IND,4001025000,"Wholesale sales of household paper and plastic products, not elsewhere classified",NAICS_2017_Code,3261,Plastics Product Manufacturing,C
 Census PROD_IND,4001050000,"Wholesale sales of televisions, home audio and visual equipment",NAICS_2017_Code,334310,Audio and Video Equipment Manufacturing,C
+Census PROD_IND,4001075000,"Wholesale sales of still picture photographic equipment, digital and film cameras, household type",NAICS_2017_Code,333316,Photographic and Photocopying Equipment Manufacturing,C
 Census PROD_IND,4001100000,Wholesale sales of audio and video recordings,NAICS_2017_Code,334614,"Software and Other Prerecorded Compact Disc, Tape, and Record Reproducing",C
 Census PROD_IND,4001100000,Wholesale sales of audio and video recordings,NAICS_2017_Code,5122,Sound Recording Industries,C
 Census PROD_IND,4001100000,Wholesale sales of audio and video recordings,NAICS_2017_Code,5121,Motion Picture and Video Industries,C
+Census PROD_IND,4001125000,Wholesale sales of greeting cards,NAICS_2017_Code,511191,Greeting Card Publishers,C
 Census PROD_IND,4001150000,"Wholesale sales of newspapers, periodicals, books and other publications, except greeting cards",NAICS_2017_Code,323111,Commercial Printing (except Screen and Books),C
+Census PROD_IND,4001150000,"Wholesale sales of newspapers, periodicals, books and other publications, except greeting cards",NAICS_2017_Code,511110,Newspaper Publishers,C
+Census PROD_IND,4001150000,"Wholesale sales of newspapers, periodicals, books and other publications, except greeting cards",NAICS_2017_Code,511120,Periodical Publishers,C
+Census PROD_IND,4001150000,"Wholesale sales of newspapers, periodicals, books and other publications, except greeting cards",NAICS_2017_Code,511130,Book Publishers,C
+Census PROD_IND,4001150000,"Wholesale sales of newspapers, periodicals, books and other publications, except greeting cards",NAICS_2017_Code,511140,Directory and Mailing List Publishers,C
 Census PROD_IND,4001175000,Wholesale sales of sporting and recreational equipment,NAICS_2017_Code,339920,Sporting and Athletic Goods Manufacturing,C
 Census PROD_IND,4001200000,"Wholesale sales of toys, games, and hobby goods",NAICS_2017_Code,339930,"Doll, Toy, and Game Manufacturing",C
 Census PROD_IND,4001225000,Wholesale sales of boats and go-carts,NAICS_2017_Code,336612,Boat Building,C
 Census PROD_IND,4001250000,Wholesale sales of motorcycles and other sports vehicles,NAICS_2017_Code,336991,"Motorcycle, Bicycle, and Parts Manufacturing",C
+Census PROD_IND,4001250000,Wholesale sales of motorcycles and other sports vehicles,NAICS_2017_Code,336999,All Other Transportation Equipment Manufacturing,C
 Census PROD_IND,4001275000,Wholesale sales of musical instruments,NAICS_2017_Code,339992,Musical Instrument Manufacturing,C
 Census PROD_IND,4001300000,"Wholesale sales of household pets, pet foods, and pet supplies",NAICS_2017_Code,311111,Dog and Cat Food Manufacturing,C
+Census PROD_IND,4001300000,"Wholesale sales of household pets, pet foods, and pet supplies",NAICS_2017_Code,11299,All Other Animal Production,C
 Census PROD_IND,4001325000,Wholesale sales of new and used automobiles ,NAICS_2017_Code,336111,Automobile Manufacturing,C
 Census PROD_IND,4001325000,Wholesale sales of new and used automobiles ,NAICS_2017_Code,S00402,Used and secondhand goods,C
 Census PROD_IND,4001375000,"Wholesale sales of motor homes, travel trailers, and campers",NAICS_2017_Code,336112,Light Truck and Utility Vehicle Manufacturing,C
+Census PROD_IND,4001375000,"Wholesale sales of motor homes, travel trailers, and campers",NAICS_2017_Code,336212,Truck Trailer Manufacturing,C
+Census PROD_IND,4001375000,"Wholesale sales of motor homes, travel trailers, and campers",NAICS_2017_Code,336213,Motor Home Manufacturing,C
+Census PROD_IND,4001375000,"Wholesale sales of motor homes, travel trailers, and campers",NAICS_2017_Code,336214,Travel Trailer and Camper Manufacturing,C
 Census PROD_IND,4001400000,"Wholesale sales of luggage, including backpacks",NAICS_2017_Code,316998,All Other Leather Good and Allied Product Manufacturing,C
+Census PROD_IND,4001425000,Wholesale sales of prescription drugs and antibiotics,NAICS_2017_Code,32541,Pharmaceutical and Medicine Manufacturing,C
+Census PROD_IND,4001450000,Wholesale sales of nonprescription drugs and over-the-counter medications,NAICS_2017_Code,32541,Pharmaceutical and Medicine Manufacturing,C
 Census PROD_IND,4001475000,Wholesale sales of vitamins and nutritional and herbal supplements,NAICS_2017_Code,325411,Medicinal and Botanical Manufacturing,C
 Census PROD_IND,4001500000,Wholesale sales of optical and ophthalmic goods and supplies,NAICS_2017_Code,339115,Ophthalmic Goods Manufacturing,C
+Census PROD_IND,4001500000,Wholesale sales of optical and ophthalmic goods and supplies,NAICS_2017_Code,333314,Optical Instrument and Lens Manufacturing,C
 Census PROD_IND,4001525000,"Wholesale sales of orthopedic and prosthetic appliances and supplies, including wheelchairs, walkers, crutches, canes, and hearing aids",NAICS_2017_Code,339113,Surgical Appliance and Supplies Manufacturing,C
 Census PROD_IND,4001550000,Wholesale sales of health aids and first aid supplies,NAICS_2017_Code,339113,Surgical Appliance and Supplies Manufacturing,C
 Census PROD_IND,4001575000,"Wholesale sales of cosmetics, beauty supplies, perfumes and colognes, including hair preparations and hair brushes ",NAICS_2017_Code,446120,"Cosmetics, Beauty Supplies, and Perfume Stores",C
 Census PROD_IND,4001600000,"Wholesale sales of bath, facial, and hand soaps",NAICS_2017_Code,325611,Soap and Other Detergent Manufacturing,C
 Census PROD_IND,4001625000,"Wholesale sales of personal care paper products, including disposable diapers, feminine hygiene products, and similar",NAICS_2017_Code,322291,Sanitary Paper Product Manufacturing,C
+Census PROD_IND,4001650000,"Wholesale sales of other personal care supplies, including toothbrushes (except electric), razor blades, and razors (except electric)",NAICS_2017_Code,339994,"Broom, Brush, and Mop Manufacturing",C
 Census PROD_IND,4001675000,Wholesale sales of caskets and other funeral goods,NAICS_2017_Code,339995,Burial Casket Manufacturing,C
 Census PROD_IND,4001700000,"Wholesale sales of batteries, except automotive",NAICS_2017_Code,33591,Battery Manufacturing,C
+Census PROD_IND,4001700000,"Wholesale sales of batteries, except automotive",NAICS_2017_Code,335912,Primary Battery Manufacturing,C
 Census PROD_IND,4001725000,Wholesale sales of religious supplies,NAICS_2017_Code,339999,All Other Miscellaneous Manufacturing,C
 Census PROD_IND,4001750000,"Wholesale sales of novelties and souvenirs, except novelty glassware",NAICS_2017_Code,339999,All Other Miscellaneous Manufacturing,C
+Census PROD_IND,4001775000,Wholesale sales of infants' goods and accessories,NAICS_2017_Code,337122,Nonupholstered Wood Household Furniture Manufacturing,C
+Census PROD_IND,4001775000,Wholesale sales of infants' goods and accessories,NAICS_2017_Code,326199,All Other Plastics Product Manufacturing,C
+Census PROD_IND,4001775000,Wholesale sales of infants' goods and accessories,NAICS_2017_Code,314999,All Other Miscellaneous Textile Product Mills,C
+Census PROD_IND,4001775000,Wholesale sales of infants' goods and accessories,NAICS_2017_Code,3159,Apparel Accessories and Other Apparel Manufacturing,C
+Census PROD_IND,4001775000,Wholesale sales of infants' goods and accessories,NAICS_2017_Code,336299,#N/A,C
+Census PROD_IND,4001785000,Wholesale sales of gift cards,NAICS_2017_Code,326199,All Other Plastics Product Manufacturing,C
 Census PROD_IND,4001800000,"Wholesale sales of office equipment, except computers",NAICS_2017_Code,333318,Other Commercial and Service Industry Machinery Manufacturing,C
 Census PROD_IND,4001825000,Wholesale sales of office furniture,NAICS_2017_Code,33721,Office Furniture (including Fixtures) Manufacturing,C
 Census PROD_IND,4001850000,"Wholesale sales of computers and peripheral equipment, except computer components",NAICS_2017_Code,3341,Computer and Peripheral Equipment Manufacturing,C
+Census PROD_IND,4001850000,"Wholesale sales of computers and peripheral equipment, except computer components",NAICS_2017_Code,334112,Computer Storage Device Manufacturing,C
+Census PROD_IND,4001850000,"Wholesale sales of computers and peripheral equipment, except computer components",NAICS_2017_Code,334118,Computer Terminal and Other Computer Peripheral Equipment Manufacturing,C
 Census PROD_IND,4001875000,Wholesale sales of communications equipment,NAICS_2017_Code,3342,Communications Equipment Manufacturing,C
+Census PROD_IND,4001875000,Wholesale sales of communications equipment,NAICS_2017_Code,33422,Radio and Television Broadcasting and Wireless Communications Equipment Manufacturing,C
+Census PROD_IND,4001875000,Wholesale sales of communications equipment,NAICS_2017_Code,33429,Other Communications Equipment Manufacturing,C
 Census PROD_IND,4001900000,Wholesale sales of computer software,NAICS_2017_Code,5112,Software Publishers,C
+Census PROD_IND,4001925000,Wholesale sales of buses,NAICS_2017_Code,336120,Heavy Duty Truck Manufacturing,C
+Census PROD_IND,4001950000,"Wholesale sales of medium trucks and tractors, 14,001 lb. to 33,000 lb.",NAICS_2017_Code,333924,"Industrial Truck, Tractor, Trailer, and Stacker Machinery Manufacturing",C
 Census PROD_IND,4001975000,"Wholesale sales of heavy trucks, trailers, and road tractors, more than 33,000 lb.",NAICS_2017_Code,336120,Heavy Duty Truck Manufacturing,C
 Census PROD_IND,4002000000,Wholesale sales of aircraft and aeronautical equipment,NAICS_2017_Code,336411,Aircraft Manufacturing,C
+Census PROD_IND,4002000000,Wholesale sales of aircraft and aeronautical equipment,NAICS_2017_Code,336414,Guided Missile and Space Vehicle Manufacturing,C
+Census PROD_IND,4002000000,Wholesale sales of aircraft and aeronautical equipment,NAICS_2017_Code,336415,Guided Missile and Space Vehicle Propulsion Unit and Propulsion Unit Parts Manufacturing,C
 Census PROD_IND,4002025000,Wholesale sales of marine machinery and equipment,NAICS_2017_Code,33661,Ship and Boat Building,C
 Census PROD_IND,4002050000,Wholesale sales of other transportation equipment ,NAICS_2017_Code,33631,Motor Vehicle Gasoline Engine and Engine Parts Manufacturing,C
+Census PROD_IND,4002050000,Wholesale sales of other transportation equipment ,NAICS_2017_Code,33651,Railroad Rolling Stock Manufacturing,C
 Census PROD_IND,4002075000,Wholesale sales of farm machinery and equipment,NAICS_2017_Code,333111,Farm Machinery and Equipment Manufacturing,C
 Census PROD_IND,4002100000,"Wholesale sales of construction, forestry, and mining machinery and equipment, including attachments",NAICS_2017_Code,333120,Construction Machinery Manufacturing,C
 Census PROD_IND,4002125000,Wholesale sales of oil well and pipeline machinery and equipment,NAICS_2017_Code,333132,Oil and Gas Field Machinery and Equipment Manufacturing,C
 Census PROD_IND,4002150000,Wholesale sales of new woodworking machinery,NAICS_2017_Code,333243,"Sawmill, Woodworking, and Paper Machinery Manufacturing",C
 Census PROD_IND,4002175000,Wholesale sales of new printing trades machinery and equipment,NAICS_2017_Code,333244,Printing Machinery and Equipment Manufacturing,C
 Census PROD_IND,4002200000,Wholesale sales of new food-processing machinery and equipment,NAICS_2017_Code,333241,Food Product Machinery Manufacturing,C
+Census PROD_IND,4002225000,Wholesale sales of new metal smelting and refining machinery and equipment,NAICS_2017_Code,333249,Other Industrial Machinery Manufacturing,C
+Census PROD_IND,4002250000,Wholesale sales of new oil refinery machinery and equipment,NAICS_2017_Code,333249,Other Industrial Machinery Manufacturing,C
 Census PROD_IND,4002275000,Wholesale sales of new textile and sewing machinery and equipment,NAICS_2017_Code,333249,Other Industrial Machinery Manufacturing,C
 Census PROD_IND,4002300000,"Wholesale sales of specialized industrial machinery and equipment, including welding, not elsewhere classified",NAICS_2017_Code,333249,Other Industrial Machinery Manufacturing,C
+Census PROD_IND,4002300000,"Wholesale sales of specialized industrial machinery and equipment, including welding, not elsewhere classified",NAICS_2017_Code,333993,Packaging Machinery Manufacturing,C
+Census PROD_IND,4002300000,"Wholesale sales of specialized industrial machinery and equipment, including welding, not elsewhere classified",NAICS_2017_Code,333994,Industrial Process Furnace and Oven Manufacturing,C
 Census PROD_IND,4002325000,"Wholesale sales of metalworking machinery and equipment, except welding equipment",NAICS_2017_Code,333517,Machine Tool Manufacturing,C
+Census PROD_IND,4002325000,"Wholesale sales of metalworking machinery and equipment, except welding equipment",NAICS_2017_Code,333511,Industrial Mold Manufacturing,C
+Census PROD_IND,4002325000,"Wholesale sales of metalworking machinery and equipment, except welding equipment",NAICS_2017_Code,333514,"Special Die and Tool, Die Set, Jig, and Fixture Manufacturing",C
+Census PROD_IND,4002325000,"Wholesale sales of metalworking machinery and equipment, except welding equipment",NAICS_2017_Code,333515,Cutting Tool and Machine Tool Accessory Manufacturing,C
 Census PROD_IND,4002350000,"Wholesale sales of hand tools, power driven ",NAICS_2017_Code,333991,Power-Driven Handtool Manufacturing,C
 Census PROD_IND,4002375000,Wholesale sales of new materials handling machinery and equipment,NAICS_2017_Code,33392,Material Handling Equipment Manufacturing,C
 Census PROD_IND,4002400000,"Wholesale sales of electricity generation, control, and storage equipment",NAICS_2017_Code,335311,"Power, Distribution, and Specialty Transformer Manufacturing",C
+Census PROD_IND,4002400000,"Wholesale sales of electricity generation, control, and storage equipment",NAICS_2017_Code,335312,Motor and Generator Manufacturing,C
+Census PROD_IND,4002400000,"Wholesale sales of electricity generation, control, and storage equipment",NAICS_2017_Code,335313,Switchgear and Switchboard Apparatus Manufacturing,C
+Census PROD_IND,4002400000,"Wholesale sales of electricity generation, control, and storage equipment",NAICS_2017_Code,332410,Power Boiler and Heat Exchanger Manufacturing,C
 Census PROD_IND,4002425000,"Wholesale sales of new industrial machinery and equipment, not elsewhere classified, including storage tanks, pumps and scales",NAICS_2017_Code,333999,All Other Miscellaneous General Purpose Machinery Manufacturing,C
 Census PROD_IND,4002450000,Wholesale sales of used industrial machinery and equipment,NAICS_2017_Code,S00402,Used and secondhand goods,C
 Census PROD_IND,4002475000,Wholesale sales of navigational and measuring equipment,NAICS_2017_Code,334511,"Search, Detection, Navigation, Guidance, Aeronautical, and Nautical System and Instrument Manufacturing",C
+Census PROD_IND,4002475000,Wholesale sales of navigational and measuring equipment,NAICS_2017_Code,334516,Analytical Laboratory Instrument Manufacturing,C
 Census PROD_IND,4002485000,"Wholesale sales of new controlling, recording, and indicating instruments and accessories",NAICS_2017_Code,334513,"Instruments and Related Products Manufacturing for Measuring, Displaying, and Controlling Industrial Process Variables",C
+Census PROD_IND,4002485000,"Wholesale sales of new controlling, recording, and indicating instruments and accessories",NAICS_2017_Code,334514,Totalizing Fluid Meter and Counting Device Manufacturing,C
+Census PROD_IND,4002485000,"Wholesale sales of new controlling, recording, and indicating instruments and accessories",NAICS_2017_Code,335314,Relay and Industrial Control Manufacturing,C
+Census PROD_IND,4002485000,"Wholesale sales of new controlling, recording, and indicating instruments and accessories",NAICS_2017_Code,334515,Instrument Manufacturing for Measuring and Testing Electricity and Electrical Signals,C
 Census PROD_IND,4002500000,Wholesale sales of refrigeration equipment,NAICS_2017_Code,333415,Air-Conditioning and Warm Air Heating Equipment and Commercial and Industrial Refrigeration Equipment Manufacturing,C
 Census PROD_IND,4002525000,"Wholesale sales of medical, dental, and veterinary equipment",NAICS_2017_Code,339112,Surgical and Medical Instrument Manufacturing,C
+Census PROD_IND,4002525000,"Wholesale sales of medical, dental, and veterinary equipment",NAICS_2017_Code,334510,Electromedical and Electrotherapeutic Apparatus Manufacturing,C
+Census PROD_IND,4002525000,"Wholesale sales of medical, dental, and veterinary equipment",NAICS_2017_Code,334517,Irradiation Apparatus Manufacturing,C
+Census PROD_IND,4002525000,"Wholesale sales of medical, dental, and veterinary equipment",NAICS_2017_Code,339116,Dental Laboratories,C
 Census PROD_IND,4002550000,Wholesale sales of commercial furniture,NAICS_2017_Code,337214,Office Furniture (except Wood) Manufacturing,C
 Census PROD_IND,4002560000,"Wholesale sales of restaurant, commercial food service and hotel equipment ",NAICS_2017_Code,333241,Food Product Machinery Manufacturing,C
 Census PROD_IND,4002575000,Wholesale sales of store equipment,NAICS_2017_Code,337215,"Showcase, Partition, Shelving, and Locker Manufacturing",C
@@ -123,13 +182,26 @@ Census PROD_IND,4002600000,Wholesale sales of commercial and service industry eq
 Census PROD_IND,4002625000,Wholesale sales of commercial photography and motion picture equipment,NAICS_2017_Code,333316,Photographic and Photocopying Equipment Manufacturing,C
 Census PROD_IND,4002650000,Wholesale sales of nonelectric signs and coin-operated games,NAICS_2017_Code,339950,Sign Manufacturing,C
 Census PROD_IND,4002675000,Wholesale sales of petroleum products marketing equipment,NAICS_2017_Code,333914,"Measuring, Dispensing, and Other Pumping Equipment Manufacturing",C
+Census PROD_IND,4002700000,Wholesale sales of exercise/fitness equipment,NAICS_2017_Code,339920,Sporting and Athletic Goods Manufacturing,C
+Census PROD_IND,4002725000,Wholesale sales of binoculars,NAICS_2017_Code,333314,Optical Instrument and Lens Manufacturing,C
 Census PROD_IND,4002750000,Wholesale sales of industrial water treatment equipment,NAICS_2017_Code,333318,Other Commercial and Service Industry Machinery Manufacturing,C
+Census PROD_IND,4002775000,"Wholesale sales of refined petroleum products, except liquefied petroleum (LP)",NAICS_2017_Code,325110,Petrochemical Manufacturing,C
 Census PROD_IND,4002775000,"Wholesale sales of refined petroleum products, except liquefied petroleum (LP)",NAICS_2017_Code,324110,Petroleum Refineries,C
+Census PROD_IND,4002780000,Wholesale sales of safes and vaults,NAICS_2017_Code,332999,All Other Miscellaneous Fabricated Metal Product Manufacturing,C
 Census PROD_IND,4002800000,Wholesale sales of coal,NAICS_2017_Code,21211,Coal Mining,C
+Census PROD_IND,4002825000,Wholesale sales of cordwood and firewood,NAICS_2017_Code,321999,All Other Miscellaneous Wood Product Manufacturing,C
+Census PROD_IND,4002830000,Wholesale sales of charcoal,NAICS_2017_Code,325194,"Cyclic Crude, Intermediate, and Gum and Wood Chemical Manufacturing",C
 Census PROD_IND,4002850000,"Wholesale sales of other fuels, not elsewhere classified",NAICS_2017_Code,324199,All Other Petroleum and Coal Products Manufacturing,C
 Census PROD_IND,4002875000,"Wholesale sales of grains, beans, and seeds",NAICS_2017_Code,1111,Oilseed and Grain Farming,C
+Census PROD_IND,4002875000,"Wholesale sales of grains, beans, and seeds",NAICS_2017_Code,1119,Other Crop Farming,C
+Census PROD_IND,4002875000,"Wholesale sales of grains, beans, and seeds",NAICS_2017_Code,11114,Wheat Farming,C
+Census PROD_IND,4002875000,"Wholesale sales of grains, beans, and seeds",NAICS_2017_Code,11115,Corn Farming,C
+Census PROD_IND,4002875000,"Wholesale sales of grains, beans, and seeds",NAICS_2017_Code,11116,Rice Farming,C
+Census PROD_IND,4002925000,Wholesale sales of raw milk and cream,NAICS_2017_Code,112120,Dairy Cattle and Milk Production,C
 Census PROD_IND,4002950000,Wholesale sales of brewers' products,NAICS_2017_Code,312120,Breweries,C
 Census PROD_IND,4002970000,"Wholesale sales of inedible animal or vegetable greases and oil, including linseed and cottonseed oil",NAICS_2017_Code,311225,Fats and Oils Refining and Blending,C
+Census PROD_IND,4002975000,Wholesale sales of raw sugar and other raw farm products used in food production,NAICS_2017_Code,311313,Beet Sugar Manufacturing,C
+Census PROD_IND,4003000000,Wholesale sales of live poultry,NAICS_2017_Code,112340,Poultry Hatcheries,C
 Census PROD_IND,4003025000,Wholesale sales of livestock,NAICS_2017_Code,112,Animal Production and Aquaculture,C
 Census PROD_IND,4003050000,Wholesale sales of materials and supplies for tobacco manufacturing,NAICS_2017_Code,312230,Tobacco Manufacturing,C
 Census PROD_IND,4003075000,Wholesale sales of yarns,NAICS_2017_Code,313110,"Fiber, Yarn, and Thread Mills",C
@@ -138,60 +210,107 @@ Census PROD_IND,4003125000,Wholesale sales of other materials and supplies for t
 Census PROD_IND,4003150000,Wholesale sales of knit and woven piece goods,NAICS_2017_Code,313210,Broadwoven Fabric Mills,C
 Census PROD_IND,4003175000,"Wholesale sales of notions, including buttons, ribbons, lace, sewing accessories, zippers, and bindings",NAICS_2017_Code,339993,"Fastener, Button, Needle, and Pin Manufacturing",C
 Census PROD_IND,4003200000,"Wholesale sales of hides, skins, and pelts",NAICS_2017_Code,339993,"Fastener, Button, Needle, and Pin Manufacturing",C
+Census PROD_IND,4003210000,Wholesale sales of leather cut stock for shoes and boots,NAICS_2017_Code,316998,All Other Leather Good and Allied Product Manufacturing,C
 Census PROD_IND,4003225000,Wholesale sales of pulpwood,NAICS_2017_Code,321113,Sawmills,C
+Census PROD_IND,4003250000,Wholesale sales of wood pulp,NAICS_2017_Code,322110,Pulp Mills,C
 Census PROD_IND,4003275000,Wholesale sales of recyclable paper and paperboard,NAICS_2017_Code,322130,Paperboard Mills,C
 Census PROD_IND,4003300000,Wholesale sales of printing paper,NAICS_2017_Code,322122,Newsprint Mills,C
 Census PROD_IND,4003310000,"Wholesale sales of ink and printing trades supplies, except paper",NAICS_2017_Code,325910,Printing Ink Manufacturing,C
 Census PROD_IND,4003325000,Wholesale sales of crude oil,NAICS_2017_Code,211120,Crude Petroleum Extraction,C
 Census PROD_IND,4003350000,"Wholesale sales of other petroleum products, including asphalt, road oil, and wax",NAICS_2017_Code,324121,Asphalt Paving Mixture and Block Manufacturing,C
 Census PROD_IND,4003375000,"Wholesale sales of chemicals, except explosives and automotive, drillers, and sanitation chemicals",NAICS_2017_Code,325199,All Other Basic Organic Chemical Manufacturing,C
+Census PROD_IND,4003375000,"Wholesale sales of chemicals, except explosives and automotive, drillers, and sanitation chemicals",NAICS_2017_Code,325120,Industrial Gas Manufacturing,C
+Census PROD_IND,4003375000,"Wholesale sales of chemicals, except explosives and automotive, drillers, and sanitation chemicals",NAICS_2017_Code,325130,Synthetic Dye and Pigment Manufacturing,C
+Census PROD_IND,4003375000,"Wholesale sales of chemicals, except explosives and automotive, drillers, and sanitation chemicals",NAICS_2017_Code,325180,Other Basic Inorganic Chemical Manufacturing,C
 Census PROD_IND,4003400000,Wholesale sales of liquefied petroleum (LP),NAICS_2017_Code,324110,Petroleum Refineries,C
+Census PROD_IND,4003425000,"Wholesale sales of industrial gases, except oxygen, acetylene and other welding gases",NAICS_2017_Code,325120,Industrial Gas Manufacturing,C
+Census PROD_IND,4003450000,Wholesale sales of acetylene and other welding gases,NAICS_2017_Code,325120,Industrial Gas Manufacturing,C
+Census PROD_IND,4003475000,Wholesale sales of oxygen,NAICS_2017_Code,325120,Industrial Gas Manufacturing,C
 Census PROD_IND,4003500000,"Wholesale sales of laminates, plastic raw materials, and crude rubber",NAICS_2017_Code,325211,Plastics Material and Resin Manufacturing,C
 Census PROD_IND,4003510000,Wholesale sales of synthetic resins,NAICS_2017_Code,325211,Plastics Material and Resin Manufacturing,C
+Census PROD_IND,4003510000,Wholesale sales of synthetic resins,NAICS_2017_Code,325212,Synthetic Rubber Manufacturing,C
 Census PROD_IND,4003520000,Wholesale sales of recyclable plastics and rubber,NAICS_2017_Code,S00401,Scrap,C
+Census PROD_IND,4003525000,"Wholesale sales of nonmetallic minerals, except crude petroleum and minerals used in construction and fertilizer",NAICS_2017_Code,21239,Other Nonmetallic Mineral Mining and Quarrying,C
 Census PROD_IND,4003550000,Wholesale sales of materials and supplies for glass products manufacturing,NAICS_2017_Code,327212,Other Pressed and Blown Glass and Glassware Manufacturing,C
-Census PROD_IND,4003600000,"Wholesale sales of nonferrous metals, including magnesium, nickel, tin, lead, and zinc, except gemstones",NAICS_2017_Code,331410,Nonferrous Metal (except Aluminum) Smelting and Refining,C
-Census PROD_IND,4003625000,Wholesale sales of precious metals,NAICS_2017_Code,331410,Nonferrous Metal (except Aluminum) Smelting and Refining,C
+Census PROD_IND,4003575000,"Wholesale sales of ores, except coal, gemstones, and crude oil",NAICS_2017_Code,212230,"Copper, Nickel, Lead, and Zinc Mining",C
+Census PROD_IND,4003600000,"Wholesale sales of nonferrous metals, including magnesium, nickel, tin, lead, and zinc, except gemstones",NAICS_2017_Code,212230,"Copper, Nickel, Lead, and Zinc Mining",C
+Census PROD_IND,4003625000,Wholesale sales of precious metals,NAICS_2017_Code,21222,Gold Ore and Silver Ore Mining,C
 Census PROD_IND,4003650000,Wholesale sales of recyclable ferrous metal scrap,NAICS_2017_Code,S00401,Scrap,C
 Census PROD_IND,4003675000,Wholesale sales of recyclable nonferrous metal scrap,NAICS_2017_Code,S00401,Scrap,C
+Census PROD_IND,4003700000,Wholesale sales of coke,NAICS_2017_Code,324110,Petroleum Refineries,C
 Census PROD_IND,4003725000,Wholesale sales of semi-finished iron and steel products,NAICS_2017_Code,331110,Iron and Steel Mills and Ferroalloy Manufacturing,C
+Census PROD_IND,4003725000,Wholesale sales of semi-finished iron and steel products,NAICS_2017_Code,331511,Iron Foundries,C
+Census PROD_IND,4003725000,Wholesale sales of semi-finished iron and steel products,NAICS_2017_Code,33152,Nonferrous Metal Foundries,C
 Census PROD_IND,4003750000,Wholesale sales of flat iron and steel products,NAICS_2017_Code,331110,Iron and Steel Mills and Ferroalloy Manufacturing,C
 Census PROD_IND,4003775000,Wholesale sales of iron and steel pipes and tubing,NAICS_2017_Code,331210,Iron and Steel Pipe and Tube Manufacturing from Purchased Steel,C
+Census PROD_IND,4003775000,Wholesale sales of iron and steel pipes and tubing,NAICS_2017_Code,332996,Fabricated Pipe and Pipe Fitting Manufacturing,C
 Census PROD_IND,4003800000,"Wholesale sales of iron and steel bars and bar-size shapes, except reinforcement bars",NAICS_2017_Code,331110,Iron and Steel Mills and Ferroalloy Manufacturing,C
 Census PROD_IND,4003825000,Wholesale sales of alloy steel,NAICS_2017_Code,331110,Iron and Steel Mills and Ferroalloy Manufacturing,C
 Census PROD_IND,4003850000,Wholesale sales of stainless steel,NAICS_2017_Code,331110,Iron and Steel Mills and Ferroalloy Manufacturing,C
 Census PROD_IND,4003875000,"Wholesale sales of primary, secondary and alloyed aluminum in primary and mill shapes ",NAICS_2017_Code,331313,Alumina Refining and Primary Aluminum Production,C
+Census PROD_IND,4003875000,"Wholesale sales of primary, secondary and alloyed aluminum in primary and mill shapes ",NAICS_2017_Code,331318,"Other Aluminum Rolling, Drawing, and Extruding",C
 Census PROD_IND,4003900000,"Wholesale sales of primary, secondary and alloyed copper and brass in primary and mill shapes, except pipe and tube",NAICS_2017_Code,331410,Nonferrous Metal (except Aluminum) Smelting and Refining,C
 Census PROD_IND,4003925000,"Wholesale sales of other primary, secondary and alloyed nonferrous metals in primary and mill shapes",NAICS_2017_Code,331410,Nonferrous Metal (except Aluminum) Smelting and Refining,C
+Census PROD_IND,4003925000,"Wholesale sales of other primary, secondary and alloyed nonferrous metals in primary and mill shapes",NAICS_2017_Code,331491,"Nonferrous Metal (except Copper and Aluminum) Rolling, Drawing, and Extruding",C
 Census PROD_IND,4003950000,"Wholesale sales of metal castings, forgings, and stampings",NAICS_2017_Code,3321,Forging and Stamping,C
+Census PROD_IND,4003950000,"Wholesale sales of metal castings, forgings, and stampings",NAICS_2017_Code,332119,"Metal Crown, Closure, and Other Metal Stamping (except Automotive)",C
+Census PROD_IND,4003950000,"Wholesale sales of metal castings, forgings, and stampings",NAICS_2017_Code,332111,Iron and Steel Forging,C
 Census PROD_IND,4003975000,"Wholesale sales of wire, including plain, coated, barbed, and twisted",NAICS_2017_Code,331222,Steel Wire Drawing,C
+Census PROD_IND,4003975000,"Wholesale sales of wire, including plain, coated, barbed, and twisted",NAICS_2017_Code,33261,Spring and Wire Product Manufacturing,C
 Census PROD_IND,4004000000,Wholesale sales of mechanical power transmission supplies,NAICS_2017_Code,333612,"Speed Changer, Industrial High-Speed Drive, and Gear Manufacturing",C
+Census PROD_IND,4004000000,Wholesale sales of mechanical power transmission supplies,NAICS_2017_Code,333613,Mechanical Power Transmission Equipment Manufacturing,C
 Census PROD_IND,4004025000,Wholesale sales of hydraulic and pneumatic valves,NAICS_2017_Code,332912,Fluid Power Valve and Hose Fitting Manufacturing,C
 Census PROD_IND,4004050000,Wholesale sales of hydraulic and pneumatic cylinders and rotary actuators,NAICS_2017_Code,333995,Fluid Power Cylinder and Actuator Manufacturing,C
+Census PROD_IND,4004075000,Wholesale sales of hydraulic and pneumatic connectors and assemblies,NAICS_2017_Code,332912,Fluid Power Valve and Hose Fitting Manufacturing,C
 Census PROD_IND,4004100000,"Wholesale sales of hydraulic and pneumatic components, accessories, and parts",NAICS_2017_Code,332912,Fluid Power Valve and Hose Fitting Manufacturing,C
+Census PROD_IND,4004125000,"Wholesale sales of hydraulic and pneumatic pumps, motors, and parts",NAICS_2017_Code,333912,Air and Gas Compressor Manufacturing,C
 Census PROD_IND,4004125000,"Wholesale sales of hydraulic and pneumatic pumps, motors, and parts",NAICS_2017_Code,333996,Fluid Power Pump and Motor Manufacturing,C
 Census PROD_IND,4004150000,Wholesale sales of tires and tubes,NAICS_2017_Code,326211,Tire Manufacturing (except Retreading),C
+Census PROD_IND,4004150000,Wholesale sales of tires and tubes,NAICS_2017_Code,326220,Rubber and Plastics Hoses and Belting Manufacturing,C
+Census PROD_IND,4004150000,Wholesale sales of tires and tubes,NAICS_2017_Code,326291,Rubber Product Manufacturing for Mechanical Use,C
 Census PROD_IND,4004175000,"Wholesale sales of new and rebuilt automotive parts and supplies, and trailer parts and supplies, except automotive bodies and chemicals",NAICS_2017_Code,336310,Motor Vehicle Gasoline Engine and Engine Parts Manufacturing,C
+Census PROD_IND,4004175000,"Wholesale sales of new and rebuilt automotive parts and supplies, and trailer parts and supplies, except automotive bodies and chemicals",NAICS_2017_Code,336350,Motor Vehicle Transmission and Power Train Parts Manufacturing,C
+Census PROD_IND,4004175000,"Wholesale sales of new and rebuilt automotive parts and supplies, and trailer parts and supplies, except automotive bodies and chemicals",NAICS_2017_Code,336390,Other Motor Vehicle Parts Manufacturing,C
+Census PROD_IND,4004175000,"Wholesale sales of new and rebuilt automotive parts and supplies, and trailer parts and supplies, except automotive bodies and chemicals",NAICS_2017_Code,336330,Motor Vehicle Steering and Suspension Components (except Spring) Manufacturing,C
+Census PROD_IND,4004175000,"Wholesale sales of new and rebuilt automotive parts and supplies, and trailer parts and supplies, except automotive bodies and chemicals",NAICS_2017_Code,336360,Motor Vehicle Seating and Interior Trim Manufacturing,C
+Census PROD_IND,4004175000,"Wholesale sales of new and rebuilt automotive parts and supplies, and trailer parts and supplies, except automotive bodies and chemicals",NAICS_2017_Code,336370,Motor Vehicle Metal Stamping,C
+Census PROD_IND,4004195000,"Wholesale sales of car stereos, tape players, and CD players",NAICS_2017_Code,334310,Audio and Video Equipment Manufacturing,C
 Census PROD_IND,4004200000,"Wholesale sales of new light truck, van, and SUV bodies",NAICS_2017_Code,336211,Motor Vehicle Body Manufacturing,C
 Census PROD_IND,4004225000,"Wholesale sales of automotive chemicals, including polishes and cleaners, fuel and oil additives, and antifreeze",NAICS_2017_Code,325998,All Other Miscellaneous Chemical Product and Preparation Manufacturing,C
 Census PROD_IND,4004250000,Wholesale sales of used automotive parts and accessories,NAICS_2017_Code,S00402,Used and secondhand goods,C
 Census PROD_IND,4004275000,Wholesale sales of marine propulsion machinery and equipment and marine supplies,NAICS_2017_Code,333618,Other Engine Equipment Manufacturing,C
 Census PROD_IND,4004300000,"Wholesale sales of aircraft equipment and supplies, including engines and engine parts",NAICS_2017_Code,336412,Aircraft Engine and Engine Parts Manufacturing,C
+Census PROD_IND,4004300000,"Wholesale sales of aircraft equipment and supplies, including engines and engine parts",NAICS_2017_Code,336413,Other Aircraft Parts and Auxiliary Equipment Manufacturing,C
+Census PROD_IND,4004325000,Wholesale sales of new medium truck bodies,NAICS_2017_Code,336211,Motor Vehicle Body Manufacturing,C
 Census PROD_IND,4004350000,Wholesale sales of new heavy truck bodies,NAICS_2017_Code,336211,Motor Vehicle Body Manufacturing,C
 Census PROD_IND,4004375000,Wholesale sales of farm machinery parts and supplies,NAICS_2017_Code,333111,Farm Machinery and Equipment Manufacturing,C
 Census PROD_IND,4004400000,"Wholesale sales of construction, forestry, and mining machinery parts and supplies",NAICS_2017_Code,333120,Construction Machinery Manufacturing,C
 Census PROD_IND,4004425000,Wholesale sales of oil well and pipeline machinery parts and supplies,NAICS_2017_Code,333132,Oil and Gas Field Machinery and Equipment Manufacturing,C
 Census PROD_IND,4004450000,Wholesale sales of industrial engines,NAICS_2017_Code,333618,Other Engine Equipment Manufacturing,C
+Census PROD_IND,4004450000,Wholesale sales of industrial engines,NAICS_2017_Code,333611,Turbine and Turbine Generator Set Units Manufacturing,C
 Census PROD_IND,4004475000,"Wholesale sales of industrial, commercial, and service industry machinery parts and supplies",NAICS_2017_Code,333249,Other Industrial Machinery Manufacturing,C
 Census PROD_IND,4004500000,Wholesale sales of lubricating oil and greases,NAICS_2017_Code,324191,Petroleum Lubricating Oil and Grease Manufacturing,C
 Census PROD_IND,4004525000,"Wholesale sales of materials and supplies for electronic and electrical equipment, appliances, and component manufacturing",NAICS_2017_Code,335999,All Other Miscellaneous Electrical Equipment and Component Manufacturing,C
+Census PROD_IND,4004525000,"Wholesale sales of materials and supplies for electronic and electrical equipment, appliances, and component manufacturing",NAICS_2017_Code,335921,Fiber Optic Cable Manufacturing,C
+Census PROD_IND,4004525000,"Wholesale sales of materials and supplies for electronic and electrical equipment, appliances, and component manufacturing",NAICS_2017_Code,335931,Current-Carrying Wiring Device Manufacturing,C
+Census PROD_IND,4004525000,"Wholesale sales of materials and supplies for electronic and electrical equipment, appliances, and component manufacturing",NAICS_2017_Code,334413,Semiconductor and Related Device Manufacturing,C
+Census PROD_IND,4004525000,"Wholesale sales of materials and supplies for electronic and electrical equipment, appliances, and component manufacturing",NAICS_2017_Code,334418,Printed Circuit Assembly (Electronic Assembly) Manufacturing,C
+Census PROD_IND,4004525000,"Wholesale sales of materials and supplies for electronic and electrical equipment, appliances, and component manufacturing",NAICS_2017_Code,334419,Other Electronic Component Manufacturing,C
+Census PROD_IND,4004525000,"Wholesale sales of materials and supplies for electronic and electrical equipment, appliances, and component manufacturing",NAICS_2017_Code,336320,Motor Vehicle Electrical and Electronic Equipment Manufacturing,C
+Census PROD_IND,4004525000,"Wholesale sales of materials and supplies for electronic and electrical equipment, appliances, and component manufacturing",NAICS_2017_Code,333242,Semiconductor Machinery Manufacturing,C
 Census PROD_IND,4004550000,"Wholesale sales of farm supplies, including agricultural chemicals, feed, and fertilizers",NAICS_2017_Code,3253,"Pesticide, Fertilizer, and Other Agricultural Chemical Manufacturing",C
+Census PROD_IND,4004575000,Wholesale sales of inedible farm products,NAICS_2017_Code,111998,All Other Miscellaneous Crop Farming,C
 Census PROD_IND,4004600000,Wholesale sales of nonagricultural insecticides,NAICS_2017_Code,325320,Pesticide and Other Agricultural Chemical Manufacturing,C
 Census PROD_IND,4004625000,"Wholesale sales of textile bags, bagging and burlap",NAICS_2017_Code,314910,Textile Bag and Canvas Mills,C
 Census PROD_IND,4004650000,Wholesale sales of metal structural products,NAICS_2017_Code,332312,Fabricated Structural Metal Manufacturing,C
+Census PROD_IND,4004650000,Wholesale sales of metal structural products,NAICS_2017_Code,332321,Metal Window and Door Manufacturing,C
+Census PROD_IND,4004650000,Wholesale sales of metal structural products,NAICS_2017_Code,332510,Hardware Manufacturing,C
+Census PROD_IND,4004660000,Wholesale sales of chemically blown closed cell rubber sponge,NAICS_2017_Code,326299,All Other Rubber Product Manufacturing,C
 Census PROD_IND,4004675000,"Wholesale sales of nonwood roofing, siding, and insulation products ",NAICS_2017_Code,324122,Asphalt Shingle and Coating Materials Manufacturing,C
 Census PROD_IND,4004700000,Wholesale sales of building and construction polystyrene and polyurethane foam products ,NAICS_2017_Code,326140,Polystyrene Foam Product Manufacturing,C
 Census PROD_IND,4004725000,"Wholesale sales of rough, dressed, and finished dimensional lumber, plywood and panels",NAICS_2017_Code,3211,Sawmills and Wood Preservation,C
+Census PROD_IND,4004725000,"Wholesale sales of rough, dressed, and finished dimensional lumber, plywood and panels",NAICS_2017_Code,113,Forestry and Logging,C
+Census PROD_IND,4004725000,"Wholesale sales of rough, dressed, and finished dimensional lumber, plywood and panels",NAICS_2017_Code,3212,"Veneer, Plywood, and Engineered Wood Product Manufacturing",C
 Census PROD_IND,4004775000,Wholesale sales of millwork,NAICS_2017_Code,321918,Other Millwork (including Flooring),C
 Census PROD_IND,4004800000,Wholesale sales of flooring and floor coverings,NAICS_2017_Code,31411,Carpet and Rug Mills,C
 Census PROD_IND,4004800000,Wholesale sales of flooring and floor coverings,NAICS_2017_Code,321918,Other Millwork (including Flooring),C
@@ -202,28 +321,52 @@ Census PROD_IND,4004820000,Wholesale sales of copper plumbing pipes and tubing,N
 Census PROD_IND,4004825000,"Wholesale sales of plumbing equipment, except pipes and tubing",NAICS_2017_Code,332913,Plumbing Fixture Fitting and Trim Manufacturing,C
 Census PROD_IND,4004830000,Wholesale sales of condensing units for commercial refrigerators,NAICS_2017_Code,333415,Air-Conditioning and Warm Air Heating Equipment and Commercial and Industrial Refrigeration Equipment Manufacturing,C
 Census PROD_IND,4004840000,Wholesale sales of heating and HVAC equipment,NAICS_2017_Code,333415,Air-Conditioning and Warm Air Heating Equipment and Commercial and Industrial Refrigeration Equipment Manufacturing,C
+Census PROD_IND,4004840000,Wholesale sales of heating and HVAC equipment,NAICS_2017_Code,333414,Heating Equipment (except Warm Air Furnaces) Manufacturing,C
+Census PROD_IND,4004840000,Wholesale sales of heating and HVAC equipment,NAICS_2017_Code,333413,Industrial and Commercial Fan and Blower and Air Purification Equipment Manufacturing,C
+Census PROD_IND,4004840000,Wholesale sales of heating and HVAC equipment,NAICS_2017_Code,334512,"Automatic Environmental Control Manufacturing for Residential, Commercial, and Appliance Use",C
 Census PROD_IND,4004850000,"Wholesale sales of electrical, communication, and lighting system products",NAICS_2017_Code,335121,Residential Electric Lighting Fixture Manufacturing,C
 Census PROD_IND,4004875000,"Wholesale sales of paint, paint supplies, and wallpaper and supplies",NAICS_2017_Code,325510,Paint and Coating Manufacturing,C
 Census PROD_IND,4004900000,"Wholesale sales of concrete, cement, sand, gravel, stone, brick, block, and tile ",NAICS_2017_Code,327310,Cement Manufacturing,C
+Census PROD_IND,4004900000,"Wholesale sales of concrete, cement, sand, gravel, stone, brick, block, and tile ",NAICS_2017_Code,327320,Ready-Mix Concrete Manufacturing,C
+Census PROD_IND,4004900000,"Wholesale sales of concrete, cement, sand, gravel, stone, brick, block, and tile ",NAICS_2017_Code,327331,Concrete Block and Brick Manufacturing,C
+Census PROD_IND,4004900000,"Wholesale sales of concrete, cement, sand, gravel, stone, brick, block, and tile ",NAICS_2017_Code,327390,Other Concrete Product Manufacturing,C
+Census PROD_IND,4004900000,"Wholesale sales of concrete, cement, sand, gravel, stone, brick, block, and tile ",NAICS_2017_Code,327410,Lime Manufacturing,C
+Census PROD_IND,4004900000,"Wholesale sales of concrete, cement, sand, gravel, stone, brick, block, and tile ",NAICS_2017_Code,327991,Cut Stone and Stone Product Manufacturing,C
+Census PROD_IND,4004900000,"Wholesale sales of concrete, cement, sand, gravel, stone, brick, block, and tile ",NAICS_2017_Code,327992,Ground or Treated Mineral and Earth Manufacturing,C
+Census PROD_IND,4004900000,"Wholesale sales of concrete, cement, sand, gravel, stone, brick, block, and tile ",NAICS_2017_Code,327993,Mineral Wool Manufacturing,C
+Census PROD_IND,4004900000,"Wholesale sales of concrete, cement, sand, gravel, stone, brick, block, and tile ",NAICS_2017_Code,21232,"Sand, Gravel, Clay, and Ceramic and Refractory Minerals Mining and Quarrying",C
+Census PROD_IND,4004900000,"Wholesale sales of concrete, cement, sand, gravel, stone, brick, block, and tile ",NAICS_2017_Code,21231,Stone Mining and Quarrying,C
 Census PROD_IND,4004910000,"Wholesale sales of bolts, nuts, rivets, and other fasteners, except nails",NAICS_2017_Code,332722,"Bolt, Nut, Screw, Rivet, and Washer Manufacturing",C
 Census PROD_IND,4004915000,"Wholesale sales of nails, wire rope, strand, strapping and reinforcement mesh",NAICS_2017_Code,331222,Steel Wire Drawing,C
 Census PROD_IND,4004925000,Wholesale sales of other construction materials and supplies,NAICS_2017_Code,327999,All Other Miscellaneous Nonmetallic Mineral Product Manufacturing,C
 Census PROD_IND,4004950000,Wholesale sales of fire extinguishers and fire safety equipment,NAICS_2017_Code,339999,All Other Miscellaneous Manufacturing,C
+Census PROD_IND,4004975000,Wholesale sales of fire sprinkler devices,NAICS_2017_Code,238220,"Plumbing, Heating, and Air-Conditioning Contractors",C
+Census PROD_IND,4005000000,Wholesale sales of explosives and drillers chemicals,NAICS_2017_Code,325920,Explosives Manufacturing,C
 Census PROD_IND,4005025000,"Wholesale sales of plastic pipes, rods, tubes, and shapes, except plastic plumbing pipes",NAICS_2017_Code,326199,All Other Plastics Product Manufacturing,C
 Census PROD_IND,4005050000,Wholesale sales of new irrigation equipment and parts,NAICS_2017_Code,333111,Farm Machinery and Equipment Manufacturing,C
 Census PROD_IND,4005075000,"Wholesale sales of industrial valves and fittings, except hydraulic valves and fittings",NAICS_2017_Code,332911,Industrial Valve Manufacturing,C
 Census PROD_IND,4005100000,Wholesale sales of nonpower driven hand tools,NAICS_2017_Code,332216,Saw Blade and Handtool Manufacturing,C
+Census PROD_IND,4005110000,Wholesale sales of scaffolding and ladders,NAICS_2017_Code,238990,All Other Specialty Trade Contractors,C
 Census PROD_IND,4005125000,"Wholesale sales of specialty pharmaceuticals, including vaccines, laboratory diagnostic reagents, and similar",NAICS_2017_Code,325412,Pharmaceutical Preparation Manufacturing,C
+Census PROD_IND,4005125000,"Wholesale sales of specialty pharmaceuticals, including vaccines, laboratory diagnostic reagents, and similar",NAICS_2017_Code,325414,Biological Product (except Diagnostic) Manufacturing,C
+Census PROD_IND,4005125000,"Wholesale sales of specialty pharmaceuticals, including vaccines, laboratory diagnostic reagents, and similar",NAICS_2017_Code,325413,In-Vitro Diagnostic Substance Manufacturing,C
+Census PROD_IND,4005150000,Wholesale sales of veterinary and pet medicines,NAICS_2017_Code,325412,Pharmaceutical Preparation Manufacturing,C
 Census PROD_IND,4005175000,"Wholesale sales of medical, dental, and veterinary instruments and supplies",NAICS_2017_Code,339112,Surgical and Medical Instrument Manufacturing,C
+Census PROD_IND,4005175000,"Wholesale sales of medical, dental, and veterinary instruments and supplies",NAICS_2017_Code,339114,Dental Equipment and Supplies Manufacturing,C
 Census PROD_IND,4005200000,Wholesale sales of photographic supplies,NAICS_2017_Code,325992,"Photographic Film, Paper, Plate, and Chemical Manufacturing",C
 Census PROD_IND,4005225000,Wholesale sales of janitorial supplies and nonpower janitorial equipment,NAICS_2017_Code,339994,"Broom, Brush, and Mop Manufacturing",C
 Census PROD_IND,4005230000,Wholesale sales of cleaning chemicals,NAICS_2017_Code,32561,Soap and Cleaning Compound Manufacturing,C
+Census PROD_IND,4005230000,Wholesale sales of cleaning chemicals,NAICS_2017_Code,325620,Toilet Preparation Manufacturing,C
+Census PROD_IND,4005240000,"Wholesale sales of household cleaning supplies, including mops and brooms",NAICS_2017_Code,339994,"Broom, Brush, and Mop Manufacturing",C
 Census PROD_IND,4005250000,Wholesale sales of harness and saddlery equipment,NAICS_2017_Code,316110,Leather and Hide Tanning and Finishing,C
 Census PROD_IND,4005275000,Wholesale sales of disposable paper and plastic products,NAICS_2017_Code,3222,Converted Paper Product Manufacturing,C
 Census PROD_IND,4005275000,Wholesale sales of disposable paper and plastic products,NAICS_2017_Code,3261,Plastics Product Manufacturing,C
+Census PROD_IND,4005300000,Wholesale sales of fireworks and firecrackers,NAICS_2017_Code,325998,All Other Miscellaneous Chemical Product and Preparation Manufacturing,C
+Census PROD_IND,4005310000,Wholesale sales of laundry and dry-cleaning supplies,NAICS_2017_Code,325611,Soap and Other Detergent Manufacturing,C
 Census PROD_IND,4005325000,"Wholesale sales of materials and supplies for professional and service industries, not elsewhere classified",NAICS_2017_Code,333999,All Other Miscellaneous General Purpose Machinery Manufacturing,C
 Census PROD_IND,4005330000,Wholesale sales of pallets and skids,NAICS_2017_Code,321920,Wood Container and Pallet Manufacturing,C
 Census PROD_IND,4005350000,Wholesale sales of industrial containers and supplies,NAICS_2017_Code,332439,Other Metal Container Manufacturing,C
+Census PROD_IND,4005350000,Wholesale sales of industrial containers and supplies,NAICS_2017_Code,332420,Metal Tank (Heavy Gauge) Manufacturing,C
 Census PROD_IND,4005355000,Wholesale sales of packing and packaging materials and supplies,NAICS_2017_Code,322220,Paper Bag and Coated and Treated Paper Manufacturing,C
 Census PROD_IND,4005355000,Wholesale sales of packing and packaging materials and supplies,NAICS_2017_Code,3261,Plastics Product Manufacturing,C
 Census PROD_IND,4005358000,Wholesale sales of strapping and tape,NAICS_2017_Code,313230,Nonwoven Fabric Mills,C
@@ -239,13 +382,19 @@ Census PROD_IND,4005475000,Wholesale sales of nonpackaging paper and plastic,NAI
 Census PROD_IND,4005480000,"Wholesale sales of other industrial materials and supplies, including abrasives and welding supplies",NAICS_2017_Code,332813,"Electroplating, Plating, Polishing, Anodizing, and Coloring",C
 Census PROD_IND,4005480000,"Wholesale sales of other industrial materials and supplies, including abrasives and welding supplies",NAICS_2017_Code,32791,Abrasive Product Manufacturing,C
 Census PROD_IND,4005485000,"Wholesale sales of miscellaneous chemicals and supplies, including adhesives, dry ice and plastic materials",NAICS_2017_Code,325520,Adhesive Manufacturing,C
+Census PROD_IND,4005490000,"Wholesale sales of other recyclable materials, excluding paper, metal, textiles, plastic, rubber and glass",NAICS_2017_Code,S00401,Scrap,C
+Census PROD_IND,4005491000,"Wholesale sales of live bait, chamois, natural sponges, plant food, rennet, and sawdust",NAICS_2017_Code,112990,All Other Animal Production,C
 Census PROD_IND,4005492000,Wholesale sales of safety equipment,NAICS_2017_Code,339113,Surgical Appliance and Supplies Manufacturing,C
 Census PROD_IND,4005494000,Wholesale sales of electric light bulbs,NAICS_2017_Code,335110,Electric Lamp Bulb and Part Manufacturing,C
 Census PROD_IND,4005495000,"Wholesale sales of nonlumber forest products, including hewn posts, poles, and railroad ties",NAICS_2017_Code,321114,Wood Preservation,C
+Census PROD_IND,4005496000,"Wholesale sales of military and other firearms and ammunition, except small arms",NAICS_2017_Code,332993,Ammunition (except Small Arms) Manufacturing,C
+Census PROD_IND,4005496000,"Wholesale sales of military and other firearms and ammunition, except small arms",NAICS_2017_Code,336992,"Military Armored Vehicle, Tank, and Tank Component Manufacturing",C
+Census PROD_IND,4005497000,Wholesale sales of gas lighting fixtures and equipment,NAICS_2017_Code,335129,Other Lighting Equipment Manufacturing,C
+Census PROD_IND,4005498000,Wholesale sales of wigs and hairpieces,NAICS_2017_Code,33999,All Other Miscellaneous Manufacturing,C
 Census PROD_IND,4005499000,"Wholesale sales of balloons, clothes hangers, foam mats, lawn ornaments, and jewelry boxes",NAICS_2017_Code,326199,All Other Plastics Product Manufacturing,C
 Census PROD_IND,4005500000,"Wholesale sales of other goods, not elsewhere classified",NAICS_2017_Code,339999,All Other Miscellaneous Manufacturing,C
-Census PROD_IND,5001710000,Retail sales of safes and vaults,NAICS_2017_Code,332999,All Other Miscellaneous Fabricated Metal Product Manufacturing,C
-Census PROD_IND,5000850000,"Retail sales of antiques, collectibles, art works, and other used goods (except transportation and machinery goods) ",NAICS_2017_Code,S00402,Used and secondhand goods,C
+Census PROD_IND,4005500000,"Wholesale sales of other goods, not elsewhere classified",NAICS_2017_Code,33299,All Other Fabricated Metal Product Manufacturing,C
+Census PROD_IND,4005500000,"Wholesale sales of other goods, not elsewhere classified",NAICS_2017_Code,335991,Carbon and Graphite Product Manufacturing,C
 Census PROD_IND,5000025000,Retail sales of fresh meat and poultry,NAICS_2017_Code,1123,Poultry and Egg Production,C
 Census PROD_IND,5000025000,Retail sales of fresh meat and poultry,NAICS_2017_Code,311615,Poultry Processing,C
 Census PROD_IND,5000025000,Retail sales of fresh meat and poultry,NAICS_2017_Code,1121,Cattle Ranching and Farming,C
@@ -264,14 +413,21 @@ Census PROD_IND,5000100000,Retail sales of eggs and dairy (except ice cream),NAI
 Census PROD_IND,5000100000,Retail sales of eggs and dairy (except ice cream),NAICS_2017_Code,311512,Creamery Butter Manufacturing,C
 Census PROD_IND,5000100000,Retail sales of eggs and dairy (except ice cream),NAICS_2017_Code,311513,Cheese Manufacturing,C
 Census PROD_IND,5000125000,Retail sales of baked goods,NAICS_2017_Code,31181,Bread and Bakery Product Manufacturing,C
+Census PROD_IND,5000125000,Retail sales of baked goods,NAICS_2017_Code,31121,Flour Milling and Malt Manufacturing,C
+Census PROD_IND,5000125000,Retail sales of baked goods,NAICS_2017_Code,31122,Starch and Vegetable Fats and Oils Manufacturing,C
 Census PROD_IND,5000150000,Retail sales of perishable prepared foods,NAICS_2017_Code,311991,Perishable Prepared Food Manufacturing,C
+Census PROD_IND,5000150000,Retail sales of perishable prepared foods,NAICS_2017_Code,311224,Soybean and Other Oilseed Processing,C
+Census PROD_IND,5000150000,Retail sales of perishable prepared foods,NAICS_2017_Code,311225,Fats and Oils Refining and Blending,C
 Census PROD_IND,5000175000,Retail sales of frozen foods,NAICS_2017_Code,31141,Frozen Food Manufacturing,C
 Census PROD_IND,5000175000,Retail sales of frozen foods,NAICS_2017_Code,31152,Ice Cream and Frozen Dessert Manufacturing,C
 Census PROD_IND,5000200000,"Retail sales of candy, prepackaged cookies, and snack foods",NAICS_2017_Code,3113,Sugar and Confectionery Product Manufacturing,C
+Census PROD_IND,5000200000,"Retail sales of candy, prepackaged cookies, and snack foods",NAICS_2017_Code,31182,"Cookie, Cracker, and Pasta Manufacturing",C
 Census PROD_IND,5000225000,Retail sales of food dry goods and other foods purchased for future consumption,NAICS_2017_Code,31191,Snack Food Manufacturing,C
 Census PROD_IND,5000225000,Retail sales of food dry goods and other foods purchased for future consumption,NAICS_2017_Code,311514,"Dry, Condensed, and Evaporated Dairy Product Manufacturing",C
 Census PROD_IND,5000225000,Retail sales of food dry goods and other foods purchased for future consumption,NAICS_2017_Code,31142,"Fruit and Vegetable Canning, Pickling, and Drying",C
 Census PROD_IND,5000225000,Retail sales of food dry goods and other foods purchased for future consumption,NAICS_2017_Code,31194,Seasoning and Dressing Manufacturing,C
+Census PROD_IND,5000225000,Retail sales of food dry goods and other foods purchased for future consumption,NAICS_2017_Code,311230,Breakfast Cereal Manufacturing,C
+Census PROD_IND,5000225000,Retail sales of food dry goods and other foods purchased for future consumption,NAICS_2017_Code,31193,Flavoring Syrup and Concentrate Manufacturing,C
 Census PROD_IND,5000225000,Retail sales of food dry goods and other foods purchased for future consumption,NAICS_2017_Code,311999,All Other Miscellaneous Food Manufacturing,C
 Census PROD_IND,5000225000,Retail sales of food dry goods and other foods purchased for future consumption,NAICS_2017_Code,31192,Coffee and Tea Manufacturing,C
 Census PROD_IND,5000250000,Retail sales of soft drinks and nonalcoholic beverages,NAICS_2017_Code,312111,Soft Drink Manufacturing,C
@@ -279,36 +435,52 @@ Census PROD_IND,5000250000,Retail sales of soft drinks and nonalcoholic beverage
 Census PROD_IND,5000275000,Retail sales of ice,NAICS_2017_Code,312113,Ice Manufacturing,C
 Census PROD_IND,5000300000,Retail sales of alcoholic beverages,NAICS_2017_Code,31212,Breweries,C
 Census PROD_IND,5000300000,Retail sales of alcoholic beverages,NAICS_2017_Code,31213,Wineries,C
+Census PROD_IND,5000300000,Retail sales of alcoholic beverages,NAICS_2017_Code,31214,Wineries,C
 Census PROD_IND,5000325000,Retail sales of tobacco products and smoking accessories,NAICS_2017_Code,3122,Tobacco Manufacturing,C
 Census PROD_IND,5000325000,Retail sales of tobacco products and smoking accessories,NAICS_2017_Code,339999,All Other Miscellaneous Manufacturing,C
 Census PROD_IND,5000350000,Retail sales of men's clothing,NAICS_2017_Code,31522,Men’s and Boys’ Cut and Sew Apparel Manufacturing,C
 Census PROD_IND,5000375000,Retail sales of women's clothing,NAICS_2017_Code,31524,"Women’s, Girls’, and Infants’ Cut and Sew Apparel Manufacturing",C
 Census PROD_IND,5000400000,"Retail sales of children's wear, including boys', girls', and infants' and toddlers' clothing and accessories",NAICS_2017_Code,31524,"Women’s, Girls’, and Infants’ Cut and Sew Apparel Manufacturing",C
+Census PROD_IND,5000450000,Retail sales of men's and women's accessories (except costume jewelry),NAICS_2017_Code,314910,Textile Bag and Canvas Mills,C
 Census PROD_IND,5000425000,"Retail sales of costumes, vestments, and unisex clothing",NAICS_2017_Code,31528,Other Cut and Sew Apparel Manufacturing,C
 Census PROD_IND,5000450000,Retail sales of men's and women's accessories (except costume jewelry),NAICS_2017_Code,3159,Apparel Accessories and Other Apparel Manufacturing,C
 Census PROD_IND,5000455000,Retail sales of costume and novelty jewelry,NAICS_2017_Code,33991,Jewelry and Silverware Manufacturing,C
 Census PROD_IND,5000475000,Retail sales of footwear and footwear accessories,NAICS_2017_Code,3162,Footwear Manufacturing,C
 Census PROD_IND,5000500000,Retail sales of fine jewelry and watches ,NAICS_2017_Code,33991,Jewelry and Silverware Manufacturing,C
+Census PROD_IND,5000525000,Retail sales of manufactured (mobile) homes,NAICS_2017_Code,321991,Manufactured Home (Mobile Home) Manufacturing,C
+Census PROD_IND,5000550000,Retail sales of indoor home furniture,NAICS_2017_Code,3371,Household and Institutional Furniture and Kitchen Cabinet Manufacturing,C
 Census PROD_IND,5000575000,Retail sales of outdoor/ patio furniture,NAICS_2017_Code,3371,Household and Institutional Furniture and Kitchen Cabinet Manufacturing,C
 Census PROD_IND,5000575000,Retail sales of outdoor/ patio furniture,NAICS_2017_Code,3371,Household and Institutional Furniture and Kitchen Cabinet Manufacturing,C
+Census PROD_IND,5000600000,"Retail sales of mattresses, box springs, and air mattresses",NAICS_2017_Code,33791,Mattress Manufacturing,C
 Census PROD_IND,5000625000,"Retail sales of window treatments, including rods, poles, and fixtures",NAICS_2017_Code,33792,Blind and Shade Manufacturing,C
 Census PROD_IND,5000650000,Retail sales of domestics and other textile home furnishings (except carpet and rugs),NAICS_2017_Code,3141,Textile Furnishings Mills,C
+Census PROD_IND,5000650000,Retail sales of domestics and other textile home furnishings (except carpet and rugs),NAICS_2017_Code,31412,Curtain and Linen Mills,C
 Census PROD_IND,5000675000,Retail sales of other home furnishings and accessories,NAICS_2017_Code,339999,All Other Miscellaneous Manufacturing,C
 Census PROD_IND,5000675000,Retail sales of other home furnishings and accessories,NAICS_2017_Code,33712,Household and Institutional Furniture Manufacturing,C
 Census PROD_IND,5000675000,Retail sales of other home furnishings and accessories,NAICS_2017_Code,332999,All Other Miscellaneous Fabricated Metal Product Manufacturing,C
+Census PROD_IND,5000675000,Retail sales of other home furnishings and accessories,NAICS_2017_Code,3212,"Veneer, Plywood, and Engineered Wood Product Manufacturing",C
 Census PROD_IND,5000675000,Retail sales of other home furnishings and accessories,NAICS_2017_Code,334519,Other Measuring and Controlling Device Manufacturing,C
 Census PROD_IND,5000700000,Retail sales of major household appliances and related parts and accessories,NAICS_2017_Code,335220,Major Household Appliance Manufacturing,C
 Census PROD_IND,5000725000,"Retail sales of small household appliances, including mixers; blenders; can openers; toasters; coffee makers; frypans; personal care appliances, such as hair dryers, curling irons, and shavers; tap water purifiers and filters; etc.",NAICS_2017_Code,335210,Small Electrical Appliance Manufacturing,C
 Census PROD_IND,5000750000,"Retail sales of tableware, kitchenware, cookware, glassware",NAICS_2017_Code,327110,"Pottery, Ceramics, and Plumbing Fixture Manufacturing",C
 Census PROD_IND,5000750000,"Retail sales of tableware, kitchenware, cookware, glassware",NAICS_2017_Code,339910,Jewelry and Silverware Manufacturing,C
+Census PROD_IND,5000750000,"Retail sales of tableware, kitchenware, cookware, glassware",NAICS_2017_Code,327212,Other Pressed and Blown Glass and Glassware Manufacturing,C
 Census PROD_IND,5000775000,Retail sales of household cleaning supplies,NAICS_2017_Code,339994,"Broom, Brush, and Mop Manufacturing",C
 Census PROD_IND,5000775000,Retail sales of household cleaning supplies,NAICS_2017_Code,32561,Soap and Cleaning Compound Manufacturing,C
+Census PROD_IND,5000775000,Retail sales of household cleaning supplies,NAICS_2017_Code,325620,Toilet Preparation Manufacturing,C
 Census PROD_IND,5000800000,Retail sales of home lawn and garden goods,NAICS_2017_Code,333112,Lawn and Garden Tractor and Home Lawn and Garden Equipment Manufacturing,C
 Census PROD_IND,5000800000,Retail sales of home lawn and garden goods,NAICS_2017_Code,111421,Nursery and Tree Production,C
+Census PROD_IND,5000825000,"Retail sales of household paper and plastic products, except tableware",NAICS_2017_Code,3222,Converted Paper Product Manufacturing,C
+Census PROD_IND,5000825000,"Retail sales of household paper and plastic products, except tableware",NAICS_2017_Code,322122,Newsprint Mills,C
+Census PROD_IND,5000825000,"Retail sales of household paper and plastic products, except tableware",NAICS_2017_Code,322130,Paperboard Mills,C
+Census PROD_IND,5000825000,"Retail sales of household paper and plastic products, except tableware",NAICS_2017_Code,322299,All Other Converted Paper Product Manufacturing,C
+Census PROD_IND,5000825000,"Retail sales of household paper and plastic products, except tableware",NAICS_2017_Code,3261,Plastics Product Manufacturing,C
+Census PROD_IND,5000850000,"Retail sales of antiques, collectibles, art works, and other used goods (except transportation and machinery goods) ",NAICS_2017_Code,S00402,Used and secondhand goods,C
 Census PROD_IND,5000860000,"Retail sales of household and personal goods, not elsewhere classified",NAICS_2017_Code,3222,Converted Paper Product Manufacturing,C
 Census PROD_IND,5000860000,"Retail sales of household and personal goods, not elsewhere classified",NAICS_2017_Code,3261,Plastics Product Manufacturing,C
 Census PROD_IND,5000860000,"Retail sales of household and personal goods, not elsewhere classified",NAICS_2017_Code,316998,All Other Leather Good and Allied Product Manufacturing,C
 Census PROD_IND,5000860000,"Retail sales of household and personal goods, not elsewhere classified",NAICS_2017_Code,33591,Battery Manufacturing,C
+Census PROD_IND,5000860000,"Retail sales of household and personal goods, not elsewhere classified",NAICS_2017_Code,335912,Primary Battery Manufacturing,C
 Census PROD_IND,5000860000,"Retail sales of household and personal goods, not elsewhere classified",NAICS_2017_Code,339999,All Other Miscellaneous Manufacturing,C
 Census PROD_IND,5000860000,"Retail sales of household and personal goods, not elsewhere classified",NAICS_2017_Code,339999,All Other Miscellaneous Manufacturing,C
 Census PROD_IND,5000860000,"Retail sales of household and personal goods, not elsewhere classified",NAICS_2017_Code,334511,"Search, Detection, Navigation, Guidance, Aeronautical, and Nautical System and Instrument Manufacturing",C
@@ -316,9 +488,17 @@ Census PROD_IND,5000860000,"Retail sales of household and personal goods, not el
 Census PROD_IND,5000860000,"Retail sales of household and personal goods, not elsewhere classified",NAICS_2017_Code,325320,Pesticide and Other Agricultural Chemical Manufacturing,C
 Census PROD_IND,5000860000,"Retail sales of household and personal goods, not elsewhere classified",NAICS_2017_Code,339999,All Other Miscellaneous Manufacturing,C
 Census PROD_IND,5000875000,"Retail sales of televisions, audio and video equipment",NAICS_2017_Code,334310,Audio and Video Equipment Manufacturing,C
+Census PROD_IND,5000875000,"Retail sales of televisions, audio and video equipment",NAICS_2017_Code,33422,Radio and Television Broadcasting and Wireless Communications Equipment Manufacturing,C
+Census PROD_IND,5000875000,"Retail sales of televisions, audio and video equipment",NAICS_2017_Code,33429,Other Communications Equipment Manufacturing,C
+Census PROD_IND,5000875000,"Retail sales of televisions, audio and video equipment",NAICS_2017_Code,335921,Fiber Optic Cable Manufacturing,C
 Census PROD_IND,5000900000,Retail sales of photographic equipment and supplies,NAICS_2017_Code,325992,"Photographic Film, Paper, Plate, and Chemical Manufacturing",C
+Census PROD_IND,5000900000,Retail sales of photographic equipment and supplies,NAICS_2017_Code,333316,Photographic and Photocopying Equipment Manufacturing,C
 Census PROD_IND,5000925000,Retail sales of books,NAICS_2017_Code,323111,Commercial Printing (except Screen and Books),C
+Census PROD_IND,5000925000,Retail sales of books,NAICS_2017_Code,511130,Book Publishers,C
 Census PROD_IND,5000950000,"Retail sales of magazines and newspapers, including issue format comic books",NAICS_2017_Code,323111,Commercial Printing (except Screen and Books),C
+Census PROD_IND,5000950000,"Retail sales of magazines and newspapers, including issue format comic books",NAICS_2017_Code,511110,Newspaper Publishers,C
+Census PROD_IND,5000950000,"Retail sales of magazines and newspapers, including issue format comic books",NAICS_2017_Code,511120,Periodical Publishers,C
+Census PROD_IND,5000975000,"Retail sales of other publications, including greeting cards and calendars",NAICS_2017_Code,511140,Directory and Mailing List Publishers,C
 Census PROD_IND,5001000000,"Retail sales of audio and video recordings, including purchased downloads",NAICS_2017_Code,334614,"Software and Other Prerecorded Compact Disc, Tape, and Record Reproducing",C
 Census PROD_IND,5001000000,"Retail sales of audio and video recordings, including purchased downloads",NAICS_2017_Code,5122,Sound Recording Industries,C
 Census PROD_IND,5001000000,"Retail sales of audio and video recordings, including purchased downloads",NAICS_2017_Code,5121,Motion Picture and Video Industries,C
@@ -330,15 +510,30 @@ Census PROD_IND,5001100000,"Retail sales of other sporting goods and equipment, 
 Census PROD_IND,5001100000,"Retail sales of other sporting goods and equipment, excluding sport vehicles",NAICS_2017_Code,316110,Leather and Hide Tanning and Finishing,C
 Census PROD_IND,5001125000,"Retail sales of toys, games, and hobby and craft supplies",NAICS_2017_Code,339930,"Doll, Toy, and Game Manufacturing",C
 Census PROD_IND,5001150000,"Retail sales of motorcycles, motor scooters, motor bikes, including parts and accessories ",NAICS_2017_Code,336991,"Motorcycle, Bicycle, and Parts Manufacturing",C
+Census PROD_IND,5001175000,Retail sales of boats and other sports vehicles,NAICS_2017_Code,336999,All Other Transportation Equipment Manufacturing,C
+Census PROD_IND,5001175000,Retail sales of boats and other sports vehicles,NAICS_2017_Code,336413,Other Aircraft Parts and Auxiliary Equipment Manufacturing,C
 Census PROD_IND,5001175000,Retail sales of boats and other sports vehicles,NAICS_2017_Code,336612,Boat Building,C
+Census PROD_IND,5001175000,Retail sales of boats and other sports vehicles,NAICS_2017_Code,33661,Ship and Boat Building,C
 Census PROD_IND,5001200000,"Retail sales of musical instruments, sheet music, and related items",NAICS_2017_Code,339992,Musical Instrument Manufacturing,C
+Census PROD_IND,5001225000,"Retail sales of pets, including fish",NAICS_2017_Code,11299,All Other Animal Production,C
 Census PROD_IND,5001250000,Retail sales of pet foods and supplies,NAICS_2017_Code,311111,Dog and Cat Food Manufacturing,C
 Census PROD_IND,5001275000,Retail sales of automobiles and light-duty trucks,NAICS_2017_Code,336111,Automobile Manufacturing,C
 Census PROD_IND,5001300000,"Retail sales of motor homes, travel trailers, and campers ",NAICS_2017_Code,336112,Light Truck and Utility Vehicle Manufacturing,C
+Census PROD_IND,5001300000,"Retail sales of motor homes, travel trailers, and campers ",NAICS_2017_Code,336213,Motor Home Manufacturing,C
+Census PROD_IND,5001300000,"Retail sales of motor homes, travel trailers, and campers ",NAICS_2017_Code,336214,Travel Trailer and Camper Manufacturing,C
+Census PROD_IND,5001300000,"Retail sales of motor homes, travel trailers, and campers ",NAICS_2017_Code,336212,Truck Trailer Manufacturing,C
+Census PROD_IND,5001325000,"Retail sales of luggage and leather goods, including briefcases",NAICS_2017_Code,316998,All Other Leather Good and Allied Product Manufacturing,C
 Census PROD_IND,5001350000,"Retail sales of medicines, vitamins, minerals, and supplements",NAICS_2017_Code,325411,Medicinal and Botanical Manufacturing,C
+Census PROD_IND,5001350000,"Retail sales of medicines, vitamins, minerals, and supplements",NAICS_2017_Code,325412,Pharmaceutical Preparation Manufacturing,C
+Census PROD_IND,5001350000,"Retail sales of medicines, vitamins, minerals, and supplements",NAICS_2017_Code,325414,Biological Product (except Diagnostic) Manufacturing,C
 Census PROD_IND,5001375000,Retail sales of home health care equipment and supplies,NAICS_2017_Code,339113,Surgical Appliance and Supplies Manufacturing,C
 Census PROD_IND,5001375000,Retail sales of home health care equipment and supplies,NAICS_2017_Code,339113,Surgical Appliance and Supplies Manufacturing,C
 Census PROD_IND,5001375000,Retail sales of home health care equipment and supplies,NAICS_2017_Code,339112,Surgical and Medical Instrument Manufacturing,C
+Census PROD_IND,5001375000,Retail sales of home health care equipment and supplies,NAICS_2017_Code,334510,Electromedical and Electrotherapeutic Apparatus Manufacturing,C
+Census PROD_IND,5001375000,Retail sales of home health care equipment and supplies,NAICS_2017_Code,325413,In-Vitro Diagnostic Substance Manufacturing,C
+Census PROD_IND,5001375000,Retail sales of home health care equipment and supplies,NAICS_2017_Code,339114,Dental Equipment and Supplies Manufacturing,C
+Census PROD_IND,5001375000,Retail sales of home health care equipment and supplies,NAICS_2017_Code,339116,Dental Laboratories,C
+Census PROD_IND,5001400000,Retail sales of glasses and contact lenses,NAICS_2017_Code,333314,Optical Instrument and Lens Manufacturing,C
 Census PROD_IND,5001400000,Retail sales of glasses and contact lenses,NAICS_2017_Code,339115,Ophthalmic Goods Manufacturing,C
 Census PROD_IND,5001425000,Retail sales of personal hygiene supplies,NAICS_2017_Code,325611,Soap and Other Detergent Manufacturing,C
 Census PROD_IND,5001425000,Retail sales of personal hygiene supplies,NAICS_2017_Code,322291,Sanitary Paper Product Manufacturing,C
@@ -346,24 +541,46 @@ Census PROD_IND,5001450000,Retail sales of cosmetics and fragrances,NAICS_2017_C
 Census PROD_IND,5001475000,"Retail sales of caskets, monuments, grave markers, and other funeral goods",NAICS_2017_Code,339995,Burial Casket Manufacturing,C
 Census PROD_IND,5001525000,Retail sales of office equipment and furniture (except computers),NAICS_2017_Code,333318,Other Commercial and Service Industry Machinery Manufacturing,C
 Census PROD_IND,5001525000,Retail sales of office equipment and furniture (except computers),NAICS_2017_Code,33721,Office Furniture (including Fixtures) Manufacturing,C
+Census PROD_IND,5001525000,Retail sales of office equipment and furniture (except computers),NAICS_2017_Code,337214,Office Furniture (except Wood) Manufacturing,C
 Census PROD_IND,5001550000,"Retail sales of computers and peripheral equipment, communications equipment, and related products",NAICS_2017_Code,3341,Computer and Peripheral Equipment Manufacturing,C
 Census PROD_IND,5001550000,"Retail sales of computers and peripheral equipment, communications equipment, and related products",NAICS_2017_Code,3342,Communications Equipment Manufacturing,C
+Census PROD_IND,5001550000,"Retail sales of computers and peripheral equipment, communications equipment, and related products",NAICS_2017_Code,334112,Computer Storage Device Manufacturing,C
+Census PROD_IND,5001550000,"Retail sales of computers and peripheral equipment, communications equipment, and related products",NAICS_2017_Code,334118,Computer Terminal and Other Computer Peripheral Equipment Manufacturing,C
+Census PROD_IND,5001550000,"Retail sales of computers and peripheral equipment, communications equipment, and related products",NAICS_2017_Code,334413,Semiconductor and Related Device Manufacturing,C
+Census PROD_IND,5001550000,"Retail sales of computers and peripheral equipment, communications equipment, and related products",NAICS_2017_Code,334418,Printed Circuit Assembly (Electronic Assembly) Manufacturing,C
 Census PROD_IND,5001575000,Retail sales of computer software,NAICS_2017_Code,5112,Software Publishers,C
 Census PROD_IND,5001625000,"Retail sales of new and used aircraft, engines, and parts and accessories",NAICS_2017_Code,336411,Aircraft Manufacturing,C
+Census PROD_IND,5001650000,"Retail sales of farm machinery, equipment, and parts",NAICS_2017_Code,333111,Farm Machinery and Equipment Manufacturing,C
 Census PROD_IND,5001675000,"Retail sales of power tools and equipment, including portable electric power tools, power air tools, stationary/bench top power tools, and accessories (blades, bits, etc.)",NAICS_2017_Code,333991,Power-Driven Handtool Manufacturing,C
+Census PROD_IND,5001700000,Retail sales of exercise/fitness equipment,NAICS_2017_Code,339920,Sporting and Athletic Goods Manufacturing,C
+Census PROD_IND,5001710000,Retail sales of safes and vaults,NAICS_2017_Code,332999,All Other Miscellaneous Fabricated Metal Product Manufacturing,C
 Census PROD_IND,5001725000,Retail sales of automotive fuels,NAICS_2017_Code,324110,Petroleum Refineries,C
+Census PROD_IND,5001750000,"Retail sales of household fuels, including oil, LP gas, wood, coal",NAICS_2017_Code,324121,Asphalt Paving Mixture and Block Manufacturing,C
+Census PROD_IND,5001750000,"Retail sales of household fuels, including oil, LP gas, wood, coal",NAICS_2017_Code,325120,Industrial Gas Manufacturing,C
+Census PROD_IND,5001750000,"Retail sales of household fuels, including oil, LP gas, wood, coal",NAICS_2017_Code,325110,Petrochemical Manufacturing,C
 Census PROD_IND,5001750000,"Retail sales of household fuels, including oil, LP gas, wood, coal",NAICS_2017_Code,21211,Coal Mining,C
 Census PROD_IND,5001750000,"Retail sales of household fuels, including oil, LP gas, wood, coal",NAICS_2017_Code,324199,All Other Petroleum and Coal Products Manufacturing,C
 Census PROD_IND,5001775000,"Retail sales of fabrics, yarns, and other sewing materials and supplies",NAICS_2017_Code,313110,"Fiber, Yarn, and Thread Mills",C
 Census PROD_IND,5001775000,"Retail sales of fabrics, yarns, and other sewing materials and supplies",NAICS_2017_Code,313210,Broadwoven Fabric Mills,C
 Census PROD_IND,5001775000,"Retail sales of fabrics, yarns, and other sewing materials and supplies",NAICS_2017_Code,339993,"Fastener, Button, Needle, and Pin Manufacturing",C
+Census PROD_IND,5001775000,"Retail sales of fabrics, yarns, and other sewing materials and supplies",NAICS_2017_Code,313310,Textile and Fabric Finishing Mills,C
 Census PROD_IND,5001800000,Retail sales of farm and agricultural supplies,NAICS_2017_Code,333111,Farm Machinery and Equipment Manufacturing,C
 Census PROD_IND,5001800000,Retail sales of farm and agricultural supplies,NAICS_2017_Code,3253,"Pesticide, Fertilizer, and Other Agricultural Chemical Manufacturing",C
+Census PROD_IND,5001825000,Retail sales of wallpaper and other flexible wallcoverings,NAICS_2017_Code,325510,Paint and Coating Manufacturing,C
 Census PROD_IND,5001850000,Retail sales of paint and sundries,NAICS_2017_Code,325510,Paint and Coating Manufacturing,C
 Census PROD_IND,5001875000,Retail sales of flooring and floor coverings,NAICS_2017_Code,31411,Carpet and Rug Mills,C
 Census PROD_IND,5001875000,Retail sales of flooring and floor coverings,NAICS_2017_Code,321918,Other Millwork (including Flooring),C
 Census PROD_IND,5001875000,Retail sales of flooring and floor coverings,NAICS_2017_Code,326199,All Other Plastics Product Manufacturing,C
 Census PROD_IND,5001875000,Retail sales of flooring and floor coverings,NAICS_2017_Code,327120,Clay Building Material and Refractories Manufacturing,C
+Census PROD_IND,5001900000,"Retail sales of plumbing, electrical, and HVAC supplies",NAICS_2017_Code,332996,Fabricated Pipe and Pipe Fitting Manufacturing,C
+Census PROD_IND,5001900000,"Retail sales of plumbing, electrical, and HVAC supplies",NAICS_2017_Code,333414,Heating Equipment (except Warm Air Furnaces) Manufacturing,C
+Census PROD_IND,5001900000,"Retail sales of plumbing, electrical, and HVAC supplies",NAICS_2017_Code,335311,"Power, Distribution, and Specialty Transformer Manufacturing",C
+Census PROD_IND,5001900000,"Retail sales of plumbing, electrical, and HVAC supplies",NAICS_2017_Code,335312,Motor and Generator Manufacturing,C
+Census PROD_IND,5001900000,"Retail sales of plumbing, electrical, and HVAC supplies",NAICS_2017_Code,335931,Current-Carrying Wiring Device Manufacturing,C
+Census PROD_IND,5001900000,"Retail sales of plumbing, electrical, and HVAC supplies",NAICS_2017_Code,332410,Power Boiler and Heat Exchanger Manufacturing,C
+Census PROD_IND,5001900000,"Retail sales of plumbing, electrical, and HVAC supplies",NAICS_2017_Code,333413,Industrial and Commercial Fan and Blower and Air Purification Equipment Manufacturing,C
+Census PROD_IND,5001900000,"Retail sales of plumbing, electrical, and HVAC supplies",NAICS_2017_Code,333912,Air and Gas Compressor Manufacturing,C
+Census PROD_IND,5001900000,"Retail sales of plumbing, electrical, and HVAC supplies",NAICS_2017_Code,334512,"Automatic Environmental Control Manufacturing for Residential, Commercial, and Appliance Use",C
 Census PROD_IND,5001900000,"Retail sales of plumbing, electrical, and HVAC supplies",NAICS_2017_Code,326122,Plastics Pipe and Pipe Fitting Manufacturing,C
 Census PROD_IND,5001900000,"Retail sales of plumbing, electrical, and HVAC supplies",NAICS_2017_Code,331420,"Copper Rolling, Drawing, Extruding, and Alloying",C
 Census PROD_IND,5001900000,"Retail sales of plumbing, electrical, and HVAC supplies",NAICS_2017_Code,332913,Plumbing Fixture Fitting and Trim Manufacturing,C
@@ -378,6 +595,22 @@ Census PROD_IND,5001925000,"Retail sales of hardware, nonpower hand tools, and o
 Census PROD_IND,5001925000,"Retail sales of hardware, nonpower hand tools, and other building materials and supplies",NAICS_2017_Code,332216,Saw Blade and Handtool Manufacturing,C
 Census PROD_IND,5001925000,"Retail sales of hardware, nonpower hand tools, and other building materials and supplies",NAICS_2017_Code,326140,Polystyrene Foam Product Manufacturing,C
 Census PROD_IND,5001925000,"Retail sales of hardware, nonpower hand tools, and other building materials and supplies",NAICS_2017_Code,321114,Wood Preservation,C
+Census PROD_IND,5001925000,"Retail sales of hardware, nonpower hand tools, and other building materials and supplies",NAICS_2017_Code,333999,All Other Miscellaneous General Purpose Machinery Manufacturing,C
+Census PROD_IND,5001925000,"Retail sales of hardware, nonpower hand tools, and other building materials and supplies",NAICS_2017_Code,33261,Spring and Wire Product Manufacturing,C
+Census PROD_IND,5001925000,"Retail sales of hardware, nonpower hand tools, and other building materials and supplies",NAICS_2017_Code,332912,Fluid Power Valve and Hose Fitting Manufacturing,C
+Census PROD_IND,5001925000,"Retail sales of hardware, nonpower hand tools, and other building materials and supplies",NAICS_2017_Code,332813,"Electroplating, Plating, Polishing, Anodizing, and Coloring",C
+Census PROD_IND,5001925000,"Retail sales of hardware, nonpower hand tools, and other building materials and supplies",NAICS_2017_Code,327320,Ready-Mix Concrete Manufacturing,C
+Census PROD_IND,5001925000,"Retail sales of hardware, nonpower hand tools, and other building materials and supplies",NAICS_2017_Code,327331,Concrete Block and Brick Manufacturing,C
+Census PROD_IND,5001925000,"Retail sales of hardware, nonpower hand tools, and other building materials and supplies",NAICS_2017_Code,327390,Other Concrete Product Manufacturing,C
+Census PROD_IND,5001925000,"Retail sales of hardware, nonpower hand tools, and other building materials and supplies",NAICS_2017_Code,327410,Lime Manufacturing,C
+Census PROD_IND,5001925000,"Retail sales of hardware, nonpower hand tools, and other building materials and supplies",NAICS_2017_Code,327991,Cut Stone and Stone Product Manufacturing,C
+Census PROD_IND,5001925000,"Retail sales of hardware, nonpower hand tools, and other building materials and supplies",NAICS_2017_Code,327992,Ground or Treated Mineral and Earth Manufacturing,C
+Census PROD_IND,5001925000,"Retail sales of hardware, nonpower hand tools, and other building materials and supplies",NAICS_2017_Code,21231,Stone Mining and Quarrying,C
+Census PROD_IND,5001925000,"Retail sales of hardware, nonpower hand tools, and other building materials and supplies",NAICS_2017_Code,327993,Mineral Wool Manufacturing,C
+Census PROD_IND,5001925000,"Retail sales of hardware, nonpower hand tools, and other building materials and supplies",NAICS_2017_Code,333514,"Special Die and Tool, Die Set, Jig, and Fixture Manufacturing",C
+Census PROD_IND,5001925000,"Retail sales of hardware, nonpower hand tools, and other building materials and supplies",NAICS_2017_Code,333515,Cutting Tool and Machine Tool Accessory Manufacturing,C
+Census PROD_IND,5001925000,"Retail sales of office and school supplies, packaging and packing materials and supplies, and other general industry and miscellaneous materials and supplies",NAICS_2017_Code,21232,"Sand, Gravel, Clay, and Ceramic and Refractory Minerals Mining and Quarrying",C
+Census PROD_IND,5001925000,"Retail sales of office and school supplies, packaging and packing materials and supplies, and other general industry and miscellaneous materials and supplies",NAICS_2017_Code,113,Forestry and Logging,C
 Census PROD_IND,5001935000,"Retail sales of office and school supplies, packaging and packing materials and supplies, and other general industry and miscellaneous materials and supplies",NAICS_2017_Code,3222,Converted Paper Product Manufacturing,C
 Census PROD_IND,5001935000,"Retail sales of office and school supplies, packaging and packing materials and supplies, and other general industry and miscellaneous materials and supplies",NAICS_2017_Code,3261,Plastics Product Manufacturing,C
 Census PROD_IND,5001935000,"Retail sales of office and school supplies, packaging and packing materials and supplies, and other general industry and miscellaneous materials and supplies",NAICS_2017_Code,322220,Paper Bag and Coated and Treated Paper Manufacturing,C
@@ -395,5 +628,58 @@ Census PROD_IND,5001950000,Retail sales of automotive parts and supplies,NAICS_2
 Census PROD_IND,5001950000,Retail sales of automotive parts and supplies,NAICS_2017_Code,336310,Motor Vehicle Gasoline Engine and Engine Parts Manufacturing,C
 Census PROD_IND,5001950000,Retail sales of automotive parts and supplies,NAICS_2017_Code,325998,All Other Miscellaneous Chemical Product and Preparation Manufacturing,C
 Census PROD_IND,5001950000,Retail sales of automotive parts and supplies,NAICS_2017_Code,S00402,Used and secondhand goods,C
+Census PROD_IND,5001950000,Retail sales of automotive parts and supplies,NAICS_2017_Code,326291,Rubber Product Manufacturing for Mechanical Use,C
+Census PROD_IND,5001950000,Retail sales of automotive parts and supplies,NAICS_2017_Code,336211,Motor Vehicle Body Manufacturing,C
+Census PROD_IND,5001950000,Retail sales of automotive parts and supplies,NAICS_2017_Code,336320,Motor Vehicle Electrical and Electronic Equipment Manufacturing,C
+Census PROD_IND,5001950000,Retail sales of automotive parts and supplies,NAICS_2017_Code,336350,Motor Vehicle Transmission and Power Train Parts Manufacturing,C
+Census PROD_IND,5001950000,Retail sales of automotive parts and supplies,NAICS_2017_Code,336390,Other Motor Vehicle Parts Manufacturing,C
+Census PROD_IND,5001950000,Retail sales of automotive parts and supplies,NAICS_2017_Code,336330,Motor Vehicle Steering and Suspension Components (except Spring) Manufacturing,C
+Census PROD_IND,5001950000,Retail sales of automotive parts and supplies,NAICS_2017_Code,336360,Motor Vehicle Seating and Interior Trim Manufacturing,C
+Census PROD_IND,5001950000,Retail sales of automotive parts and supplies,NAICS_2017_Code,336370,Motor Vehicle Metal Stamping,C
 Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,326199,All Other Plastics Product Manufacturing,C
 Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,339999,All Other Miscellaneous Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,321920,Wood Container and Pallet Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,325180,Other Basic Inorganic Chemical Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,326220,Rubber and Plastics Hoses and Belting Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,32791,Abrasive Product Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,331491,"Nonferrous Metal (except Copper and Aluminum) Rolling, Drawing, and Extruding",C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,331511,Iron Foundries,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,33152,Nonferrous Metal Foundries,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,3321,Forging and Stamping,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,332119,"Metal Crown, Closure, and Other Metal Stamping (except Automotive)",C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,332111,Iron and Steel Forging,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,332312,Fabricated Structural Metal Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,332321,Metal Window and Door Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,332439,Other Metal Container Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,332510,Hardware Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,332993,Ammunition (except Small Arms) Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,333241,Food Product Machinery Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,333517,Machine Tool Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,333618,Other Engine Equipment Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,334419,Other Electronic Component Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,334514,Totalizing Fluid Meter and Counting Device Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,335313,Switchgear and Switchboard Apparatus Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,335999,All Other Miscellaneous Electrical Equipment and Component Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,212230,"Copper, Nickel, Lead, and Zinc Mining",C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,21222,Gold Ore and Silver Ore Mining,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,325130,Synthetic Dye and Pigment Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,325212,Synthetic Rubber Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,331318,"Other Aluminum Rolling, Drawing, and Extruding",C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,332420,Metal Tank (Heavy Gauge) Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,33299,All Other Fabricated Metal Product Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,333242,Semiconductor Machinery Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,333511,Industrial Mold Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,333611,Turbine and Turbine Generator Set Units Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,333613,Mechanical Power Transmission Equipment Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,333993,Packaging Machinery Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,333994,Industrial Process Furnace and Oven Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,334515,Instrument Manufacturing for Measuring and Testing Electricity and Electrical Signals,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,334516,Analytical Laboratory Instrument Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,334517,Irradiation Apparatus Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,335314,Relay and Industrial Control Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,335991,Carbon and Graphite Product Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,336414,Guided Missile and Space Vehicle Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,336415,Guided Missile and Space Vehicle Propulsion Unit and Propulsion Unit Parts Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,33651,Railroad Rolling Stock Manufacturing,C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,336992,"Military Armored Vehicle, Tank, and Tank Component Manufacturing",C
+Census PROD_IND,5002000000,"Retail sales of other goods, not elsewhere classified",NAICS_2017_Code,S00401,Scrap,C
