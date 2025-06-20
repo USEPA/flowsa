@@ -1,6 +1,6 @@
 ## FBS method for Product x Industry production from Census focused only on
-## wholesale or retail products. These products are aligned with the commodity(-ies)
-## that are being wholesaled/retailed and assigned as the SectorConsumedBy
+## wholesale or retail products. These products are mapped to the commodity(-ies)
+## that are being wholesaled/retailed and assigned as the Flowable.
 
 !include:BEA_detail_target.yaml
 # industry_spec:
@@ -40,14 +40,10 @@ source_names:
         clean_fba: !script_function:Census_EC keep_wholesale_retail
         # Keep only NAPCS that start with 4 (Wholesale) or 5 (Retail)
         clean_fba_after_attribution: !script_function:Census_EC clean_after_attr_m2
-        # Moves the FlowName back to the SPB (with no mappings/adjustments)
-        # And also stores the original NAPCS code back as the flowname
-        # attribution_method: equal
+        # Moves the FlowName (Census NAICS) back to the SPB (with no mappings/adjustments)
+        # And updates the Flowable as the now mapped-to-sector Census Product Code
         attribution_method: proportional
         attribution_source:
-          # BEA_Detail_Supply:
-          #   <<: *bea
-          #   year: 2017
           BEA_Detail_GrossOutput_IO:
             year: 2017
             geoscale: national
