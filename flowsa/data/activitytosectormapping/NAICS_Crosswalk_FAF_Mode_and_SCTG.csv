@@ -127,6 +127,7 @@ FAF_SCTG,Printed Products,,NAICS_2017_Code,51112,,511120
 FAF_SCTG,Printed Products,,NAICS_2017_Code,51113,,511130
 FAF_SCTG,Printed Products,,NAICS_2017_Code,51114,,5111A0
 FAF_SCTG,Printed Products,,NAICS_2017_Code,51119,,5111A0
+FAF_SCTG,Printed Products,,NAICS_2017_Code,S00402,,S00402
 FAF_SCTG,"Textiles, Leather, and Articles of Textiles or Leather",,NAICS_2017_Code,3131,,313100
 FAF_SCTG,"Textiles, Leather, and Articles of Textiles or Leather",,NAICS_2017_Code,3132,,313200
 FAF_SCTG,"Textiles, Leather, and Articles of Textiles or Leather",,NAICS_2017_Code,3133,,313300
@@ -135,6 +136,7 @@ FAF_SCTG,"Textiles, Leather, and Articles of Textiles or Leather",,NAICS_2017_Co
 FAF_SCTG,"Textiles, Leather, and Articles of Textiles or Leather",,NAICS_2017_Code,3149,,314900
 FAF_SCTG,"Textiles, Leather, and Articles of Textiles or Leather",,NAICS_2017_Code,315,,315000
 FAF_SCTG,"Textiles, Leather, and Articles of Textiles or Leather",,NAICS_2017_Code,316,,316000
+FAF_SCTG,"Textiles, Leather, and Articles of Textiles or Leather",,NAICS_2017_Code,S00402,,S00402
 FAF_SCTG,Non-Metallic Mineral Products,,NAICS_2017_Code,3271,,327100
 FAF_SCTG,Non-Metallic Mineral Products,,NAICS_2017_Code,3272,,327200
 FAF_SCTG,Non-Metallic Mineral Products,,NAICS_2017_Code,32731,,327310
@@ -222,6 +224,7 @@ FAF_SCTG,Machinery,,NAICS_2017_Code,335228,,335228
 FAF_SCTG,Machinery,,NAICS_2017_Code,33631,,336310
 FAF_SCTG,Machinery,,NAICS_2017_Code,33635,,336350
 FAF_SCTG,Machinery,,NAICS_2017_Code,336412,,336412
+FAF_SCTG,Machinery,,NAICS_2017_Code,S00402,,S00402
 FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,334111,,334111
 FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,334112,,334112
 FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,334118,,334118
@@ -247,6 +250,7 @@ FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office E
 FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,335991,,335991
 FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,335999,,335999
 FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,33632,,336320
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,S00402,,S00402
 FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,336111,,336111
 FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,336112,,336112
 FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,33612,,336120
@@ -261,6 +265,7 @@ FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,33633,,3
 FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,33634,,3363A0
 FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,336991,,336991
 FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,336992,,336992
+FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,S00402,,S00402
 FAF_SCTG,"Transportation Equipment, not elsewhere classified",,NAICS_2017_Code,336411,,336411
 FAF_SCTG,"Transportation Equipment, not elsewhere classified",,NAICS_2017_Code,336413,,336413
 FAF_SCTG,"Transportation Equipment, not elsewhere classified",,NAICS_2017_Code,336414,,336414
@@ -270,6 +275,7 @@ FAF_SCTG,"Transportation Equipment, not elsewhere classified",,NAICS_2017_Code,3
 FAF_SCTG,"Transportation Equipment, not elsewhere classified",,NAICS_2017_Code,336611,,336611
 FAF_SCTG,"Transportation Equipment, not elsewhere classified",,NAICS_2017_Code,336612,,336612
 FAF_SCTG,"Transportation Equipment, not elsewhere classified",,NAICS_2017_Code,336999,,336999
+FAF_SCTG,"Transportation Equipment, not elsewhere classified",,NAICS_2017_Code,S00402,,S00402
 FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,33451,,334510
 FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,334511,,334511
 FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,334512,,334512
@@ -286,6 +292,7 @@ FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,339113,,339113
 FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,339114,,339114
 FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,339115,,339115
 FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,339116,,339116
+FAF_SCTG,Precision Instruments and Apparatus,,NAICS_2017_Code,S00402,,S00402
 FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings, and Illuminated Signs",,NAICS_2017_Code,33511,,335110
 FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings, and Illuminated Signs",,NAICS_2017_Code,33512,,335120
 FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings, and Illuminated Signs",,NAICS_2017_Code,33711,,337110
@@ -300,10 +307,12 @@ FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings,
 FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings, and Illuminated Signs",,NAICS_2017_Code,337214,,33721A
 FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings, and Illuminated Signs",,NAICS_2017_Code,3379,,337900
 FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings, and Illuminated Signs",,NAICS_2017_Code,33995,,339950
+FAF_SCTG,"Furniture, Mattresses and Mattress Supports, Lamps, Lighting Fittings, and Illuminated Signs",,NAICS_2017_Code,S00402,,S00402
 FAF_SCTG,Miscellaneous Manufactured Products,,NAICS_2017_Code,336414,,336414
 FAF_SCTG,Miscellaneous Manufactured Products,,NAICS_2017_Code,33991,,339910
 FAF_SCTG,Miscellaneous Manufactured Products,,NAICS_2017_Code,33992,,339920
 FAF_SCTG,Miscellaneous Manufactured Products,,NAICS_2017_Code,33993,,339930
 FAF_SCTG,Miscellaneous Manufactured Products,,NAICS_2017_Code,33999,,339990
 FAF_SCTG,Waste and Scrap (excludes of agriculture or food),,NAICS_2017_Code,562,,562000
+FAF_SCTG,Waste and Scrap (excludes of agriculture or food),,NAICS_2017_Code,S00401,,S00401
 FAF_SCTG,Mixed Freight,,NAICS_2017_Code,33994,,339940
