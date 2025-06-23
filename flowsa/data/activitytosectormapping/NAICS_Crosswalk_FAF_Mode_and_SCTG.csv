@@ -43,6 +43,7 @@ FAF_SCTG,"Milled Grain Products and Preparations, and Bakery Products",,NAICS_20
 FAF_SCTG,"Milled Grain Products and Preparations, and Bakery Products",,NAICS_2017_Code,31181,,311810
 FAF_SCTG,"Milled Grain Products and Preparations, and Bakery Products",,NAICS_2017_Code,31182,,3118A0
 FAF_SCTG,"Milled Grain Products and Preparations, and Bakery Products",,NAICS_2017_Code,31183,,3118A0
+FAF_SCTG,"Other Prepared Foodstuffs, Fats and Oils",,NAICS_2017_Code,311224,,311224
 FAF_SCTG,"Other Prepared Foodstuffs, Fats and Oils",,NAICS_2017_Code,311225,,311225
 FAF_SCTG,"Other Prepared Foodstuffs, Fats and Oils",,NAICS_2017_Code,3113,,311300
 FAF_SCTG,"Other Prepared Foodstuffs, Fats and Oils",,NAICS_2017_Code,31141,,311410
@@ -122,6 +123,10 @@ FAF_SCTG,Paper or Paperboard Articles,,NAICS_2017_Code,32222,,322220
 FAF_SCTG,Paper or Paperboard Articles,,NAICS_2017_Code,32223,,322230
 FAF_SCTG,Paper or Paperboard Articles,,NAICS_2017_Code,322291,,322291
 FAF_SCTG,Paper or Paperboard Articles,,NAICS_2017_Code,322299,,322299
+FAF_SCTG,Printed Products,,NAICS_2017_Code,323111,,323110
+FAF_SCTG,Printed Products,,NAICS_2017_Code,323113,,323110
+FAF_SCTG,Printed Products,,NAICS_2017_Code,323117,,323110
+FAF_SCTG,Printed Products,,NAICS_2017_Code,323120,,323120
 FAF_SCTG,Printed Products,,NAICS_2017_Code,51111,,511110
 FAF_SCTG,Printed Products,,NAICS_2017_Code,51112,,511120
 FAF_SCTG,Printed Products,,NAICS_2017_Code,51113,,511130
@@ -149,6 +154,7 @@ FAF_SCTG,Non-Metallic Mineral Products,,NAICS_2017_Code,327991,,327991
 FAF_SCTG,Non-Metallic Mineral Products,,NAICS_2017_Code,327992,,327992
 FAF_SCTG,Non-Metallic Mineral Products,,NAICS_2017_Code,327993,,327993
 FAF_SCTG,Non-Metallic Mineral Products,,NAICS_2017_Code,327999,,327999
+FAF_SCTG,Non-Metallic Mineral Products,,NAICS_2017_Code,332119,,332119
 FAF_SCTG,Base Metal in Primary or Semi-Finished Forms and in Finished Basic Shapes,,NAICS_2017_Code,33111,,331110
 FAF_SCTG,Base Metal in Primary or Semi-Finished Forms and in Finished Basic Shapes,,NAICS_2017_Code,3312,,331200
 FAF_SCTG,Base Metal in Primary or Semi-Finished Forms and in Finished Basic Shapes,,NAICS_2017_Code,331313,,331313
@@ -184,14 +190,16 @@ FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,332996,,332996
 FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,332992,,33299A
 FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,332993,,33299A
 FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,332994,,33299A
+FAF_SCTG,Articles of Base Metal,,NAICS_2017_Code,332999,,332999
 FAF_SCTG,Machinery,,NAICS_2017_Code,333111,,333111
 FAF_SCTG,Machinery,,NAICS_2017_Code,333112,,333112
 FAF_SCTG,Machinery,,NAICS_2017_Code,333120,,333120
-FAF_SCTG,Machinery,,NAICS_2017_Code,333130,,333130
-FAF_SCTG,Machinery,,NAICS_2017_Code,333291,,33329A
-FAF_SCTG,Machinery,,NAICS_2017_Code,333293,,33329A
-FAF_SCTG,Machinery,,NAICS_2017_Code,333294,,33329A
-FAF_SCTG,Machinery,,NAICS_2017_Code,333299,,33329A
+FAF_SCTG,Machinery,,NAICS_2017_Code,33313,,333130
+FAF_SCTG,Machinery,,NAICS_2017_Code,333242,,333242
+FAF_SCTG,Machinery,,NAICS_2017_Code,333241,,33329A
+FAF_SCTG,Machinery,,NAICS_2017_Code,333243,,33329A
+FAF_SCTG,Machinery,,NAICS_2017_Code,333244,,33329A
+FAF_SCTG,Machinery,,NAICS_2017_Code,333249,,33329A
 FAF_SCTG,Machinery,,NAICS_2017_Code,333314,,333314
 FAF_SCTG,Machinery,,NAICS_2017_Code,333316,,333316
 FAF_SCTG,Machinery,,NAICS_2017_Code,333318,,333318
@@ -218,9 +226,6 @@ FAF_SCTG,Machinery,,NAICS_2017_Code,333997,,33399A
 FAF_SCTG,Machinery,,NAICS_2017_Code,333999,,33399A
 FAF_SCTG,Machinery,,NAICS_2017_Code,333995,,33399B
 FAF_SCTG,Machinery,,NAICS_2017_Code,333996,,33399B
-FAF_SCTG,Machinery,,NAICS_2017_Code,335222,,335222
-FAF_SCTG,Machinery,,NAICS_2017_Code,335224,,335224
-FAF_SCTG,Machinery,,NAICS_2017_Code,335228,,335228
 FAF_SCTG,Machinery,,NAICS_2017_Code,33631,,336310
 FAF_SCTG,Machinery,,NAICS_2017_Code,33635,,336350
 FAF_SCTG,Machinery,,NAICS_2017_Code,336412,,336412
@@ -239,7 +244,7 @@ FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office E
 FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,334417,,33441A
 FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,334419,,33441A
 FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,33521,,335210
-FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,335221,,335221
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,33522,,335220
 FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,335311,,335311
 FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,335312,,335312
 FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,335313,,335313
@@ -250,6 +255,9 @@ FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office E
 FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,335991,,335991
 FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,335999,,335999
 FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,33632,,336320
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,51121,,511200
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,5121,,512100
+FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,5122,,512200
 FAF_SCTG,"Electronic and Other Electrical Equipment and Components, and Office Equipment",,NAICS_2017_Code,S00402,,S00402
 FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,336111,,336111
 FAF_SCTG,Motorized and Other Vehicles (includes parts),,NAICS_2017_Code,336112,,336112
