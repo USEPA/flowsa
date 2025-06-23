@@ -92,6 +92,7 @@ Census PROD_IND,4001250000,Wholesale sales of motorcycles and other sports vehic
 Census PROD_IND,4001250000,Wholesale sales of motorcycles and other sports vehicles,NAICS_2017_Code,336999,All Other Transportation Equipment Manufacturing,C
 Census PROD_IND,4001275000,Wholesale sales of musical instruments,NAICS_2017_Code,339992,Musical Instrument Manufacturing,C
 Census PROD_IND,4001300000,"Wholesale sales of household pets, pet foods, and pet supplies",NAICS_2017_Code,311111,Dog and Cat Food Manufacturing,C
+Census PROD_IND,4001300000,"Wholesale sales of household pets, pet foods, and pet supplies",NAICS_2017_Code,311119,Other Animal Food Manufacturing,C
 Census PROD_IND,4001300000,"Wholesale sales of household pets, pet foods, and pet supplies",NAICS_2017_Code,11299,All Other Animal Production,C
 Census PROD_IND,4001325000,Wholesale sales of new and used automobiles ,NAICS_2017_Code,336111,Automobile Manufacturing,C
 Census PROD_IND,4001325000,Wholesale sales of new and used automobiles ,NAICS_2017_Code,S00402,Used and secondhand goods,C
@@ -517,6 +518,7 @@ Census PROD_IND,5001175000,Retail sales of boats and other sports vehicles,NAICS
 Census PROD_IND,5001200000,"Retail sales of musical instruments, sheet music, and related items",NAICS_2017_Code,339992,Musical Instrument Manufacturing,C
 Census PROD_IND,5001225000,"Retail sales of pets, including fish",NAICS_2017_Code,11299,All Other Animal Production,C
 Census PROD_IND,5001250000,Retail sales of pet foods and supplies,NAICS_2017_Code,311111,Dog and Cat Food Manufacturing,C
+Census PROD_IND,5001250000,Retail sales of pet foods and supplies,NAICS_2017_Code,311119,Other Animal Food Manufacturing,C
 Census PROD_IND,5001275000,Retail sales of automobiles and light-duty trucks,NAICS_2017_Code,336111,Automobile Manufacturing,C
 Census PROD_IND,5001300000,"Retail sales of motor homes, travel trailers, and campers ",NAICS_2017_Code,336112,Light Truck and Utility Vehicle Manufacturing,C
 Census PROD_IND,5001300000,"Retail sales of motor homes, travel trailers, and campers ",NAICS_2017_Code,336213,Motor Home Manufacturing,C
