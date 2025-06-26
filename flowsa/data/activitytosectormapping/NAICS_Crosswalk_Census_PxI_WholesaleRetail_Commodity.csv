@@ -11,8 +11,8 @@ Census PROD_IND,4000100000,Wholesale sales of confectionery and snack foods,NAIC
 Census PROD_IND,4000125000,"Wholesale sales of cookies, bread, and baked goods",NAICS_2017_Code,31181,Bread and Bakery Product Manufacturing,C
 Census PROD_IND,4000125000,"Wholesale sales of cookies, bread, and baked goods",NAICS_2017_Code,31182,"Cookie, Cracker, and Pasta Manufacturing",C
 Census PROD_IND,4000150000,"Wholesale sales of fish and seafood, except canned and frozen fish and seafood",NAICS_2017_Code,1141,Fishing,C
-Census PROD_IND,4000150001,"Wholesale sales of fish and seafood, except canned and frozen fish and seafood",NAICS_2017_Code,3117,Seafood Product Preparation and Packaging,C
-Census PROD_IND,4000150002,"Wholesale sales of fish and seafood, except canned and frozen fish and seafood",NAICS_2017_Code,1125,Aquaculture,C
+Census PROD_IND,4000150000,"Wholesale sales of fish and seafood, except canned and frozen fish and seafood",NAICS_2017_Code,3117,Seafood Product Preparation and Packaging,C
+Census PROD_IND,4000150000,"Wholesale sales of fish and seafood, except canned and frozen fish and seafood",NAICS_2017_Code,1125,Aquaculture,C
 Census PROD_IND,4000175000,"Wholesale sales of fresh meat and meat products, except canned and frozen",NAICS_2017_Code,1121,Cattle Ranching and Farming,C
 Census PROD_IND,4000175000,"Wholesale sales of fresh meat and meat products, except canned and frozen",NAICS_2017_Code,1122,Hog and Pig Farming,C
 Census PROD_IND,4000175000,"Wholesale sales of fresh meat and meat products, except canned and frozen",NAICS_2017_Code,1124,Sheep and Goat Farming,C
@@ -20,7 +20,7 @@ Census PROD_IND,4000175000,"Wholesale sales of fresh meat and meat products, exc
 Census PROD_IND,4000175000,"Wholesale sales of fresh meat and meat products, except canned and frozen",NAICS_2017_Code,311612,Meat Processed from Carcasses,C
 Census PROD_IND,4000175000,"Wholesale sales of fresh meat and meat products, except canned and frozen",NAICS_2017_Code,311613,Rendering and Meat Byproduct Processing,C
 Census PROD_IND,4000200000,Wholesale sales of fresh fruits and vegetables,NAICS_2017_Code,1112,Vegetable and Melon Farming,C
-Census PROD_IND,4000200001,Wholesale sales of fresh fruits and vegetables,NAICS_2017_Code,1113,Fruit and Tree Nut Farming,C
+Census PROD_IND,4000200000,Wholesale sales of fresh fruits and vegetables,NAICS_2017_Code,1113,Fruit and Tree Nut Farming,C
 Census PROD_IND,4000225000,Wholesale sales of baking ingredients,NAICS_2017_Code,31121,Flour Milling and Malt Manufacturing,C
 Census PROD_IND,4000225000,Wholesale sales of baking ingredients,NAICS_2017_Code,31122,Starch and Vegetable Fats and Oils Manufacturing,C
 Census PROD_IND,4000230000,"Wholesale sales of soybean, cottonseed, linseed, peanut, sunflower seed, and all other oilseed cake and meal",NAICS_2017_Code,1119,Other Crop Farming,C
@@ -36,7 +36,7 @@ Census PROD_IND,4000275000,Wholesale sales of grocery specialties,NAICS_2017_Cod
 Census PROD_IND,4000300000,"Wholesale sales of coffee, tea, and powdered drink mixes",NAICS_2017_Code,31192,Coffee and Tea Manufacturing,C
 Census PROD_IND,4000325000,"Wholesale sales of food and beverage basic materials, including flavoring extracts, fruit peel, sausage casings, hop extract, malt, and yeast",NAICS_2017_Code,31193,Flavoring Syrup and Concentrate Manufacturing,C
 Census PROD_IND,4000350000,"Wholesale sales of soft drinks, bottled water, juices, and nonalcoholic beverages",NAICS_2017_Code,312111,Soft Drink Manufacturing,C
-Census PROD_IND,4000350001,"Wholesale sales of soft drinks, bottled water, juices, and nonalcoholic beverages",NAICS_2017_Code,312112,Bottled Water Manufacturing,C
+Census PROD_IND,4000350000,"Wholesale sales of soft drinks, bottled water, juices, and nonalcoholic beverages",NAICS_2017_Code,312112,Bottled Water Manufacturing,C
 Census PROD_IND,4000375000,Wholesale sales of beer and ale,NAICS_2017_Code,31212,Breweries,C
 Census PROD_IND,4000400000,"Wholesale sales of wine and distilled liquor, including premixed alcoholic drinks",NAICS_2017_Code,31213,Wineries,C
 Census PROD_IND,4000400000,"Wholesale sales of wine and distilled liquor, including premixed alcoholic drinks",NAICS_2017_Code,31214,Distilleries,C
@@ -409,6 +409,8 @@ Census PROD_IND,5000050000,Retail sales of fresh fish and seafood,NAICS_2017_Cod
 Census PROD_IND,5000050000,Retail sales of fresh fish and seafood,NAICS_2017_Code,1125,Aquaculture,C
 Census PROD_IND,5000075000,Retail sales of fresh fruit and vegetables,NAICS_2017_Code,1112,Vegetable and Melon Farming,C
 Census PROD_IND,5000075000,Retail sales of fresh fruit and vegetables,NAICS_2017_Code,1113,Fruit and Tree Nut Farming,C
+Census PROD_IND,5000075000,Retail sales of fresh fruit and vegetables,NAICS_2017_Code,11113,Dry Pea and Bean Farming,C
+Census PROD_IND,5000075000,Retail sales of fresh fruit and vegetables,NAICS_2017_Code,1119,Other Crop Farming,C
 Census PROD_IND,5000100000,Retail sales of eggs and dairy (except ice cream),NAICS_2017_Code,11212,Dairy Cattle and Milk Production,C
 Census PROD_IND,5000100000,Retail sales of eggs and dairy (except ice cream),NAICS_2017_Code,311511,Fluid Milk Manufacturing,C
 Census PROD_IND,5000100000,Retail sales of eggs and dairy (except ice cream),NAICS_2017_Code,311512,Creamery Butter Manufacturing,C
@@ -517,8 +519,8 @@ Census PROD_IND,5001175000,Retail sales of boats and other sports vehicles,NAICS
 Census PROD_IND,5001175000,Retail sales of boats and other sports vehicles,NAICS_2017_Code,33661,Ship and Boat Building,C
 Census PROD_IND,5001200000,"Retail sales of musical instruments, sheet music, and related items",NAICS_2017_Code,339992,Musical Instrument Manufacturing,C
 Census PROD_IND,5001225000,"Retail sales of pets, including fish",NAICS_2017_Code,11299,All Other Animal Production,C
-Census PROD_IND,5001250000,Retail sales of pet foods and supplies,NAICS_2017_Code,311111,Dog and Cat Food Manufacturing,C
 Census PROD_IND,5001250000,Retail sales of pet foods and supplies,NAICS_2017_Code,311119,Other Animal Food Manufacturing,C
+Census PROD_IND,5001250000,Retail sales of pet foods and supplies,NAICS_2017_Code,311111,Dog and Cat Food Manufacturing,C
 Census PROD_IND,5001275000,Retail sales of automobiles and light-duty trucks,NAICS_2017_Code,336111,Automobile Manufacturing,C
 Census PROD_IND,5001300000,"Retail sales of motor homes, travel trailers, and campers ",NAICS_2017_Code,336112,Light Truck and Utility Vehicle Manufacturing,C
 Census PROD_IND,5001300000,"Retail sales of motor homes, travel trailers, and campers ",NAICS_2017_Code,336213,Motor Home Manufacturing,C
