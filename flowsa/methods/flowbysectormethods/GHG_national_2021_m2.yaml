@@ -10,23 +10,6 @@ mecs_year: &mecs_year 2018
 coa_year: &coa_year 2022
 usgs_year: &usgs_year 2020 # FBA not available after 2020
 
-sources_to_cache:
-  Detail_Use_2021:
-    !include:Detail_Use_SUT.yaml
-    year: *ghgi_year
-    source_names:
-      BEA_Summary_Use_SUT:
-        !include:Detail_Use_SUT.yaml:source_names:BEA_Summary_Use_SUT
-        year: *ghgi_year
-
-  Detail_Supply_2021:
-    !include:Detail_Supply.yaml
-    year: *ghgi_year
-    source_names:
-      BEA_Summary_Supply:
-        !include:Detail_Supply.yaml:source_names:BEA_Summary_Supply
-        year: *ghgi_year
-
 source_names:
   GHG_national_2021_m1: # National Summary model
     !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1
@@ -34,105 +17,12 @@ source_names:
     activity_sets: # Update MECS year for some activity sets
       !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets
 
-      liming:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:liming
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:liming:attribution_source:Detail_Use_YEAR
-
-      urea:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:urea
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:urea:attribution_source:Detail_Use_YEAR
-
-      urea_fertilizer:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:urea_fertilizer
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:urea_fertilizer:attribution_source:Detail_Use_YEAR
-
-      carbonate_use:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:carbonate_use
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:carbonate_use:attribution_source:Detail_Use_YEAR
-
-      nitrous_oxide_use:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:nitrous_oxide_use
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:nitrous_oxide_use:attribution_source:Detail_Use_YEAR
-
-      fertilizer_use:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:fertilizer_use
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:fertilizer_use:attribution_source:Detail_Use_YEAR
-
-      petroleum_fuels:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:petroleum_fuels
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:petroleum_fuels:attribution_source:Detail_Use_YEAR
-
-      petroleum_fuels_diesel:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:petroleum_fuels_diesel
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:petroleum_fuels_diesel:attribution_source:Detail_Use_YEAR
-
-      petroleum_fuels_gasoline:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:petroleum_fuels_gasoline
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:petroleum_fuels_gasoline:attribution_source:Detail_Use_YEAR
-
-      construction_and_mining:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:construction_and_mining
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:construction_and_mining:attribution_source:Detail_Use_YEAR
-
-      farm_non_road:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:farm_non_road
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:farm_non_road:attribution_source:Detail_Use_YEAR
-
-      other_non_road:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:other_non_road
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:other_non_road:attribution_source:Detail_Use_YEAR
-
-      alt_fuel_on_road:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:alt_fuel_on_road
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:alt_fuel_on_road:attribution_source:Detail_Use_YEAR
-
-      non_manufacturing_coal:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:non_manufacturing_coal
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:non_manufacturing_coal:attribution_source:Detail_Use_YEAR
-
-      non_manufacturing_natural_gas:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:non_manufacturing_natural_gas
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:non_manufacturing_natural_gas:attribution_source:Detail_Use_YEAR
-
       coal_manufacturing_co2: # Industrial Coal for Manufacturing
         !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:coal_manufacturing_co2
         attribution_source:
           EIA_MECS_Energy:
             !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:coal_manufacturing_co2:attribution_source:EIA_MECS_Energy
             year: *mecs_year
-            attribution_source:
-              Detail_Use_2021:
-                !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:coal_manufacturing_co2:attribution_source:EIA_MECS_Energy:attribution_source:Detail_Use_YEAR
 
       natural_gas_manufacturing: # Industrial Natural Gas for manufacturing
         !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:natural_gas_manufacturing
@@ -140,39 +30,6 @@ source_names:
           EIA_MECS_Energy:
             !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:natural_gas_manufacturing:attribution_source:EIA_MECS_Energy
             year: *mecs_year
-            attribution_source:
-              Detail_Use_2021:
-                !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:natural_gas_manufacturing:attribution_source:EIA_MECS_Energy:attribution_source:Detail_Use_YEAR
-
-      petroleum:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:petroleum
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:petroleum:attribution_source:Detail_Use_YEAR
-
-      electric_power:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:electric_power
-        attribution_source:
-          Detail_Supply_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:electric_power:attribution_source:Detail_Supply_YEAR
-
-      fuel_oil:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:fuel_oil
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:fuel_oil:attribution_source:Detail_Use_YEAR
-
-      natural_gas_nonmanufacturing:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:natural_gas_nonmanufacturing
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:natural_gas_nonmanufacturing:attribution_source:Detail_Use_YEAR
-
-      coal_nonmanufacturing:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:coal_nonmanufacturing
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:coal_nonmanufacturing:attribution_source:Detail_Use_YEAR
 
       coal_manufacturing:
         !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:coal_manufacturing
@@ -180,9 +37,6 @@ source_names:
           EIA_MECS_Energy:
             !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:coal_manufacturing:attribution_source:EIA_MECS_Energy
             year: *mecs_year
-            attribution_source:
-              Detail_Use_2021:
-                !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:coal_manufacturing:attribution_source:EIA_MECS_Energy:attribution_source:Detail_Use_YEAR
 
       ng_manufacturing:
         !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:ng_manufacturing
@@ -190,9 +44,6 @@ source_names:
           EIA_MECS_Energy:
             !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:ng_manufacturing:attribution_source:EIA_MECS_Energy
             year: *mecs_year
-            attribution_source:
-              Detail_Use_2021:
-                !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:ng_manufacturing:attribution_source:EIA_MECS_Energy:attribution_source:Detail_Use_YEAR
 
       petroleum_neu: # consumed petroleum products
         !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:petroleum_neu
@@ -200,9 +51,6 @@ source_names:
           EIA_MECS_Energy:
             !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:petroleum_neu:attribution_source:EIA_MECS_Energy
             year: *mecs_year
-            attribution_source:
-              Detail_Use_2021:
-                !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:petroleum_neu:attribution_source:EIA_MECS_Energy:attribution_source:Detail_Use_YEAR
 
       natural_gas_neu: # consumed nat gas to chemical plants
         !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:natural_gas_neu
@@ -210,33 +58,6 @@ source_names:
           EIA_MECS_Energy:
             !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:natural_gas_neu:attribution_source:EIA_MECS_Energy
             year: *mecs_year
-            attribution_source:
-              Detail_Use_2021:
-                !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:natural_gas_neu:attribution_source:EIA_MECS_Energy:attribution_source:Detail_Use_YEAR
-
-      transportation_lubricants:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:transportation_lubricants
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:transportation_lubricants:attribution_source:Detail_Use_YEAR
-
-      refrigerants:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:refrigerants
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:refrigerants:attribution_source:Detail_Use_YEAR
-
-      air_conditioning:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:air_conditioning
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:air_conditioning:attribution_source:Detail_Use_YEAR
-
-      foams:
-        !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:foams
-        attribution_source:
-          Detail_Use_2021:
-            !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:foams:attribution_source:Detail_Use_YEAR
 
       magnesium:
         !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1:activity_sets:magnesium
