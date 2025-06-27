@@ -157,22 +157,6 @@ def subset_sector_key(flowbyactivity, activitycol, sector_source_year, primary_s
         flowbyactivity.loc[:, ['DataReliability', 'DataCollection']].round(decimals=5))
     flowbyactivity = flowbyactivity[subset_cols].drop_duplicates()
 
-    # drop parent sectors if parent-completechild
-    if flowbyactivity.config.get('sector_hierarchy') == 'parent-completeChild':
-        # Drop duplicates and group by Class, Flowable, Context
-        flowbyactivity_sub = flowbyactivity[['Class', 'Flowable', 'Context', activitycol]].drop_duplicates()
-        existing_sectors_df = pd.DataFrame([])
-        # subset the df by grouping cols
-        for _, df_sub in flowbyactivity_sub.groupby(['Class', 'Flowable', 'Context'], dropna=False):
-            for i in df_sub[activitycol]:
-                n = df_sub[df_sub[activitycol].apply(
-                    lambda x: str(x).startswith(str(i)))]
-                if len(n) == 1:
-                    existing_sectors_df = pd.concat(
-                        [existing_sectors_df, n])
-
-        flowbyactivity = flowbyactivity.merge(existing_sectors_df, on=existing_sectors_df.columns.tolist())
-
     primary_sector_key_2 = pd.DataFrame(flowbyactivity.merge(
         primary_sector_key,
         how='left',
@@ -180,6 +164,18 @@ def subset_sector_key(flowbyactivity, activitycol, sector_source_year, primary_s
         right_on=merge_col,
     )).dropna(subset=[merge_col]).drop(columns=activitycol)
 
+    # drop parent sectors if parent-completechild #todo: check this works for sector-like activities
+    if flowbyactivity.config.get('sector_hierarchy') == 'parent-completeChild':
+
+        def drop_parent_sectors(sector_key):
+            sector_list = sector_key['source_naics'].astype(str).tolist()
+            is_parent = lambda x: any(sector != x and sector.startswith(x) for sector in sector_list)
+            return sector_key[~sector_key['source_naics'].astype(str).apply(is_parent)]
+
+        primary_sector_key_2 = primary_sector_key_2.groupby(['Class', 'Flowable', 'Context'],
+                                                            group_keys=False,
+                                                            dropna=False
+                                                            ).apply(drop_parent_sectors)
 
     # modify dqi scores for data reliability and collection based on mapping
     if "DataReliability" in flowbyactivity.columns:
@@ -192,12 +188,6 @@ def subset_sector_key(flowbyactivity, activitycol, sector_source_year, primary_s
     # subset df to all remaining target sectors and Activity if present by dropping the one to one matches
     df_remaining = primary_sector_key_2[primary_sector_key_2["source_naics"] !=
                                         primary_sector_key_2["target_naics"]].reset_index(drop=True)
-    # df_remaining = primary_sector_key_2.merge(
-    #     df_keep[group_cols + [merge_col]],
-    #     on=group_cols + [merge_col],
-    #     how='left',
-    #     indicator=True
-    # ).query('_merge == "left_only"').drop('_merge', axis=1)
 
     # function to identify which source naics most closely match to the target naics
     def subset_target_sectors_by_source_sectors(group):
