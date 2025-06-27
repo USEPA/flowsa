@@ -164,7 +164,7 @@ def subset_sector_key(flowbyactivity, activitycol, sector_source_year, primary_s
         right_on=merge_col,
     )).dropna(subset=[merge_col]).drop(columns=activitycol)
 
-    # drop parent sectors if parent-completechild #todo: check this works for sector-like activities
+    # drop parent sectors if parent-completechild
     if flowbyactivity.config.get('sector_hierarchy') == 'parent-completeChild':
 
         def drop_parent_sectors(sector_key):
