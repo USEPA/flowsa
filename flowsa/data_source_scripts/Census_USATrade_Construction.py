@@ -29,21 +29,26 @@ def census_url_helper(*, build_url, year, config, **_):
     :return: list, urls to call, concat, parse, format into Flow-By-Activity format
     """
     urls = []
+    dataset = config['url'].get('dataset')
     for flow in config['url'].get('flows'):
-        for naics in config['url'].get('naics'):
+        for codes in config['url'].get(dataset.replace('state', '')):
             if flow == 'imports':
                 get_params = config['url']['get_params'].get('import_params')
             elif flow == 'exports':
                 get_params = config['url']['get_params'].get('export_params')
             get_params_list = '%2C'.join(get_params)
             replacements = {
+                '__dataset__': dataset, 
                 '__flows__': flow,
-                '__naics__': naics,
+                '__codes__': codes,
                 '__get_params__': get_params_list
             }
             request_url = build_url
             for placeholder, value in replacements.items():
-                request_url = request_url.replace(placeholder, value) 
+                request_url = request_url.replace(placeholder, value)
+            request_url = request_url.replace('CODES', dataset.replace('state', '').upper())
+            if dataset == 'statehs':
+                request_url = request_url.replace('HS', ('I_COMMODITY' if flow == 'imports' else 'E_COMMODITY'))
             urls.append(request_url)
     return urls
 
@@ -89,11 +94,19 @@ def census_usatrade_parse(*, df_list, year, **_):
         df['CTY_CODE'].str.contains('X') | 
         (df['CTY_CODE'] == '-')
     )]
-        
+    
+    # if dataset is statenaics, rename column containing NAICS code
+    if 'NAICS' in df.columns:
+        df = df.rename(columns={'NAICS': 'CODE'})
+    # if dataset is statehs, combine columns containing HS code and rename
+    elif 'I_COMMODITY' in df.columns or 'E_COMMODITY' in df.columns:
+        df['CODE'] = df['I_COMMODITY'].combine_first(df['E_COMMODITY']).fillna('')
+
+    # rename columns to FBA format and drop unnecessary columns
     df = (df
           .assign(FlowAmount = lambda x: x['CON_VAL_YR'].astype(float)
                   .fillna(x['ALL_VAL_YR'].astype(float)))
-          .rename(columns={'NAICS':'FlowName',
+          .rename(columns={'CODE':'FlowName',
                            'Type':'Compartment',
                            'STATE':'State',
                            'YEAR':'Year',
@@ -125,4 +138,5 @@ def census_usatrade_parse(*, df_list, year, **_):
 if __name__ == "__main__":
     import flowsa
     flowsa.generateflowbyactivity.main(source='Census_USATrade_Construction', year=2024)
-    fba = flowsa.getFlowByActivity('Census_USATrade_Construction', 2015)
+    fba = flowsa.getFlowByActivity('Census_USATrade_Construction', 2024)
+    fba.to_csv('C:/Users/EBell/OneDrive - Eastern Research Group/Desktop/fba.csv',index=False)

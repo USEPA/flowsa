@@ -5,20 +5,46 @@ bib_id: Census
 api_key_required: False
 format: json
 url:
-  base_url: http://api.census.gov/data/timeseries/intltrade/__flows__/statenaics?
+  base_url: http://api.census.gov/data/timeseries/intltrade/__flows__/__dataset__?
+  dataset: 'statenaics'  # choose either 'statenaics' or 'statehs' (see below)
+    # 'statenaics'= North American Industry Classification System (NAICS) by State
+    # 'statehs' = Harmonized System (HS) by State
   flows:
     - imports
     - exports
-  naics: # NAICS by state data available for 2-,3-, or 4-digit NAICS
-  - '3273'  # Cement and Concrete Product Manufacturing
-  - '3272'  # Glass & Glass Products
-  - '3311'  # Iron & Steel & Ferroalloy
-  
+  naics: # NAICS by state data available for 2-, 3-, or 4-digit NAICS
+    - '3273'  # Cement and Concrete Product Manufacturing
+    - '3272'  # Glass & Glass Products
+    - '3311'  # Iron & Steel & Ferroalloy
+  hs: # HS by state data available for 2-, 4-, or 6-digit HS
+    # Concrete
+    - '2523'  # Portland cement, aluminous cement, slag cement, etc.
+    - '3816'  # Refractory cements, mortars, concretes, and similar compositions
+    - '6810'  # Articles of cement, concrete or artificial stone
+    - '382450'  # Nonrefractory mortars and concretes
+    # Steel
+    - '72'  # Iron and steel
+    - '73'  # Articles of iron or steel
+    - '2618'  # Granulated slag (slag sand) from the manufacture of iron or steel
+    - '820231'  # Hand saws and blades with a working part made of steel
+    - '830710'  # Flexible tubing made of iron or steel
+    - '940620'  # Modular building units of steel
+    # Glass
+    - '70'  # Glass and glassware
+    - '320740'  # Glass frit and other glass, in the form of powder, granules or flakes
+    - '854610'  # Electrical insulators of glass
+    - '900140'  # Spectacle lenses of glass
+    - '940591'  # Parts for lamps and light fittings made of glass
+    # Asphalt
+    - '6807'  # Articles of asphalt or similar material
+    
   url_params:
     get: __get_params__
     YEAR: __year__  # 4-character YEAR
     MONTH: "12"  # 2-character MONTH
-    NAICS: __naics__  # 2-,3-, or 4-digit NAICS
+    CODES: __codes__  # either NAICS or HS codes
+    # if NAICS, must be 2-, 3-, or 4-digit
+    # if HS, must be 2-, 4-, or 6-digit
   get_params:
     import_params:
       - CTY_CODE  # 4-character COUNTRY CODE
