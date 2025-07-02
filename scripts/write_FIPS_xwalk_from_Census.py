@@ -219,9 +219,20 @@ if __name__ == '__main__':
                       'County_2013', 'FIPS_2015', 'County_2015']]
     fips_xwalk = fips_xwalk.sort_values(['FIPS_2010', 'FIPS_2013',
                                          'FIPS_2015'])
-    # drop peurto rico data
+    # drop puerto rico data
     fips_xwalk = fips_xwalk[fips_xwalk['State'] != 'Puerto rico'].reset_index(
         drop=True)
+
+    # assign geo level
+    def assign_fips_value(fips):
+        if fips == '00000':
+            return 5
+        elif fips.endswith('000') and fips != '00000':
+            return 2
+        else:
+            return 1
+
+    fips_xwalk["FIPS_Scale"] = fips_xwalk['FIPS_2015'].apply(assign_fips_value)
 
     # write fips crosswalk as csv
     fips_xwalk.to_csv(f"{datapath}/FIPS_Crosswalk.csv", index=False)
