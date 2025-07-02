@@ -57,6 +57,59 @@ def get_activitytosector_mapping(source, fbsconfigpath=None):
         return mapping
 
 
+def assign_technological_correlation(mapping):
+    """
+    Assign technological correlation sources based on the difference between source and target sectors using
+    https://github.com/USEPA/esupy/blob/main/DataQualityPedigreeMatrix.md
+    as a guideline
+    """
+
+    # todo: modify tech assignments for cases where there is one:one parent:child relationships because a NAICS5 is
+    #  the same as a NAICS6 in these situations, so the tech score should be the same for each
+
+    tech_dict = {'-5': '1',
+                 '-4': '1',
+                 '-3': '1',
+                 '-2': '1',
+                 '-1': '1',
+                 '0': '1',
+                 '1': '2',
+                 '2': '3',
+                 '3': '4',
+                 '4': '5',
+                 '5': '5',
+                 '6': '5',
+                 '7': '5',
+                 '8': '5'
+                 }
+
+    # load the sector length crosswalk
+    naics_crosswalk = load_crosswalk("Sector_Levels")
+
+    # assign sector lengths to compare to assign tech correlation
+    # merge dfs
+    for i in ['source', 'target']:
+        mapping = (mapping
+                  .merge(naics_crosswalk[['Sector', 'SectorLength']],
+                         how='left',
+                         left_on=[f'{i}_naics'],
+                         right_on=['Sector'])
+                  .drop(columns=['Sector'])
+                  .rename(columns={'SectorLength': f'{i}Length'})
+                  )
+    mapping = mapping.assign(SectorDifference = mapping[
+        'targetLength'].astype(int) - mapping['sourceLength'].astype(int))
+
+    # determine difference in sector lengths between source and target and assign tech score
+    mapping = mapping.assign(TechnologicalCorrelation=mapping["SectorDifference"].astype(str).apply(lambda x: tech_dict.get(x)))
+    mapping["TechnologicalCorrelation"] = mapping["TechnologicalCorrelation"].map(int)
+
+    # address special circumstances for BEA household/gov codes by dropping duplicates, keeping first assignment
+    mapping = mapping.drop_duplicates(subset=['source_naics', 'target_naics'], keep="first")
+
+    return mapping.drop(columns=['sourceLength', 'targetLength', 'SectorDifference'])
+
+
 def convert_units_to_annual(df):
     """
     Convert data and units to annual flows
