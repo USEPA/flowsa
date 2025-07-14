@@ -1449,10 +1449,13 @@ class _FlowBy(pd.DataFrame):
                 # if target geoscale not defined, first try pulling from config, else pull from method name
                 target_geoscale = (self.config.get('target_geoscale') or
                                    extract_target_geoscale(fbs_method_name))
-                log.info(f"Assigning geographical correlation data quality score for {self.full_name}")
-            except:
-                # if there isn't a target geoscale or method name, return FBS without appending geo correlation
+                if target_geoscale is None:
+                    # if there isn't a target geoscale or method name, return FBS without appending geo correlation
+                    return self
+            except TypeError:
                 return self
+
+        log.info(f"Assigning geographical correlation data quality score for {self.full_name}")
 
         # if all Geo Corr scores in the FBS are 0, drop the column and reassign values
         if ('GeographicalCorrelation' in fbs and
