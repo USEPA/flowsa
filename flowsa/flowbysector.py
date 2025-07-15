@@ -230,6 +230,9 @@ class FlowBySector(_FlowBy):
 
         # Save fbs and metadata
         log.info(f'FBS generation complete, saving {method} to file')
+        if fbs.columns.duplicated().any():
+            log.error(f'Duplicate columns found in fbs: '
+                      f'{fbs.columns[fbs.columns.duplicated()].tolist()}')
         meta = metadata.set_fb_meta(method, 'FlowBySector')
         esupy.processed_data_mgmt.write_df_to_file(fbs, settings.paths, meta)
         reset_log_file(method, meta)

@@ -1,0 +1,19 @@
+industry_spec:
+  default: NAICS_6
+target_naics_year: 2017
+geoscale: national
+
+source_names:
+  BLS_QCEW:
+    year: 2017
+    activity_sets:
+      wages:
+        selection_fields:
+          Class: Money
+          Location: !include:Location_common.yaml:_national_location
+          # Reassign all relevant data
+          FlowName: {'Annual payroll, Federal Government': 'Annual payroll',
+                     'Annual payroll, State Government': 'Annual payroll',
+                     'Annual payroll, Local Government': 'Annual payroll',
+                     'Annual payroll, Private': 'Annual payroll'}
+        attribution_method: direct
