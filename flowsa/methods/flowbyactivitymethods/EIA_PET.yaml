@@ -1,0 +1,37 @@
+author: US Energy Information Administration
+source_name: Petroleum & Other Liquids
+source_url: https://www.eia.gov/petroleum/data.php
+api_name: EIA
+api_key_required: true
+format: json
+url:
+  base_url: "https://api.eia.gov/v2/petroleum/sum/snd/data/?api_key=__API_KEY__&frequency=annual&data[0]=value&facets[series][]=__SERIES_ID__&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=5000"
+facet_code: 'series'
+url_replace_fxn: !script_function:EIA_AEO eia_api_url_helper
+call_response_fxn: !script_function:EIA_AEO eia_pet_call
+parse_response_fxn: !script_function:EIA_AEO eia_pet_parse
+call_all_years: True
+years:
+  - 2012
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  - 2018
+  - 2019
+  - 2020
+  - 2021
+  - 2022
+  - 2023
+series_id: # pulled/revised from v1 of EIA API
+  # Product Supplied: Asphalt and Road Oil
+  - MAPUPUS1
+  - MAPUPP11
+  - MAPUPP21
+  - MAPUPP31
+  - MAPUPP41
+  - MAPUPP51
+
+  # US Imports: Asphalt and Road Oil
+  - MAPIMUS1

@@ -5,6 +5,8 @@
 """
 ANNUAL ENERGY OUTLOOK (AEO)
 https://www.eia.gov/outlooks/aeo/
+
+and other EIA datasets via the API
 """
 
 import json
@@ -17,7 +19,7 @@ from flowsa.common import load_env_file_key
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
-def eia_aeo_url_helper(*, build_url, year, config, **_):
+def eia_api_url_helper(*, build_url, year, config, **_):
     """
     This helper function uses the "build_url" input from generateflowbyactivity.py,
     which is a base url for data imports that requires parts of the url text
@@ -34,6 +36,7 @@ def eia_aeo_url_helper(*, build_url, year, config, **_):
     max_num_series = 100
     
     list_seriesIDs = config['series_id']
+    facet_code = config.get('facet_code', 'seriesId')
     
     # reshape list of series IDs into 2D array, padded with ''
     rows = max_num_series
@@ -46,17 +49,18 @@ def eia_aeo_url_helper(*, build_url, year, config, **_):
     # for each batch of series IDs...
     for col in range(array_seriesIDs.shape[1]):
         # concatenate series IDs into a list separated by semicolons
-        series_list = "&facets[seriesId][]=".join(array_seriesIDs[:,col])
+        series_list = f"&facets[{facet_code}][]=".join(array_seriesIDs[:,col])
         # remove any empty seriesid
-        series_list = series_list.replace('&facets[seriesId][]=0', '')
+        series_list = series_list.replace(f'&facets[{facet_code}][]=0', '')
         
         # create url from build url
         url = build_url
         userAPIKey = load_env_file_key('API_Key', config['api_name'])
         url = (url.replace("__API_KEY__", userAPIKey)
-               .replace("__YEAR__", year)
                .replace("__SERIES_ID__", series_list)
                )
+        if "__YEAR__" in url:
+            url = url.replace("__YEAR__", year)
         urls.append(url)
     return urls
 
@@ -154,3 +158,55 @@ def clean_string(s, string_type):
             s = s.replace('Energy Use-','')
         s = s.replace('-Energy Use','')
     return s
+
+
+def eia_pet_call(*, resp, year, **_):
+    """
+    Convert response for calling url to pandas dataframe, begin
+        parsing df into FBA format
+    :param resp: df, response from url call
+    :return: pandas dataframe of original source data
+    """
+    df_json = json.loads(resp.text)
+    # convert response to dataframe
+    series = df_json["response"]["data"]
+    df_load = pd.DataFrame(data=series[1:len(series)], columns=series[0])
+    return df_load
+
+
+def eia_pet_parse(*, df_list, year, **_):
+    """
+    Combine, parse, and format the provided dataframes
+    :param df_list: list of dataframes to concat and format
+    :param year: year
+    :return: df, parsed and partially formatted to
+        flowbyactivity specifications
+    """
+    # concat dataframes
+    df = pd.concat(df_list, sort=False, ignore_index=True)
+    df = (df
+          .rename(columns={"series-description": "Description",
+                           "value": "FlowAmount",
+                           "units": "Unit",
+                           "product-name": "FlowName",
+                           "area-name": "Location",
+                           "process-name": "ActivityProducedBy"})
+          .assign(Year = df['period'])
+          .drop(columns=['duoarea', 'product', 'process', 'period'], errors='ignore')
+          )
+
+    # hard code data
+    df['SourceName'] = 'EIA_PET'
+    df['FlowType'] = 'TECHNOSPHERE_FLOW'
+    # Add tmp DQ scores
+    df['DataReliability'] = 5
+    df['DataCollection'] = 5
+    df['Compartment'] = None
+    df['Class'] = 'Energy'
+    return df
+
+
+if __name__ == "__main__":
+    import flowsa
+    flowsa.generateflowbyactivity.main(source='EIA_PET', year='2012-2024')
+    fba = flowsa.getFlowByActivity('EIA_PET', 2023)

@@ -6,7 +6,8 @@ api_key_required: true
 format: json
 url:
   base_url: "https://api.eia.gov/v2/aeo/__YEAR__/data/?api_key=__API_KEY__&frequency=annual&data[0]=value&facets[scenario][]=ref__YEAR__&facets[seriesId][]=__SERIES_ID__&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=5000"
-url_replace_fxn: !script_function:EIA_AEO eia_aeo_url_helper
+facet_code: 'seriesId'
+url_replace_fxn: !script_function:EIA_AEO eia_api_url_helper
 call_response_fxn: !script_function:EIA_AEO eia_aeo_call
 parse_response_fxn: !script_function:EIA_AEO eia_aeo_parse
 years:
