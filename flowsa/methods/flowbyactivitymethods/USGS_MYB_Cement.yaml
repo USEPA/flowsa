@@ -1,0 +1,35 @@
+source_name: USGS Mineral Yearbook Cement
+source_url: https://www.usgs.gov/centers/national-minerals-information-center/cement-statistics-and-information
+api_required: False
+format: xlsx
+url:
+  base_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/files/myb1-2023-cemen-ERT.xlsx
+url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
+call_response_fxn: !script_function:USGS_MYB usgs_myb_call
+parse_response_fxn: !script_function:USGS_MYB usgs_myb_parse
+years:
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+
+sheets:
+  T1:
+    Name: Salient Cement Statistics
+    header: 6
+    rows: [8, 24]
+    usecols: 'A, D, F, H, J, L'
+    primary_col: 'FlowName'
+    Unit: thousand metric tons
+    years_on_columns: '2019-2023'
+
+  T3:
+    Name: Portland and Blended Cement Production, Capacity, and Stocks in the United States, By District
+    FlowName: portland and blended cement
+    Unit: thousand metric tons
+    year_row: 6
+    header_row_list: [7, 8]
+    rows: [9, 33]
+    usecols: 'A, C, E, G, I, K, N, P, R, T, V'
+    primary_col: 'Location'

@@ -4758,3 +4758,103 @@ def usgs_zirconium_parse(*, df_list, source, year, **_):
                 dataframe = assign_fips_location_system(
                     dataframe, str(year))
     return dataframe
+
+
+def usgs_myb_call(*, resp, config, **_):
+    """
+    Convert response for calling url to pandas dataframe,
+    begin parsing df into FBA format
+    :param resp: df, response from url call
+    :return: pandas dataframe of original source data
+    """
+    df_list = []
+    for sheet, specs in config['sheets'].items():
+        rows = specs.get('rows')
+        df = (pd.read_excel(resp.content,
+                            sheet_name=sheet,
+                            usecols=specs.get("usecols"),
+                            header=None,
+                            )
+              )
+        if specs.get('years_on_columns'):
+            cols = df.iloc[specs.get('header')-1, 0:].astype('Int64').astype(str)
+        else:
+            headers_list = []
+            header_row = specs.get('header_row_list')
+            for r in header_row:
+                headers = df.iloc[r-1, 0:]
+                if specs.get('fill_header'):
+                    headers = headers.fillna(method='ffill')
+                headers = ['' if pd.isna(h) else h for h in headers]
+                headers_list.append(headers)
+            headers = [" ".join(item_tuple) for item_tuple in zip(*tuple(headers_list))]
+
+            year_row = specs.get('year_row')
+            if year_row:
+                years = df.iloc[year_row-1, 0:].fillna(method='ffill').astype(str).tolist()
+
+            cols = [h + " ~ " + y for h, y in zip(headers, years)]
+        # Remove the rows from the beginning up to and including the old header row
+        df = df[rows[0]-1: rows[1]].reset_index(drop=True)
+        cols[0] = specs.get('primary_col', cols[0])
+        df.columns = cols
+        df = df.assign(sheet=f'{sheet}')
+        df_list.append(df)
+
+    return df_list
+
+
+def usgs_myb_parse(*, df_list, year, config, **_):
+    """
+    Combine, parse, and format the provided dataframes
+    :param df_list: list of dataframes to concat and format
+    :param args: dictionary, used to run generateflowbyactivity.py
+        ('year' and 'source')
+    :return: df, parsed and partially formatted to
+        flowbyactivity specifications
+    """
+    df_list2 = []
+    for df in df_list:
+        specs = config['sheets'].get(df.loc[0, "sheet"])
+        if specs.get('years_on_columns'):
+            ## pivot
+            df['Activity'] = df.iloc[:,0].where(df.isna().any(axis=1)).fillna(method='ffill')
+            df = df.dropna(axis=0, how='any')
+
+            y = specs.get('years_on_columns').split('-')
+            year_iter = list(range(int(y[0]), int(y[1]) + 1))
+            year_iter = [str(y) for y in year_iter]
+
+            df2 = df.melt(id_vars = [c for c in df.columns if c not in year_iter],
+                          value_vars=year_iter,
+                          var_name='Year',
+                          value_name='FlowAmount')
+        else:
+            df2 = df.melt(id_vars = ['sheet', specs.get('primary_col')],
+                          value_name='FlowAmount',
+                          var_name='Activity')
+            df2['Year'] = df2['Activity'].str.split(' ~ ').str[1]
+            df2['Activity'] = df2['Activity'].str.split(' ~ ').str[0]
+
+        if 'FlowName' in specs:
+            df2['FlowName'] = specs.get('FlowName')
+        if 'Unit' in specs:
+            df2['Unit'] = specs.get('Unit')
+        if 'Activity' in specs:
+            df2['Activity'] = specs.get('Activity')
+        df2.FlowAmount = df2.FlowAmount.replace("--", 0)
+        df_list2.append(df2)
+    df = pd.concat(df_list2, sort=False)
+
+    df['FlowAmount'] = df['FlowAmount'].apply(lambda x: x if isinstance(x, float) else np.nan)
+    df = df.dropna(subset=['FlowAmount'])
+
+    return df
+
+
+if __name__ == "__main__":
+    import flowsa
+    flowsa.generateflowbyactivity.main(source='USGS_MYB_IronandSteel', year=2023)
+    fba1 = flowsa.getFlowByActivity('USGS_MYB_IronandSteel', 2023)
+    flowsa.generateflowbyactivity.main(source='USGS_MYB_Cement', year=2023)
+    fba2 = flowsa.getFlowByActivity('USGS_MYB_Cement', 2023)

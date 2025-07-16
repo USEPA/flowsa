@@ -1,0 +1,56 @@
+source_name: USGS Mineral Yearbook Iron and Steel
+source_url: https://www.usgs.gov/centers/national-minerals-information-center/iron-and-steel-statistics-and-information
+api_required: False
+format: xlsx
+url:
+  base_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/files/myb1-2023-feste-ert.xlsx
+url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
+call_response_fxn: !script_function:USGS_MYB usgs_myb_call
+parse_response_fxn: !script_function:USGS_MYB usgs_myb_parse
+years:
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+
+sheets:
+  T1:
+    Name: Salient Iron and Steel Statistics
+    rows: [8, 32]
+    usecols: 'A, C, E, G, I, K'
+    header: 6
+    primary_col: 'FlowName'
+    Unit: thousand metric tons
+    years_on_columns: '2019-2023'
+
+  T3:
+    Name: U.S. Imports and Exports of Steel Mill Products
+    FlowName: steel mill products
+    Unit: thousand metric tons
+    rows: [9, 29]
+    year_row: 8
+    header_row_list: [7]
+    fill_header: True
+    primary_col: 'Location'
+    usecols: 'A, C, E, G, I'
+
+  T4:
+    Name: U.S. Exports of Iron and Steel Products
+    rows: [7, 58]
+    usecols: 'A, C, E'
+    header: 6
+    primary_col: 'FlowName'
+    Activity: 'Exports'
+    Unit: thousand metric tons
+    years_on_columns: '2022-2023'
+
+  T5:
+    Name: U.S. Imports of Iron and Steel Products
+    rows: [7, 57]
+    usecols: 'A, C, E'
+    header: 6
+    primary_col: 'FlowName'
+    Activity: 'Imports'
+    Unit: thousand metric tons
+    years_on_columns: '2022-2023'
