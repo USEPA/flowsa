@@ -4858,7 +4858,7 @@ def usgs_myb_parse(*, df_list, source, year, config, **_):
                                df2['ActivityProducedBy'].str.contains('utiliz', case=False),
                                '%', df2['Unit'])
         df2['Unit'] = np.where(df2['ActivityProducedBy'].str.contains('number', case=False),
-                               '', df2['Unit'])
+                               'count', df2['Unit'])
 
         df2['Description'] = df2['sheet'] + ": " + specs.get('Name')
         df2.FlowAmount = df2.FlowAmount.replace("--", 0)
