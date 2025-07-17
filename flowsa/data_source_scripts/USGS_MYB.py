@@ -4859,6 +4859,10 @@ def usgs_myb_parse(*, df_list, source, year, config, **_):
 
         df2['Description'] = df2['sheet'] + ": " + specs.get('Name')
         df2.FlowAmount = df2.FlowAmount.replace("--", 0)
+        df2 = df2[pd.to_numeric(df2['FlowAmount'], errors='coerce').notna()]
+        df2 = df2.reset_index(drop=True)
+        df2.FlowAmount = pd.to_numeric(df2.FlowAmount)
+
         df_list2.append(df2)
     df = pd.concat(df_list2, sort=False)
 
