@@ -4795,6 +4795,8 @@ def usgs_myb_call(*, resp, year, config, **_):
             year_row = specs.get('year_row')
             if year_row:
                 years = df.iloc[year_row-1, 0:].fillna(method='ffill').astype(str).tolist()
+            else:
+                years = [specs['Year']] * (len(headers) + 1)
 
             cols = [h + " ~ " + y for h, y in zip(headers, years)]
         # Remove the rows from the beginning up to and including the old header row
@@ -4873,8 +4875,9 @@ def usgs_myb_parse(*, df_list, source, year, config, **_):
     df = df.dropna(subset=['FlowAmount'])
 
     # Remove numbers, including comma-separated ones
-    for c in ('ActivityProducedBy', 'FlowName', 'Location'):
-        df[c] = df[c].apply(remove_numbers_and_extra_spaces)
+    for c in ('ActivityProducedBy', 'FlowName', 'Location', 'ActivityConsumedBy'):
+        if c in df:
+            df[c] = df[c].apply(remove_numbers_and_extra_spaces)
 
     df = (df
           .assign(SourceName = source)
@@ -4894,9 +4897,9 @@ def remove_numbers_and_extra_spaces(text):
 
 if __name__ == "__main__":
     import flowsa
-    flowsa.generateflowbyactivity.main(source='USGS_MYB_IronandSteel', year=2023)
-    fba1 = flowsa.getFlowByActivity('USGS_MYB_IronandSteel', 2023)
-    flowsa.generateflowbyactivity.main(source='USGS_MYB_IronandSteel', year=2022)
-    fba2 = flowsa.getFlowByActivity('USGS_MYB_IronandSteel', 2022)
+    flowsa.generateflowbyactivity.main(source='USGS_MYB_Silica', year=2023)
+    fba1 = flowsa.getFlowByActivity('USGS_MYB_Silica', 2023)
+    # flowsa.generateflowbyactivity.main(source='USGS_MYB_IronandSteel', year=2022)
+    # fba2 = flowsa.getFlowByActivity('USGS_MYB_IronandSteel', 2022)
     # flowsa.generateflowbyactivity.main(source='USGS_MYB_Cement', year=2023)
     # fba2 = flowsa.getFlowByActivity('USGS_MYB_Cement', 2023)

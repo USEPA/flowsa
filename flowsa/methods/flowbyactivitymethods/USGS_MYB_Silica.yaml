@@ -1,0 +1,57 @@
+source_name: USGS Mineral Yearbook Silica
+source_url: https://www.usgs.gov/centers/national-minerals-information-center/silica-statistics-and-information
+api_required: False
+format: xlsx
+url:
+  base_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/files/myb1-__YEAR__-__STUB__.xlsx
+url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
+call_response_fxn: !script_function:USGS_MYB usgs_myb_call
+parse_response_fxn: !script_function:USGS_MYB usgs_myb_parse
+years: # this reflects the available data vintage for the workbooks
+# - 2020
+- 2021
+- 2022
+- 2023
+
+stub:
+  # 2020: silica-ert
+  2021: silic-ERT
+  2022: silic-ert
+  2023: silic-ERT
+
+sheets:
+  2023: &sheets_2023
+      T6B: &end_use
+        Name: Industrial Sand and Gravel Sold or Used by U.S. Producers, by Major End Use
+        FlowName: industrial sand and gravel
+        Unit: thousand metric tons
+        rows: [10, 49]
+        usecols: 'A, AA, AC, AE' # US only
+        header_row_list: [4, 5, 6, 7, 8, 9]
+        primary_col: 'ActivityConsumedBy'
+        Year: '2023'
+
+      T6A:
+        <<: *end_use
+        Year: '2022'
+
+  2022:
+      T6A:
+        <<: *end_use
+        Year: '2022'
+      T6A:
+        <<: *end_use
+        Year: '2021'
+
+  2021:
+      T6A:
+        <<: *end_use
+        Year: '2021'
+      T6A:
+        <<: *end_use
+        Year: '2020'
+
+  2020: # Starting in this year only single table 6 is reported
+      T6:
+        <<: *end_use
+        Year: '2020'
