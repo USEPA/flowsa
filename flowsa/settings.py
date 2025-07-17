@@ -1,9 +1,8 @@
 import os
 import subprocess
-from importlib.metadata import version
 from pathlib import Path
 from esupy.processed_data_mgmt import Paths, mkdir_if_missing
-from esupy.util import get_git_hash
+from esupy.util import get_git_hash, return_pkg_version
 
 
 MODULEPATH = Path(__file__).resolve().parent
@@ -44,21 +43,6 @@ scriptpath = MODULEPATH.parent / 'scripts'
 scriptsFBApath = scriptpath / 'FlowByActivity_Datasets'
 
 
-def return_pkg_version():
-    # return version with git describe
-    try:
-        # set path to flowsa repository, necessary if running method files
-        # outside the flowsa repo
-        tags = subprocess.check_output(
-            ["git", "describe", "--tags", "--always", "--match", "v[0-9]*"],
-            cwd=MODULEPATH).decode().strip()
-        pkg_version = tags.split("-", 1)[0].replace('v', "")
-    except subprocess.CalledProcessError:
-        pkg_version = version('flowsa')
-
-    return pkg_version
-
-
 # https://stackoverflow.com/a/41125461
 def memory_limit(percentage=.93):
     # Placed here becuase older versions of Python do not have this
@@ -86,7 +70,7 @@ def get_memory():
 
 # metadata
 PKG = "flowsa"
-PKG_VERSION_NUMBER = return_pkg_version()
+PKG_VERSION_NUMBER = return_pkg_version(MODULEPATH, 'flowsa')
 GIT_HASH_LONG = os.environ.get('GITHUB_SHA') or get_git_hash('long')
 if GIT_HASH_LONG:
     GIT_HASH = GIT_HASH_LONG[0:7]
