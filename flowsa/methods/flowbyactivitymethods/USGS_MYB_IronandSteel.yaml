@@ -23,6 +23,8 @@ sheets:
     primary_col: 'FlowName'
     Unit: thousand metric tons
     years_on_columns: '2019-2023'
+    swap_flow_and_activity: # items show up in ActivityField
+        ['Steel mill products', 'Pig iron', 'Direct-reduced iron']
 
   T3:
     Name: U.S. Imports and Exports of Steel Mill Products
@@ -41,7 +43,7 @@ sheets:
     usecols: 'A, C, E'
     header: 6
     primary_col: 'FlowName'
-    Activity: 'Exports'
+    ActivityProducedBy: 'Exports'
     Unit: thousand metric tons
     years_on_columns: '2022-2023'
 
@@ -51,6 +53,6 @@ sheets:
     usecols: 'A, C, E'
     header: 6
     primary_col: 'FlowName'
-    Activity: 'Imports'
+    ActivityProducedBy: 'Imports'
     Unit: thousand metric tons
     years_on_columns: '2022-2023'

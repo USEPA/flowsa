@@ -2,6 +2,7 @@ import io
 import math
 import numpy as np
 import pandas as pd
+import re
 from string import digits
 from flowsa.flowsa_log import log
 from flowsa.common import WITHDRAWN_KEYWORD
@@ -4804,7 +4805,7 @@ def usgs_myb_call(*, resp, config, **_):
     return df_list
 
 
-def usgs_myb_parse(*, df_list, year, config, **_):
+def usgs_myb_parse(*, df_list, source, year, config, **_):
     """
     Combine, parse, and format the provided dataframes
     :param df_list: list of dataframes to concat and format
@@ -4818,7 +4819,7 @@ def usgs_myb_parse(*, df_list, year, config, **_):
         specs = config['sheets'].get(df.loc[0, "sheet"])
         if specs.get('years_on_columns'):
             ## pivot
-            df['Activity'] = df.iloc[:,0].where(df.isna().any(axis=1)).fillna(method='ffill')
+            df['ActivityProducedBy'] = df.iloc[:,0].where(df.isna().any(axis=1)).fillna(method='ffill')
             df = df.dropna(axis=0, how='any')
 
             y = specs.get('years_on_columns').split('-')
@@ -4832,16 +4833,31 @@ def usgs_myb_parse(*, df_list, year, config, **_):
         else:
             df2 = df.melt(id_vars = ['sheet', specs.get('primary_col')],
                           value_name='FlowAmount',
-                          var_name='Activity')
-            df2['Year'] = df2['Activity'].str.split(' ~ ').str[1]
-            df2['Activity'] = df2['Activity'].str.split(' ~ ').str[0]
+                          var_name='ActivityProducedBy')
+            df2['Year'] = df2['ActivityProducedBy'].str.split(' ~ ').str[1]
+            df2['ActivityProducedBy'] = df2['ActivityProducedBy'].str.split(' ~ ').str[0]
 
         if 'FlowName' in specs:
             df2['FlowName'] = specs.get('FlowName')
         if 'Unit' in specs:
             df2['Unit'] = specs.get('Unit')
-        if 'Activity' in specs:
-            df2['Activity'] = specs.get('Activity')
+        if 'ActivityProducedBy' in specs:
+            df2['ActivityProducedBy'] = specs.get('ActivityProducedBy')
+
+
+        if specs.get('swap_flow_and_activity'):
+            condition = df2['ActivityProducedBy'].str.contains("|".join(specs.get('swap_flow_and_activity')))
+            df2['ActivityProducedBy'], df2['FlowName'] = (
+                np.where(condition, df2['FlowName'], df2['ActivityProducedBy']),
+                np.where(condition, df2['ActivityProducedBy'], df2['FlowName'])
+            )
+        df2['Unit'] = np.where(df2['FlowName'].str.contains('utiliz') |
+                               df2['ActivityProducedBy'].str.contains('utiliz', case=False),
+                               '%', df2['Unit'])
+        df2['Unit'] = np.where(df2['ActivityProducedBy'].str.contains('number', case=False),
+                               '', df2['Unit'])
+
+        df2['Description'] = df2['sheet'] + ": " + specs.get('Name')
         df2.FlowAmount = df2.FlowAmount.replace("--", 0)
         df_list2.append(df2)
     df = pd.concat(df_list2, sort=False)
@@ -4849,8 +4865,25 @@ def usgs_myb_parse(*, df_list, year, config, **_):
     df['FlowAmount'] = df['FlowAmount'].apply(lambda x: x if isinstance(x, float) else np.nan)
     df = df.dropna(subset=['FlowAmount'])
 
+    # Remove numbers, including comma-separated ones
+    for c in ('ActivityProducedBy', 'FlowName', 'Location'):
+        df[c] = df[c].apply(remove_numbers_and_extra_spaces)
+
+    df = (df
+          .assign(SourceName = source)
+          .assign(Class = 'Other')
+          .assign(FlowType = 'TECHNOSPHERE_FLOW')
+          )
+
     return df
 
+def remove_numbers_and_extra_spaces(text):
+    if not isinstance(text, str):
+        return text
+    text = re.sub(r'\d+(?:\s*,\s*\d+)*', '', text) # remove numbers including comma-separated ones
+    text = re.sub(r'\s+', ' ', text).strip() # remove extra spaces
+    text = re.sub(r'\s*:$', '', text) # remove trailing colon
+    return text
 
 if __name__ == "__main__":
     import flowsa
