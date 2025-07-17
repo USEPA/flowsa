@@ -156,6 +156,7 @@ def usgs_myb_url_helper(*, build_url, config, year, **_):
            .replace('__YEAR__', year)
            .replace('__FORMAT__', config.get('file_format',
                                              {}).get(int(year), 'NULL'))
+           .replace('__STUB__', config.get('stub', {}).get(int(year), 'NULL'))
            )
 
     return [url]
@@ -4761,7 +4762,7 @@ def usgs_zirconium_parse(*, df_list, source, year, **_):
     return dataframe
 
 
-def usgs_myb_call(*, resp, config, **_):
+def usgs_myb_call(*, resp, year, config, **_):
     """
     Convert response for calling url to pandas dataframe,
     begin parsing df into FBA format
@@ -4769,7 +4770,8 @@ def usgs_myb_call(*, resp, config, **_):
     :return: pandas dataframe of original source data
     """
     df_list = []
-    for sheet, specs in config['sheets'].items():
+    conf = config['sheets'].get(int(year), config['sheets'])
+    for sheet, specs in conf.items():
         rows = specs.get('rows')
         df = (pd.read_excel(resp.content,
                             sheet_name=sheet,
@@ -4815,15 +4817,16 @@ def usgs_myb_parse(*, df_list, source, year, config, **_):
         flowbyactivity specifications
     """
     df_list2 = []
+    conf = config['sheets'].get(int(year), config['sheets'])
     for df in df_list:
-        specs = config['sheets'].get(df.loc[0, "sheet"])
+        specs = conf.get(df.loc[0, "sheet"])
         if specs.get('years_on_columns'):
             ## pivot
             df['ActivityProducedBy'] = df.iloc[:,0].where(df.isna().any(axis=1)).fillna(method='ffill')
             df = df.dropna(axis=0, how='any')
 
-            y = specs.get('years_on_columns').split('-')
-            year_iter = list(range(int(y[0]), int(y[1]) + 1))
+            y = specs.get('years_on_columns')
+            year_iter = list(range(int(year)-y+1, int(year) + 1))
             year_iter = [str(y) for y in year_iter]
 
             df2 = df.melt(id_vars = [c for c in df.columns if c not in year_iter],
@@ -4893,5 +4896,7 @@ if __name__ == "__main__":
     import flowsa
     flowsa.generateflowbyactivity.main(source='USGS_MYB_IronandSteel', year=2023)
     fba1 = flowsa.getFlowByActivity('USGS_MYB_IronandSteel', 2023)
-    flowsa.generateflowbyactivity.main(source='USGS_MYB_Cement', year=2023)
-    fba2 = flowsa.getFlowByActivity('USGS_MYB_Cement', 2023)
+    flowsa.generateflowbyactivity.main(source='USGS_MYB_IronandSteel', year=2022)
+    fba2 = flowsa.getFlowByActivity('USGS_MYB_IronandSteel', 2022)
+    # flowsa.generateflowbyactivity.main(source='USGS_MYB_Cement', year=2023)
+    # fba2 = flowsa.getFlowByActivity('USGS_MYB_Cement', 2023)

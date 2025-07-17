@@ -3,56 +3,73 @@ source_url: https://www.usgs.gov/centers/national-minerals-information-center/ir
 api_required: False
 format: xlsx
 url:
-  base_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/files/myb1-2023-feste-ert.xlsx
+  base_url: https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/files/myb1-__YEAR__-__STUB__.xlsx
 url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
 call_response_fxn: !script_function:USGS_MYB usgs_myb_call
 parse_response_fxn: !script_function:USGS_MYB usgs_myb_parse
 years:
-- 2019
 - 2020
 - 2021
 - 2022
 - 2023
 
+stub:
+  2020: feste-advrel
+  2021: feste-ert
+  2022: feste-ert
+  2023: feste-ert
+
 sheets:
-  T1:
-    Name: Salient Iron and Steel Statistics
-    rows: [8, 32]
-    usecols: 'A, C, E, G, I, K'
-    header: 6
-    primary_col: 'FlowName'
-    Unit: thousand metric tons
-    years_on_columns: '2019-2023'
-    swap_flow_and_activity: # items show up in ActivityField
-        ['Steel mill products', 'Pig iron', 'Direct-reduced iron']
+  2023: &sheets_2023
+      T1: &salient
+        Name: Salient Iron and Steel Statistics
+        rows: [8, 32]
+        usecols: 'A, C, E, G, I, K'
+        header: 6
+        primary_col: 'FlowName'
+        Unit: thousand metric tons
+        years_on_columns: 5
+        swap_flow_and_activity: # items show up in ActivityField
+            ['Steel mill products', 'Pig iron', 'Direct-reduced iron']
 
-  T3:
-    Name: U.S. Imports and Exports of Steel Mill Products
-    FlowName: steel mill products
-    Unit: thousand metric tons
-    rows: [9, 29]
-    year_row: 8
-    header_row_list: [7]
-    fill_header: True
-    primary_col: 'Location'
-    usecols: 'A, C, E, G, I'
+      T3: &imp_exp
+        Name: U.S. Imports and Exports of Steel Mill Products
+        FlowName: steel mill products
+        Unit: thousand metric tons
+        rows: [9, 29]
+        year_row: 8
+        header_row_list: [7]
+        fill_header: True
+        primary_col: 'Location'
+        usecols: 'A, C, E, G, I'
 
-  T4:
-    Name: U.S. Exports of Iron and Steel Products
-    rows: [7, 58]
-    usecols: 'A, C, E'
-    header: 6
-    primary_col: 'FlowName'
-    ActivityProducedBy: 'Exports'
-    Unit: thousand metric tons
-    years_on_columns: '2022-2023'
+      T4: &export
+        Name: U.S. Exports of Iron and Steel Products
+        rows: [7, 58]
+        usecols: 'A, C, E'
+        header: 6
+        primary_col: 'FlowName'
+        ActivityProducedBy: 'Exports'
+        Unit: thousand metric tons
+        years_on_columns: 2
 
-  T5:
-    Name: U.S. Imports of Iron and Steel Products
-    rows: [7, 57]
-    usecols: 'A, C, E'
-    header: 6
-    primary_col: 'FlowName'
-    ActivityProducedBy: 'Imports'
-    Unit: thousand metric tons
-    years_on_columns: '2022-2023'
+      T5: &import
+        Name: U.S. Imports of Iron and Steel Products
+        rows: [7, 57]
+        usecols: 'A, C, E'
+        header: 6
+        primary_col: 'FlowName'
+        ActivityProducedBy: 'Imports'
+        Unit: thousand metric tons
+        years_on_columns: 2
+  2022:
+      T1:
+        <<: *salient
+      T4:
+        <<: *imp_exp
+        year_row: 7
+        header_row_list: [8]
+      T5:
+        <<: *export
+      T6:
+        <<: *import
