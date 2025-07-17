@@ -7,7 +7,7 @@ url:
 url_replace_fxn: !script_function:USGS_MYB usgs_myb_url_helper
 call_response_fxn: !script_function:USGS_MYB usgs_myb_call
 parse_response_fxn: !script_function:USGS_MYB usgs_myb_parse
-years:
+years: # this reflects the available data vintage for the workbooks
 - 2020
 - 2021
 - 2022
@@ -65,6 +65,31 @@ sheets:
   2022:
       T1:
         <<: *salient
+      T4:
+        <<: *imp_exp
+        year_row: 7
+        header_row_list: [8]
+      T5:
+        <<: *export
+      T6:
+        <<: *import
+
+  2021:
+      T1:
+        <<: *salient
+        rows: [8, 30]
+      T4:
+        <<: *imp_exp
+        year_row: 7
+        header_row_list: [8]
+      T5:
+        <<: *export
+      T6:
+        <<: *import
+  2020:
+      T1:
+        <<: *salient
+        rows: [8, 30]
       T4:
         <<: *imp_exp
         year_row: 7

@@ -4780,7 +4780,7 @@ def usgs_myb_call(*, resp, year, config, **_):
                             )
               )
         if specs.get('years_on_columns'):
-            cols = df.iloc[specs.get('header')-1, 0:].astype('Int64').astype(str)
+            cols = pd.to_numeric(df.iloc[specs.get('header')-1, 0:].fillna(0)).astype('Int64').astype(str)
         else:
             headers_list = []
             header_row = specs.get('header_row_list')
