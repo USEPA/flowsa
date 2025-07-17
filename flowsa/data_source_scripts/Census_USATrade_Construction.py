@@ -11,9 +11,10 @@ https://www.census.gov/data/developers/data-sets/international-trade.html
 """
 import json
 import pandas as pd
+import numpy as np
 from flowsa.common import datapath
 from flowsa.flowsa_log import log
-from flowsa.location import apply_county_FIPS
+from flowsa.location import apply_county_FIPS, US_FIPS
 from flowsa.flowbyfunctions import assign_fips_location_system
 
 
@@ -70,7 +71,7 @@ def census_usatrade_call(*, resp, url, **_):
         data=census_json[1:len(census_json)], columns=census_json[0])
 
     df_census = (df_census
-                 .assign(Type = 'exports' if 'exports' in url else 'imports'))
+                 .assign(Type = 'Exports' if 'exports' in url else 'Imports'))
     
     return df_census
 
@@ -107,18 +108,24 @@ def census_usatrade_parse(*, df_list, year, **_):
           .assign(FlowAmount = lambda x: x['CON_VAL_YR'].astype(float)
                   .fillna(x['ALL_VAL_YR'].astype(float)))
           .rename(columns={'CODE':'FlowName',
-                           'Type':'Compartment',
+                           'Type':'ActivityProducedBy',
                            'STATE':'State',
                            'YEAR':'Year',
                            'CTY_NAME':'Description'})
           .drop(columns=['CTY_CODE', 'CON_VAL_YR', 'MONTH', 'ALL_VAL_YR'], errors='ignore')
+          .assign(State = lambda x: x['State'].replace('-', 'US'))
           )
 
     # replace the 2-state abbreviations with FIPS code
-    df = apply_county_FIPS(df).drop(columns=['State', 'County']) # defaults to FIPS 2015
+    df = apply_county_FIPS(df)  # defaults to FIPS 2015
+    df = (df
+          .assign(Location = lambda x: np.where(x['State'] == "Us", US_FIPS, x['Location']))
+          .drop(columns=['State', 'County'])
+          .dropna(subset='Location') # drops data from territories
+          )
 
     # check for duplicate rows    
-    x = df.drop_duplicates(subset=['FlowName', 'Year', 'Compartment',
+    x = df.drop_duplicates(subset=['FlowName', 'Year', 'ActivityProducedBy',
                                    'Location', 'Description'])
     if len(x) < len(df):
         print('ERROR check duplicates')
@@ -126,6 +133,7 @@ def census_usatrade_parse(*, df_list, year, **_):
     # add hard coded data
     df['Class'] = 'Money'
     df['SourceName'] = 'Census_USATrade'
+    df['Compartment'] = None
     df['Unit'] = 'USD'
     df['FlowType'] = 'TECHNOSPHERE_FLOW'
     df['LocationSystem'] = 'FIPS_2015'
@@ -139,4 +147,3 @@ if __name__ == "__main__":
     import flowsa
     flowsa.generateflowbyactivity.main(source='Census_USATrade_Construction', year=2024)
     fba = flowsa.getFlowByActivity('Census_USATrade_Construction', 2024)
-    fba.to_csv('C:/Users/EBell/OneDrive - Eastern Research Group/Desktop/fba.csv',index=False)
