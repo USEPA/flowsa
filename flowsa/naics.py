@@ -2,6 +2,7 @@ from typing import Literal
 import pandas as pd
 import numpy as np
 import re
+from flowsa.flowbyfunctions import aggregator
 from flowsa.flowsa_log import vlog, log
 from flowsa.dqi import adjust_dqi_reliability_collection_scores
 from . import (common, settings)
@@ -569,12 +570,18 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
     # if activities are naics-like, also update the NAICS in the activity cols. necessary for aggregation and
     # resetting the group totals - otherwise "direct" allocation will be forced to "equal" allocation and the FBS
     # results will be incorrect
-    if df_load.config['data_format'] in ['FBS']:
-        activity_schema = "NAICS"
-    else:
-        activity_schema = df_load.config['activity_schema'] if isinstance(
-                df_load.config['activity_schema'], str) else df_load.config.get(
-                'activity_schema', {}).get(df_load.config['year'])
+    try:
+        if df_load.config['data_format'] in ['FBS']:
+            activity_schema = "NAICS"
+        else:
+            activity_schema = df_load.config['activity_schema'] if isinstance(
+                    df_load.config['activity_schema'], str) else df_load.config.get(
+                    'activity_schema', {}).get(df_load.config['year'])
+    except AttributeError:
+        # The only non FBA/FBS run via FLOWSA are data pulled from stewi, which are naics-based, however, stewi data
+        # contains APB and ACB cols and does not have the group_id/group_totals and goes through separate allocation
+        # methods, so assigning schema as None
+        activity_schema = "None"
 
     if "NAICS" in activity_schema and "ActivityProducedBy" in df_load.columns:
         column_headers += ['ActivityProducedBy', 'ActivityConsumedBy']
@@ -650,14 +657,24 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
     # further, incorrectly, allocate FlowAmounts (such as through equal allocation)
 
     # aggregate data
-    if "NAICS" in activity_schema:
-        df2 = (df
-               .drop(columns=['group_id', 'group_total'])
-               .aggregate_flowby(columns_to_group_by=df.groupby_cols)
-               ).reset_index(drop=True)
-        df2 = df2.assign(group_id=df2.index, group_total=df2['FlowAmount'])
+    if hasattr(df, 'aggregate_flowby'):
+        if "NAICS" in activity_schema:
+            df2 = (df
+                   .drop(columns=['group_id', 'group_total'])
+                   .aggregate_flowby(columns_to_group_by=df.groupby_cols)
+                   ).reset_index(drop=True)
+            df2 = df2.assign(group_id=df2.index, group_total=df2['FlowAmount'])
+        else:
+            df2 = df.aggregate_flowby(columns_to_group_by=df.groupby_cols+['group_id'])
+    # stewi data are imported as DF, not as FBA/FBS Class Objects
     else:
-        df2 = df.aggregate_flowby(columns_to_group_by=df.groupby_cols+['group_id'])
+        possible_column_headers = ('FlowAmount', 'Spread', 'Min', 'Max', 'DataReliability',
+                                   'TemporalCorrelation', 'GeographicalCorrelation',
+                                   'TechnologicalCorrelation', 'DataCollection', 'Description')
+        # list of column headers to group aggregation by
+        groupby_cols = [e for e in df.columns.values.tolist()
+                        if e not in possible_column_headers]
+        df2 = aggregator(df, groupby_cols)
 
     return df2
 
