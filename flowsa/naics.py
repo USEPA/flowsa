@@ -567,6 +567,16 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
     if 'Sector' in df_load:
         column_headers = ['Sector']
 
+    # if activities are naics-like, also update the NAICS in the activity cols. necessary for aggregation and
+    # resetting the group totals - otherwise "direct" allocation will be forced to "equal" allocation and the FBS
+    # results will be incorrect
+    activity_schema = df_load.config['activity_schema'] if isinstance(
+            df_load.config['activity_schema'], str) else df_load.config.get(
+            'activity_schema', {}).get(df_load.config['year'])
+
+    if "NAICS" in activity_schema and "ActivityProducedBy" in df_load.columns:
+        column_headers += ['ActivityProducedBy', 'ActivityConsumedBy']
+
     # load the mastercrosswalk and subset by sectorsourcename,
     # save values to list
     if targetsectorsourcename == sectorsourcename:
@@ -630,23 +640,25 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
                 continue
             # drop rows where column value is in the nonnaics list
             df = df[~df[c].isin(nonsectors)]
+
+    # if activities are naics-like, must reset group_id and group_total by grouping through the reset APB and ACB
+    # columns. This is necessary for cases like QCEW data, where we would be left with duplicate group_id rows when
+    # there is a one:many mapping upon converting NAICS years. This function already correctly allocated the
+    # FlowAmount to the new sector values. Do not want duplicated group_id rows because later steps in flowsa will
+    # further, incorrectly, allocate FlowAmounts (such as through equal allocation)
+
     # aggregate data
-    if hasattr(df, 'aggregate_flowby'):
-        df = df.aggregate_flowby(columns_to_group_by=df.groupby_cols+['group_id'])
-
+    if "NAICS" in activity_schema:
+        df2 = (df
+               .drop(columns=['group_id', 'group_total'])
+               .aggregate_flowby(columns_to_group_by=df.groupby_cols)
+               ).reset_index(drop=True)
+        df2 = df2.assign(group_id=df2.index, group_total=df2['FlowAmount'])
     else:
-        # todo: drop else statement once all dataframes are converted
-        #  to classes
-        possible_column_headers = \
-            ('FlowAmount', 'Spread', 'Min', 'Max', 'DataReliability',
-             'TemporalCorrelation', 'GeographicalCorrelation',
-             'TechnologicalCorrelation', 'DataCollection', 'Description')
-        # list of column headers to group aggregation by
-        groupby_cols = [e for e in df.columns.values.tolist()
-                        if e not in possible_column_headers]
-        df = aggregator(df, groupby_cols)
+        df2 = df.aggregate_flowby(columns_to_group_by=df.groupby_cols+['group_id'])
 
-    return df
+    return df2
+
 
 def return_max_sector_level(
     industry_spec: dict,
