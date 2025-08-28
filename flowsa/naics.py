@@ -2,7 +2,6 @@ from typing import Literal
 import pandas as pd
 import numpy as np
 import re
-from flowsa.flowbyfunctions import aggregator
 from flowsa.flowsa_log import vlog, log
 from flowsa.dqi import adjust_dqi_reliability_collection_scores
 from . import (common, settings)
@@ -570,9 +569,12 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
     # if activities are naics-like, also update the NAICS in the activity cols. necessary for aggregation and
     # resetting the group totals - otherwise "direct" allocation will be forced to "equal" allocation and the FBS
     # results will be incorrect
-    activity_schema = df_load.config['activity_schema'] if isinstance(
-            df_load.config['activity_schema'], str) else df_load.config.get(
-            'activity_schema', {}).get(df_load.config['year'])
+    if df_load.config['data_format'] in ['FBS']:
+        activity_schema = "NAICS"
+    else:
+        activity_schema = df_load.config['activity_schema'] if isinstance(
+                df_load.config['activity_schema'], str) else df_load.config.get(
+                'activity_schema', {}).get(df_load.config['year'])
 
     if "NAICS" in activity_schema and "ActivityProducedBy" in df_load.columns:
         column_headers += ['ActivityProducedBy', 'ActivityConsumedBy']
