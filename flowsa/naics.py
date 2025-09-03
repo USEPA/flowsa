@@ -630,11 +630,11 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
                 cw_melt = cw_melt[cw_melt['NAICS'] == sector].drop(columns=['naics_count', 'length'])
                 cw_melt_list.append(cw_melt)
 
-        # Merge generated crosswalks
-        cw_melt = pd.concat(cw_melt_list, ignore_index=True)
-
         # if sectors were found to represent a different naics year, use those values to map to target naics
-        if len(cw_melt) > 0:
+        if len(cw_melt_list) > 0:
+            # Merge generated crosswalks
+            cw_melt = pd.concat(cw_melt_list, ignore_index=True)
+
             df = replace_sectors_with_targetsectors(df, nonsectors, cw_melt, column_headers, targetsectorsourcename)
         # check if there are any sectors that are not in
         # the target sector crosswalk and if so, drop those sectors
