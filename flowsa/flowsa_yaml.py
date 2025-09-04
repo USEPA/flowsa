@@ -143,6 +143,8 @@ def load(stream: IO, external_path: str = None) -> dict:
         loader.external_paths_to_search.append(
             f'{external_path}flowbysectormethods/')
         loader.external_paths_to_search.append(
+            f'{external_path}flowbysectoractivitysets/')
+        loader.external_paths_to_search.append(
             path.dirname(external_path))
         loader.external_path_to_pass = external_path
     try:

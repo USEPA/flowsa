@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='flowsa',
-    version='2.0.6',
+    version='2.1.0',
     packages=find_packages(),
     package_dir={'flowsa': 'flowsa'},
     include_package_data=True,
@@ -39,7 +39,7 @@ setup(
     license='MIT',
     author='Catherine Birney, Ben Young, Matthew Chambers, and Wesley '
            'Ingwersen',
-    author_email='ingwersen.wesley@epa.gov',
+    author_email='catherine.birney@erg.com',
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: IDE",
