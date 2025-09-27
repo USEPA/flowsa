@@ -18,8 +18,20 @@ BEA_NIPA,Research and development (16),NAICS_2017_Code,,,
 BEA_NIPA,National defense (17),NAICS_2017_Code,,,
 BEA_NIPA,Consumption expenditures (18),NAICS_2017_Code,928110,,Federal general government (defense)
 BEA_NIPA,National defense (19),NAICS_2017_Code,,,
-BEA_NIPA,Structures (20),NAICS_2017_Code,,,
-BEA_NIPA,Equipment (21),NAICS_2017_Code,,,
+BEA_NIPA,Structures (20),NAICS_2017_Code,238990,,Health care structures
+BEA_NIPA,Structures (20),NAICS_2017_Code,238390,,Educational and vocational structures
+BEA_NIPA,Structures (20),NAICS_2017_Code,236220,,Office and commercial structures
+BEA_NIPA,Structures (20),NAICS_2017_Code,236116,,Multifamily residential structures
+BEA_NIPA,Structures (20),NAICS_2017_Code,238290,,Other residential structures
+BEA_NIPA,Structures (20),NAICS_2017_Code,236210,,Manufacturing structures
+BEA_NIPA,Structures (20),NAICS_2017_Code,237990,,Other nonresidential structures
+BEA_NIPA,Structures (20),NAICS_2017_Code,237110,,Power and communication structures
+BEA_NIPA,Structures (20),NAICS_2017_Code,236115,,Single-family residential structures
+BEA_NIPA,Structures (20),NAICS_2017_Code,237310,,Transportation structures and highways and streets
+BEA_NIPA,Equipment (21),NAICS_2017_Code,31,,
+BEA_NIPA,Equipment (21),NAICS_2017_Code,32,,
+BEA_NIPA,Equipment (21),NAICS_2017_Code,33,,
+BEA_NIPA,Equipment (21),NAICS_2017_Code,5415,,
 BEA_NIPA,Intellectual property products (22),NAICS_2017_Code,,,
 BEA_NIPA,Software (23),NAICS_2017_Code,51121,,Software publishers
 BEA_NIPA,Software (23),NAICS_2017_Code,5182,,"Data processing, hosting, and related services"
@@ -28,25 +40,55 @@ BEA_NIPA,Research and development (24),NAICS_2017_Code,5417,,Scientific research
 BEA_NIPA,Nondefense (25),NAICS_2017_Code,,,
 BEA_NIPA,Consumption expenditures (26),NAICS_2017_Code,928120,,Federal general government (nondefense)
 BEA_NIPA,Nondefense (27),NAICS_2017_Code,,,
-BEA_NIPA,Structures (28),NAICS_2017_Code,,,
-BEA_NIPA,Equipment (29),NAICS_2017_Code,,,
+BEA_NIPA,Structures (28),NAICS_2017_Code,238990,,Health care structures
+BEA_NIPA,Structures (28),NAICS_2017_Code,238390,,Educational and vocational structures
+BEA_NIPA,Structures (28),NAICS_2017_Code,236220,,Office and commercial structures
+BEA_NIPA,Structures (28),NAICS_2017_Code,236210,,Manufacturing structures
+BEA_NIPA,Structures (28),NAICS_2017_Code,237990,,Other nonresidential structures
+BEA_NIPA,Structures (28),NAICS_2017_Code,237110,,Power and communication structures
+BEA_NIPA,Structures (28),NAICS_2017_Code,237310,,Transportation structures and highways and streets
+BEA_NIPA,Equipment (29),NAICS_2017_Code,31,,
+BEA_NIPA,Equipment (29),NAICS_2017_Code,32,,
+BEA_NIPA,Equipment (29),NAICS_2017_Code,33,,
+BEA_NIPA,Equipment (29),NAICS_2017_Code,5415,,
 BEA_NIPA,Intellectual property products (30),NAICS_2017_Code,,,
 BEA_NIPA,Software (31),NAICS_2017_Code,51121,,Software publishers
 BEA_NIPA,Software (31),NAICS_2017_Code,5182,,"Data processing, hosting, and related services"
 BEA_NIPA,Software (31),NAICS_2017_Code,541511,,Custom computer programming services
 BEA_NIPA,Research and development (32),NAICS_2017_Code,5417,,Scientific research and development services
 BEA_NIPA,State and local (33),NAICS_2017_Code,,,
-BEA_NIPA,State and local (34),NAICS_2017_Code,,,
+BEA_NIPA,State and local (34),NAICS_2017_Code,923110,,State and local government (educational services); GSLGE
+BEA_NIPA,State and local (34),NAICS_2017_Code,923120,,State and local government (hospitals and health services); GSLGH
+BEA_NIPA,State and local (34),NAICS_2017_Code,923130,,State and local government (other services); GSLGO
 BEA_NIPA,State and local (35),NAICS_2017_Code,,,
-BEA_NIPA,Structures (36),NAICS_2017_Code,,,
-BEA_NIPA,Equipment (37),NAICS_2017_Code,,,
+BEA_NIPA,Structures (36),NAICS_2017_Code,238990,,Health care structures
+BEA_NIPA,Structures (36),NAICS_2017_Code,238390,,Educational and vocational structures
+BEA_NIPA,Structures (36),NAICS_2017_Code,236220,,Office and commercial structures
+BEA_NIPA,Structures (36),NAICS_2017_Code,236116,,Multifamily residential structures
+BEA_NIPA,Structures (36),NAICS_2017_Code,238290,,Other residential structures
+BEA_NIPA,Structures (36),NAICS_2017_Code,236210,,Manufacturing structures
+BEA_NIPA,Structures (36),NAICS_2017_Code,237990,,Other nonresidential structures
+BEA_NIPA,Structures (36),NAICS_2017_Code,237110,,Power and communication structures
+BEA_NIPA,Structures (36),NAICS_2017_Code,236115,,Single-family residential structures
+BEA_NIPA,Structures (36),NAICS_2017_Code,237310,,Transportation structures and highways and streets
+BEA_NIPA,Equipment (37),NAICS_2017_Code,31,,
+BEA_NIPA,Equipment (37),NAICS_2017_Code,32,,
+BEA_NIPA,Equipment (37),NAICS_2017_Code,33,,
+BEA_NIPA,Equipment (37),NAICS_2017_Code,5415,,
 BEA_NIPA,Intellectual property products (38),NAICS_2017_Code,,,
 BEA_NIPA,Software (39),NAICS_2017_Code,51121,,Software publishers
 BEA_NIPA,Software (39),NAICS_2017_Code,5182,,"Data processing, hosting, and related services"
 BEA_NIPA,Software (39),NAICS_2017_Code,541511,,Custom computer programming services
 BEA_NIPA,Research and development (40),NAICS_2017_Code,5417,,Scientific research and development services
 BEA_NIPA,Federal Government Defense Consumption Expenditures,NAICS_2017_Code,F06C00,,
+BEA_NIPA,Federal Government Defense Investment in Equipment,NAICS_2017_Code,F06E00,,
+BEA_NIPA,Federal Government Defense Investment in Structures,NAICS_2017_Code,F06S00,,
 BEA_NIPA,Federal Government Nondefense Consumption Expenditures,NAICS_2017_Code,F07C00,,
+BEA_NIPA,Federal Government Nondefense Investment in Equipment,NAICS_2017_Code,F07E00,,
+BEA_NIPA,Federal Government Nondefense Investment in Structures,NAICS_2017_Code,F07S00,,
 BEA_NIPA,Federal Government Defense IP,NAICS_2017_Code,F06N00,,
 BEA_NIPA,Federal Government Nondefense IP,NAICS_2017_Code,F07N00,,
+BEA_NIPA,State and Local Consumption Expenditures,NAICS_2017_Code,F10C00,,
+BEA_NIPA,State and Local Investment in Equipment,NAICS_2017_Code,F10E00,,
+BEA_NIPA,State and Local Investment in Structures,NAICS_2017_Code,F10S00,,
 BEA_NIPA,State and Local IP,NAICS_2017_Code,F10N00,,

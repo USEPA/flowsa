@@ -2,17 +2,17 @@ ActivitySourceName,Activity,SectorSourceName,Sector,SectorType,Note
 BEA_NIPA,Private fixed investment in structures (1),NAICS_2017_Code,,,
 BEA_NIPA,Structures (2),NAICS_2017_Code,,,
 BEA_NIPA,Commercial and health care (3),NAICS_2017_Code,,,
-BEA_NIPA,Office (4),NAICS_2017_Code,,,Office and commercial structures; 2332A0
-BEA_NIPA,Health care (7),NAICS_2017_Code,,,Health care structures; 233210
+BEA_NIPA,Office (4),NAICS_2017_Code,236220,,Office and commercial structures; 2332A0
+BEA_NIPA,Health care (7),NAICS_2017_Code,238990,,Health care structures; 233210
 BEA_NIPA,Hospitals and special care (8),NAICS_2017_Code,,,
 BEA_NIPA,Hospitals (9),NAICS_2017_Code,,,
 BEA_NIPA,Special care (10),NAICS_2017_Code,,,
 BEA_NIPA,Medical buildings (11),NAICS_2017_Code,,,
-BEA_NIPA,Multimerchandise shopping (12),NAICS_2017_Code,,,Office and commercial structures; 2332A0
-BEA_NIPA,Food and beverage establishments (13),NAICS_2017_Code,,,Office and commercial structures; 2332A0
-BEA_NIPA,Warehouses (14),NAICS_2017_Code,,,Office and commercial structures; 2332A0
-BEA_NIPA,Other commercial (15),NAICS_2017_Code,,,Office and commercial structures; 2332A0
-BEA_NIPA,Manufacturing (16),NAICS_2017_Code,,,Manufacturing structures; 233230
+BEA_NIPA,Multimerchandise shopping (12),NAICS_2017_Code,236220,,Office and commercial structures; 2332A0
+BEA_NIPA,Food and beverage establishments (13),NAICS_2017_Code,236220,,Office and commercial structures; 2332A0
+BEA_NIPA,Warehouses (14),NAICS_2017_Code,236220,,Office and commercial structures; 2332A0
+BEA_NIPA,Other commercial (15),NAICS_2017_Code,236220,,Office and commercial structures; 2332A0
+BEA_NIPA,Manufacturing (16),NAICS_2017_Code,236210,,Manufacturing structures; 233230
 BEA_NIPA,Power and communication (17),NAICS_2017_Code,237110,,Power and communication structures; 233240
 BEA_NIPA,Power (18),NAICS_2017_Code,,,
 BEA_NIPA,Electric (19),NAICS_2017_Code,,,
@@ -33,7 +33,7 @@ BEA_NIPA,Mining (26),NAICS_2017_Code,213114,,Other support activities for mining
 BEA_NIPA,Mining (26),NAICS_2017_Code,213115,,Other support activities for mining
 BEA_NIPA,Other structures (27),NAICS_2017_Code,,,
 BEA_NIPA,Religious (28),NAICS_2017_Code,237990,,Other nonresidential structures; 2332D0
-BEA_NIPA,Educational and vocational (29),NAICS_2017_Code,,,Educational and vocational structures; 233262
+BEA_NIPA,Educational and vocational (29),NAICS_2017_Code,238390,,Educational and vocational structures; 233262
 BEA_NIPA,Lodging (30),NAICS_2017_Code,237990,,Other nonresidential structures; 2332D0
 BEA_NIPA,Amusement and recreation (31),NAICS_2017_Code,237990,,Other nonresidential structures; 2332D0
 BEA_NIPA,Transportation (32),NAICS_2017_Code,237310,,Transportation structures and highways and streets; 2332C0
@@ -56,8 +56,8 @@ BEA_NIPA,Manufactured homes (44),NAICS_2017_Code,32196,,All other wood product m
 BEA_NIPA,Manufactured homes (44),NAICS_2017_Code,32197,,All other wood product manufacturing
 BEA_NIPA,Manufactured homes (44),NAICS_2017_Code,32198,,All other wood product manufacturing
 BEA_NIPA,Manufactured homes (44),NAICS_2017_Code,32199,,All other wood product manufacturing
-BEA_NIPA,Dormitories (45),NAICS_2017_Code,,,
-BEA_NIPA,Improvements (46),NAICS_2017_Code,,,
+BEA_NIPA,Dormitories (45),NAICS_2017_Code,238290,,Other residential structures; 2334A0
+BEA_NIPA,Improvements (46),NAICS_2017_Code,238290,,Other residential structures; 2334A0
 BEA_NIPA,Brokers' commissions and other ownership transfer costs (47),NAICS_2017_Code,524114,,"Insurance carriers, except direct life"
 BEA_NIPA,Brokers' commissions and other ownership transfer costs (47),NAICS_2017_Code,52412,,"Insurance carriers, except direct life"
 BEA_NIPA,Brokers' commissions and other ownership transfer costs (47),NAICS_2017_Code,52413,,"Insurance carriers, except direct life"

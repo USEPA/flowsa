@@ -78,6 +78,21 @@ source_names:
         #     selection_fields:
         #       ActivityConsumedBy: {'F06C00': ''}
 
+      FD_Gov_FedD_Equipment:
+        activity_to_sector_mapping: BEA_NIPA_FD_Gov
+        selection_fields:
+          Table: T30905 # Table 3.9.5. Government Consumption Expenditures and Gross Investment
+          ActivityProducedBy:
+            - Equipment (21)
+        assign_fields:
+          ActivityConsumedBy: Federal Government Defense Investment in Equipment
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityConsumedBy: {'F06E00': ''}
+
       FD_Gov_FedD_IP:
         activity_to_sector_mapping: BEA_NIPA_FD_Gov
         selection_fields:
@@ -94,6 +109,21 @@ source_names:
             selection_fields:
               ActivityConsumedBy: {'F06N00': ''}
 
+      FD_Gov_FedD_Structures:
+        activity_to_sector_mapping: BEA_NIPA_FD_Gov
+        selection_fields:
+          Table: T30905 # Table 3.9.5. Government Consumption Expenditures and Gross Investment
+          ActivityProducedBy:
+            - Structures (20)
+        assign_fields:
+          ActivityConsumedBy: Federal Government Defense Investment in Structures
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityConsumedBy: {'F06S00': ''}
+
       FD_Gov_FedND_CE:
         activity_to_sector_mapping: BEA_NIPA_FD_Gov
         selection_fields:
@@ -108,6 +138,36 @@ source_names:
         #     <<: *bea
         #     selection_fields:
         #       ActivityConsumedBy: {'F07C00': ''}
+
+      FD_Gov_FedND_Structures:
+        activity_to_sector_mapping: BEA_NIPA_FD_Gov
+        selection_fields:
+          Table: T30905 # Table 3.9.5. Government Consumption Expenditures and Gross Investment
+          ActivityProducedBy:
+            - Structures (28)
+        assign_fields:
+          ActivityConsumedBy: Federal Government Nondefense Investment in Structures
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityConsumedBy: {'F07S00': ''}
+
+      FD_Gov_FedND_Equipment:
+        activity_to_sector_mapping: BEA_NIPA_FD_Gov
+        selection_fields:
+          Table: T30905 # Table 3.9.5. Government Consumption Expenditures and Gross Investment
+          ActivityProducedBy:
+            - Equipment (29)
+        assign_fields:
+          ActivityConsumedBy: Federal Government Nondefense Investment in Equipment
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityConsumedBy: {'F07E00': ''}
 
       FD_Gov_FedND_IP:
         activity_to_sector_mapping: BEA_NIPA_FD_Gov
@@ -124,6 +184,51 @@ source_names:
             <<: *bea
             selection_fields:
               ActivityConsumedBy: {'F07N00': ''}
+
+      FD_Gov_SLG_CE:
+        activity_to_sector_mapping: BEA_NIPA_FD_Gov
+        selection_fields:
+          Table: T30905 # Table 3.9.5. Government Consumption Expenditures and Gross Investment
+          ActivityProducedBy:
+            - State and local (34)
+        assign_fields:
+          ActivityConsumedBy: State and Local Consumption Expenditures
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityConsumedBy: {'F10C00': ''}
+
+      FD_Gov_SLG_Equipment:
+        activity_to_sector_mapping: BEA_NIPA_FD_Gov
+        selection_fields:
+          Table: T30905 # Table 3.9.5. Government Consumption Expenditures and Gross Investment
+          ActivityProducedBy:
+            - Equipment (37)
+        assign_fields:
+          ActivityConsumedBy: State and Local Investment in Equipment
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityConsumedBy: {'F10E00': ''}
+
+      FD_Gov_SLG_Structures:
+        activity_to_sector_mapping: BEA_NIPA_FD_Gov
+        selection_fields:
+          Table: T30905 # Table 3.9.5. Government Consumption Expenditures and Gross Investment
+          ActivityProducedBy:
+            - Structures (36)
+        assign_fields:
+          ActivityConsumedBy: State and Local Investment in Structures
+        attribution_method: proportional
+        attribution_source:
+          BEA_Detail_Use_SUT:
+            <<: *bea
+            selection_fields:
+              ActivityConsumedBy: {'F10S00': ''}
 
       FD_Gov_SLG_IP:
         activity_to_sector_mapping: BEA_NIPA_FD_Gov
@@ -150,6 +255,7 @@ source_names:
            - Multifamily (42)
            - Manufactured homes (44)
            - Dormitories (45)
+           - Improvements (46)
            - "Brokers' commissions and other ownership transfer costs (47)"
            - Net purchases of used structures (48)
         assign_fields:
