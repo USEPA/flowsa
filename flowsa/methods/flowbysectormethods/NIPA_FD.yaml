@@ -42,7 +42,7 @@ source_names:
         selection_fields:
           Table: T50605 # Table 5.6.5. Private Fixed Investment in Intellectual Property Products by Type 
           ActivityProducedBy:
-           - Research and development (6)
+            - Research and development (6)
         assign_fields:
           ActivityConsumedBy: Private Fixed Investment
         attribution_method: direct
@@ -53,7 +53,7 @@ source_names:
           Table: T50605 # Table 5.6.5. Private Fixed Investment in Intellectual Property Products by Type 
         exclusion_fields:
           ActivityProducedBy:
-           - Research and development (6)
+            - Research and development (6)
         assign_fields:
           ActivityConsumedBy: Private Fixed Investment
         attribution_method: proportional
@@ -68,23 +68,23 @@ source_names:
         selection_fields:
           Table: T30905 # Table 3.9.5. Government Consumption Expenditures and Gross Investment
           ActivityProducedBy:
-           - Consumption expenditures (18)
+            - Consumption expenditures (18)
         assign_fields:
           ActivityConsumedBy: Federal Government Defense Consumption Expenditures
-        attribution_method: proportional
-        attribution_source:
-          BEA_Detail_Use_SUT:
-            <<: *bea
-            selection_fields:
-              ActivityConsumedBy: {'F06C00': ''}
+        attribution_method: direct
+        # attribution_source:
+        #   BEA_Detail_Use_SUT:
+        #     <<: *bea
+        #     selection_fields:
+        #       ActivityConsumedBy: {'F06C00': ''}
 
       FD_Gov_FedD_IP:
         activity_to_sector_mapping: BEA_NIPA_FD_Gov
         selection_fields:
           Table: T30905 # Table 3.9.5. Government Consumption Expenditures and Gross Investment
           ActivityProducedBy:
-           - Software (23)
-           - Research and development (24)
+            - Software (23)
+            - Research and development (24) # Direct
         assign_fields:
           ActivityConsumedBy: Federal Government Defense IP
         attribution_method: proportional
@@ -99,23 +99,23 @@ source_names:
         selection_fields:
           Table: T30905 # Table 3.9.5. Government Consumption Expenditures and Gross Investment
           ActivityProducedBy:
-           - Consumption expenditures (26)
+            - Consumption expenditures (26)
         assign_fields:
           ActivityConsumedBy: Federal Government Nondefense Consumption Expenditures
-        attribution_method: proportional
-        attribution_source:
-          BEA_Detail_Use_SUT:
-            <<: *bea
-            selection_fields:
-              ActivityConsumedBy: {'F07C00': ''}
+        attribution_method: direct
+        # attribution_source:
+        #   BEA_Detail_Use_SUT:
+        #     <<: *bea
+        #     selection_fields:
+        #       ActivityConsumedBy: {'F07C00': ''}
 
       FD_Gov_FedND_IP:
         activity_to_sector_mapping: BEA_NIPA_FD_Gov
         selection_fields:
           Table: T30905 # Table 3.9.5. Government Consumption Expenditures and Gross Investment
           ActivityProducedBy:
-           - Software (31)
-           - Research and development (32)
+            - Software (31)
+            - Research and development (32) # Direct
         assign_fields:
           ActivityConsumedBy: Federal Government Nondefense IP
         attribution_method: proportional
@@ -130,8 +130,8 @@ source_names:
         selection_fields:
           Table: T30905 # Table 3.9.5. Government Consumption Expenditures and Gross Investment
           ActivityProducedBy:
-           - Software (39)
-           - Research and development (40)
+            - Software (39)
+            - Research and development (40) # Direct
         assign_fields:
           ActivityConsumedBy: State and Local IP
         attribution_method: proportional
@@ -146,12 +146,12 @@ source_names:
         selection_fields:
           Table: U50405 # Table 5.4.5. Private Fixed Investment in Structures by Type
           ActivityProducedBy:
-           - Single family (39)
-           - Multifamily (40)
-           - Manufactured homes (42)
-           - Dormitories (43)
-           - "Brokers' commissions and other ownership transfer costs (45)"
-           - Net purchases of used structures (46)
+           - Single family (41)
+           - Multifamily (42)
+           - Manufactured homes (44)
+           - Dormitories (45)
+           - "Brokers' commissions and other ownership transfer costs (47)"
+           - Net purchases of used structures (48)
         assign_fields:
           ActivityConsumedBy: Residential Investment
         attribution_method: proportional
@@ -167,24 +167,24 @@ source_names:
           Table: U50405 # Table 5.4.5. Private Fixed Investment in Structures by Type
           ActivityProducedBy:
            - Office (4)
-           - Health care (5)
-           - Multimerchandise shopping (10)
-           - Food and beverage establishments (11)
-           - Warehouses (12)
-           - Other commercial (13)
-           - Manufacturing (14)
-           - Power and communication (15)
-           - Petroleum and natural gas (23)
-           - Mining (24)
-           - Religious (26)
-           - Educational and vocational (27)
-           - Lodging (28)
-           - Amusement and recreation (29)
-           - Transportation (30)
-           - Farm (33)
-           - Other (34)
-           - "Brokers' commissions on sale of structures (35)"
-           - Net purchases of used structures (36)
+           - Health care (7)
+           - Multimerchandise shopping (12)
+           - Food and beverage establishments (13)
+           - Warehouses (14)
+           - Other commercial (15)
+           - Manufacturing (16)
+           - Power and communication (17)
+           - Petroleum and natural gas (25)
+           - Mining (26)
+           - Religious (28)
+           - Educational and vocational (29)
+           - Lodging (30)
+           - Amusement and recreation (31)
+           - Transportation (32)
+           - Farm (35)
+           - Other (36)
+           - "Brokers' commissions on sale of structures (37)"
+           - Net purchases of used structures (38)
         assign_fields:
           ActivityConsumedBy: Nonresidential Investment in Structures
         attribution_method: proportional
