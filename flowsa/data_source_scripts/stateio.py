@@ -34,7 +34,7 @@ def parse_statior(*, source, year, config, **_):
 
     data_dict = {}
 
-    # uses rpy2
+    # uses rpy2, known to work with 3.5.12 and python 3.12
     # this .rds is stored as a list of named dataframes by state
     for state in us_state_abbrev.keys():
          matrix = states.rx2(state)
@@ -82,5 +82,6 @@ if __name__ == "__main__":
     # source = 'stateio_Industry_GO'
     # source = 'stateio_Make_Summary'
     source = 'stateio_Use_Summary'
-    flowsa.generateflowbyactivity.main(year=2017, source=source)
-    fba = flowsa.flowbyactivity.getFlowByActivity(source, 2017)
+    for y in range(2012, 2024):
+        flowsa.generateflowbyactivity.main(year=y, source=source)
+    fba = flowsa.flowbyactivity.getFlowByActivity(source, 2022)

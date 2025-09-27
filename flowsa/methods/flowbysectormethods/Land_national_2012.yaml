@@ -30,7 +30,6 @@ sources_to_cache:
       Class: Land
       Location: !include:Location_common.yaml:_national_location
       FlowName: "Approximate Enclosed Floorspace of All Buildings Onsite"
-      Year: {2014: 2012} # replace year to align with method year
     clean_fba: !script_function:EIA_MECS mecs_land_fba_cleanup
     activity_sets:
       mecs_land: # all activities in eia mecs land crosswalk
@@ -107,7 +106,6 @@ source_names:
                       Class: Land
                       FlowName:
                         - "AG LAND, CROPLAND, HARVESTED"
-#                    estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
                     attribution_method: equal
               cropland_attribution-orchards:
                 selection_fields:
@@ -125,7 +123,6 @@ source_names:
             selection_fields:
               Class: Land
               FlowName: "FARM OPERATIONS"
-#            estimate_suppressed: !clean_function:flowbyclean estimate_suppressed_sectors_equal_attribution
             attribution_method: equal
       forest:
         selection_fields:

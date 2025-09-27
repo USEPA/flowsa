@@ -7,7 +7,7 @@ api_name: USDA_ERS_FIWS
 api_key_required: false
 format: csv
 url:
-  base_url: https://www.ers.usda.gov/media/3ynp11al/farmincome_wealthstatisticsdata_december2024.zip
+  base_url: https://www.ers.usda.gov/media/4532/farmincomewealthstatisticsdata2025-02zip
 call_response_fxn: !script_function:USDA_ERS_FIWS fiws_call
 parse_response_fxn: !script_function:USDA_ERS_FIWS fiws_parse
 years:

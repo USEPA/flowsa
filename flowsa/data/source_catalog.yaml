@@ -82,9 +82,18 @@ BLS_QCEW:
     - Employment
     - Money
     - Other
-  activity_schema: {2002: NAICS_2002_Code,
+  activity_schema: {2000: NAICS_2002_Code, # pulled from https://www.bls.gov/cew/classifications/industry/home.htm
+                    2001: NAICS_2002_Code,
+                    2002: NAICS_2002_Code,
+                    2003: NAICS_2002_Code,
+                    2004: NAICS_2002_Code,
+                    2005: NAICS_2002_Code,
+                    2006: NAICS_2002_Code,
+                    2007: NAICS_2007_Code,
+                    2008: NAICS_2007_Code,
+                    2009: NAICS_2007_Code,
                     2010: NAICS_2007_Code,
-                    2011: NAICS_2007_Code,
+                    2011: NAICS_2012_Code,
                     2012: NAICS_2012_Code,
                     2013: NAICS_2012_Code,
                     2014: NAICS_2012_Code,
@@ -95,8 +104,8 @@ BLS_QCEW:
                     2019: NAICS_2017_Code,
                     2020: NAICS_2017_Code,
                     2021: NAICS_2017_Code,
-                    2022: NAICS_2017_Code,
-                    2023: NAICS_2017_Code,
+                    2022: NAICS_2022_Code,
+                    2023: NAICS_2022_Code,
                     }
   sector_hierarchy: "parent-completeChild"
 BTS_Airlines:

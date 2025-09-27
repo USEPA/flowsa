@@ -2,6 +2,7 @@ industry_spec:
   default: NAICS_6
 year: 2014
 target_naics_year: 2012
+target_geoscale: state  # used for geographical correlation
 geoscale: state
 
 source_names:

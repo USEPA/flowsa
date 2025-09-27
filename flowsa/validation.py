@@ -81,7 +81,7 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
     # column calculating difference
     dfagg['FlowAmount_Difference'] = \
         dfagg['FlowAmount_Modified'] - dfagg['FlowAmount_Original']
-    dfagg['Percent_Difference'] = (dfagg['FlowAmount_Difference'] /
+    dfagg['Percent_Increase'] = (dfagg['FlowAmount_Difference'] /
                                    dfagg['FlowAmount_Original']) * 100
     # drop rows where difference = 0
     dfagg2 = dfagg[dfagg['FlowAmount_Difference'] != 0].reset_index(drop=True)
@@ -92,14 +92,14 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
         # aggregate diff at the geoscale
         dfagg3 = dfagg.drop(columns=[
             'ActivityProducedBy', 'ActivityConsumedBy',
-            'FlowAmount_Difference', 'Percent_Difference'])
+            'FlowAmount_Difference', 'Percent_Increase'])
         dfagg4 = dfagg3.groupby(flowcols + ['Unit', 'geoscale'],
             dropna=False, as_index=False).agg(
             {'FlowAmount_Original': sum, 'FlowAmount_Modified': sum})
         # column calculating difference
         dfagg4['FlowAmount_Difference'] = \
             dfagg4['FlowAmount_Modified'] - dfagg4['FlowAmount_Original']
-        dfagg4['Percent_Difference'] = (dfagg4['FlowAmount_Difference'] /
+        dfagg4['Percent_Increase'] = (dfagg4['FlowAmount_Difference'] /
                                         dfagg4['FlowAmount_Original']) * 100
         # drop rows where difference = 0
         dfagg5 = dfagg4[
@@ -252,7 +252,7 @@ def compare_FBA_results(source, year, fba1_version=None, fba2_version=None,
     df_m = df_m.assign(FlowAmount_diff=df_m['FlowAmount_fba2']
                        .fillna(0) - df_m['FlowAmount_fba1'].fillna(0))
     df_m = df_m.assign(
-        Percent_Diff=(df_m['FlowAmount_diff']/df_m['FlowAmount_fba1']) * 100)
+        Percent_Increase=(df_m['FlowAmount_diff']/df_m['FlowAmount_fba1']) * 100)
     df_m = df_m[df_m['FlowAmount_diff'].apply(
         lambda x: round(abs(x), 2) != 0)].reset_index(drop=True)
     # if no differences, print, if differences, provide df subset
@@ -336,7 +336,7 @@ def compare_FBS(df1, df2, ignore_metasources=False):
     df_m = df_m.assign(FlowAmount_diff=df_m['FlowAmount_fbs2']
                        .fillna(0) - df_m['FlowAmount_fbs1'].fillna(0))
     df_m = df_m.assign(
-        Percent_Diff=(df_m['FlowAmount_diff']/df_m['FlowAmount_fbs1']) * 100)
+        Percent_Increase=(df_m['FlowAmount_diff']/df_m['FlowAmount_fbs1']) * 100)
     df_m = df_m[df_m['FlowAmount_diff'].apply(
         lambda x: round(abs(x), 2) != 0)].reset_index(drop=True)
     # if no differences, print, if differences, provide df subset
@@ -554,14 +554,14 @@ def compare_geographic_totals(
                             sub2[merge_cols + ['FlowAmount_sub']],
                             how='outer')
             df_m = df_m.assign(
-                FlowAmount_diff=df_m['FlowAmount_nat'] - df_m['FlowAmount_sub'])
-            df_m = df_m.assign(Percent_Diff=(abs(df_m['FlowAmount_diff'] /
+                FlowAmount_diff=df_m['FlowAmount_sub'] - df_m['FlowAmount_nat'])
+            df_m = df_m.assign(Percent_Increase=(abs(df_m['FlowAmount_diff'] /
                                                  df_m['FlowAmount_nat']) * 100))
             df_m = df_m[df_m['FlowAmount_diff'] != 0].reset_index(drop=True)
             # subset the merged df to what to include in the validation df
             # include data where percent difference is > 1 or where value is nan
-            df_m_sub = df_m[(df_m['Percent_Diff'] > 1) |
-                            (df_m['Percent_Diff'].isna())].reset_index(drop=True)
+            df_m_sub = df_m[(df_m['Percent_Increase'] > 1) |
+                            (df_m['Percent_Increase'].isna())].reset_index(drop=True)
 
             subnational_geoscale = (subnational_geoscale
                                     or attr['allocation_from_scale'])

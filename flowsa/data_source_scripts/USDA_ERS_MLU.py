@@ -48,14 +48,12 @@ def mlu_parse(*, df_list, source, year, **_):
         specifications
     """
     # concat dataframes
-    df = pd.concat(df_list, sort=False
-                   ).drop(columns=['SortOrder', 'Region']
-                          ).rename(columns={'Region or State': 'State'})
-
-    # use "melt" fxn to convert colummns into rows
-    df = df.melt(id_vars=["State", "Year"],
-                 var_name="FlowName",
-                 value_name="FlowAmount")
+    df = (pd.concat(df_list, sort=False)
+          .rename(columns={'Region or State': 'State',
+                           'Value': 'FlowAmount',
+                           'Land use': 'FlowName'})
+          )
+    df = df[['State', 'Year', 'FlowAmount', 'FlowName']]
 
     # rename states to match with FIPS crosswalk
     df = df.replace('District of Columbia', 'District Of Columbia')
