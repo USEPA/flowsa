@@ -205,7 +205,7 @@ def write_annual_naics_crosswalk(year):
            )
 
     # load BEA codes that will act as NAICS
-    house = load_crosswalk('Household_SectorCodes')
+    house = load_crosswalk('FinalDemand_SectorCodes')
     govt = load_crosswalk('Government_SectorCodes')
     bea = pd.concat([house, govt], ignore_index=True).rename(
         columns={'Code': f'NAICS_{year}_Code',
@@ -299,7 +299,7 @@ def write_sector_name_crosswalk():
         df[f"NAICS_{y}_Code"] = df[f"NAICS_{y}_Code"].astype(str)
         # load household and gov sectors - do this after explode because
         # household and gov sectors contain letters
-        for s in ["Government", "Household"]:
+        for s in ["Government", "FinalDemand"]:
             cw = (load_crosswalk(f"{s}_SectorCodes")[['Code', 'Name']]
                   .rename(columns={"Code": f"NAICS_{y}_Code",
                                    "Name": f"NAICS_{y}_Name"})
@@ -337,10 +337,12 @@ def write_sector_level_crosswalk():
 
 # if __name__ == '__main__':
     # # update_naics_crosswalk()
+    # write_naics_year_concordance()
     # write_annual_naics_crosswalk('2002')
     # write_annual_naics_crosswalk('2007')
     # write_annual_naics_crosswalk('2012')
     # write_annual_naics_crosswalk('2017')
     # write_annual_naics_crosswalk('2022')
     # # write_sector_name_crosswalk()
+    # write_sector_level_crosswalk()
     # update_naics_crosswalk()
