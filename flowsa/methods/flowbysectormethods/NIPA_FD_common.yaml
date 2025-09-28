@@ -24,18 +24,18 @@ source_names:
     clean_fba_w_sec: !script_function:BEA_NIPA drop_unassigned
     activity_sets:
 
-      FD_PCE:
-        activity_to_sector_mapping: BEA_NIPA_FD_PCE
-        selection_fields:
-          Table: U20405 # Table 2.4.5U. Personal Consumption Expenditures by Type of Product
-        assign_fields:
-          ActivityConsumedBy: Personal Consumption Expenditures
-        attribution_method: proportional
-        attribution_source:
-          BEA_Detail_Use_SUT:
-            <<: *bea
-            selection_fields:
-              ActivityConsumedBy: {'F01000': ''}
+      # FD_PCE:
+      #   activity_to_sector_mapping: BEA_NIPA_FD_PCE
+      #   selection_fields:
+      #     Table: U20405 # Table 2.4.5U. Personal Consumption Expenditures by Type of Product
+      #   assign_fields:
+      #     ActivityConsumedBy: Personal Consumption Expenditures
+      #   attribution_method: proportional
+      #   attribution_source: ## Change this to use the PCE Bridge directly
+      #     BEA_Detail_Use_SUT:
+      #       <<: *bea
+      #       selection_fields:
+      #         ActivityConsumedBy: {'F01000': ''}
 
       FD_IP_direct:
         activity_to_sector_mapping: BEA_NIPA_FD_IP
