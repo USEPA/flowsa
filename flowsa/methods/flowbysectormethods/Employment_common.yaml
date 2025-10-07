@@ -33,8 +33,6 @@ bls_load_and_clean_county:
   geoscale: county
 
 bls_allocation:
-  selection_fields:
-    PrimaryActivity: !from_index:BLS_QCEW_asets.csv qcew
   attribution_method: direct
 
 employment_fbs_allocation:

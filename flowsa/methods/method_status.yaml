@@ -6,6 +6,11 @@ BTS_Airlines:
     Status: Private data
     Type: FileNotFoundError
 
+Census_SAS:
+    Active: True
+    Status: Runs locally, error through GitHub Actions
+    Type: SSLError
+
 EPA_NEI_Nonroad:
     Active: True
     Status: Max retries exceeded with url - Certificate verify failed

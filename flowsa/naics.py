@@ -157,22 +157,6 @@ def subset_sector_key(flowbyactivity, activitycol, sector_source_year, primary_s
         flowbyactivity.loc[:, ['DataReliability', 'DataCollection']].round(decimals=5))
     flowbyactivity = flowbyactivity[subset_cols].drop_duplicates()
 
-    # drop parent sectors if parent-completechild
-    if flowbyactivity.config.get('sector_hierarchy') == 'parent-completeChild':
-        # Drop duplicates and group by Class, Flowable, Context
-        flowbyactivity_sub = flowbyactivity[['Class', 'Flowable', 'Context', activitycol]].drop_duplicates()
-        existing_sectors_df = pd.DataFrame([])
-        # subset the df by grouping cols
-        for _, df_sub in flowbyactivity_sub.groupby(['Class', 'Flowable', 'Context'], dropna=False):
-            for i in df_sub[activitycol]:
-                n = df_sub[df_sub[activitycol].apply(
-                    lambda x: str(x).startswith(str(i)))]
-                if len(n) == 1:
-                    existing_sectors_df = pd.concat(
-                        [existing_sectors_df, n])
-
-        flowbyactivity = flowbyactivity.merge(existing_sectors_df, on=existing_sectors_df.columns.tolist())
-
     primary_sector_key_2 = pd.DataFrame(flowbyactivity.merge(
         primary_sector_key,
         how='left',
@@ -180,6 +164,18 @@ def subset_sector_key(flowbyactivity, activitycol, sector_source_year, primary_s
         right_on=merge_col,
     )).dropna(subset=[merge_col]).drop(columns=activitycol)
 
+    # drop parent sectors if parent-completechild
+    if flowbyactivity.config.get('sector_hierarchy') == 'parent-completeChild':
+
+        def drop_parent_sectors(sector_key):
+            sector_list = sector_key['source_naics'].astype(str).tolist()
+            is_parent = lambda x: any(sector != x and sector.startswith(x) for sector in sector_list)
+            return sector_key[~sector_key['source_naics'].astype(str).apply(is_parent)]
+
+        primary_sector_key_2 = primary_sector_key_2.groupby(['Class', 'Flowable', 'Context'],
+                                                            group_keys=False,
+                                                            dropna=False
+                                                            ).apply(drop_parent_sectors)
 
     # modify dqi scores for data reliability and collection based on mapping
     if "DataReliability" in flowbyactivity.columns:
@@ -192,12 +188,6 @@ def subset_sector_key(flowbyactivity, activitycol, sector_source_year, primary_s
     # subset df to all remaining target sectors and Activity if present by dropping the one to one matches
     df_remaining = primary_sector_key_2[primary_sector_key_2["source_naics"] !=
                                         primary_sector_key_2["target_naics"]].reset_index(drop=True)
-    # df_remaining = primary_sector_key_2.merge(
-    #     df_keep[group_cols + [merge_col]],
-    #     on=group_cols + [merge_col],
-    #     how='left',
-    #     indicator=True
-    # ).query('_merge == "left_only"').drop('_merge', axis=1)
 
     # function to identify which source naics most closely match to the target naics
     def subset_target_sectors_by_source_sectors(group):
@@ -577,6 +567,25 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
     if 'Sector' in df_load:
         column_headers = ['Sector']
 
+    # if activities are naics-like, also update the NAICS in the activity cols. necessary for aggregation and
+    # resetting the group totals - otherwise "direct" allocation will be forced to "equal" allocation and the FBS
+    # results will be incorrect
+    try:
+        if df_load.config['data_format'] in ['FBS']:
+            activity_schema = "NAICS"
+        else:
+            activity_schema = df_load.config['activity_schema'] if isinstance(
+                    df_load.config['activity_schema'], str) else df_load.config.get(
+                    'activity_schema', {}).get(df_load.config['year'])
+    except AttributeError:
+        # The only non FBA/FBS run via FLOWSA are data pulled from stewi, which are naics-based, however, stewi data
+        # contains APB and ACB cols and does not have the group_id/group_totals and goes through separate allocation
+        # methods, so assigning schema as None
+        activity_schema = "None"
+
+    if "NAICS" in activity_schema and "ActivityProducedBy" in df_load.columns:
+        column_headers += ['ActivityProducedBy', 'ActivityConsumedBy']
+
     # load the mastercrosswalk and subset by sectorsourcename,
     # save values to list
     if targetsectorsourcename == sectorsourcename:
@@ -621,11 +630,11 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
                 cw_melt = cw_melt[cw_melt['NAICS'] == sector].drop(columns=['naics_count', 'length'])
                 cw_melt_list.append(cw_melt)
 
-        # Merge generated crosswalks
-        cw_melt = pd.concat(cw_melt_list, ignore_index=True)
-
         # if sectors were found to represent a different naics year, use those values to map to target naics
-        if len(cw_melt) > 0:
+        if len(cw_melt_list) > 0:
+            # Merge generated crosswalks
+            cw_melt = pd.concat(cw_melt_list, ignore_index=True)
+
             df = replace_sectors_with_targetsectors(df, nonsectors, cw_melt, column_headers, targetsectorsourcename)
         # check if there are any sectors that are not in
         # the target sector crosswalk and if so, drop those sectors
@@ -640,23 +649,35 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
                 continue
             # drop rows where column value is in the nonnaics list
             df = df[~df[c].isin(nonsectors)]
+
+    # if activities are naics-like, must reset group_id and group_total by grouping through the reset APB and ACB
+    # columns. This is necessary for cases like QCEW data, where we would be left with duplicate group_id rows when
+    # there is a one:many mapping upon converting NAICS years. This function already correctly allocated the
+    # FlowAmount to the new sector values. Do not want duplicated group_id rows because later steps in flowsa will
+    # further, incorrectly, allocate FlowAmounts (such as through equal allocation)
+
     # aggregate data
     if hasattr(df, 'aggregate_flowby'):
-        df = df.aggregate_flowby(columns_to_group_by=df.groupby_cols+['group_id'])
-
+        if "NAICS" in activity_schema:
+            df2 = (df
+                   .drop(columns=['group_id', 'group_total'])
+                   .aggregate_flowby(columns_to_group_by=df.groupby_cols)
+                   ).reset_index(drop=True)
+            df2 = df2.assign(group_id=df2.index, group_total=df2['FlowAmount'])
+        else:
+            df2 = df.aggregate_flowby(columns_to_group_by=df.groupby_cols+['group_id'])
+    # stewi data are imported as DF, not as FBA/FBS Class Objects
     else:
-        # todo: drop else statement once all dataframes are converted
-        #  to classes
-        possible_column_headers = \
-            ('FlowAmount', 'Spread', 'Min', 'Max', 'DataReliability',
-             'TemporalCorrelation', 'GeographicalCorrelation',
-             'TechnologicalCorrelation', 'DataCollection', 'Description')
+        possible_column_headers = ('FlowAmount', 'Spread', 'Min', 'Max', 'DataReliability',
+                                   'TemporalCorrelation', 'GeographicalCorrelation',
+                                   'TechnologicalCorrelation', 'DataCollection', 'Description')
         # list of column headers to group aggregation by
         groupby_cols = [e for e in df.columns.values.tolist()
                         if e not in possible_column_headers]
-        df = aggregator(df, groupby_cols)
+        df2 = aggregator(df, groupby_cols)
 
-    return df
+    return df2
+
 
 def return_max_sector_level(
     industry_spec: dict,

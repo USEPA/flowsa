@@ -1,17 +1,17 @@
-# This is a 2021 target year specific implementation of GHG_national_m2
-# All parameters add year specific data when needed to implement for 2021
-# GHGI FBA table names match the 2024 GHGI Report
+# This is a 2023 target year specific implementation of GHG_national_m2
+# All parameters add year specific data when needed to implement for 2023
+# GHGI FBA table names match the 2025 GHGI Report
 # MECS year is 2018
 # CoA year is 2022
 
 !include:GHG_national_m2_common.yaml
-year: &ghgi_year 2021
+year: &ghgi_year 2023
 mecs_year: &mecs_year 2018
 coa_year: &coa_year 2022
 usgs_year: &usgs_year 2020 # FBA not available after 2020
 
 source_names:
-  GHG_national_2021_m1: # National Summary model
+  GHG_national_2023_m1: # National Summary model
     !include:GHG_national_m2_common.yaml:source_names:GHG_national_m1
     year: *ghgi_year
     activity_sets: # Update MECS year for some activity sets
@@ -141,11 +141,11 @@ source_names:
     year: *ghgi_year
 
 ## Stationary Combustion
-  EPA_GHGI_T_A_7:
+  EPA_GHGI_T_A_5:
     !include:GHG_national_m2_common.yaml:source_names:GHGI_CO2_stationary_combustion
     year: *ghgi_year
   EPA_GHGI_T_3_8: # CH4 emissions from stationary combustion
-     !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_8
+    !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_8
     year: *ghgi_year
   EPA_GHGI_T_3_9: # N2O emissions from stationary combustion
     !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_3_9
@@ -156,7 +156,7 @@ source_names:
     !include:GHG_national_m2_common.yaml:source_names:EPA_GHGI_T_4_55
     year: *ghgi_year
 
-  EPA_GHGI_T_3_25b: # Fossil fuel for non-energy uses
+  EPA_GHGI_T_3_25: # Fossil fuel for non-energy uses
     !include:GHG_national_m2_common.yaml:source_names:GHGI_nonenergy_fossil_fuel_emissions
     year: *ghgi_year
 

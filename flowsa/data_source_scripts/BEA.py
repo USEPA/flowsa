@@ -88,3 +88,11 @@ def bea_parse(*, source, year, **_):
     df['Description'] = filename
 
     return df
+
+if __name__ == "__main__":
+    import flowsa
+    for y in range(2012, 2024):
+        flowsa.generateflowbyactivity.main(year=y, source='BEA_Summary_Supply')
+        flowsa.generateflowbyactivity.main(year=y, source='BEA_Summary_Use_SUT')
+        fba = flowsa.getFlowByActivity('BEA_Summary_Supply', y)
+        fba2 = flowsa.getFlowByActivity('BEA_Summary_Use_SUT', y)
