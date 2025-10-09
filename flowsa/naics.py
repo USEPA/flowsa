@@ -172,10 +172,12 @@ def subset_sector_key(flowbyactivity, activitycol, sector_source_year, primary_s
             is_parent = lambda x: any(sector != x and sector.startswith(x) for sector in sector_list)
             return sector_key[~sector_key['source_naics'].astype(str).apply(is_parent)]
 
-        primary_sector_key_2 = primary_sector_key_2.groupby(['Class', 'Flowable', 'Context'],
-                                                            group_keys=False,
-                                                            dropna=False
-                                                            ).apply(drop_parent_sectors)
+        # todo: check futurewarning dataframegroupby.apply fix working as expected
+        primary_sector_key_2 = (primary_sector_key_2
+                                .groupby(['Class', 'Flowable', 'Context'],
+                                         group_keys=False, dropna=False)[primary_sector_key_2.columns.tolist()]
+                                .apply(drop_parent_sectors)
+                                )
 
     # modify dqi scores for data reliability and collection based on mapping
     if "DataReliability" in flowbyactivity.columns:
@@ -224,10 +226,11 @@ def subset_sector_key(flowbyactivity, activitycol, sector_source_year, primary_s
     if flowbyactivity.config.get('sector_hierarchy') == 'parent-incompleteChild':
         df_remaining_mapped = df_remaining.copy()
     else:
+        # todo: check impact of changing code to remove future warning
         df_remaining_mapped = (df_remaining
-                           .groupby(group_cols, dropna=False)
+                           .groupby(group_cols, dropna=False, group_keys=False)[df_remaining.columns.tolist()]
                            .apply(subset_target_sectors_by_source_sectors)
-                           .reset_index(drop=True)
+                           # .reset_index(drop=True)
                            )
 
     mapping = pd.concat([df_keep, df_remaining_mapped], ignore_index=True)

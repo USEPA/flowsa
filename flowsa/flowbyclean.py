@@ -98,6 +98,7 @@ def weighted_average(
         with pd.option_context('future.no_silent_downcasting', True):
             merged = merged.replace({original: replacement})
 
+    # todo: check modification for futurewarning dataframegroupby.apply works as expected
     wt_flow = (merged
                .groupby(['Class', 'Flowable', 'Unit',
                          'FlowType', 'ActivityProducedBy',
@@ -108,7 +109,7 @@ def weighted_average(
                          'SectorProducedBy', 'ProducedBySectorType',
                          'SectorConsumedBy', 'ConsumedBySectorType',
                          'SectorSourceName'],
-                        dropna=False)
+                        dropna=False)[merged.columns.tolist()]
                .apply(lambda x: np.average(x['FlowAmount'],
                                            weights=x['FlowAmount_other']))
                .drop(columns='FlowAmount')  # original flowamounts
