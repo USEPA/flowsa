@@ -98,7 +98,6 @@ def weighted_average(
         with pd.option_context('future.no_silent_downcasting', True):
             merged = merged.replace({original: replacement})
 
-    # todo: check modification for futurewarning dataframegroupby.apply works as expected
     wt_flow = (merged
                .groupby(['Class', 'Flowable', 'Unit',
                          'FlowType', 'ActivityProducedBy',
@@ -153,7 +152,7 @@ def substitute_nonexistent_values(
          .assign(Location=location.US_FIPS))
     ]).reset_index(drop=True)
 
-    other2 = pd.DataFrame(other
+    other = (other
              .merge(state_geo)
              .drop(columns=['Location', 'FlowUUID'])
              .rename(columns={'FIPS': 'Location'})
@@ -161,13 +160,10 @@ def substitute_nonexistent_values(
 
     # todo: revise these check merge cols, expand
     merged = (fb
-              .merge(other2[['Year', 'Location', 'SectorProducedBy', 'SectorConsumedBy',
-                           'SectorSourceName', 'Context', 'FlowAmount']],
-                     # on=list(other2.select_dtypes(
-                     #     include=['object', 'int']).columns),
-                     on = ['Year', 'Location', 'SectorProducedBy', 'SectorConsumedBy',
-                           'SectorSourceName', 'Context'],
-                     how='left',
+              .merge(other,
+                     on=list(other.select_dtypes(
+                         include=['object', 'int']).columns),
+                     how='outer',
                      suffixes=(None, '_y'))
               .fillna({'FlowAmount': 0})
               )
