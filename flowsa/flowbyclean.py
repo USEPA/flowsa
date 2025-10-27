@@ -295,7 +295,7 @@ def estimate_suppressed_sectors_equal_attribution(
                right_on='source_naics')
         .assign(location=fba3.Location,
                 category=fba3.FlowName)
-        .replace({'FlowAmount': {0: np.nan}  #,
+        # .replace({'FlowAmount': {0: np.nan}  #,
                   # col: {'1125 & 1129': '112X',
                   #       '11193 & 11194 & 11199': '1119X',
                   #       '31-33': '3X',
@@ -306,7 +306,7 @@ def estimate_suppressed_sectors_equal_attribution(
                   #        '48': '4Y', '49': '4Y'},
                   # 'n4': {'1125': '112X', '1129': '112X'},
                   # 'n5': {'11193': '1119X', '11194': '1119X', '11199': '1119X'}
-                  })
+                  # })
         .dropna(subset='source_naics')
         .drop(columns='source_naics')
     )
@@ -315,16 +315,16 @@ def estimate_suppressed_sectors_equal_attribution(
                                'location', 'category'], verify_integrity=True)
 
     def fill_suppressed(
-        flows, level: int, activity
+            flows, level: int, activity
     ):
         parent = flows[flows[activity].str.len() == level]
         children = flows[flows[activity].str.len() == level + 1]
-        null_children = children[children['FlowAmount'].isna()]
+        null_children = children[children['flow_suppressed']]
 
         if null_children.empty or parent.empty:
             return flows
         else:
-            value = max(parent['Unattributed'][0] / len(null_children), 0)
+            value = max(parent['Unattributed'].iloc[0] / len(null_children), 0)
             # update the null children by adding the unattributed data to
             # the attributed data
             null_children = (
@@ -332,10 +332,15 @@ def estimate_suppressed_sectors_equal_attribution(
                 .assign(FlowAmount=value+null_children['Attributed'])
                 .assign(Unattributed=value)
             )
-            flows.update(null_children)
+            flows.loc[null_children.index, ['FlowAmount', 'Unattributed']] = null_children[['FlowAmount', 'Unattributed']]
             return flows
 
     unsuppressed = indexed.copy()
+    # replace 0 values with np.nan for suppressed data to be estimated
+    unsuppressed['FlowAmount'] = unsuppressed['FlowAmount'].mask(unsuppressed['FlowAmount'] == 0)
+    unsuppressed['flow_suppressed'] = unsuppressed['FlowAmount'].isna()
+
+    # loop through sector lengths, estimating suppressed data
     for level in [2, 3, 4, 5, 6]:
         groupcols = (["{}{}".format("n", i) for i in range(2, level+1)] +
                      ['location', 'category'])
@@ -344,11 +349,12 @@ def estimate_suppressed_sectors_equal_attribution(
                         .apply(fill_suppressed, level, col)
                         )
     unsuppressed['Year'] = unsuppressed['Year'].astype('int')
+
     aggregated = (
         unsuppressed
         .reset_index(drop=True)
         .fillna({'FlowAmount': 0})
-        .drop(columns=['Unattributed', 'Attributed'])
+        .drop(columns=['Unattributed', 'Attributed', 'flow_suppressed'])
         # .replace({col: {'3X': '31-33',
         #                 '4X': '44-45',
         #                 '4Y': '48-49'}})
