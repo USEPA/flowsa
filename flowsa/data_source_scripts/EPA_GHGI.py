@@ -40,9 +40,9 @@ ANNEX_HEADERS = {"Total Consumption (TBtu) a": "Total Consumption (TBtu)",
 ANNEX_ENERGY_TABLES = ["A-" + str(x) for x in list(range(4,16))]
 
 DROP_COLS = ["Unnamed: 0"] + list(pd.date_range(
-    start="1990", end="2010", freq='Y').year.astype(str))
+    start="1990", end="2010", freq='YE').year.astype(str))
 
-YEARS = list(pd.date_range(start="2010", end="2024", freq='Y').year.astype(str))
+YEARS = list(pd.date_range(start="2010", end="2024", freq='YE').year.astype(str))
 
 
 def ghg_url_helper(*, build_url, config, **_):

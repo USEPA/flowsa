@@ -57,7 +57,7 @@ def add_missing_flow_by_fields(flowby_partial_df, flowbyfields):
             flowby_partial_df[k] = \
                 flowby_partial_df[k].astype(v[0]['dtype'])
             if v[0]['dtype'] in ['string', 'str', 'object']:
-                flowby_partial_df[k] = flowby_partial_df[k].fillna(np.nan)
+                flowby_partial_df[k] = flowby_partial_df[k].fillna(np.nan).infer_objects(copy=False)
             else:
                 flowby_partial_df[k] = flowby_partial_df[k].fillna(0)
     # convert all None, 'nan' to np.nan
@@ -101,7 +101,7 @@ def standardize_units(df):
         .merge(conversion_table, how='left',
                left_on='Unit', right_on='old_unit')
         .assign(Unit=lambda x: x.new_unit.mask(x.new_unit.isna(), x.Unit),
-                conversion_factor=lambda x: x.conversion_factor.fillna(1),
+                conversion_factor=lambda x: x.conversion_factor.fillna(1).infer_objects(copy=False),
                 FlowAmount=lambda x: x.FlowAmount * x.conversion_factor)
         .drop(columns=['old_unit', 'new_unit', 'conversion_factor'])
     )

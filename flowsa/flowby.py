@@ -294,9 +294,11 @@ class _FlowBy(pd.DataFrame):
 
         conversion_table = pd.concat([
             pd.read_csv(settings.datapath / 'unit_conversion.csv'),
-            pd.Series({'old_unit': 'Canadian Dollar',
-                       'new_unit': 'USD',
-                       'conversion_factor': 1 / exchange_rate}).to_frame().T
+            pd.DataFrame([{
+                        'old_unit': 'Canadian Dollar',
+                        'new_unit': 'USD',
+                        'conversion_factor': 1 / exchange_rate
+            }])
         ])
         # avoid warning: "Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated
         # and will change in a future version"
@@ -534,6 +536,7 @@ class _FlowBy(pd.DataFrame):
         replaced_fb = (
             filtered_fb
             .replace(replace_dict)
+            .infer_objects(copy=False)
             .drop(columns=['PrimaryActivity', 'PrimarySector'],
                   errors='ignore')
             .reset_index(drop=True)
