@@ -588,6 +588,13 @@ def convert_naics_year(df_load, targetsectorsourcename, sectorsourcename,
         # methods, so assigning schema as None
         activity_schema = "None"
 
+        # however, need to ensure that these NAICS are formatted correly - stewi data are at times imported
+        # with some NAICS values including decimals that do not get mapped correctly (ex. '311712.0')
+        for col in column_headers:
+            if col in df_load.columns:
+                df_load[col] = (df_load[col]
+                                .apply(lambda x: x.split(".")[0] if isinstance(x, str) else x))
+
     if "NAICS" in activity_schema and "ActivityProducedBy" in df_load.columns:
         column_headers += ['ActivityProducedBy', 'ActivityConsumedBy']
 
