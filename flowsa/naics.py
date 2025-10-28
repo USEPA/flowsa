@@ -149,12 +149,14 @@ def subset_sector_key(flowbyactivity, activitycol, sector_source_year, primary_s
     # for situations where an activity can be listed in both columns for different circumstances
     subset_cols = ['Class', 'Flowable', 'Context', 'ActivityProducedBy',
                    'ActivityConsumedBy', 'DataReliability', 'DataCollection']
-    if "DataReliability" not in flowbyactivity.columns:
-        subset_cols = ['Class', 'Flowable', 'Context', 'ActivityProducedBy', 'ActivityConsumedBy']
+    # list DQI columns in df
+    dqi = [col for col in ['DataReliability', 'DataCollection'] if col in flowbyactivity.columns]
+    # Drop missing DQI columns from subset list
+    subset_cols = [col for col in subset_cols if col not in ['DataReliability', 'DataCollection'] or col in dqi]
     # ensure dq column decimals do not cause errors with dropping duplicates, without this statement, rows often
     # duplicated
-    flowbyactivity.loc[:, ['DataReliability', 'DataCollection']] = (
-        flowbyactivity.loc[:, ['DataReliability', 'DataCollection']].round(decimals=5))
+    if dqi:
+        flowbyactivity[dqi] = flowbyactivity[dqi].round(decimals=5)
     flowbyactivity = flowbyactivity[subset_cols].drop_duplicates()
 
     primary_sector_key_2 = pd.DataFrame(flowbyactivity.merge(
