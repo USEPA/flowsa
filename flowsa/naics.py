@@ -156,7 +156,7 @@ def subset_sector_key(flowbyactivity, activitycol, sector_source_year, primary_s
     # ensure dq column decimals do not cause errors with dropping duplicates, without this statement, rows often
     # duplicated
     if dqi:
-        flowbyactivity[dqi] = flowbyactivity[dqi].round(decimals=5)
+        flowbyactivity.loc[:, dqi] = (flowbyactivity.loc[:, dqi].round(decimals=5))
     flowbyactivity = flowbyactivity[subset_cols].drop_duplicates()
 
     primary_sector_key_2 = pd.DataFrame(flowbyactivity.merge(
