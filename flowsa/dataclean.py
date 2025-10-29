@@ -49,8 +49,9 @@ def add_missing_flow_by_fields(flowby_partial_df, flowbyfields):
                 flowby_partial_df[col] = np.nan
     # convert all None, 'nan' to np.nan
     flowby_partial_df = (flowby_partial_df
-                         .replace('None', np.nan)
-                         .replace('nan', np.nan))
+                         .replace({'None': np.nan, 'nan': np.nan})
+                         .infer_objects(copy=False)
+                         )
     # convert data types to match those defined in flow_by_activity_fields
     for k, v in flowbyfields.items():
         if k in flowby_partial_df.columns:
@@ -59,7 +60,7 @@ def add_missing_flow_by_fields(flowby_partial_df, flowbyfields):
             if v[0]['dtype'] in ['string', 'str', 'object']:
                 flowby_partial_df[k] = flowby_partial_df[k].fillna(np.nan).infer_objects(copy=False)
             else:
-                flowby_partial_df[k] = flowby_partial_df[k].fillna(0)
+                flowby_partial_df[k] = flowby_partial_df[k].fillna(0).infer_objects(copy=False)
     # convert all None, 'nan' to np.nan
     with pd.option_context('future.no_silent_downcasting', True):
         flowby_partial_df = (flowby_partial_df
