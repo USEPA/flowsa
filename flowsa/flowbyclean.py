@@ -96,7 +96,10 @@ def weighted_average(
     for original, replacement in fba.config.get(
             'replacement_dictionary').items():
         with pd.option_context('future.no_silent_downcasting', True):
-            merged = merged.replace({original: replacement})
+            merged = (merged
+                  .replace({original: replacement})
+                  .infer_objects(copy=False)
+                  )
 
     wt_flow = (merged
                .groupby(['Class', 'Flowable', 'Unit',

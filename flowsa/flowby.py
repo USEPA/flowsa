@@ -150,9 +150,10 @@ class _FlowBy(pd.DataFrame):
             # and will change in a future version"
             with pd.option_context('future.no_silent_downcasting', True):
                 data = (data
-                        .fillna(fill_na_dict)
-                        .replace(null_string_dict)
-                        .astype(fields))
+                    .fillna(fill_na_dict).infer_objects(copy=False)
+                    .replace(null_string_dict).infer_objects(copy=False)
+                    .astype(fields)
+                    )
 
         if isinstance(data, pd.DataFrame) and column_order is not None and convert_df_to_flowby:
             data = data[[c for c in column_order if c in data.columns]
