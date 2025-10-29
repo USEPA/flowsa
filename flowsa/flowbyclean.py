@@ -345,6 +345,7 @@ def estimate_suppressed_sectors_equal_attribution(
 
     # loop through sector lengths, estimating suppressed data
     for level in [2, 3, 4, 5, 6]:
+        log.info(f"Estimating suppressed data at sector level {level}")
         groupcols = (["{}{}".format("n", i) for i in range(2, level+1)] +
                      ['location', 'category'])
         unsuppressed = (unsuppressed
