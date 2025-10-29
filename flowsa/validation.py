@@ -296,7 +296,7 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
 
 
 def compare_FBS(df1, df2, ignore_metasources=False):
-    "Assess differences between two FBS dataframes."
+    """Assess differences between two FBS dataframes."""
     df1 = df1.rename(columns={'FlowAmount': 'FlowAmount_fbs1'})
     df2 = df2.rename(columns={'FlowAmount': 'FlowAmount_fbs2'})
     merge_cols = [c for c in df2.select_dtypes(include=[
