@@ -1391,6 +1391,11 @@ class _FlowBy(pd.DataFrame):
 
         groupby_cols = ['group_id', 'Location']
         for rank in ['Primary', 'Secondary']:
+            # continue if values are all np.nan
+            if fba[f'{rank}Sector'].isna().all():
+                groupby_cols.append(f'{rank}Sector')
+                continue
+
             fba = (
                 fba
                 .merge(naics_key, how='left', left_on=f'{rank}Sector',
