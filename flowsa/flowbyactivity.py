@@ -533,10 +533,13 @@ class FlowByActivity(_FlowBy):
                 log.warning('Activities in %s are not mapped to sectors: %s', not_mapped.full_name, sorted(
                     set(not_mapped.ActivityProducedBy.dropna()).union(set(not_mapped.ActivityConsumedBy.dropna()))))
 
-        # drop all NA data
-        fba_w_naics = (fba_w_naics
-                       .dropna(subset=['SectorProducedBy', 'SectorConsumedBy'], how='all')
-                       .assign(SectorSourceName=f'NAICS_{target_year}_Code')
+        # drop all NA data and clean up df
+        fba_w_naics = fba_w_naics[
+            ~(fba_w_naics['SectorProducedBy'].isna() & fba_w_naics['SectorConsumedBy'].isna())
+        ]
+
+        fba_w_naics2 = (fba_w_naics
+                        .assign(SectorSourceName=f'NAICS_{target_year}_Code')
                        .drop(columns=['TechnologicalCorrelation_x', 'TechnologicalCorrelation_y',
                                       'DataReliability_x', 'DataReliability_y',
                                       'DataCollection_x', 'DataCollection_y'],
@@ -544,7 +547,7 @@ class FlowByActivity(_FlowBy):
                        .reset_index(drop=True)
                        )
 
-        return fba_w_naics
+        return fba_w_naics2
 
 
     def prepare_fbs(
