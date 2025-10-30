@@ -321,8 +321,8 @@ def compare_FBS(df1, df2, ignore_metasources=False):
     # convert sector columns to object to avoid valueErrors
     cols = ['SectorProducedBy', 'SectorConsumedBy']
     for c in cols:
-        df1[c] = df1[c].astype(str)
-        df2[c] = df2[c].astype(str)
+        df1[c] = df1[c].where(df1[c].notna(), '').astype(str)
+        df2[c] = df2[c].where(df2[c].notna(), '').astype(str)
     for c in ['SectorSourceName']:
         df1 = df1.drop(columns=c, errors='ignore')
         df2 = df2.drop(columns=c, errors='ignore')
