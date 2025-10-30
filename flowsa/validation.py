@@ -312,10 +312,6 @@ def compare_FBS(df1, df2, ignore_metasources=False):
             except ValueError:
                 pass
 
-    # convert all np.nan in the string type merge cols to empty strings, to ensure correct merge
-    fill_cols = [c for c in merge_cols if df2[c].dtype == 'object']
-    df1[fill_cols] = df1[fill_cols].fillna("")
-    df2[fill_cols] = df2[fill_cols].fillna("")
     # aggregate dfs before merge - might have duplicate sectors due to
     # dropping metasources/attribution sources
     df1 = (df1.groupby(merge_cols, dropna=False)
@@ -331,6 +327,10 @@ def compare_FBS(df1, df2, ignore_metasources=False):
         df1 = df1.drop(columns=c, errors='ignore')
         df2 = df2.drop(columns=c, errors='ignore')
         merge_cols = [x for x in merge_cols if x != c]
+    # convert all np.nan in the string type merge cols to empty strings, to ensure correct merge
+    fill_cols = [c for c in merge_cols if df2[c].dtype == 'object']
+    df1[fill_cols] = df1[fill_cols].replace(['nan', np.nan], '')
+    df2[fill_cols] = df2[fill_cols].replace(['nan', np.nan], '')
     # check units
     # compare_df_units(df1, df2)
     df_m = pd.DataFrame(
@@ -377,6 +377,8 @@ def compare_single_FBS_against_remote(m, outdir=diffpath,
               inplace=True)
     if len(df) > 0:
         print(f"Saving differences in {m} to csv")
+        # maintain leading 0s in location col
+        df.Location = df.Location.apply('="{}"'.format)
         df.to_csv(f"{outdir}/{m}_diff.csv", index=False)
     else:
         print(f"***No differences found in {m}***")
@@ -406,6 +408,8 @@ def compare_single_FBA_against_remote(source, year, outdir=diffpath,
               inplace=True)
     if len(df) > 0:
         print(f"Saving differences in {source} {year} to csv")
+        # maintain leading 0s in location col
+        df.Location = df.Location.apply('="{}"'.format)
         df.to_csv(f"{outdir}/{source}_{year}_diff.csv", index=False)
     else:
         print(f"***No differences found in {source} {year}***")
