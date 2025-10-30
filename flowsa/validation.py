@@ -295,10 +295,10 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
     return df_m
 
 
-def compare_FBS(df1, df2, ignore_metasources=False):
+def compare_FBS(df1_load, df2_load, ignore_metasources=False):
     """Assess differences between two FBS dataframes."""
-    df1 = df1.rename(columns={'FlowAmount': 'FlowAmount_fbs1'})
-    df2 = df2.rename(columns={'FlowAmount': 'FlowAmount_fbs2'})
+    df1 = pd.DataFrame(df1_load.rename(columns={'FlowAmount': 'FlowAmount_fbs1'}))
+    df2 = pd.DataFrame(df2_load.rename(columns={'FlowAmount': 'FlowAmount_fbs2'}))
     merge_cols = [c for c in df2.select_dtypes(include=[
         'object', 'int']).columns if c not in dq_fields]
     if ignore_metasources:
@@ -332,14 +332,12 @@ def compare_FBS(df1, df2, ignore_metasources=False):
 
     # aggregate dfs before merge - might have duplicate sectors due to
     # dropping metasources/attribution sources
-    df1_sub = (df1_sub.groupby(merge_cols, dropna=False)
-           .agg({'FlowAmount_fbs1': 'sum'}).reset_index())
-    df2_sub = (df2_sub.groupby(merge_cols, dropna=False)
-           .agg({'FlowAmount_fbs2': 'sum'}).reset_index())
+    df1_sub = df1_sub.groupby(merge_cols, dropna=False).agg({'FlowAmount_fbs1': 'sum'}).reset_index()
+    df2_sub = df2_sub.groupby(merge_cols, dropna=False).agg({'FlowAmount_fbs2': 'sum'}).reset_index()
 
     # check units
     # compare_df_units(df1_sub, df2_sub)
-    df_m = pd.DataFrame(pd.merge(df1_sub, df2_sub,how='outer'))
+    df_m = pd.merge(df1_sub, df2_sub,how='outer')
     df_m = df_m.assign(FlowAmount_diff=df_m['FlowAmount_fbs2']
                        .fillna(0) - df_m['FlowAmount_fbs1'].fillna(0))
     df_m = df_m.assign(
