@@ -312,13 +312,7 @@ def compare_FBS(df1, df2, ignore_metasources=False):
             except ValueError:
                 pass
 
-    # aggregate dfs before merge - might have duplicate sectors due to
-    # dropping metasources/attribution sources
-    df1 = (df1.groupby(merge_cols, dropna=False)
-           .agg({'FlowAmount_fbs1': 'sum'}).reset_index())
-    df2 = (df2.groupby(merge_cols, dropna=False)
-           .agg({'FlowAmount_fbs2': 'sum'}).reset_index())
-    # convert sector columns to object to avoid valueErrors
+    # convert sector columns to object to avoid valueErrors and df clean up
     cols = ['SectorProducedBy', 'SectorConsumedBy']
     for c in cols:
         df1[c] = df1[c].astype(str)
@@ -331,12 +325,21 @@ def compare_FBS(df1, df2, ignore_metasources=False):
     fill_cols = [c for c in merge_cols if df2[c].dtype == 'object']
     df1[fill_cols] = df1[fill_cols].replace(['nan', np.nan], '')
     df2[fill_cols] = df2[fill_cols].replace(['nan', np.nan], '')
+
+    # subset dfs
+    df1_sub = df1[merge_cols + ['FlowAmount_fbs1']]
+    df2_sub = df2[merge_cols + ['FlowAmount_fbs2']]
+
+    # aggregate dfs before merge - might have duplicate sectors due to
+    # dropping metasources/attribution sources
+    df1_sub = (df1_sub.groupby(merge_cols, dropna=False)
+           .agg({'FlowAmount_fbs1': 'sum'}).reset_index())
+    df2_sub = (df2_sub.groupby(merge_cols, dropna=False)
+           .agg({'FlowAmount_fbs2': 'sum'}).reset_index())
+
     # check units
-    # compare_df_units(df1, df2)
-    df_m = pd.DataFrame(
-        pd.merge(df1[merge_cols + ['FlowAmount_fbs1']],
-                 df2[merge_cols + ['FlowAmount_fbs2']],
-                 how='outer'))
+    # compare_df_units(df1_sub, df2_sub)
+    df_m = pd.DataFrame(pd.merge(df1_sub, df2_sub,how='outer'))
     df_m = df_m.assign(FlowAmount_diff=df_m['FlowAmount_fbs2']
                        .fillna(0) - df_m['FlowAmount_fbs1'].fillna(0))
     df_m = df_m.assign(
