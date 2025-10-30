@@ -312,6 +312,10 @@ def compare_FBS(df1, df2, ignore_metasources=False):
             except ValueError:
                 pass
 
+    # convert all np.nan in the string type merge cols to empty strings, to ensure correct merge
+    fill_cols = [c for c in merge_cols if df2[c].dtype == 'object']
+    df1[fill_cols] = df1[fill_cols].fillna("")
+    df2[fill_cols] = df2[fill_cols].fillna("")
     # aggregate dfs before merge - might have duplicate sectors due to
     # dropping metasources/attribution sources
     df1 = (df1.groupby(merge_cols, dropna=False)
@@ -321,8 +325,8 @@ def compare_FBS(df1, df2, ignore_metasources=False):
     # convert sector columns to object to avoid valueErrors
     cols = ['SectorProducedBy', 'SectorConsumedBy']
     for c in cols:
-        df1[c] = df1[c].where(df1[c].notna(), '').astype(str)
-        df2[c] = df2[c].where(df2[c].notna(), '').astype(str)
+        df1[c] = df1[c].astype(str)
+        df2[c] = df2[c].astype(str)
     for c in ['SectorSourceName']:
         df1 = df1.drop(columns=c, errors='ignore')
         df2 = df2.drop(columns=c, errors='ignore')
