@@ -101,22 +101,18 @@ def weighted_average(
                   .infer_objects(copy=False)
                   )
 
-    wt_flow = (merged
-               .groupby(['Class', 'Flowable', 'Unit',
-                         'FlowType', 'ActivityProducedBy',
-                         'ActivityConsumedBy', 'Context', 'Location',
-                         'LocationSystem', 'Year', 'MeasureofSpread',
-                         'Spread', 'DistributionType', 'Min', 'Max',
-                         'DataReliability', 'DataCollection',
-                         'SectorProducedBy', 'ProducedBySectorType',
-                         'SectorConsumedBy', 'ConsumedBySectorType',
-                         'SectorSourceName'],
-                        dropna=False)[merged.columns.tolist()]
-               .apply(lambda x: np.average(x['FlowAmount'],
-                                           weights=x['FlowAmount_other']))
-               .drop(columns='FlowAmount')  # original flowamounts
-               .reset_index(name='FlowAmount')  # new, weighted flows
-               )
+    wt_flow = (
+        merged
+        .groupby(['Class', 'Flowable', 'Unit', 'FlowType', 'ActivityProducedBy',
+                  'ActivityConsumedBy', 'Context', 'Location', 'LocationSystem',
+                  'Year', 'MeasureofSpread', 'Spread', 'DistributionType', 'Min',
+                  'Max', 'DataReliability', 'DataCollection', 'SectorProducedBy',
+                  'ProducedBySectorType', 'SectorConsumedBy', 'ConsumedBySectorType',
+                  'SectorSourceName'], dropna=False)[['FlowAmount', 'FlowAmount_other']]
+        .apply(lambda x: np.average(x['FlowAmount'], weights=x['FlowAmount_other']))
+        .reset_index(name='FlowAmount')
+    )
+
     # set attributes todo: revise above code so don't lose attributes
     attributes_to_save = {
         attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
