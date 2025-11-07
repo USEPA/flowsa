@@ -509,8 +509,8 @@ def update_regions_to_states(fba: FlowByActivity,
     fba = (
         fba
         .drop(columns=['group_id', 'group_total'])
-        .reset_index(drop=True).reset_index()
-        .rename(columns={'index': 'group_id'})
+        .reset_index(drop=True)
+        .reset_index(names='group_id')
         .assign(group_total=fba.FlowAmount)
     )
 

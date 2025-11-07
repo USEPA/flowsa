@@ -67,7 +67,7 @@ def get_flowby_from_config(
             external_data_path=external_data_path
         )
     elif config.get('data_format') == 'FBS_outside_flowsa':
-        return FlowBySector(
+        return FlowBySector(  # todo: add convert_df_to_flowby=True?
             config['FBS_datapull_fxn'](
                 config=config,
                 external_config_path=external_config_path,
@@ -97,6 +97,8 @@ class _FlowBy(pd.DataFrame):
         self,
         data: pd.DataFrame or '_FlowBy' = None,
         *args,
+        # needs to initially be false bc otherwise all internal pandas fxns (.assign(), .copy()) trigger the code to run
+        convert_df_to_flowby: bool = False,
         add_missing_columns: bool = True,
         fields: dict = None,
         column_order: List[str] = None,
@@ -105,7 +107,7 @@ class _FlowBy(pd.DataFrame):
     ) -> None:
         '''
         Extends pandas DataFrame. Attaches metadata if provided as kwargs and
-        ensures that all columns described in  flowby_config.yaml are present
+        ensures that all columns described in flowby_config.yaml are present
         and of the correct datatype.
 
         All args and kwargs not specified above or in FBA/FBS metadata are
@@ -124,9 +126,9 @@ class _FlowBy(pd.DataFrame):
                                        self.__annotations__.get(attribute,
                                                                 None)()))
                 )
-
+        # only runs if truly a pandas df and not retriggered due to .copy() or .assign()
         if isinstance(data, pd.DataFrame) and fields is not None:
-            if add_missing_columns:
+            if convert_df_to_flowby and add_missing_columns:
                 data = data.assign(**{field: None
                                       for field in fields
                                       if field not in data.columns})
@@ -144,12 +146,16 @@ class _FlowBy(pd.DataFrame):
                 for field, dtype in fields.items() if dtype == 'object'
             }
 
-            data = (data
-                    .fillna(fill_na_dict)
-                    .replace(null_string_dict)
-                    .astype(fields))
+            # avoid warning: "Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated
+            # and will change in a future version"
+            with pd.option_context('future.no_silent_downcasting', True):
+                data = (data
+                    .fillna(fill_na_dict).infer_objects(copy=False)
+                    .replace(null_string_dict).infer_objects(copy=False)
+                    .astype(fields)
+                    )
 
-        if isinstance(data, pd.DataFrame) and column_order is not None:
+        if isinstance(data, pd.DataFrame) and column_order is not None and convert_df_to_flowby:
             data = data[[c for c in column_order if c in data.columns]
                         + [c for c in data.columns if c not in column_order]]
         super().__init__(data, *args, **kwargs)
@@ -264,7 +270,7 @@ class _FlowBy(pd.DataFrame):
         else:
             log.error(f'{file_metadata.name_data} {file_metadata.category} '
                       f'could not be found locally, downloaded, or generated')
-        fb = cls(df, full_name=full_name or '', config=config or {})
+        fb = cls(df, full_name=full_name or '', config=config or {}, convert_df_to_flowby=True)
         return fb
 
     def convert_daily_to_annual(self: FB) -> FB:
@@ -289,21 +295,25 @@ class _FlowBy(pd.DataFrame):
 
         conversion_table = pd.concat([
             pd.read_csv(settings.datapath / 'unit_conversion.csv'),
-            pd.Series({'old_unit': 'Canadian Dollar',
-                       'new_unit': 'USD',
-                       'conversion_factor': 1 / exchange_rate}).to_frame().T
+            pd.DataFrame([{
+                        'old_unit': 'Canadian Dollar',
+                        'new_unit': 'USD',
+                        'conversion_factor': 1 / exchange_rate
+            }])
         ])
-
-        standardized = (
-            self
-            .assign(Unit=self.Unit.str.strip())
-            .merge(conversion_table, how='left',
-                   left_on='Unit', right_on='old_unit')
-            .assign(Unit=lambda x: x.new_unit.mask(x.new_unit.isna(), x.Unit),
-                    conversion_factor=lambda x: x.conversion_factor.fillna(1),
-                    FlowAmount=lambda x: x.FlowAmount * x.conversion_factor)
-            .drop(columns=['old_unit', 'new_unit', 'conversion_factor'])
-        )
+        # avoid warning: "Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated
+        # and will change in a future version"
+        with pd.option_context('future.no_silent_downcasting', True):
+            standardized = (
+                self
+                .assign(Unit=self.Unit.str.strip())
+                .merge(conversion_table, how='left',
+                       left_on='Unit', right_on='old_unit')
+                .assign(Unit=lambda x: x.new_unit.mask(x.new_unit.isna(), x.Unit),
+                        conversion_factor=lambda x: x.conversion_factor.fillna(1),
+                        FlowAmount=lambda x: x.FlowAmount * x.conversion_factor)
+                .drop(columns=['old_unit', 'new_unit', 'conversion_factor'])
+            )
 
         standardized_units = list(conversion_table.new_unit.unique())
 
@@ -492,7 +502,7 @@ class _FlowBy(pd.DataFrame):
             if k not in ['Activity', 'Sector']
         }
 
-        filtered_fb = self
+        filtered_fb = self.copy()
         for field, values in special_fields.items():
             check_values = ([*values.keys(), *values.values()]
                             if isinstance(values, dict) else values)
@@ -527,6 +537,7 @@ class _FlowBy(pd.DataFrame):
         replaced_fb = (
             filtered_fb
             .replace(replace_dict)
+            .infer_objects(copy=False)
             .drop(columns=['PrimaryActivity', 'PrimarySector'],
                   errors='ignore')
             .reset_index(drop=True)
@@ -591,7 +602,7 @@ class _FlowBy(pd.DataFrame):
                     **{f'_{c}_weights': fb.FlowAmount * fb[c].notnull()
                     for c in columns_to_average})
             .groupby(columns_to_group_by, dropna=False)
-            .agg(sum)
+            .agg("sum")
             .reset_index()
         )
         aggregated = (
@@ -657,8 +668,8 @@ class _FlowBy(pd.DataFrame):
             validate = True
             grouped: 'FB' = (
                 self
-                .reset_index(drop=True).reset_index()
-                .rename(columns={'index': 'group_id'})
+                .reset_index(drop=True)
+                .reset_index(names='group_id')
                 .assign(group_total=lambda x: x.FlowAmount)
             )
             if len(grouped) == 0:
@@ -848,7 +859,8 @@ class _FlowBy(pd.DataFrame):
                          if k not in ['activity_sets',
                                       'clean_fba_before_activity_sets']
                          and not k.startswith('_')}
-        parent_df = self.reset_index().rename(columns={'index': 'row'})
+        parent_df = (self
+                     .reset_index(names='row'))
 
         child_df_list = []
         assigned_rows = set()
@@ -1379,6 +1391,11 @@ class _FlowBy(pd.DataFrame):
 
         groupby_cols = ['group_id', 'Location']
         for rank in ['Primary', 'Secondary']:
+            # continue if values are all np.nan
+            if fba[f'{rank}Sector'].isna().all():
+                groupby_cols.append(f'{rank}Sector')
+                continue
+
             fba = (
                 fba
                 .merge(naics_key, how='left', left_on=f'{rank}Sector',
@@ -1603,7 +1620,7 @@ class _FlowBy(pd.DataFrame):
         metadata = {attribute: self.__getattr__(attribute)
                     for attribute in self._metadata}
         df = pd.DataFrame(self).astype(*args, **kwargs)
-        fb = type(self)(df, add_missing_columns=False, **metadata)
+        fb = type(self)(df, convert_df_to_flowby=True, add_missing_columns=False, **metadata)
 
         return fb
 

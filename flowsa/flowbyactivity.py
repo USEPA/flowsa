@@ -322,15 +322,15 @@ class FlowByActivity(_FlowBy):
 
         fba_at_source_geoscale = (
             fba_with_reporting_levels
-            .assign(source_geoscale=(
-                fba_with_reporting_levels[reporting_level_columns]
-                .max(axis='columns')))
-            #   ^^^ max() with axis='columns' takes max along rows
+            .assign(source_geoscale=
+            fba_with_reporting_levels[reporting_level_columns].apply(
+                lambda row: max((v for v in row if isinstance(v, geo.scale)), default=np.nan),
+                axis=1))
             .query('geoscale == source_geoscale')
             .drop(columns=(['geoscale',
                             *geoscale_name_columns,
                             *reporting_level_columns]))
-        )
+        ).reset_index(drop=True)
 
         if len(fba_at_source_geoscale.source_geoscale.unique()) > 1:
             log.warning(f"{fba_at_source_geoscale.full_name} has multiple "
@@ -369,7 +369,7 @@ class FlowByActivity(_FlowBy):
                 # ^^^ TODO: Rewrite validation to use fb metadata
             )
 
-        return fba_at_target_geoscale
+        return fba_at_target_geoscale.reset_index(drop=True)
 
     def map_to_sectors(
             self: 'FlowByActivity',
@@ -533,10 +533,13 @@ class FlowByActivity(_FlowBy):
                 log.warning('Activities in %s are not mapped to sectors: %s', not_mapped.full_name, sorted(
                     set(not_mapped.ActivityProducedBy.dropna()).union(set(not_mapped.ActivityConsumedBy.dropna()))))
 
-        # drop all NA data
-        fba_w_naics = (fba_w_naics
-                       .dropna(subset=['SectorProducedBy', 'SectorConsumedBy'], how='all')
-                       .assign(SectorSourceName=f'NAICS_{target_year}_Code')
+        # drop all NA data and clean up df
+        fba_w_naics = fba_w_naics[
+            ~(fba_w_naics['SectorProducedBy'].isna() & fba_w_naics['SectorConsumedBy'].isna())
+        ]
+
+        fba_w_naics2 = (fba_w_naics
+                        .assign(SectorSourceName=f'NAICS_{target_year}_Code')
                        .drop(columns=['TechnologicalCorrelation_x', 'TechnologicalCorrelation_y',
                                       'DataReliability_x', 'DataReliability_y',
                                       'DataCollection_x', 'DataCollection_y'],
@@ -544,7 +547,7 @@ class FlowByActivity(_FlowBy):
                        .reset_index(drop=True)
                        )
 
-        return fba_w_naics
+        return fba_w_naics2
 
 
     def prepare_fbs(
@@ -584,7 +587,7 @@ class FlowByActivity(_FlowBy):
                     .reset_index(drop=True)
                 )
             except ValueError:
-                return FlowBySector(pd.DataFrame())
+                return FlowBySector(pd.DataFrame(), convert_df_to_flowby=True)
         log.info(f'Processing FlowBySector for {self.full_name}')
         # Primary FlowBySector generation approach:
         return FlowBySector(
@@ -603,7 +606,8 @@ class FlowByActivity(_FlowBy):
                                         download_sources_ok=download_sources_ok)  # recursive call to prepare_fbs
             .drop(columns=drop_cols)
             .aggregate_flowby()
-            .function_socket('clean_fbs_after_aggregation')
+            .function_socket('clean_fbs_after_aggregation'),
+            convert_df_to_flowby=True
         )
 
     def activity_sets(self) -> List['FlowByActivity']:
@@ -626,7 +630,9 @@ class FlowByActivity(_FlowBy):
                          if k not in ['activity_sets',
                                       'clean_fba_before_activity_sets']
                          and not k.startswith('_')}
-        parent_fba = self.reset_index().rename(columns={'index': 'row'})
+        parent_fba = (self
+                      .reset_index(names='row')
+                      )
 
         child_fba_list = []
         assigned_rows = set()

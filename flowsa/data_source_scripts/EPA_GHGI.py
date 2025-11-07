@@ -40,9 +40,9 @@ ANNEX_HEADERS = {"Total Consumption (TBtu) a": "Total Consumption (TBtu)",
 ANNEX_ENERGY_TABLES = ["A-" + str(x) for x in list(range(4,16))]
 
 DROP_COLS = ["Unnamed: 0"] + list(pd.date_range(
-    start="1990", end="2010", freq='Y').year.astype(str))
+    start="1990", end="2010", freq='YE').year.astype(str))
 
-YEARS = list(pd.date_range(start="2010", end="2024", freq='Y').year.astype(str))
+YEARS = list(pd.date_range(start="2010", end="2024", freq='YE').year.astype(str))
 
 
 def ghg_url_helper(*, build_url, config, **_):
@@ -496,20 +496,15 @@ def ghg_parse(*, df_list, year, config, **_):
         # set suppressed values to 0 but mark as suppressed
         # otherwise set non-numeric to nan
         try:
-            df = (df.assign(
-                    Suppressed = np.where(df.FlowAmount.str.strip() == "+", "+",
-                                          np.nan),
-                    FlowAmount = pd.Series(
-                        np.where(df.FlowAmount.str.strip() == "+", 0,
-                                 df.FlowAmount.str.replace(',',''))))
-                )
-            df = (df.assign(
-                    FlowAmount = np.where(pd.to_numeric(
-                        df.FlowAmount, errors='coerce').isnull(),
-                                          np.nan, pd.to_numeric(
-                                              df.FlowAmount, errors='coerce')))
-                .dropna(subset='FlowAmount')
-                )
+            df['Suppressed'] = (df['FlowAmount']
+                                .astype(str).str.strip().eq('+')
+                                .replace({True: '+', False: np.nan})
+                                .infer_objects(copy=False)
+                                )
+            df['FlowAmount'] = df['FlowAmount'].astype(str).str.replace(',', '').infer_objects(copy=False)
+            df['FlowAmount'] = df['FlowAmount'].replace('+', '0').infer_objects(copy=False)
+            df['FlowAmount'] = pd.to_numeric(df['FlowAmount'], errors='coerce')
+            df = df.dropna(subset='FlowAmount')
         except AttributeError:
             # if no string in FlowAmount, then proceed
             df = df.dropna(subset='FlowAmount')

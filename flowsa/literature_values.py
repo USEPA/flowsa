@@ -15,7 +15,7 @@ from flowsa.settings import datapath
 def get_Canadian_to_USD_exchange_rate(year):
     """
     Return exchange rate (Canadian $/USD)
-    From https://www.federalreserve.gov/releases/h10/current/ on 09/07/2020
+    From https://www.federalreserve.gov/releases/h10/current/ on 10/28/2025
     :param year: str, year of exchange rate to return
     :return: number, value of exchange rate for year
     """
@@ -38,7 +38,12 @@ def get_Canadian_to_USD_exchange_rate(year):
            2016: 1.3243,
            2017: 1.2984,
            2018: 1.2957,
-           2019: 1.3269
+           2019: 1.3269,
+           2020: 1.3422,
+           2021: 1.2533,
+           2022: 1.3014,
+           2023: 1.3494,
+           2024: 1.3699
            })
 
     exchange_rate = er.get(year, np.nan)
