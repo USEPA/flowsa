@@ -13,6 +13,7 @@ TON,kg,907.185
 tons,kg,907.185
 short tons,kg,907.185
 Thousands of Tons,kg,907185
+million short tons,kg,907184740
 MT,kg,1000
 Metric Tons,kg,1000
 LB,kg,0.45359
@@ -20,7 +21,9 @@ ACRE FEET / ACRE,kg/m2,304.8000006
 gal/USD,kg/USD,3.79
 Quadrillion Btu,MJ,1.06E+12
 Trillion Btu,MJ,1055055900
+trillion Btu,MJ,1055055900
 Tbtu,MJ,1055055900
+million kWh,MJ,3600000
 MT CO2e,MMT CO2e,0.000001
 employees,p,1
 Thousand USD,USD,1000

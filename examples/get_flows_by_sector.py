@@ -36,6 +36,7 @@ https://github.com/USEPA/flowsa/blob/master/format%20specs/FlowBySector.md.
     :return: dataframe in flow by sector format
 
 """
+import flowsa
 from flowsa import getFlowBySector, collapse_FlowBySector, \
     seeAvailableFlowByModels
 
@@ -54,3 +55,10 @@ fbs_water = getFlowBySector('Water_national_2015_m1',
 # `Water_national_2015_m1` FBS will have 2 fewer rows, as the df is aggregated
 # after dropping "SectorProducedBy" information
 fbs_water_collapsed = collapse_FlowBySector('Water_national_2015_m1')
+
+# alternatively, you can generate an FBS dataset even if you have a local copy. Your local copy will be overwritten
+# if the same git hash.
+flowsa.flowbysector.FlowBySector.generateFlowBySector(
+            method='Land_national_2012',
+            download_sources_ok=True  # optionally download FBA data used to generate FBS
+)

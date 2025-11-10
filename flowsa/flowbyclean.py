@@ -56,7 +56,7 @@ def load_prepare_clean_source(
                 **config},
         download_sources_ok=download_sources_ok
         ).prepare_fbs(download_sources_ok=download_sources_ok)
-    return clean_fbs
+    return clean_fbs.reset_index(drop=True)
 
 
 def weighted_average(
@@ -86,31 +86,33 @@ def weighted_average(
                      else 'Location'],
                      right_on=['PrimarySector', 'Location'],
                      suffixes=[None, '_other'])
-              .fillna({'FlowAmount_other': fba['FlowAmount']})
               )
+    merged['FlowAmount_other'] = merged['FlowAmount_other'].mask(
+        merged['FlowAmount_other'] == 0, merged['FlowAmount'])
+
     # drop rows where flow is 0
     merged = merged[merged['FlowAmount'] != 0]
     # replace terms
     for original, replacement in fba.config.get(
             'replacement_dictionary').items():
-        merged = merged.replace({original: replacement})
+        with pd.option_context('future.no_silent_downcasting', True):
+            merged = (merged
+                  .replace({original: replacement})
+                  .infer_objects(copy=False)
+                  )
 
-    wt_flow = (merged
-               .groupby(['Class', 'Flowable', 'Unit',
-                         'FlowType', 'ActivityProducedBy',
-                         'ActivityConsumedBy', 'Context', 'Location',
-                         'LocationSystem', 'Year', 'MeasureofSpread',
-                         'Spread', 'DistributionType', 'Min', 'Max',
-                         'DataReliability', 'DataCollection',
-                         'SectorProducedBy', 'ProducedBySectorType',
-                         'SectorConsumedBy', 'ConsumedBySectorType',
-                         'SectorSourceName'],
-                        dropna=False)
-               .apply(lambda x: np.average(x['FlowAmount'],
-                                           weights=x['FlowAmount_other']))
-               .drop(columns='FlowAmount')  # original flowamounts
-               .reset_index(name='FlowAmount')  # new, weighted flows
-               )
+    wt_flow = (
+        merged
+        .groupby(['Class', 'Flowable', 'Unit', 'FlowType', 'ActivityProducedBy',
+                  'ActivityConsumedBy', 'Context', 'Location', 'LocationSystem',
+                  'Year', 'MeasureofSpread', 'Spread', 'DistributionType', 'Min',
+                  'Max', 'DataReliability', 'DataCollection', 'SectorProducedBy',
+                  'ProducedBySectorType', 'SectorConsumedBy', 'ConsumedBySectorType',
+                  'SectorSourceName'], dropna=False)[['FlowAmount', 'FlowAmount_other']]
+        .apply(lambda x: np.average(x['FlowAmount'], weights=x['FlowAmount_other']))
+        .reset_index(name='FlowAmount')
+    )
+
     # set attributes todo: revise above code so don't lose attributes
     attributes_to_save = {
         attr: getattr(fba, attr) for attr in fba._metadata + ['_metadata']
@@ -120,8 +122,8 @@ def weighted_average(
 
     # reset dropped information
     wt_flow = (wt_flow
-               .reset_index(drop=True).reset_index()
-               .rename(columns={'index': 'group_id'})
+               .reset_index(drop=True)
+               .reset_index(names='group_id')
                .assign(group_total=wt_flow.FlowAmount)
                )
 
@@ -147,7 +149,7 @@ def substitute_nonexistent_values(
     state_geo = pd.concat([
         (geo.filtered_fips(fb.config['geoscale'])[['FIPS']]
          .assign(Location=location.US_FIPS))
-    ])
+    ]).reset_index(drop=True)
 
     other = (other
              .merge(state_geo)
@@ -155,6 +157,7 @@ def substitute_nonexistent_values(
              .rename(columns={'FIPS': 'Location'})
              )
 
+    # todo: revise these check merge cols, expand
     merged = (fb
               .merge(other,
                      on=list(other.select_dtypes(
@@ -179,8 +182,8 @@ def substitute_nonexistent_values(
     merged = (merged
               .drop(merged.filter(regex='_y').columns, axis=1)
               .drop(columns=['group_id'])
-              .reset_index(drop=True).reset_index()
-              .rename(columns={'index': 'group_id'})
+              .reset_index(drop=True)
+              .reset_index(names='group_id')
               .assign(group_total=merged.FlowAmount)
               )
 
@@ -291,7 +294,7 @@ def estimate_suppressed_sectors_equal_attribution(
                right_on='source_naics')
         .assign(location=fba3.Location,
                 category=fba3.FlowName)
-        .replace({'FlowAmount': {0: np.nan}  #,
+        # .replace({'FlowAmount': {0: np.nan}  #,
                   # col: {'1125 & 1129': '112X',
                   #       '11193 & 11194 & 11199': '1119X',
                   #       '31-33': '3X',
@@ -302,7 +305,7 @@ def estimate_suppressed_sectors_equal_attribution(
                   #        '48': '4Y', '49': '4Y'},
                   # 'n4': {'1125': '112X', '1129': '112X'},
                   # 'n5': {'11193': '1119X', '11194': '1119X', '11199': '1119X'}
-                  })
+                  # })
         .dropna(subset='source_naics')
         .drop(columns='source_naics')
     )
@@ -311,16 +314,16 @@ def estimate_suppressed_sectors_equal_attribution(
                                'location', 'category'], verify_integrity=True)
 
     def fill_suppressed(
-        flows, level: int, activity
+            flows, level: int, activity
     ):
         parent = flows[flows[activity].str.len() == level]
         children = flows[flows[activity].str.len() == level + 1]
-        null_children = children[children['FlowAmount'].isna()]
+        null_children = children[children['flow_suppressed']]
 
         if null_children.empty or parent.empty:
             return flows
         else:
-            value = max(parent['Unattributed'][0] / len(null_children), 0)
+            value = max(parent['Unattributed'].iloc[0] / len(null_children), 0)
             # update the null children by adding the unattributed data to
             # the attributed data
             null_children = (
@@ -328,11 +331,17 @@ def estimate_suppressed_sectors_equal_attribution(
                 .assign(FlowAmount=value+null_children['Attributed'])
                 .assign(Unattributed=value)
             )
-            flows.update(null_children)
+            flows.loc[null_children.index, ['FlowAmount', 'Unattributed']] = null_children[['FlowAmount', 'Unattributed']]
             return flows
 
     unsuppressed = indexed.copy()
+    # replace 0 values with np.nan for suppressed data to be estimated
+    unsuppressed['FlowAmount'] = unsuppressed['FlowAmount'].mask(unsuppressed['FlowAmount'] == 0)
+    unsuppressed['flow_suppressed'] = unsuppressed['FlowAmount'].isna()
+
+    # loop through sector lengths, estimating suppressed data
     for level in [2, 3, 4, 5, 6]:
+        log.info(f"Estimating suppressed data at sector level {level}")
         groupcols = (["{}{}".format("n", i) for i in range(2, level+1)] +
                      ['location', 'category'])
         unsuppressed = (unsuppressed
@@ -340,11 +349,12 @@ def estimate_suppressed_sectors_equal_attribution(
                         .apply(fill_suppressed, level, col)
                         )
     unsuppressed['Year'] = unsuppressed['Year'].astype('int')
+
     aggregated = (
         unsuppressed
         .reset_index(drop=True)
         .fillna({'FlowAmount': 0})
-        .drop(columns=['Unattributed', 'Attributed'])
+        .drop(columns=['Unattributed', 'Attributed', 'flow_suppressed'])
         # .replace({col: {'3X': '31-33',
         #                 '4X': '44-45',
         #                 '4Y': '48-49'}})
@@ -394,8 +404,8 @@ def attribute_national_to_states(fba: FlowByActivity, **_) -> FlowByActivity:
     fba = (
         fba
         .drop(columns=['group_id', 'group_total'])
-        .reset_index(drop=True).reset_index()
-        .rename(columns={'index': 'group_id'})
+        .reset_index(drop=True)
+        .reset_index(names='group_id')
         .assign(group_total=fba.FlowAmount)
     )
 
@@ -541,7 +551,7 @@ def define_parentincompletechild_descendants(
     fba = (fba
            .drop(columns='group_total')
            .merge((fba.groupby('group_id')
-                      .agg({'FlowAmount':sum})
+                      .agg({'FlowAmount': "sum"})
                       .rename(columns={'FlowAmount': 'group_total'})
                       ),
                   on='group_id', how='left', validate='m:1')
@@ -612,8 +622,8 @@ def proxy_sector_data(
     # break each sector into separate line
     fba3 = (fba2
             .explode(col)
-            .reset_index(drop=True).reset_index()
-            .rename(columns={'index': 'group_id'})
+            .reset_index(drop=True)
+            .reset_index(names='group_id')
             )
 
     return fba3

@@ -201,7 +201,7 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
         df_non_urban_transport_area[['Location', 'Unit', 'FlowAmount']]
     non_urban_transport_area_sum = df_non_urban_transport_area.groupby(
             ['Location', 'Unit'], as_index=False).agg(
-        {'FlowAmount': sum}).rename(columns={'FlowAmount': 'NonTransport'})
+        {'FlowAmount': "sum"}).rename(columns={'FlowAmount': 'NonTransport'})
     # compare units
     compare_df_units(fba, df_non_urban_transport_area)
     # calculate total urban transportation by subtracting
@@ -232,7 +232,7 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
     air_rail_area = air_rail_area[['Location', 'Unit', 'FlowAmount']]
     air_rail_area_sum = air_rail_area.groupby(
         ['Location', 'Unit'], as_index=False).agg(
-        {'FlowAmount': sum}).rename(columns={'FlowAmount': 'AirRail'})
+        {'FlowAmount': "sum"}).rename(columns={'FlowAmount': 'AirRail'})
 
     df_highway = df_transport.merge(air_rail_area_sum, how='left')
     df_highway = df_highway.assign(
@@ -256,8 +256,8 @@ def allocate_usda_ers_mlu_land_in_urban_areas(
         allocated_urban_areas_df
         .drop(columns=['group_id', 'group_total', 'rurl_res', 'total_area'],
               errors='ignore')
-        .reset_index(drop=True).reset_index()
-        .rename(columns={'index': 'group_id'})
+        .reset_index(drop=True)
+        .reset_index(names='group_id')
         .assign(group_total=allocated_urban_areas_df.FlowAmount)
     )
 
@@ -317,7 +317,7 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(
     air_rail_area = air_rail_area[['Location', 'Unit', 'FlowAmount']]
     air_rail_area_sum = air_rail_area.groupby(
         ['Location', 'Unit'], as_index=False).agg(
-        {'FlowAmount': sum}).rename(columns={'FlowAmount': 'AirRail'})
+        {'FlowAmount': "sum"}).rename(columns={'FlowAmount': 'AirRail'})
 
     # compare units
     compare_df_units(fba, air_rail_area)
@@ -341,8 +341,8 @@ def allocate_usda_ers_mlu_land_in_rural_transportation_areas(
     allocated_rural_trans = (
         allocated_rural_trans
         .drop(columns=['group_id', 'group_total'])
-        .reset_index(drop=True).reset_index()
-        .rename(columns={'index': 'group_id'})
+        .reset_index(drop=True)
+        .reset_index(names='group_id')
         .assign(group_total=allocated_rural_trans.FlowAmount)
     )
 

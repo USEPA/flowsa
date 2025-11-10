@@ -77,7 +77,7 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
                            'Unit', 'geoscale']
     dfagg = dfs.groupby(
         agg_cols, dropna=False, as_index=False).agg(
-        {'FlowAmount_Original': sum, 'FlowAmount_Modified': sum})
+        {'FlowAmount_Original': "sum", 'FlowAmount_Modified': "sum"})
     # column calculating difference
     dfagg['FlowAmount_Difference'] = \
         dfagg['FlowAmount_Modified'] - dfagg['FlowAmount_Original']
@@ -95,7 +95,7 @@ def calculate_flowamount_diff_between_dfs(dfa_load, dfb_load):
             'FlowAmount_Difference', 'Percent_Increase'])
         dfagg4 = dfagg3.groupby(flowcols + ['Unit', 'geoscale'],
             dropna=False, as_index=False).agg(
-            {'FlowAmount_Original': sum, 'FlowAmount_Modified': sum})
+            {'FlowAmount_Original': "sum", 'FlowAmount_Modified': "sum"})
         # column calculating difference
         dfagg4['FlowAmount_Difference'] = \
             dfagg4['FlowAmount_Modified'] - dfagg4['FlowAmount_Original']
@@ -295,10 +295,10 @@ def compare_FBS_results(fbs1, fbs2, ignore_metasources=False,
     return df_m
 
 
-def compare_FBS(df1, df2, ignore_metasources=False):
-    "Assess differences between two FBS dataframes."
-    df1 = df1.rename(columns={'FlowAmount': 'FlowAmount_fbs1'})
-    df2 = df2.rename(columns={'FlowAmount': 'FlowAmount_fbs2'})
+def compare_FBS(df1_load, df2_load, ignore_metasources=False):
+    """Assess differences between two FBS dataframes."""
+    df1 = pd.DataFrame(df1_load.rename(columns={'FlowAmount': 'FlowAmount_fbs1'}))
+    df2 = pd.DataFrame(df2_load.rename(columns={'FlowAmount': 'FlowAmount_fbs2'}))
     merge_cols = [c for c in df2.select_dtypes(include=[
         'object', 'int']).columns if c not in dq_fields]
     if ignore_metasources:
@@ -312,13 +312,7 @@ def compare_FBS(df1, df2, ignore_metasources=False):
             except ValueError:
                 pass
 
-    # aggregate dfs before merge - might have duplicate sectors due to
-    # dropping metasources/attribution sources
-    df1 = (df1.groupby(merge_cols, dropna=False)
-           .agg({'FlowAmount_fbs1': 'sum'}).reset_index())
-    df2 = (df2.groupby(merge_cols, dropna=False)
-           .agg({'FlowAmount_fbs2': 'sum'}).reset_index())
-    # convert sector columns to object to avoid valueErrors
+    # convert sector columns to object to avoid valueErrors and df clean up
     cols = ['SectorProducedBy', 'SectorConsumedBy']
     for c in cols:
         df1[c] = df1[c].astype(str)
@@ -327,12 +321,23 @@ def compare_FBS(df1, df2, ignore_metasources=False):
         df1 = df1.drop(columns=c, errors='ignore')
         df2 = df2.drop(columns=c, errors='ignore')
         merge_cols = [x for x in merge_cols if x != c]
+    # convert all np.nan in the string type merge cols to empty strings, to ensure correct merge
+    fill_cols = [c for c in merge_cols if df2[c].dtype == 'object']
+    df1[fill_cols] = df1[fill_cols].replace(['nan', np.nan], '')
+    df2[fill_cols] = df2[fill_cols].replace(['nan', np.nan], '')
+
+    # subset dfs
+    df1_sub = df1[merge_cols + ['FlowAmount_fbs1']]
+    df2_sub = df2[merge_cols + ['FlowAmount_fbs2']]
+
+    # aggregate dfs before merge - might have duplicate sectors due to
+    # dropping metasources/attribution sources
+    df1_sub = df1_sub.groupby(merge_cols, dropna=False).agg({'FlowAmount_fbs1': 'sum'}).reset_index()
+    df2_sub = df2_sub.groupby(merge_cols, dropna=False).agg({'FlowAmount_fbs2': 'sum'}).reset_index()
+
     # check units
-    # compare_df_units(df1, df2)
-    df_m = pd.DataFrame(
-        pd.merge(df1[merge_cols + ['FlowAmount_fbs1']],
-                 df2[merge_cols + ['FlowAmount_fbs2']],
-                 how='outer'))
+    # compare_df_units(df1_sub, df2_sub)
+    df_m = pd.merge(df1_sub, df2_sub,how='outer')
     df_m = df_m.assign(FlowAmount_diff=df_m['FlowAmount_fbs2']
                        .fillna(0) - df_m['FlowAmount_fbs1'].fillna(0))
     df_m = df_m.assign(
@@ -373,6 +378,8 @@ def compare_single_FBS_against_remote(m, outdir=diffpath,
               inplace=True)
     if len(df) > 0:
         print(f"Saving differences in {m} to csv")
+        # maintain leading 0s in location col
+        df.Location = df.Location.apply('="{}"'.format)
         df.to_csv(f"{outdir}/{m}_diff.csv", index=False)
     else:
         print(f"***No differences found in {m}***")
@@ -402,6 +409,8 @@ def compare_single_FBA_against_remote(source, year, outdir=diffpath,
               inplace=True)
     if len(df) > 0:
         print(f"Saving differences in {source} {year} to csv")
+        # maintain leading 0s in location col
+        df.Location = df.Location.apply('="{}"'.format)
         df.to_csv(f"{outdir}/{source}_{year}_diff.csv", index=False)
     else:
         print(f"***No differences found in {source} {year}***")

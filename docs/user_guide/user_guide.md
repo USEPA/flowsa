@@ -327,7 +327,7 @@ To attribute a primary data source to target level sectors, identify the primary
   specified attribution data source
 - equal: Equally attribute parent values to child values until reach target 
   sector length
-- inheritance: Assign parent values to all child values. Usefull in 
+- inheritance: Assign parent values to all child values. Useful in 
   situations where value is a rate, such as kg/m2.
 
 ### Recursive vs Sequential Attribution

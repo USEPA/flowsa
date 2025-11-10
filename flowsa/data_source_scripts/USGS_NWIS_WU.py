@@ -610,6 +610,13 @@ def subset_and_merge_irrigation_types(df: FlowByActivity):
                                   "ActivityConsumedBy_y": "Crop_ACB",
                                   "Description_x": 'Description',
                                   "Description_y": "Crop_Description"})
+
+    # ensure activity cols are object, not float, so not converted to 0
+    col = ['ActivityProducedBy', 'Golf_APB', 'Crop_APB']
+    for c in col:
+        df_m2[c] = df_m2[c].astype(str)
+
+
     # fill na and sum crop and golf
     for col in df_m2:
         if df_m2[col].dtype in ("int", "float"):
