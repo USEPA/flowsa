@@ -292,12 +292,12 @@ def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
     ):
         parent = flows[flows[activity].str.len() == level]
         children = flows[flows[activity].str.len() == level + 1]
-        null_children = children[children['FlowAmount'].isna()]
+        null_children = children[children['flow_suppressed']]
 
         if null_children.empty or parent.empty:
             return flows
         else:
-            value = max(parent['Unattributed'][0] / len(null_children), 0)
+            value = max(parent['Unattributed'].iloc[0] / len(null_children), 0)
             # update the null children by adding the unattributed data to
             # the attributed data
             null_children = (
@@ -305,11 +305,15 @@ def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
                 .assign(FlowAmount=value+null_children['Attributed'])
                 .assign(Unattributed=value)
             )
-            flows.update(null_children)
+            flows.loc[null_children.index, ['FlowAmount', 'Unattributed']] = (
+                null_children)[['FlowAmount', 'Unattributed']]
 
             return flows
 
     unsuppressed = indexed.copy()
+    # replace 0 values with np.nan for suppressed data to be estimated
+    unsuppressed['FlowAmount'] = unsuppressed['FlowAmount'].mask(unsuppressed['FlowAmount'] == 0)
+    unsuppressed['flow_suppressed'] = unsuppressed['FlowAmount'].isna()
     for level in range(2, max_level, 1):
         log.info(f"Estimating suppressed NAICS {level + 1}")
         groupcols = ["{}{}".format("n", i) for i in range(2, level+1)] + [
@@ -322,7 +326,7 @@ def estimate_suppressed_qcew(fba: FlowByActivity) -> FlowByActivity:
         unsuppressed
         .reset_index(drop=True)
         .fillna({'FlowAmount': 0})
-        .drop(columns=['Unattributed', 'Attributed'])
+        .drop(columns=['Unattributed', 'Attributed', 'flow_suppressed'])
         .assign(FlowName='Number of employees')
         .replace({'ActivityProducedBy': {'3X': '31-33',
                                          '4X': '44-45',
