@@ -83,15 +83,19 @@ tables:
         years: '2015-2022'
       S1501_C01_009E:
         name: High School Degree
-        unit: '% of people'
+        unit: '# of people'     # number of people 25 and older with a HS degree
         years: '2010-2014'
       S1501_C01_012E:
-        name: Bachelors Degree
-        unit: '% of people'
+        name: Bachelors Degree  # number of people 25 and older with a Bachelors degree
+        unit: '# of people'
         years: '2010-2014'
       S1501_C01_003E:
-        name: Graduate Degree
-        unit: '% of people'
+        name: Graduate Degree  # number of people 25 and older with a Grad degree
+        unit: '# of people'
+        years: '2010-2014'
+      S1501_C01_006E:
+        name: 'Population'     # number of people 25 and older
+        unit: '# of people'
         years: '2010-2014'
         
   S1401:
