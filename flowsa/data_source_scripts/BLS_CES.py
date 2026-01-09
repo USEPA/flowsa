@@ -45,7 +45,7 @@ def bls_ces_call(config, year):
         short_series = series_list[x:x+50] 
     
         data = json.dumps({"seriesid": short_series,
-                           "startyear":2004, "endyear":2022,
+                           "startyear":2004, "endyear":2023,
                            "registrationkey": api_key})
         
         response = make_url_request(url=config['base_url'],

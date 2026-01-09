@@ -30,6 +30,7 @@ years:
 - 2020
 - 2021
 - 2022
+- 2023
 
 tables:
   DP03:
@@ -53,7 +54,7 @@ tables:
       DP04_0046PE:
         name: Owner-occupied housing
         unit: '% of homes'
-        years: '2015-2022'
+        years: '2015-2023'
       DP04_0045PE:
         name: Owner-occupied housing
         unit: '% of homes'
@@ -72,15 +73,15 @@ tables:
       S1501_C02_009E:
         name: High School Degree
         unit: '% of people'
-        years: '2015-2022'
+        years: '2015-2023'
       S1501_C02_012E:
         name: Bachelors Degree
         unit: '% of people'
-        years: '2015-2022'
+        years: '2015-2023'
       S1501_C02_013E:
         name: Graduate Degree
         unit: '% of people'
-        years: '2015-2022'
+        years: '2015-2023'
       S1501_C01_009E:
         name: High School Degree
         unit: '# of people'     # number of people 25 and older with a HS degree
@@ -105,7 +106,7 @@ tables:
       S1401_C02_003E:
         name: K12 Enrollment
         unit: '% of people'
-        years: '2015-2022'
+        years: '2015-2023'
       S1401_C01_003E:
         name: K12 Enrollment
         unit: '# of people'
